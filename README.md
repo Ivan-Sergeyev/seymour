@@ -122,7 +122,7 @@ The guideline below is written primarily to assist you in reading the code.
   - `hM₁` carries any information about `M₁`
   - `hM₂` carries any information about `M₂`
   - `hMM` carries any information about both `M₁` and `M₂` (indices after `hMM` are not needed)
-- Never name anything `this` or standalone `h` (these names are acceptable neither for data nor for propositions), but leaving automatically named stuff with `this` or `h` is encouraged if the term is not explicitly referred to later.
+- Never name anything `this`, `ass` or standalone `h` (these names are acceptable neither for data nor for propositions), but leaving automatically named stuff with `this` or `h` is encouraged if the term is not explicitly referred to later.
   - Writing names like `h₁` or `h'` or `this'` or `this_` is strongly discouraged regardless of the purpose
 
 ### Other
