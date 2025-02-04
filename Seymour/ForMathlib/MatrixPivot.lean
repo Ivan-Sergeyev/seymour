@@ -32,7 +32,7 @@ def Matrix.shortTableauPivot [Field F] (A : Matrix X Y F) (x : X) (y : Y) :
 #guard_msgs in
 #eval ∀ m : (Fin 3) → (Fin 2) → ({0, 1, -1} : Finset ℚ),
   let M : Matrix (Fin 3) (Fin 2) ℚ := Matrix.of (fun i j => (m i j).val)
-  M 0 0 = 0 ∨ M.testTotallyUnimodular == (M.shortTableauPivot 0 0).testTotallyUnimodular
+  M 0 0 = 0 ∨ M.IsTotallyUnimodular == (M.shortTableauPivot 0 0).IsTotallyUnimodular
 -- tested for matrices up to 2 × 4
 
 lemma Matrix.shortTableauPivot_row_pivot [Field F] (A : Matrix X Y F) (x : X) (y : Y) :

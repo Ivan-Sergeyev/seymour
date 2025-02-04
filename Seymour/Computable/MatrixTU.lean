@@ -1,5 +1,5 @@
 import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
---import Mathlib.Data.Finset.Card -- some pidgeonholes
+import Mathlib.Data.Finset.Card -- some pidgeonholes
 import Seymour.ForMathlib.Basic
 
 
@@ -10,20 +10,9 @@ def Matrix.testTotallyUnimodular {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : 
 lemma Matrix.isTotallyUnimodular_of_aux {m n : ℕ} {A : Matrix (Fin m) (Fin n) ℚ}
     (hA : ∀ k : ℕ, k ≤ m → ∀ x : Fin k → Fin m, ∀ y : Fin k → Fin n, (A.submatrix x y).det ∈ Set.range SignType.cast) :
     A.IsTotallyUnimodular := by
-  -- rw [Matrix.isTotallyUnimodular_iff]
-  -- intro k f g
-  -- if hk : k ≤ m then
-  --   exact hA k hk f g
-  -- else
-  --   convert zero_in_set_range_singType_cast
-  --   obtain ⟨a, b, hab, hfab⟩ : ∃ a b : Fin k, a ≠ b ∧ f a = f b
-  --   · sorry
-  --   apply Matrix.det_zero_of_row_eq hab
-  --   ext
-  --   simp [Matrix.submatrix_apply, hfab]
-  intro k f g hf hg
+  intro k f g hf _
   have hkm : k ≤ m
-  · sorry -- from `hf` by https://github.com/leanprover-community/mathlib4/pull/20056/files
+  · simpa using Fintype.card_le_of_injective f hf
   exact hA k hkm f g
 
 lemma Matrix.isTotallyUnimodular_of_testTotallyUnimodular {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) :
@@ -54,3 +43,6 @@ theorem Matrix.testTotallyUnimodular_eq_isTotallyUnimodular {m n : ℕ} (A : Mat
     simp only [Matrix.testTotallyUnimodular, and_imp, decide_eq_true_eq, eq_iff_iff, iff_true]
     intro k _ f g
     exact hA k f g
+
+instance {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Decidable A.IsTotallyUnimodular :=
+  decidable_of_iff _ A.testTotallyUnimodular_eq_isTotallyUnimodular
