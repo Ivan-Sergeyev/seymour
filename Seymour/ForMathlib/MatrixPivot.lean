@@ -20,14 +20,6 @@ def Matrix.shortTableauPivot [Field F] (A : Matrix X Y F) (x : X) (y : Y) :
       else
         A i j - A i y * A x j / A x y
 
--- private def A : Matrix (Fin 3) (Fin 3) ℚ := !![1, 2, 3; 4, 5, 6; 7, 8, 9]
--- #eval A.shortTableauPivot 0 0
-
--- private def B : Matrix (Fin 3) (Fin 3) ℚ := !![0, -1, 1; 1, -1, 0; 1, 0, -1]
--- #eval B.testTotallyUnimodular
--- private def B' := B.shortTableauPivot 1 1
--- #eval B'.testTotallyUnimodular
-
 /-- info: true -/
 #guard_msgs in
 #eval ∀ m : (Fin 2) → (Fin 3) → ({0, 1, -1} : Finset ℚ),
@@ -154,6 +146,17 @@ private lemma Matrix.shortTableauPivot_eq [Field F] (A : Matrix X Y F) (x : X) (
     else
       simp [Matrix.shortTableauPivot, Matrix.fromCols, Matrix.addMultiple, Matrix.getSmallTableau, Matrix.mulRow, hj, hi]
       ring
+
+/-- info: true -/
+#guard_msgs in
+#eval ∀ m : (Fin 2) → (Fin 3) → ({0, 1, -1} : Finset ℚ),
+  let M : Matrix (Fin 2) (Fin 3) ℚ := Matrix.of (fun i j => (m i j).val)
+  M 0 0 == 0  ∨  M.testTotallyUnimodularFaster == (M.addMultiple 0 (- M · 0 / M 0 0)).testTotallyUnimodularFaster
+
+-- `false` !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#eval ∀ m : (Fin 3) → (Fin 2) → ({0, 1, -1} : Finset ℚ),
+  let M : Matrix (Fin 3) (Fin 2) ℚ := Matrix.of (fun i j => (m i j).val)
+  M 0 0 == 0  ∨  M.testTotallyUnimodularFaster == (M.addMultiple 0 (- M · 0 / M 0 0)).testTotallyUnimodularFaster
 
 /-- Pivoting preserves total unimodularity. -/
 lemma Matrix.IsTotallyUnimodular.shortTableauPivot [Field F] {A : Matrix X Y F}
