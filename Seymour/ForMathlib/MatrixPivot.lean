@@ -116,7 +116,7 @@ private def Matrix.addMultiple [Semifield F] (A : Matrix X Y F) (x : X) (q : X �
 private lemma Matrix.IsTotallyUnimodular.addMultiple [Field F] {A : Matrix X Y F}
     (hA : A.IsTotallyUnimodular) (x : X) (q : X → F) :
     (A.addMultiple x q).IsTotallyUnimodular := by
-  sorry -- This lemma does not hold for the same reasons are written above.
+  sorry -- This lemma does not hold for the same reasons as the lemma above.
 
 /-- The small tableau consists of all columns but `x`th from the original matrix and the `y`th column of the square matrix. -/
 private def Matrix.getSmallTableau (A : Matrix X (X ⊕ Y) F) (x : X) (y : Y) :
@@ -151,12 +151,14 @@ private lemma Matrix.shortTableauPivot_eq [Field F] (A : Matrix X Y F) (x : X) (
 #guard_msgs in
 #eval ∀ m : (Fin 2) → (Fin 3) → ({0, 1, -1} : Finset ℚ),
   let M : Matrix (Fin 2) (Fin 3) ℚ := Matrix.of (fun i j => (m i j).val)
-  M 0 0 == 0  ∨  M.testTotallyUnimodularFaster == (M.addMultiple 0 (- M · 0 / M 0 0)).testTotallyUnimodularFaster
+  M.testTotallyUnimodularFaster == (M.addMultiple 0 (- M · 0 / M 0 0)).testTotallyUnimodularFaster
 
--- `false` !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+/-- info: true -/
+#guard_msgs in
 #eval ∀ m : (Fin 3) → (Fin 2) → ({0, 1, -1} : Finset ℚ),
   let M : Matrix (Fin 3) (Fin 2) ℚ := Matrix.of (fun i j => (m i j).val)
-  M 0 0 == 0  ∨  M.testTotallyUnimodularFaster == (M.addMultiple 0 (- M · 0 / M 0 0)).testTotallyUnimodularFaster
+  M.testTotallyUnimodularFaster ≤ (M.addMultiple 0 (- M · 0 / M 0 0)).testTotallyUnimodularFaster
+-- `→` seems to hold unconditionally
 
 /-- Pivoting preserves total unimodularity. -/
 lemma Matrix.IsTotallyUnimodular.shortTableauPivot [Field F] {A : Matrix X Y F}
@@ -166,4 +168,3 @@ lemma Matrix.IsTotallyUnimodular.shortTableauPivot [Field F] {A : Matrix X Y F}
   have hAxy : 1 / A x y ∈ Set.range SignType.cast
   · rw [inv_eq_self_of_in_set_range_singType_cast] <;> exact hA.apply x y
   exact (((hA.one_fromCols).addMultiple x _).getSmallTableau x y).mulRow x hAxy
--- The other implication should hold as well afaik.
