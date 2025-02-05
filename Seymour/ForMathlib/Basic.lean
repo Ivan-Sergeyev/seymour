@@ -1,6 +1,10 @@
 import Mathlib.Tactic
 
 
+lemma Sum.swap_inj {α β : Type} : (@Sum.swap α β).Injective := by
+  intro
+  aesop
+
 lemma finset_of_cardinality_between {α β : Type} [Fintype α] [Fintype β] {n : ℕ}
     (hα : Fintype.card α < n) (hn : n ≤ Fintype.card α + Fintype.card β) :
     ∃ b : Finset β, Fintype.card (α ⊕ b) = n ∧ Nonempty b := by

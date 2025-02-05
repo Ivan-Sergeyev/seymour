@@ -26,9 +26,15 @@ attribute [instance] StandardRepresentation.decmemY
 
 variable {α : Type} [DecidableEq α] {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)]
 
-/-- Given matrix `B`, whether the set of columns `S` in the (standard) representation [`1 | B`] `Z2`-independent. -/
+/-- Given matrix `B`, tell whether the set of columns `S` in the (standard) representation [`1 | B`] is `Z2`-independent. -/
 def Matrix.IndepCols (B : Matrix X Y Z2) (S : Set α) : Prop :=
-  ∃ hs : S ⊆ X ∪ Y, LinearIndependent Z2 ((Matrix.fromCols 1 B).submatrix id (Subtype.toSum ∘ hs.elem)).transpose
+  ∃ hS : S ⊆ X ∪ Y, LinearIndependent Z2 (fun s : S => ((Matrix.fromCols 1 B) · (hS.elem s).toSum))
+
+/-- The definition `Matrix.IndepCols` can be rephrased in terms of a submatrix of [`1 | B`]. -/
+lemma Matrix.indepCols_iff (B : Matrix X Y Z2) (S : Set α) :
+    B.IndepCols S ↔
+    ∃ hS : S ⊆ X ∪ Y, LinearIndependent Z2 ((Matrix.fromCols 1 B).submatrix id (Subtype.toSum ∘ hS.elem)).transpose := by
+  rfl
 
 
 /-- The empty set of columns is linearly independent. -/

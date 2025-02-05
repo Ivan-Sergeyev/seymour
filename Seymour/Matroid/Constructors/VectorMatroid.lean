@@ -3,6 +3,10 @@ import Mathlib.Data.Matroid.Dual
 
 import Seymour.Basic
 
+open scoped Matrix
+
+-- TODO names `S` and `Q` could be used more consistently throughout this file than they are now.
+
 
 section Definition
 
@@ -20,8 +24,6 @@ structure VectorMatroid (α R : Type) where
   emb : Y ↪ α
 
 attribute [instance] VectorMatroid.finY
-
-open scoped Matrix
 
 variable {α R : Type} [DecidableEq α] [Semiring R]
 
@@ -59,7 +61,6 @@ theorem VectorMatroid.indepCols_aug (M : VectorMatroid α R) (I J : Set α)
   push_neg at hMI'
   obtain ⟨hI, I_indep⟩ := hMI
   obtain ⟨⟨hJ, J_indep⟩, hJ'⟩ := hMJ
-
   -- let I' : Set M.E := { x : M.E.Elem | x.val ∈ I }
   -- let J' : Set M.E := { x : M.E.Elem | x.val ∈ J }
   -- let Iᵥ : Set (M.X → R) := M.Aᵀ '' I'
@@ -140,7 +141,7 @@ section EquivalentTransformations
 -- 2.2.6 Multiply a column by a non-zero member of F.
 -- 2.2.7 Replace each matrix entry by its image under some automorphism of F.
 
--- todo: if A is non-zero, it can be reduced to [I | B] by a sequence of operations of types 2.2.1-2.2.5
+-- todo: if A is non-zero, it can be reduced to [1 | B] by a sequence of operations of types 2.2.1--2.2.5
 
 end EquivalentTransformations
 
@@ -156,8 +157,10 @@ structure StandardRepr (α R : Type) where
   Y : Type
   /-- Standard representation matrix. -/
   B : Matrix X Y R
-  /-- The matrix has finite number of rows and columns. -/
-  fntp : Fintype (X ⊕ Y) -- TODO two things?
+  /-- The matrix has finite number of rows . -/
+  fntpX : Fintype X
+  /-- The matrix has finite number ofcolumns. -/
+  fntpY : Fintype Y
   /-- The computer can distinguish the rows from each other. -/
   deceqX : DecidableEq X
   /-- The computer can distinguish the cols from each other. -/
@@ -165,7 +168,8 @@ structure StandardRepr (α R : Type) where
   /-- How the rows and columns correspond to the elements of the resulting matroid. -/
   emb : X ⊕ Y ↪ α
 
-attribute [instance] StandardRepr.fntp
+attribute [instance] StandardRepr.fntpX
+attribute [instance] StandardRepr.fntpY
 attribute [instance] StandardRepr.deceqX
 attribute [instance] StandardRepr.deceqY
 
@@ -173,7 +177,7 @@ variable {α R : Type} [Ring R]
 
 /-- Vector matroid constructed from standard representation. -/
 def StandardRepr.toVectorMatroid (S : StandardRepr α R) : VectorMatroid α R :=
-  ⟨S.X, S.X ⊕ S.Y, Matrix.fromCols 1 S.B, S.fntp, S.emb⟩
+  ⟨S.X, S.X ⊕ S.Y, Matrix.fromCols 1 S.B, inferInstance, S.emb⟩
 
 /-- Ground set of a vector matroid is union of row and column index sets of its standard matrix representation. -/
 @[simp]
@@ -187,26 +191,43 @@ lemma StandardRepr.toVectorMatroid_A (S : StandardRepr α R) :
     S.toVectorMatroid.A = Matrix.fromCols 1 S.B :=
   rfl
 
-/-- Set is independent in vector matroid iff corresponding set of columns of `[1 | B]` is linearly independent over `R`. -/
-@[simp]
-lemma StandardRepr.toVectorMatroid_indep (S : StandardRepr α R) [DecidableEq α] :
-    S.toVectorMatroid.toMatroid.Indep = S.toVectorMatroid.IndepCols :=
+/-- Set is independent in vector matroid iff corresponding multiset of columns of `[1 | B]` is linearly independent over `R`. -/
+lemma StandardRepr.toVectorMatroid_indep_iff (S : StandardRepr α R) [DecidableEq α] (Q : Set α) :
+    S.toVectorMatroid.toMatroid.Indep Q ↔
+    ∃ hQ : Q ⊆ Set.range S.emb,
+      LinearIndependent R (fun q : Q => (Matrix.fromCols 1 S.B · (S.emb.invOfMemRange (hQ.elem q)))) := by
   rfl
+-- Does `StandardRepr.toMatroid_indep_iff` make it redundant?
 
-/-- todo: desc -/
+/-- Every vector matroid has a standard representation. -/
 lemma VectorMatroid.exists_standardRepr (M : VectorMatroid α R) :
     ∃ S : StandardRepr α R, M = S.toVectorMatroid := by
   sorry
 
-/-- todo: desc -/
+/-- Every vector matroid has a standard representation whose rows are a given base. -/
 lemma VectorMatroid.exists_standardRepr_base [DecidableEq α] {B : Set α}
     (M : VectorMatroid α R) (hB : M.toMatroid.Base B) (hBE : B ⊆ M.E) :
     ∃ S : StandardRepr α R, M.X = B ∧ M = S.toVectorMatroid := by
   sorry
 
-/-- Matroid constructed from standard representation. -/
+/-- Construct a matroid from standard representation. -/
 def StandardRepr.toMatroid [DecidableEq α] (S : StandardRepr α R) : Matroid α :=
   S.toVectorMatroid.toMatroid
+
+/-- Set is independent in resulting matroid iff
+the corresponding multiset of columns of `[1 | B]` is linearly independent over `R`. -/
+@[simp]
+lemma StandardRepr.toMatroid_indep_iff (S : StandardRepr α R) [DecidableEq α] (Q : Set α) :
+    S.toMatroid.Indep Q ↔
+    ∃ hQ : Q ⊆ Set.range S.emb,
+      LinearIndependent R (fun q : Q => (Matrix.fromCols 1 S.B · (S.emb.invOfMemRange (hQ.elem q)))) := by
+  rfl
+
+lemma StandardRepr.toMatroid_indep_iff_submatrix (S : StandardRepr α R) [DecidableEq α] (Q : Set α) :
+    S.toMatroid.Indep Q ↔
+    ∃ hQ : Q ⊆ Set.range S.emb,
+      LinearIndependent R ((Matrix.fromCols 1 S.B).submatrix id (S.emb.invOfMemRange ∘ hQ.elem))ᵀ := by
+  rfl
 
 /-- The identity matrix has linearly independent rows. -/
 lemma Matrix.one_linearIndependent [DecidableEq α] : LinearIndependent R (1 : Matrix α α R) := by
@@ -215,40 +236,40 @@ lemma Matrix.one_linearIndependent [DecidableEq α] : LinearIndependent R (1 : M
   intro l hl
   ext j
   simpa [Finsupp.linearCombination_apply, Pi.zero_apply, Finsupp.sum_apply', Matrix.one_apply] using congr_fun hl j
--- TODO replace with Mathlib version when available
+-- TODO check if in Mathlib already
 
-/-- todo: desc -/
+/-- The image of all rows of a standard representation is a base in the resulting matroid. -/
 lemma StandardRepr.toMatroid_base [DecidableEq α] (S : StandardRepr α R) :
     S.toMatroid.Base (S.emb '' Set.range Sum.inl) := by
-  unfold StandardRepr.toMatroid StandardRepr.toVectorMatroid VectorMatroid.toMatroid
   apply Matroid.Indep.base_of_forall_insert
-  · simp [VectorMatroid.toIndepMatroid, VectorMatroid.IndepCols]
-    sorry
+  · rw [StandardRepr.toMatroid_indep_iff_submatrix]
+    use (by simp)
+    show LinearIndependent R ((Matrix.fromCols 1 S.B).transpose.submatrix _ id)
+    rw [Matrix.transpose_fromCols, Matrix.transpose_one]
+    convert @Matrix.one_linearIndependent S.X R _ _
+    sorry -- defeq + simp should suffice
   · intro e he
-    -- TODO if you add anything extra to the identity matrix, it becomes singular.
-    sorry
+    sorry --  if you add anything extra to the identity matrix, it becomes singular
 
-lemma Sum.swap_inj {α β : Type} : (@Sum.swap α β).Injective := by
-  intro
-  aesop
-
+/-- The dual of standard representation (transpose the matrix and flip its signs). -/
 def StandardRepr.dual (S : StandardRepr α R) : StandardRepr α R where
   X := S.Y
   Y := S.X
   B := - S.B.transpose
-  fntp := Fintype.ofEquiv _ (Equiv.sumComm S.X S.Y)
+  fntpX := S.fntpY
+  fntpY := S.fntpX
   deceqX := S.deceqY
   deceqY := S.deceqX
   emb := ⟨(S.emb ·.swap), S.emb.injective.comp Sum.swap_inj⟩
 
 postfix:max "✶" => StandardRepr.dual
 
-/-- todo: desc -/
+/-- The dual of standard representation gives a dual matroid. -/
 lemma StandardRepr.toMatroid_dual [DecidableEq α] (S : StandardRepr α R) :
     S.toMatroid✶ = S✶.toMatroid :=
   sorry -- Theorem 2.2.8 in Oxley
 
-/-- todo: desc -/
+/-- Every vector matroid's dual has a standard representation. -/
 lemma VectorMatroid.dual_exists_standardRepr [DecidableEq α] (M : VectorMatroid α R) :
     ∃ S' : StandardRepr α R, M.toMatroid✶ = S'.toMatroid :=
   have ⟨S, hS⟩ := M.exists_standardRepr
