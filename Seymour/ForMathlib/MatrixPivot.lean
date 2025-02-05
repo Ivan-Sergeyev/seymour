@@ -160,6 +160,43 @@ private lemma Matrix.shortTableauPivot_eq [Field F] (A : Matrix X Y F) (x : X) (
   M.testTotallyUnimodularFaster ≤ (M.addMultiple 0 (- M · 0 / M 0 0)).testTotallyUnimodularFaster
 -- `→` seems to hold unconditionally
 
+/-- info: true -/
+#guard_msgs in
+#eval ∀ m : (Fin 2) → (Fin 3) → ({0, 1, -1} : Finset ℚ),
+  let M : Matrix (Fin 2) (Fin 3) ℚ := Matrix.of (fun i j => (m i j).val)
+  M.testTotallyUnimodularFaster == (((Matrix.fromCols 1 M).addMultiple 0 (- M · 0 / M 0 0)).getSmallTableau 0 0).testTotallyUnimodularFaster
+
+/-- info: true -/
+#guard_msgs in
+#eval ∀ m : (Fin 3) → (Fin 2) → ({0, 1, -1} : Finset ℚ),
+  let M : Matrix (Fin 3) (Fin 2) ℚ := Matrix.of (fun i j => (m i j).val)
+  M.testTotallyUnimodularFaster ≤ (((Matrix.fromCols 1 M).addMultiple 0 (- M · 0 / M 0 0)).getSmallTableau 0 0).testTotallyUnimodularFaster
+
+/-- info: true -/
+#guard_msgs in
+#eval ∀ m : (Fin 2) → (Fin 3) → ({0, 1, -1} : Finset ℚ),
+  let M : Matrix (Fin 2) (Fin 3) ℚ := Matrix.of (fun i j => (m i j).val)
+  M.testTotallyUnimodularFaster ≤ ((M.addMultiple 0 (- M · 0 / M 0 0)).mulRow 0 (1 / M 0 0)).testTotallyUnimodularFaster
+
+/-- info: true -/
+#guard_msgs in
+#eval ∀ m : (Fin 3) → (Fin 2) → ({0, 1, -1} : Finset ℚ),
+  let M : Matrix (Fin 3) (Fin 2) ℚ := Matrix.of (fun i j => (m i j).val)
+  M.testTotallyUnimodularFaster ≤ ((M.addMultiple 0 (- M · 0 / M 0 0)).mulRow 0 (1 / M 0 0)).testTotallyUnimodularFaster
+
+/-- info: true -/
+#guard_msgs in
+#eval ∀ m : (Fin 2) → (Fin 3) → ({0, 1, -1} : Finset ℚ),
+  let M : Matrix (Fin 2) (Fin 3) ℚ := Matrix.of (fun i j => (m i j).val)
+  M.testTotallyUnimodularFaster ≤ ((((Matrix.fromCols 1 M).addMultiple 0 (- M · 0 / M 0 0)).getSmallTableau 0 0).mulRow 0 (1 / M 0 0)).testTotallyUnimodularFaster
+
+/-- info: true -/
+#guard_msgs in
+#eval ∀ m : (Fin 3) → (Fin 2) → ({0, 1, -1} : Finset ℚ),
+  let M : Matrix (Fin 3) (Fin 2) ℚ := Matrix.of (fun i j => (m i j).val)
+  M.testTotallyUnimodularFaster ≤ ((((Matrix.fromCols 1 M).addMultiple 0 (- M · 0 / M 0 0)).getSmallTableau 0 0).mulRow 0 (1 / M 0 0)).testTotallyUnimodularFaster
+
+
 /-- Pivoting preserves total unimodularity. -/
 lemma Matrix.IsTotallyUnimodular.shortTableauPivot [Field F] {A : Matrix X Y F}
     (hA : A.IsTotallyUnimodular) (x : X) (y : Y) :
