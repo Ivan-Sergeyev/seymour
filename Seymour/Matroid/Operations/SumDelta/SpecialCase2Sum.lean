@@ -65,6 +65,7 @@ lemma DeltaSumCircuitForm2.sum2_circuit_pred {C : Set α}
       have X₂_dep := hX₂.nonempty_dep C'_nonempty
       exact hC.right X₂_dep hCC'
 
+omit [DecidableEq α] in
 /-- Under 2-sum assumptions, `{p}` in definition of circuits of form 3 is exactly `M₁.E ∩ M₂.E` -/
 lemma DeltaSumCircuitForm3.sum2_singleton_eq {C : Set α} {p : α}
     (hC : DeltaSumCircuitForm3 M₁ M₂ C p) (assumptions : TwoSumAssumptions M₁.toMatroid M₂.toMatroid) :

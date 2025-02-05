@@ -3,19 +3,19 @@ import Seymour.ForMathlib.SetTheory
 
 set_option linter.unusedVariables false
 
-variable {α : Type} [DecidableEq α]
+variable {α : Type}
 
 
 section Basic
 
 /-- Nonempty union of disjoint circuits of `M₁` satisfies circuit form of `M₁ Δ M₂`  -/
-lemma deltaSumCircuitForm_left {M₁ M₂ : BinaryMatroid α} {C : Set α}
+lemma deltaSumCircuitForm_left [DecidableEq α] {M₁ M₂ : BinaryMatroid α} {C : Set α}
     (hC : C.Nonempty) (hCE : C ⊆ (M₁.E ∪ M₂.E) \ (M₁.E ∩ M₂.E)) (hCM₁ : M₁.toMatroid.IsUnionDisjointCircuits C) :
     DeltaSumCircuitForm M₁ M₂ C :=
   ⟨hC, hCE, C, ∅, by simp, hCM₁, M₂.toMatroid.emptyUnionDisjointCircuits⟩
 
 /-- Nonempty union of disjoint circuits of `M₂` satisfies circuit form of `M₁ Δ M₂`  -/
-lemma deltaSumCircuitForm_right {M₁ M₂ : BinaryMatroid α} {C : Set α}
+lemma deltaSumCircuitForm_right [DecidableEq α] {M₁ M₂ : BinaryMatroid α} {C : Set α}
     (hC : C.Nonempty) (hCE : C ⊆ (M₁.E ∪ M₂.E) \ (M₁.E ∩ M₂.E)) (hCM₂ : M₂.toMatroid.IsUnionDisjointCircuits C) :
     DeltaSumCircuitForm M₁ M₂ C :=
   ⟨hC, hCE, ∅, C, by simp, M₁.toMatroid.emptyUnionDisjointCircuits, hCM₂⟩
@@ -70,13 +70,13 @@ lemma DeltaSumCircuitForm1.disjoint_M₂ {M₁ M₂ : BinaryMatroid α} {C : Set
   exact hCM₂
 
 /-- Circuit of form 1 satisfies circuit form of `M₁ Δ M₂` -/
-lemma DeltaSumCircuitForm1.circuit_form {M₁ M₂ : BinaryMatroid α} {C : Set α}
+lemma DeltaSumCircuitForm1.circuit_form [DecidableEq α] {M₁ M₂ : BinaryMatroid α} {C : Set α}
     (hC : DeltaSumCircuitForm1 M₁ M₂ C) :
     DeltaSumCircuitForm M₁ M₂ C :=
   deltaSumCircuitForm_left hC.circuit_M₁.nonempty hC.subset_ground hC.circuit_M₁.isUnionDisjointCircuits
 
 /-- If `C` satisfies circuit predicate and is a union of disjoint circuits of `M₁`, then `C` is a circuit of `M₁` -/
-lemma DeltaSumCircuitPred.udc_M₁ {M₁ M₂ : BinaryMatroid α} {C : Set α}
+lemma DeltaSumCircuitPred.udc_M₁ [DecidableEq α] {M₁ M₂ : BinaryMatroid α} {C : Set α}
     (C_pred : DeltaSumCircuitPred M₁ M₂ C) (C_udc : M₁.toMatroid.IsUnionDisjointCircuits C) :
     M₁.toMatroid.Circuit C :=
   have ⟨⟨hC, hCE, _⟩, hCmin⟩ := C_pred
@@ -137,13 +137,13 @@ lemma DeltaSumCircuitForm2.disjoint_M₁ {M₁ M₂ : BinaryMatroid α} {C : Set
   exact hCM₂
 
 /-- Circuit of form 2 satisfies circuit form of `M₁ Δ M₂` -/
-lemma DeltaSumCircuitForm2.circuit_form {M₁ M₂ : BinaryMatroid α} {C : Set α}
+lemma DeltaSumCircuitForm2.circuit_form [DecidableEq α] {M₁ M₂ : BinaryMatroid α} {C : Set α}
     (hC : DeltaSumCircuitForm2 M₁ M₂ C) :
     DeltaSumCircuitForm M₁ M₂ C :=
   deltaSumCircuitForm_right hC.circuit_M₂.nonempty hC.subset_ground hC.circuit_M₂.isUnionDisjointCircuits
 
 /-- If `C` satisfies circuit predicate and is a union of disjoint circuits of `M₂`, then `C` is a circuit of `M₂` -/
-lemma DeltaSumCircuitPred.udc_M₂ {M₁ M₂ : BinaryMatroid α} {C : Set α}
+lemma DeltaSumCircuitPred.udc_M₂ [DecidableEq α] {M₁ M₂ : BinaryMatroid α} {C : Set α}
     (hCpred : DeltaSumCircuitPred M₁ M₂ C) (hCudc : M₂.toMatroid.IsUnionDisjointCircuits C) :
     M₂.toMatroid.Circuit C :=
   have ⟨⟨C_nempty, hCE, _⟩, hCmin⟩ := hCpred
@@ -305,7 +305,7 @@ lemma DeltaSumCircuitForm3.eq_symmDiff {M₁ M₂ : BinaryMatroid α}
   exact hC.subset_union.parts_eq.symm
 
 /-- Circuit of form 3 satisfies circuit form of `M₁ Δ M₂` provided it is nonempty -/
-lemma DeltaSumCircuitForm3.circuit_form {M₁ M₂ : BinaryMatroid α}
+lemma DeltaSumCircuitForm3.circuit_form [DecidableEq α] {M₁ M₂ : BinaryMatroid α}
     (hCp : DeltaSumCircuitForm3 M₁ M₂ C p) (hC : C.Nonempty) :
     DeltaSumCircuitForm M₁ M₂ C :=
   ⟨hC, hCp.subset_ground, C ∩ M₁.E ∪ {p}, C ∩ M₂.E ∪ {p},

@@ -17,11 +17,11 @@ def Matrix.IsGraphic {m n : Type} (A : Matrix m n ℚ) : Prop :=
 
 /-- Matroid is graphic iff it is represented by an incidence matrix of a graph. -/
 def Matroid.IsGraphic {α : Type} [DecidableEq α] (M : Matroid α) : Prop :=
-  ∃ X Y : Type, ∃ _ : Fintype Y, ∃ A : Matrix X Y ℚ, M.IsRepresentedBy A ∧ A.IsGraphic
+  ∃ X Y : Type, ∃ A : Matrix X Y ℚ, M.IsRepresentedBy A ∧ A.IsGraphic
 
 /-- Graphic matroid can be represented only by a TU matrix. -/
-lemma Matroid.IsRepresentedBy.isTotallyUnimodular_of_isGraphic {α X Y : Type} [DecidableEq α] {M : Matroid α}
-    [Fintype Y] {A : Matrix X Y ℚ} (hMA : M.IsRepresentedBy A) (hA : A.IsGraphic) :
+lemma Matroid.IsRepresentedBy.isTotallyUnimodular_of_isGraphic {α X Y : Type} {M : Matroid α} {A : Matrix X Y ℚ}
+    (hMA : M.IsRepresentedBy A) (hA : A.IsGraphic) :
     A.IsTotallyUnimodular := by
   sorry
 
@@ -29,8 +29,9 @@ lemma Matroid.IsRepresentedBy.isTotallyUnimodular_of_isGraphic {α X Y : Type} [
 lemma Matroid.IsGraphic.isRegular {α : Type} [DecidableEq α] {M : Matroid α} (hM : M.IsGraphic) :
     M.IsRegular := by
   rw [Matroid.isRegular_iff_hasTuRepr]
-  obtain ⟨X, Y, hY, A, hMA, hA⟩ := hM
-  exact ⟨X, _, _, A, hMA.isTotallyUnimodular_of_isGraphic hA, hMA⟩
+  obtain ⟨X, Y, A, hMA, hA⟩ := hM
+  unfold Matroid.HasTuRepr
+  exact ⟨X, Y, A, hMA.isTotallyUnimodular_of_isGraphic hA, hMA⟩
 
 end IsGraphic
 

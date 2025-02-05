@@ -6,8 +6,8 @@ variable {α : Type} [DecidableEq α]
 -- Having both `Matroid.IsRepresentedBy` and `Matroid.IsRepresentableOver` is sus since the defs are independent of each other.
 
 /-- Matroid `M` is represented by matrix `A` if vector matroid `M[A]` is exactly `M` -/
-def Matroid.IsRepresentedBy {R X Y : Type} [Ring R] [hY : Fintype Y] (M : Matroid α) (A : Matrix X Y R) : Prop :=
-  ∃ c : Y ↪ α, M = (VectorMatroid.mk X Y A hY c).toMatroid
+def Matroid.IsRepresentedBy {R X Y : Type} [Ring R] (M : Matroid α) (A : Matrix X Y R) : Prop :=
+  ∃ c : Y ↪ α, M = (VectorMatroid.mk X Y A c).toMatroid
 
 /-- Matroid `M` can be represented over ring `R` if it can be represented by some matrix with entries in `R` -/
 def Matroid.IsRepresentableOver (M : Matroid α) (R : Type) [Ring R] : Prop :=

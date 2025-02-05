@@ -18,14 +18,17 @@ structure VectorMatroid (α R : Type) where
   Y : Type
   /-- Full representation matrix. -/
   A : Matrix X Y R
-  /-- The matrix has finite number of columns. -/
-  finY : Fintype Y
   /-- How the columns correspond to the elements of the resulting matroid. -/
   emb : Y ↪ α
 
-attribute [instance] VectorMatroid.finY
+noncomputable abbrev Function.Embedding.equiv {α β : Type} (f : β ↪ α) : β ≃ (Set.range f.toFun).Elem :=
+  Equiv.ofInjective f.toFun f.injective
 
-variable {α R : Type} [DecidableEq α] [Semiring R]
+noncomputable abbrev Function.Embedding.inver {α β : Type} (f : β ↪ α) : (Set.range f.toFun).Elem ≃ β :=
+  f.equiv.symm
+
+
+variable {α R : Type} [Semiring R]
 
 def VectorMatroid.E (M : VectorMatroid α R) : Set α :=
   Set.range M.emb
@@ -33,12 +36,12 @@ def VectorMatroid.E (M : VectorMatroid α R) : Set α :=
 /-- A set `S` is independent in `M[A]` iff
     `S ⊆ Y` and `S` corresponds to a linearly independent submultiset of columns in `A`. -/
 def VectorMatroid.IndepCols (M : VectorMatroid α R) (S : Set α) : Prop :=
-  ∃ hS : S ⊆ M.E, LinearIndependent R (fun s : S => (M.A · (M.emb.invOfMemRange (hS.elem s))))
+  ∃ hS : S ⊆ M.E, LinearIndependent R (fun s : S => (M.A · (M.emb.inver (hS.elem s))))
 
 /-- A set `S` is independent in `M[A]` iff
     `S ⊆ Y` and the submatrix that contains only columns of `S` has linearly independent columns. -/
 lemma VectorMatroid.indepCols_iff_submatrix (M : VectorMatroid α R) (S : Set α) :
-    M.IndepCols S ↔ ∃ hS : S ⊆ M.E, LinearIndependent R (M.A.submatrix id (M.emb.invOfMemRange ∘ hS.elem))ᵀ := by
+    M.IndepCols S ↔ ∃ hS : S ⊆ M.E, LinearIndependent R (M.A.submatrix id (M.emb.inver ∘ hS.elem))ᵀ := by
   rfl
 
 /-- Empty set is independent. -/
@@ -112,7 +115,7 @@ end Definition
 
 section API
 
-variable {α R : Type} [DecidableEq α] [Semiring R]
+variable {α R : Type} [Semiring R]
 
 /-- Vector matroid converted to `Matroid`. -/
 def VectorMatroid.toMatroid (M : VectorMatroid α R) : Matroid α :=
@@ -157,10 +160,6 @@ structure StandardRepr (α R : Type) where
   Y : Type
   /-- Standard representation matrix. -/
   B : Matrix X Y R
-  /-- The matrix has finite number of rows . -/
-  fntpX : Fintype X
-  /-- The matrix has finite number ofcolumns. -/
-  fntpY : Fintype Y
   /-- The computer can distinguish the rows from each other. -/
   deceqX : DecidableEq X
   /-- The computer can distinguish the cols from each other. -/
@@ -168,8 +167,6 @@ structure StandardRepr (α R : Type) where
   /-- How the rows and columns correspond to the elements of the resulting matroid. -/
   emb : X ⊕ Y ↪ α
 
-attribute [instance] StandardRepr.fntpX
-attribute [instance] StandardRepr.fntpY
 attribute [instance] StandardRepr.deceqX
 attribute [instance] StandardRepr.deceqY
 
@@ -177,7 +174,7 @@ variable {α R : Type} [Ring R]
 
 /-- Vector matroid constructed from standard representation. -/
 def StandardRepr.toVectorMatroid (S : StandardRepr α R) : VectorMatroid α R :=
-  ⟨S.X, S.X ⊕ S.Y, Matrix.fromCols 1 S.B, inferInstance, S.emb⟩
+  ⟨S.X, S.X ⊕ S.Y, Matrix.fromCols 1 S.B, S.emb⟩
 
 /-- Ground set of a vector matroid is union of row and column index sets of its standard matrix representation. -/
 @[simp]
@@ -195,7 +192,7 @@ lemma StandardRepr.toVectorMatroid_A (S : StandardRepr α R) :
 lemma StandardRepr.toVectorMatroid_indep_iff (S : StandardRepr α R) [DecidableEq α] (Q : Set α) :
     S.toVectorMatroid.toMatroid.Indep Q ↔
     ∃ hQ : Q ⊆ Set.range S.emb,
-      LinearIndependent R (fun q : Q => (Matrix.fromCols 1 S.B · (S.emb.invOfMemRange (hQ.elem q)))) := by
+      LinearIndependent R (fun q : Q => (Matrix.fromCols 1 S.B · (S.emb.inver (hQ.elem q)))) := by
   rfl
 -- Does `StandardRepr.toMatroid_indep_iff` make it redundant?
 
@@ -220,13 +217,13 @@ the corresponding multiset of columns of `[1 | B]` is linearly independent over 
 lemma StandardRepr.toMatroid_indep_iff (S : StandardRepr α R) [DecidableEq α] (Q : Set α) :
     S.toMatroid.Indep Q ↔
     ∃ hQ : Q ⊆ Set.range S.emb,
-      LinearIndependent R (fun q : Q => (Matrix.fromCols 1 S.B · (S.emb.invOfMemRange (hQ.elem q)))) := by
+      LinearIndependent R (fun q : Q => (Matrix.fromCols 1 S.B · (S.emb.inver (hQ.elem q)))) := by
   rfl
 
 lemma StandardRepr.toMatroid_indep_iff_submatrix (S : StandardRepr α R) [DecidableEq α] (Q : Set α) :
     S.toMatroid.Indep Q ↔
     ∃ hQ : Q ⊆ Set.range S.emb,
-      LinearIndependent R ((Matrix.fromCols 1 S.B).submatrix id (S.emb.invOfMemRange ∘ hQ.elem))ᵀ := by
+      LinearIndependent R ((Matrix.fromCols 1 S.B).submatrix id (S.emb.inver ∘ hQ.elem))ᵀ := by
   rfl
 
 /-- The identity matrix has linearly independent rows. -/
@@ -256,8 +253,6 @@ def StandardRepr.dual (S : StandardRepr α R) : StandardRepr α R where
   X := S.Y
   Y := S.X
   B := - S.B.transpose
-  fntpX := S.fntpY
-  fntpY := S.fntpX
   deceqX := S.deceqY
   deceqY := S.deceqX
   emb := ⟨(S.emb ·.swap), S.emb.injective.comp Sum.swap_inj⟩
