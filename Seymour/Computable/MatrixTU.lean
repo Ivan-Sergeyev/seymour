@@ -1,8 +1,9 @@
 import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
-import Mathlib.Data.Finset.Card -- some pidgeonholes
+import Mathlib.Data.Fintype.Card
 import Seymour.ForMathlib.Basic
 
 
+/-- Formally verified algorithm for testing total unimodularity. -/
 def Matrix.testTotallyUnimodular {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Bool :=
   ∀ k : ℕ, k ≤ min m n → ∀ x : Fin k → Fin m, ∀ y : Fin k → Fin n, (A.submatrix x y).det ∈ Set.range SignType.cast
 
@@ -46,3 +47,14 @@ theorem Matrix.testTotallyUnimodular_eq_isTotallyUnimodular {m n : ℕ} (A : Mat
 
 instance {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Decidable A.IsTotallyUnimodular :=
   decidable_of_iff _ A.testTotallyUnimodular_eq_isTotallyUnimodular
+
+
+/-- Faster algorithm for testing total unimodularity but without formal guarantees. -/
+def Matrix.testTotallyUnimodularFaster {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Bool :=
+  (∀ k : ℕ, k < min m n → ∀ x : Fin k → Fin m, ∀ y : Fin k → Fin n, (A.submatrix x y).det ∈ Set.range SignType.cast) ∧ (
+    if hmn : m = n
+      then (A.submatrix id (finCongr hmn)).det ∈ Set.range SignType.cast
+    else if m < n
+      then (∀ y : Fin m → Fin n, (A.submatrix id y).det ∈ Set.range SignType.cast)
+      else (∀ x : Fin n → Fin m, (A.submatrix x id).det ∈ Set.range SignType.cast)
+  )
