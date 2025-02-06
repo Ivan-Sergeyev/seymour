@@ -23,6 +23,16 @@ lemma finset_of_cardinality_between {α β : Type} [Fintype α] [Fintype β] {n 
       exact Finset.eq_empty_of_forall_not_mem ifempty
     omega
 
+lemma sum_over_fin_succ_of_only_zeroth_nonzero {α : Type} {n : ℕ} [AddCommMonoid α]
+    {f : Fin n.succ → α} (hf : ∀ i : Fin n.succ, i ≠ 0 → f i = 0) :
+    Finset.univ.sum f = f 0 := by
+  rw [←Finset.sum_subset (s₁ := {0})]
+  · simp
+  · exact Finset.subset_univ {0}
+  intro x _ hx
+  apply hf
+  simpa using hx
+
 
 variable {R : Type}
 
@@ -35,6 +45,16 @@ lemma in_set_range_singType_cast_mul_in_set_range_singType_cast [Ring R] {a b : 
   obtain ⟨a', rfl⟩ := ha
   obtain ⟨b', rfl⟩ := hb
   exact ⟨_, SignType.coe_mul a' b'⟩
+
+lemma neg_one_mul_in_set_range_singType_cast [Ring R] {a : R} (ha : a ∈ Set.range SignType.cast) :
+    (-1) * a ∈ Set.range SignType.cast :=
+  in_set_range_singType_cast_mul_in_set_range_singType_cast ⟨-1, rfl⟩ ha
+
+lemma in_set_range_singType_cast_of_neg_one_mul_self [Ring R] {a : R} (ha : (-1) * a ∈ Set.range SignType.cast) :
+    a ∈ Set.range SignType.cast := by
+  rw [←neg_neg a, neg_eq_neg_one_mul]
+  apply neg_one_mul_in_set_range_singType_cast
+  rwa [neg_eq_neg_one_mul]
 
 lemma in_set_range_singType_cast_iff_abs [LinearOrderedCommRing R] (a : R) :
     a ∈ Set.range SignType.cast ↔ |a| ∈ Set.range SignType.cast := by
