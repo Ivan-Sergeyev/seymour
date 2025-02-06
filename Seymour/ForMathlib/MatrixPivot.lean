@@ -85,14 +85,19 @@ private def Matrix.addMultiples [Semifield F] (A : Matrix X Y F) (x : X) (q : X 
   fun i : X => if i = x then A x else A i + q i • A x
 
 private lemma Matrix.IsTotallyUnimodular.addMultiples [Field F] {A : Matrix X Y F}
-    (hA : A.IsTotallyUnimodular) (x : X) (y : Y) :
+    (hA : A.IsTotallyUnimodular) (x : X) (y : Y) (hxy : A x y ≠ 0) :
     (A.addMultiples x (- A · y / A x y)).IsTotallyUnimodular := by
   intro k f g hf hg
   -- If `x` is in the selected rows, prove by induction that the determinant doesn't change.
-  -- Else if `y` is in the selected columns, its column is all zeros so the determinant is zero.
+  if hx : ∃ r : Fin k, f r = x then
+    sorry
+  -- Else if `y` is in the selected columns, its column is all zeros, so the determinant is zero.
+  else if hy : ∃ c : Fin k, g c = y then
+    sorry
   -- Else perform the expansion on the `y` column, the smaller determinant is equal to ± the bigger determinant,
   -- which did not change by the same argument as above.
-  sorry
+  else
+    sorry
 
 omit [DecidableEq X] in
 /-- The small tableau consists of all columns but `x`th from the original matrix and the `y`th column of the square matrix. -/
@@ -176,9 +181,9 @@ private lemma Matrix.shortTableauPivot_eq [Field F] (A : Matrix X Y F) (x : X) (
 
 /-- Pivoting preserves total unimodularity. -/
 lemma Matrix.IsTotallyUnimodular.shortTableauPivot [Field F] {A : Matrix X Y F}
-    (hA : A.IsTotallyUnimodular) (x : X) (y : Y) :
+    (hA : A.IsTotallyUnimodular) {x : X} {y : Y} (hxy : A x y ≠ 0) :
     (A.shortTableauPivot x y).IsTotallyUnimodular := by
   rw [Matrix.shortTableauPivot_eq]
   have hAxy : 1 / A x y ∈ Set.range SignType.cast
   · rw [inv_eq_self_of_in_set_range_singType_cast] <;> exact hA.apply x y
-  exact (((hA.one_fromCols).addMultiples x (Sum.inr y)).getSmallTableau x y).mulRow x hAxy
+  exact (((hA.one_fromCols).addMultiples x (Sum.inr y) hxy).getSmallTableau x y).mulRow x hAxy

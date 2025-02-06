@@ -8,10 +8,10 @@ lemma Sum.swap_inj {α β : Type} : (@Sum.swap α β).Injective := by
 lemma finset_of_cardinality_between {α β : Type} [Fintype α] [Fintype β] {n : ℕ}
     (hα : Fintype.card α < n) (hn : n ≤ Fintype.card α + Fintype.card β) :
     ∃ b : Finset β, Fintype.card (α ⊕ b) = n ∧ Nonempty b := by
-  have beta' : n - Fintype.card α ≤ Fintype.card β
+  have beta : n - Fintype.card α ≤ Fintype.card β
   · omega
   obtain ⟨s, hs⟩ : ∃ s : Finset β, s.card = n - Fintype.card α :=
-    (Finset.exists_subset_card_eq beta').imp (by simp)
+    (Finset.exists_subset_card_eq beta).imp (by simp)
   use s
   rw [Fintype.card_sum, Fintype.card_coe, hs]
   constructor
@@ -26,7 +26,7 @@ lemma finset_of_cardinality_between {α β : Type} [Fintype α] [Fintype β] {n 
 
 variable {R : Type}
 
-lemma zero_in_set_range_singType_cast [LinearOrderedRing R] : (0 : R) ∈ Set.range SignType.cast :=
+lemma zero_in_set_range_singType_cast [Ring R] : (0 : R) ∈ Set.range SignType.cast :=
   ⟨0, rfl⟩
 
 lemma in_set_range_singType_cast_mul_in_set_range_singType_cast [Ring R] {a b : R}
