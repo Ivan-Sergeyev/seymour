@@ -2,11 +2,11 @@ import Seymour.Basic
 import Seymour.Computable.MatrixTU
 
 
-variable {X Y F : Type} [DecidableEq X] [DecidableEq Y]
+variable {X Y F : Type}
 
 /-- The result of the pivot operation in a short tableau (without exchanging the indices that define the pivot).
 This definition makes sense only if `A x y` is nonzero. -/
-def Matrix.shortTableauPivot [Field F] (A : Matrix X Y F) (x : X) (y : Y) :
+def Matrix.shortTableauPivot [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (x : X) (y : Y) :
     Matrix X Y F :=
   Matrix.of <| fun i j =>
     if j = y then
@@ -20,27 +20,26 @@ def Matrix.shortTableauPivot [Field F] (A : Matrix X Y F) (x : X) (y : Y) :
       else
         A i j - A i y * A x j / A x y
 
-lemma Matrix.shortTableauPivot_row_pivot [Field F] (A : Matrix X Y F) (x : X) (y : Y) :
+lemma Matrix.shortTableauPivot_row_pivot [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (x : X) (y : Y) :
     A.shortTableauPivot x y x =
     (fun j : Y => if j = y then 1 / A x y else A x j / A x y) := by
   ext
   simp [Matrix.shortTableauPivot]
 
-lemma Matrix.shortTableauPivot_row_other [Field F] (A : Matrix X Y F) (x : X) (y : Y) (i : X) (hix : i ≠ x) :
+lemma Matrix.shortTableauPivot_row_other [Field F] [DecidableEq X] [DecidableEq Y]
+    (A : Matrix X Y F) (x : X) (y : Y) (i : X) (hix : i ≠ x) :
     A.shortTableauPivot x y i =
     (fun j : Y => if j = y then - A i y / A x y else A i j - A i y * A x j / A x y) := by
   ext
   simp [Matrix.shortTableauPivot, hix]
 
 
-omit [DecidableEq Y] in
 /-- Multiply the `x`th row of `A` by `c` and keep the rest of `A` unchanged. -/
-private def Matrix.mulRow [NonUnitalNonAssocSemiring F] (A : Matrix X Y F) (x : X) (c : F) :
+private def Matrix.mulRow [DecidableEq X] [Mul F] (A : Matrix X Y F) (x : X) (c : F) :
     Matrix X Y F :=
   A.updateRow x (c • A x)
 
-omit [DecidableEq Y] in
-private lemma Matrix.IsTotallyUnimodular.mulRow [CommRing F] {A : Matrix X Y F}
+private lemma Matrix.IsTotallyUnimodular.mulRow [DecidableEq X] [CommRing F] {A : Matrix X Y F}
     (hA : A.IsTotallyUnimodular) (x : X) {c : F} (hc : c ∈ Set.range SignType.cast) :
     (A.mulRow x c).IsTotallyUnimodular := by
   intro k f g hf hg
@@ -66,17 +65,17 @@ private lemma Matrix.IsTotallyUnimodular.mulRow [CommRing F] {A : Matrix X Y F}
     simp_all [Matrix.submatrix, Matrix.mulRow]
 
 /-- Add `q` times the `x`th row of `A` to all rows of `A` except the `x`th row (where `q` is different for each row). -/
-private def Matrix.addMultiples [Semifield F] (A : Matrix X Y F) (x : X) (q : X → F) :
+private def Matrix.addMultiples [DecidableEq X] [NonUnitalNonAssocSemiring F] (A : Matrix X Y F) (x : X) (q : X → F) :
     Matrix X Y F :=
   fun i : X => if i = x then A x else A i + q i • A x
 
-private lemma Matrix.addMultiples_det [Fintype X] [Field F] (A : Matrix X X F) (x : X) (q : X → F) :
+private lemma Matrix.addMultiples_det [DecidableEq X] [Fintype X] [CommRing F] (A : Matrix X X F) (x : X) (q : X → F) :
     (A.addMultiples x q).det = A.det := by
   apply Matrix.det_eq_of_forall_row_eq_smul_add_const (fun i : X => if i = x then 0 else q i) x (by simp)
   unfold Matrix.addMultiples
   aesop
 
-private lemma Matrix.IsTotallyUnimodular.addMultiples [Field F] {A : Matrix X Y F}
+private lemma Matrix.IsTotallyUnimodular.addMultiples [DecidableEq X] [Field F] {A : Matrix X Y F}
     (hA : A.IsTotallyUnimodular) (x : X) (y : Y) (hxy : A x y ≠ 0) :
     (A.addMultiples x (- A · y / A x y)).IsTotallyUnimodular := by
   intro k f g hf hg
@@ -178,14 +177,12 @@ private lemma Matrix.IsTotallyUnimodular.addMultiples [Field F] {A : Matrix X Y 
       | pos => exact hAxy hs.symm
       | neg => exact hAxy' hs.symm
 
-omit [DecidableEq X] in
 /-- The small tableau consists of all columns but `x`th from the original matrix and the `y`th column of the square matrix. -/
-private def Matrix.getSmallTableau (A : Matrix X (X ⊕ Y) F) (x : X) (y : Y) :
+private def Matrix.getSmallTableau [DecidableEq Y] (A : Matrix X (X ⊕ Y) F) (x : X) (y : Y) :
     Matrix X Y F :=
   Matrix.of (fun i : X => fun j : Y => if j = y then A i (Sum.inl x) else A i (Sum.inr j))
 
-omit [DecidableEq X] in
-private lemma Matrix.IsTotallyUnimodular.getSmallTableau [CommRing F]
+private lemma Matrix.IsTotallyUnimodular.getSmallTableau [DecidableEq Y] [CommRing F]
     {A : Matrix X (X ⊕ Y) F} (hA : A.IsTotallyUnimodular) (x : X) (y : Y) :
     (A.getSmallTableau x y).IsTotallyUnimodular := by
   convert
@@ -193,7 +190,7 @@ private lemma Matrix.IsTotallyUnimodular.getSmallTableau [CommRing F]
   unfold Matrix.getSmallTableau
   aesop
 
-private lemma Matrix.shortTableauPivot_eq [Field F] (A : Matrix X Y F) (x : X) (y : Y) :
+private lemma Matrix.shortTableauPivot_eq [DecidableEq X] [DecidableEq Y] [Field F] (A : Matrix X Y F) (x : X) (y : Y) :
     A.shortTableauPivot x y =
     ((A.prependId.addMultiples x (- A · y / A x y)).getSmallTableau x y).mulRow x (1 / A x y) := by
   ext i j
@@ -210,7 +207,7 @@ private lemma Matrix.shortTableauPivot_eq [Field F] (A : Matrix X Y F) (x : X) (
 
 
 /-- Pivoting preserves total unimodularity. -/
-lemma Matrix.IsTotallyUnimodular.shortTableauPivot [Field F] {A : Matrix X Y F}
+lemma Matrix.IsTotallyUnimodular.shortTableauPivot [DecidableEq X] [DecidableEq Y] [Field F] {A : Matrix X Y F}
     (hA : A.IsTotallyUnimodular) {x : X} {y : Y} (hxy : A x y ≠ 0) :
     (A.shortTableauPivot x y).IsTotallyUnimodular := by
   rw [Matrix.shortTableauPivot_eq]

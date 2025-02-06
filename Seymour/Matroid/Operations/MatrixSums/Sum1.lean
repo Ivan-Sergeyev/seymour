@@ -99,4 +99,3 @@ theorem StandardRepresentation.Is1sumOf.isRegular [Fintype M₁.X] [Fintype M₁
   exact StandardRepresentation_1sum_isRegular hXY hYX hM₁ hM₂
 
 #print axioms StandardRepresentation_1sum_isRegular
-#print axioms StandardRepresentation.Is1sumOf.isRegular
