@@ -28,12 +28,12 @@ variable {α : Type} [DecidableEq α] {X Y : Set α} [∀ a, Decidable (a ∈ X)
 
 /-- Given matrix `B`, tell whether the set of columns `S` in the (standard) representation [`1 | B`] is `Z2`-independent. -/
 def Matrix.IndepCols (B : Matrix X Y Z2) (S : Set α) : Prop :=
-  ∃ hS : S ⊆ X ∪ Y, LinearIndependent Z2 (fun s : S => ((Matrix.fromCols 1 B) · (hS.elem s).toSum))
+  ∃ hS : S ⊆ X ∪ Y, LinearIndependent Z2 (fun s : S => (B.prependId · (hS.elem s).toSum))
 
 /-- The definition `Matrix.IndepCols` can be rephrased in terms of a submatrix of [`1 | B`]. -/
 lemma Matrix.indepCols_iff (B : Matrix X Y Z2) (S : Set α) :
     B.IndepCols S ↔
-    ∃ hS : S ⊆ X ∪ Y, LinearIndependent Z2 ((Matrix.fromCols 1 B).submatrix id (Subtype.toSum ∘ hS.elem)).transpose := by
+    ∃ hS : S ⊆ X ∪ Y, LinearIndependent Z2 (B.prependId.submatrix id (Subtype.toSum ∘ hS.elem)).transpose := by
   rfl
 
 
@@ -47,7 +47,7 @@ theorem Matrix.indepCols_subset {B : Matrix X Y Z2} (I J : Set α) (hBJ : B.Inde
     B.IndepCols I := by
   obtain ⟨hJ, hB⟩ := hBJ
   use hIJ.trans hJ
-  show LinearIndependent Z2 (fun i x => Matrix.fromCols 1 B x ((hJ.elem (Subtype.map id hIJ i)).toSum))
+  show LinearIndependent Z2 (fun i x => B.prependId x ((hJ.elem (Subtype.map id hIJ i)).toSum))
   apply hB.comp
   intro _ _ hf
   apply Subtype.eq

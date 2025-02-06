@@ -174,7 +174,7 @@ variable {α R : Type} [Ring R]
 
 /-- Vector matroid constructed from standard representation. -/
 def StandardRepr.toVectorMatroid (S : StandardRepr α R) : VectorMatroid α R :=
-  ⟨S.X, S.X ⊕ S.Y, Matrix.fromCols 1 S.B, S.emb⟩
+  ⟨S.X, S.X ⊕ S.Y, S.B.prependId, S.emb⟩
 
 /-- Ground set of a vector matroid is union of row and column index sets of its standard matrix representation. -/
 @[simp]
@@ -185,14 +185,14 @@ lemma StandardRepr.toVectorMatroid_E (S : StandardRepr α R) [DecidableEq α] :
 /-- Full representation matrix of vector matroid is `[1 | B]`. -/
 @[simp]
 lemma StandardRepr.toVectorMatroid_A (S : StandardRepr α R) :
-    S.toVectorMatroid.A = Matrix.fromCols 1 S.B :=
+    S.toVectorMatroid.A = S.B.prependId :=
   rfl
 
 /-- Set is independent in vector matroid iff corresponding multiset of columns of `[1 | B]` is linearly independent over `R`. -/
 lemma StandardRepr.toVectorMatroid_indep_iff (S : StandardRepr α R) [DecidableEq α] (Q : Set α) :
     S.toVectorMatroid.toMatroid.Indep Q ↔
     ∃ hQ : Q ⊆ Set.range S.emb,
-      LinearIndependent R (fun q : Q => (Matrix.fromCols 1 S.B · (S.emb.inver (hQ.elem q)))) := by
+      LinearIndependent R (fun q : Q => (S.B.prependId · (S.emb.inver (hQ.elem q)))) := by
   rfl
 -- Does `StandardRepr.toMatroid_indep_iff` make it redundant?
 
@@ -217,13 +217,13 @@ the corresponding multiset of columns of `[1 | B]` is linearly independent over 
 lemma StandardRepr.toMatroid_indep_iff (S : StandardRepr α R) [DecidableEq α] (Q : Set α) :
     S.toMatroid.Indep Q ↔
     ∃ hQ : Q ⊆ Set.range S.emb,
-      LinearIndependent R (fun q : Q => (Matrix.fromCols 1 S.B · (S.emb.inver (hQ.elem q)))) := by
+      LinearIndependent R (fun q : Q => (S.B.prependId · (S.emb.inver (hQ.elem q)))) := by
   rfl
 
 lemma StandardRepr.toMatroid_indep_iff_submatrix (S : StandardRepr α R) [DecidableEq α] (Q : Set α) :
     S.toMatroid.Indep Q ↔
     ∃ hQ : Q ⊆ Set.range S.emb,
-      LinearIndependent R ((Matrix.fromCols 1 S.B).submatrix id (S.emb.inver ∘ hQ.elem))ᵀ := by
+      LinearIndependent R (S.B.prependId.submatrix id (S.emb.inver ∘ hQ.elem))ᵀ := by
   rfl
 
 /-- The identity matrix has linearly independent rows. -/
@@ -241,7 +241,7 @@ lemma StandardRepr.toMatroid_base [DecidableEq α] (S : StandardRepr α R) :
   apply Matroid.Indep.base_of_forall_insert
   · rw [StandardRepr.toMatroid_indep_iff_submatrix]
     use (by simp)
-    show LinearIndependent R ((Matrix.fromCols 1 S.B).transpose.submatrix _ id)
+    show LinearIndependent R (S.B.prependId.transpose.submatrix _ id)
     rw [Matrix.transpose_fromCols, Matrix.transpose_one]
     convert @Matrix.one_linearIndependent S.X R _ _
     sorry -- defeq + simp should suffice

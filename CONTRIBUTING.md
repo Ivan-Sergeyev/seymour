@@ -167,6 +167,7 @@ The guideline below is written primarily to assist you in reading the code.
 - We like to use our custom notation declared at the beginning of the [Basic](https://github.com/Ivan-Sergeyev/seymour/blob/main/Seymour/Basic.lean) file.
 - We do not write `.1` and `.2` to access fields; write their names instead (with the exception for `Iff.mp` and `Iff.mpr` where we prefer our notation `.→` and `.←` respectively).
 - We prefer Mathlib's `have` over Lean's `have` inside tactic-block proofs.
+- If you have a standard representation matrix and need a full representation matrix, use `Matrix.prependId` to put the identity matrix on the left of the standard representation matrix.
 - We do not write a space after `←` in the `rw` syntax.
 - We do not write `↦` as this syntax does not work everywhere. Write `=>` instead.
 

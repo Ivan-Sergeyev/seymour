@@ -43,6 +43,9 @@ lemma HasSubset.Subset.elem_injective {X Y : Set α} (hXY : X ⊆ Y) : hXY.elem.
   ext
   simpa [HasSubset.Subset.elem] using hxy
 
+abbrev Matrix.prependId [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) : Matrix m (m ⊕ n) α :=
+  Matrix.fromCols 1 A
+
 /-- Convert `(X ∪ Y).Elem` to `X.Elem ⊕ Y.Elem`. -/
 def Subtype.toSum {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) : X.Elem ⊕ Y.Elem :=
   if hiX : i.val ∈ X then Sum.inl ⟨i, hiX⟩ else
