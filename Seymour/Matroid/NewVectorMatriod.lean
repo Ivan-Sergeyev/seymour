@@ -27,6 +27,11 @@ variable {α R : Type} [Semiring R]
 def VectorMatroid.IndepCols (M : VectorMatroid α R) (I : Set α) : Prop :=
   ∃ hI : I ⊆ M.Y, LinearIndependent R (fun i : I => (M.A · (hI.elem i)))
 
+lemma VectorMatroid.indepCols_iff_submatrix (M : VectorMatroid α R) (I : Set α) :
+    M.IndepCols I ↔
+    ∃ hI : I ⊆ M.Y, LinearIndependent R (M.A.submatrix id (hI.elem))ᵀ := by
+  rfl
+
 /-- Empty set is independent. -/
 theorem VectorMatroid.indepCols_empty (M : VectorMatroid α R) :
     M.IndepCols ∅ :=
@@ -207,11 +212,10 @@ lemma StandardRepr.toMatroid_indep_iff (S : StandardRepr α R) [DecidableEq α] 
       LinearIndependent R (fun i : I => (S.B.prependId · (hI.elem i).toSum)) := by
   rfl
 
--- lemma StandardRepr.toMatroid_indep_iff_submatrix (S : StandardRepr α R) [DecidableEq α] (Q : Set α) :
---     S.toMatroid.Indep Q ↔
---     ∃ hQ : Q ⊆ Set.range S.emb,
---       LinearIndependent R (S.B.prependId.submatrix id (S.emb.inver ∘ hQ.elem))ᵀ := by
---   rfl
+lemma StandardRepr.toMatroid_indep_iff_submatrix (S : StandardRepr α R) (I : Set α) :
+    S.toMatroid.Indep I ↔
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (S.B.prependId.submatrix id (Subtype.toSum ∘ hI.elem))ᵀ := by
+  rfl
 
 /-- The identity matrix has linearly independent rows. -/
 lemma Matrix.one_linearIndependent [DecidableEq α] : LinearIndependent R (1 : Matrix α α R) := by
@@ -275,6 +279,7 @@ def Matrix.HasTuSigning {X Y : Type} {n : ℕ} (A : Matrix X Y (ZMod n)) : Prop 
 
 variable {α : Type}
 
+/-- The main definition of regularity: `M` is regular iff it is constructed from a `VectorMatroid` with a rational TU matrix. -/
 def Matroid.IsRegular (M : Matroid α) : Prop :=
   ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsTotallyUnimodular ∧ (VectorMatroid.mk X Y A).toMatroid = M
 
@@ -446,6 +451,7 @@ section IsGraphic
 -- * one row for each vertex, and one column for each edge
 -- * in each column, either: 1x `+1`, 1x `-1`, and `0` elsewhere
 -- todo: unit and zero columns representing loops
+/-- Matroid is graphic iff it is represented by an incidence matrix of a graph. -/
 def Matrix.IsGraphic {m n : Type} (A : Matrix m n ℚ) : Prop :=
   ∀ y : n, ∃ x₁ x₂ : m, A x₁ y = 1 ∧ A x₂ y = -1 ∧ ∀ x : m, x ≠ x₁ → x ≠ x₂ → A x y = 0
 
