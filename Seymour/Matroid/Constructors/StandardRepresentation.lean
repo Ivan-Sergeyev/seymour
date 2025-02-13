@@ -1,7 +1,7 @@
 import Seymour.Matroid.Constructors.BinaryMatroid
 
 
-/-- Standard matrix representation of a vector matroid. TODO finiteness? -/
+/-- Standard matrix representation of a vector matroid. -/
 structure StandardRepr (α R : Type) [DecidableEq α] where
   /-- Row indices. -/
   X : Set α
@@ -22,7 +22,7 @@ attribute [instance] StandardRepr.decmemY
 
 variable {α R : Type} [DecidableEq α] [Semiring R]
 
-/-- Vector matroid constructed from standard representation. -/
+/-- Vector matroid constructed from the standard representation. -/
 def StandardRepr.toVectorMatroid (S : StandardRepr α R) : VectorMatroid α R :=
   ⟨S.X, S.X ∪ S.Y, (S.B.prependId · ∘ Subtype.toSum)⟩
 
@@ -39,7 +39,7 @@ lemma StandardRepr.toVectorMatroid_A (S : StandardRepr α R) :
   rfl
 
 /-- Set is independent in the vector matroid iff
-    corresponding multiset of columns of `[1 | B]` is linearly independent over `R`. -/
+    the corresponding multiset of columns of `[1 | B]` is linearly independent over `R`. -/
 lemma StandardRepr.toVectorMatroid_indep_iff (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
     ∃ hI : I ⊆ S.X ∪ S.Y,
@@ -48,13 +48,13 @@ lemma StandardRepr.toVectorMatroid_indep_iff (S : StandardRepr α R) (I : Set α
 
 /-- Every vector matroid has a standard representation. -/
 lemma VectorMatroid.exists_standardRepr (M : VectorMatroid α R) :
-    ∃ S : StandardRepr α R, M = S.toVectorMatroid := by
+    ∃ S : StandardRepr α R, S.toVectorMatroid = M := by
   sorry
 
 /-- Every vector matroid has a standard representation whose rows are a given base. -/
 lemma VectorMatroid.exists_standardRepr_base {B : Set α}
-    (M : VectorMatroid α R) (hB : M.toMatroid.Base B) (hBY : B ⊆ M.Y) :
-    ∃ S : StandardRepr α R, M.X = B ∧ M = S.toVectorMatroid := by
+    (M : VectorMatroid α R) (hMB : M.toMatroid.Base B) (hBY : B ⊆ M.Y) :
+    ∃ S : StandardRepr α R, M.X = B ∧ S.toVectorMatroid = M := by
   sorry
 
 /-- Construct a matroid from standard representation. -/

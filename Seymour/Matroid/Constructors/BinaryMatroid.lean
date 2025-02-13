@@ -4,12 +4,11 @@ import Mathlib.Data.Matroid.Map
 import Mathlib.Data.Matroid.Sum
 
 import Seymour.Basic
-import Seymour.ForMathlib.SetTheory
 
 open scoped Matrix
 
 
-/-- Vector matroid `M[A]` of matrix `A`. -/
+/-- Data representing a vector matroid `M[A]` of matrix `A`. -/
 structure VectorMatroid (α R : Type) where
   /-- Row indices. -/
   X : Set α

@@ -121,7 +121,7 @@ private lemma Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_isTo
 
   ` (g₁ ∘ e₁) | (g₂ ∘ e₂) :  Z -> Y₁ ⊕ Y₂ `   (note that `f` has the same type)
 -/
-  have hAfg :
+  have hAfg : -- make the outer submatrix bijective
     (fromBlocks
       (A₁.submatrix
         ((·.val.snd) : { x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } → X₁)
@@ -132,7 +132,7 @@ private lemma Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_isTo
         ((·.val.snd) : { y₂ : Z × Y₂ // g y₂.fst = Sum.inr y₂.snd } → Y₂)
       )
     ).submatrix f.decomposeSum g.decomposeSum
-    = -- make outer submatrix bijective
+    =
     (fromBlocks
       (A₁.submatrix (·.val.snd) ((·.val.snd) ∘ e₁)) 0 0
       (A₂.submatrix (·.val.snd) ((·.val.snd) ∘ e₂))
@@ -214,7 +214,7 @@ private lemma Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_card
 
   ` e₃ ∘ (I | e') :  Z ≃ (▫X₁ ⊕ X') ⊕ (▫X₂ \ X') `
 -/
-  have hAfg :
+  have hAfg : -- make the outer submatrix bijective
     (fromBlocks
       (A₁.submatrix
         ((·.val.snd) : { x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } → X₁)
@@ -225,7 +225,7 @@ private lemma Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_card
         ((·.val.snd) : { y₂ : Z × Y₂ // g y₂.fst = Sum.inr y₂.snd } → Y₂)
       )
     ).submatrix f.decomposeSum g.decomposeSum
-    = -- make outer submatrix bijective
+    =
     (fromBlocks
       (fromRows (A₁.submatrix (·.val.snd) ((·.val.snd) ∘ e₁)) 0)
       (fromRows 0 (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂)))

@@ -16,66 +16,66 @@ noncomputable abbrev Matrix_3sumComposition {β : Type} [CommRing β] {X₁ Y₁
 
 /-- `StandardRepresentation`-level 3-sum of two matroids.
 The second part checks legitimacy (invertibility of a certain 2x2 submatrix and specific 1s and 0s on concrete positions). -/
-noncomputable def StandardRepr_3sum {M₁ M₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ y₂ y₃ : α}
-    (hXX : M₁.X ∩ M₂.X = {x₁, x₂, x₃}) (hYY : M₁.Y ∩ M₂.Y = {y₁, y₂, y₃}) (hXY : M₁.X ⫗ M₂.Y) (hYX : M₁.Y ⫗ M₂.X) :
+noncomputable def StandardRepr_3sum {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ y₂ y₃ : α}
+    (hXX : S₁.X ∩ S₂.X = {x₁, x₂, x₃}) (hYY : S₁.Y ∩ S₂.Y = {y₁, y₂, y₃}) (hXY : S₁.X ⫗ S₂.Y) (hYX : S₁.Y ⫗ S₂.X) :
     StandardRepr α Z2 × Prop :=
-  have hxxx₁ : {x₁, x₂, x₃} ⊆ M₁.X := hXX.symm.subset.trans Set.inter_subset_left
-  have hxxx₂ : {x₁, x₂, x₃} ⊆ M₂.X := hXX.symm.subset.trans Set.inter_subset_right
-  have hyyy₁ : {y₁, y₂, y₃} ⊆ M₁.Y := hYY.symm.subset.trans Set.inter_subset_left
-  have hyyy₂ : {y₁, y₂, y₃} ⊆ M₂.Y := hYY.symm.subset.trans Set.inter_subset_right
-  have x₁inX₁ : x₁ ∈ M₁.X := hxxx₁ (Set.mem_insert x₁ {x₂, x₃})
-  have x₁inX₂ : x₁ ∈ M₂.X := hxxx₂ (Set.mem_insert x₁ {x₂, x₃})
-  have x₂inX₁ : x₂ ∈ M₁.X := hxxx₁ (Set.insert_comm x₁ x₂ {x₃} ▸ Set.mem_insert x₂ {x₁, x₃})
-  have x₂inX₂ : x₂ ∈ M₂.X := hxxx₂ (Set.insert_comm x₁ x₂ {x₃} ▸ Set.mem_insert x₂ {x₁, x₃})
-  have x₃inX₁ : x₃ ∈ M₁.X := hxxx₁ (by simp)
-  have x₃inX₂ : x₃ ∈ M₂.X := hxxx₂ (by simp)
-  have y₃inY₁ : y₃ ∈ M₁.Y := hyyy₁ (by simp)
-  have y₃inY₂ : y₃ ∈ M₂.Y := hyyy₂ (by simp)
-  have y₂inY₁ : y₂ ∈ M₁.Y := hyyy₁ (Set.insert_comm y₁ y₂ {y₃} ▸ Set.mem_insert y₂ {y₁, y₃})
-  have y₂inY₂ : y₂ ∈ M₂.Y := hyyy₂ (Set.insert_comm y₁ y₂ {y₃} ▸ Set.mem_insert y₂ {y₁, y₃})
-  have y₁inY₁ : y₁ ∈ M₁.Y := hyyy₁ (Set.mem_insert y₁ {y₂, y₃})
-  have y₁inY₂ : y₁ ∈ M₂.Y := hyyy₂ (Set.mem_insert y₁ {y₂, y₃})
+  have hxxx₁ : {x₁, x₂, x₃} ⊆ S₁.X := hXX.symm.subset.trans Set.inter_subset_left
+  have hxxx₂ : {x₁, x₂, x₃} ⊆ S₂.X := hXX.symm.subset.trans Set.inter_subset_right
+  have hyyy₁ : {y₁, y₂, y₃} ⊆ S₁.Y := hYY.symm.subset.trans Set.inter_subset_left
+  have hyyy₂ : {y₁, y₂, y₃} ⊆ S₂.Y := hYY.symm.subset.trans Set.inter_subset_right
+  have x₁inX₁ : x₁ ∈ S₁.X := hxxx₁ (Set.mem_insert x₁ {x₂, x₃})
+  have x₁inX₂ : x₁ ∈ S₂.X := hxxx₂ (Set.mem_insert x₁ {x₂, x₃})
+  have x₂inX₁ : x₂ ∈ S₁.X := hxxx₁ (Set.insert_comm x₁ x₂ {x₃} ▸ Set.mem_insert x₂ {x₁, x₃})
+  have x₂inX₂ : x₂ ∈ S₂.X := hxxx₂ (Set.insert_comm x₁ x₂ {x₃} ▸ Set.mem_insert x₂ {x₁, x₃})
+  have x₃inX₁ : x₃ ∈ S₁.X := hxxx₁ (by simp)
+  have x₃inX₂ : x₃ ∈ S₂.X := hxxx₂ (by simp)
+  have y₃inY₁ : y₃ ∈ S₁.Y := hyyy₁ (by simp)
+  have y₃inY₂ : y₃ ∈ S₂.Y := hyyy₂ (by simp)
+  have y₂inY₁ : y₂ ∈ S₁.Y := hyyy₁ (Set.insert_comm y₁ y₂ {y₃} ▸ Set.mem_insert y₂ {y₁, y₃})
+  have y₂inY₂ : y₂ ∈ S₂.Y := hyyy₂ (Set.insert_comm y₁ y₂ {y₃} ▸ Set.mem_insert y₂ {y₁, y₃})
+  have y₁inY₁ : y₁ ∈ S₁.Y := hyyy₁ (Set.mem_insert y₁ {y₂, y₃})
+  have y₁inY₂ : y₁ ∈ S₂.Y := hyyy₂ (Set.mem_insert y₁ {y₂, y₃})
   -- The actual definition starts here:
-  let A₁ : Matrix (M₁.X \ {x₁, x₂, x₃}).Elem ((M₁.Y \ {y₁, y₂, y₃}).Elem ⊕ Fin 2) Z2 := -- the top left submatrix
-    Matrix.of (fun i j => M₁.B
+  let A₁ : Matrix (S₁.X \ {x₁, x₂, x₃}).Elem ((S₁.Y \ {y₁, y₂, y₃}).Elem ⊕ Fin 2) Z2 := -- the top left submatrix
+    Matrix.of (fun i j => S₁.B
         ⟨i.val, Set.mem_of_mem_diff i.property⟩
         (j.casesOn (fun j' => ⟨j'.val, Set.mem_of_mem_diff j'.property⟩) ![⟨y₂, y₂inY₁⟩, ⟨y₁, y₁inY₁⟩]))
-  let A₂ : Matrix (Fin 2 ⊕ (M₂.X \ {x₁, x₂, x₃}).Elem) (M₂.Y \ {y₁, y₂, y₃}).Elem Z2 := -- the bottom right submatrix
-    Matrix.of (fun i j => M₂.B
+  let A₂ : Matrix (Fin 2 ⊕ (S₂.X \ {x₁, x₂, x₃}).Elem) (S₂.Y \ {y₁, y₂, y₃}).Elem Z2 := -- the bottom right submatrix
+    Matrix.of (fun i j => S₂.B
         (i.casesOn ![⟨x₂, x₂inX₂⟩, ⟨x₃, x₃inX₂⟩] (fun i' => ⟨i'.val, Set.mem_of_mem_diff i'.property⟩))
         ⟨j.val, Set.mem_of_mem_diff j.property⟩)
-  let z₁ : (M₁.Y \ {y₁, y₂, y₃}).Elem → Z2 := -- the middle left "row vector"
-    (fun j => M₁.B ⟨x₁, x₁inX₁⟩ ⟨j.val, Set.mem_of_mem_diff j.property⟩)
-  let z₂ : (M₂.X \ {x₁, x₂, x₃}).Elem → Z2 := -- the bottom middle "column vector"
-    (fun i => M₂.B ⟨i.val, Set.mem_of_mem_diff i.property⟩ ⟨y₃, y₃inY₂⟩)
+  let z₁ : (S₁.Y \ {y₁, y₂, y₃}).Elem → Z2 := -- the middle left "row vector"
+    (fun j => S₁.B ⟨x₁, x₁inX₁⟩ ⟨j.val, Set.mem_of_mem_diff j.property⟩)
+  let z₂ : (S₂.X \ {x₁, x₂, x₃}).Elem → Z2 := -- the bottom middle "column vector"
+    (fun i => S₂.B ⟨i.val, Set.mem_of_mem_diff i.property⟩ ⟨y₃, y₃inY₂⟩)
   let D_₁ : Matrix (Fin 2) (Fin 2) Z2 := -- the bottom middle 2x2 submatrix
-    Matrix.of (fun i j => M₁.B (![⟨x₂, x₂inX₁⟩, ⟨x₃, x₃inX₁⟩] i) (![⟨y₂, y₂inY₁⟩, ⟨y₁, y₁inY₁⟩] j))
+    Matrix.of (fun i j => S₁.B (![⟨x₂, x₂inX₁⟩, ⟨x₃, x₃inX₁⟩] i) (![⟨y₂, y₂inY₁⟩, ⟨y₁, y₁inY₁⟩] j))
   let D_₂ : Matrix (Fin 2) (Fin 2) Z2 := -- the middle left 2x2 submatrix
-    Matrix.of (fun i j => M₂.B (![⟨x₂, x₂inX₂⟩, ⟨x₃, x₃inX₂⟩] i) (![⟨y₂, y₂inY₂⟩, ⟨y₁, y₁inY₂⟩] j))
-  let D₁ : Matrix (Fin 2) (M₁.Y \ {y₁, y₂, y₃}).Elem Z2 := -- the bottom left submatrix
-    Matrix.of (fun i j => M₁.B (![⟨x₂, x₂inX₁⟩, ⟨x₃, x₃inX₁⟩] i) ⟨j.val, Set.mem_of_mem_diff j.property⟩)
-  let D₂ : Matrix (M₂.X \ {x₁, x₂, x₃}).Elem (Fin 2) Z2 := -- the bottom left submatrix
-    Matrix.of (fun i j => M₂.B ⟨i.val, Set.mem_of_mem_diff i.property⟩ (![⟨y₂, y₂inY₂⟩, ⟨y₁, y₁inY₂⟩] j))
+    Matrix.of (fun i j => S₂.B (![⟨x₂, x₂inX₂⟩, ⟨x₃, x₃inX₂⟩] i) (![⟨y₂, y₂inY₂⟩, ⟨y₁, y₁inY₂⟩] j))
+  let D₁ : Matrix (Fin 2) (S₁.Y \ {y₁, y₂, y₃}).Elem Z2 := -- the bottom left submatrix
+    Matrix.of (fun i j => S₁.B (![⟨x₂, x₂inX₁⟩, ⟨x₃, x₃inX₁⟩] i) ⟨j.val, Set.mem_of_mem_diff j.property⟩)
+  let D₂ : Matrix (S₂.X \ {x₁, x₂, x₃}).Elem (Fin 2) Z2 := -- the bottom left submatrix
+    Matrix.of (fun i j => S₂.B ⟨i.val, Set.mem_of_mem_diff i.property⟩ (![⟨y₂, y₂inY₂⟩, ⟨y₁, y₁inY₂⟩] j))
   ⟨
     ⟨
-      (M₁.X \ {x₁, x₂, x₃}) ∪ M₂.X,
-      M₁.Y ∪ (M₂.Y \ {y₁, y₂, y₃}),
+      (S₁.X \ {x₁, x₂, x₃}) ∪ S₂.X,
+      S₁.Y ∪ (S₂.Y \ {y₁, y₂, y₃}),
       by
         rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
         exact
-          ⟨⟨M₁.hXY.disjoint_sdiff_left, hYX.symm⟩, ⟨hXY.disjoint_sdiff_right.disjoint_sdiff_left, M₂.hXY.disjoint_sdiff_right⟩⟩,
+          ⟨⟨S₁.hXY.disjoint_sdiff_left, hYX.symm⟩, ⟨hXY.disjoint_sdiff_right.disjoint_sdiff_left, S₂.hXY.disjoint_sdiff_right⟩⟩,
       Matrix.of (fun i j =>
         Matrix_3sumComposition A₁ A₂ z₁ z₂ D_₁ D₁ D₂ (
-          if hi₁ : i.val ∈ M₁.X \ {x₁, x₂, x₃} then Sum.inl (Sum.inl ⟨i, hi₁⟩) else
-          if hi₂ : i.val ∈ M₂.X \ {x₁, x₂, x₃} then Sum.inr (Sum.inr ⟨i, hi₂⟩) else
+          if hi₁ : i.val ∈ S₁.X \ {x₁, x₂, x₃} then Sum.inl (Sum.inl ⟨i, hi₁⟩) else
+          if hi₂ : i.val ∈ S₂.X \ {x₁, x₂, x₃} then Sum.inr (Sum.inr ⟨i, hi₂⟩) else
           if hx₁ : i.val = x₁ then Sum.inl (Sum.inr ()) else
           if hx₂ : i.val = x₂ then Sum.inr (Sum.inl 0) else
           if hx₃ : i.val = x₃ then Sum.inr (Sum.inl 1) else
           (i.property.elim hi₁ (by simp_all)).elim
           -- TODO can `Matrix.toMatrixUnionUnion` be combined with something else to simplify this definition?
         ) (
-          if hj₁ : j.val ∈ M₁.Y \ {y₁, y₂, y₃} then Sum.inl (Sum.inl ⟨j, hj₁⟩) else
-          if hj₂ : j.val ∈ M₂.Y \ {y₁, y₂, y₃} then Sum.inr (Sum.inr ⟨j, hj₂⟩) else
+          if hj₁ : j.val ∈ S₁.Y \ {y₁, y₂, y₃} then Sum.inl (Sum.inl ⟨j, hj₁⟩) else
+          if hj₂ : j.val ∈ S₂.Y \ {y₁, y₂, y₃} then Sum.inr (Sum.inr ⟨j, hj₂⟩) else
           if hy₁ : j.val = y₁ then Sum.inl (Sum.inr 1) else
           if hy₂ : j.val = y₂ then Sum.inl (Sum.inr 0) else
           if hy₃ : j.val = y₃ then Sum.inr (Sum.inl ()) else
@@ -86,33 +86,33 @@ noncomputable def StandardRepr_3sum {M₁ M₂ : StandardRepr α Z2} {x₁ x₂ 
       inferInstance,
     ⟩,
     IsUnit D_₁ ∧ D_₁ = D_₂ -- the matrix `D_₁ = D_₂` (called D-bar in the book) is invertible
-    ∧ M₁.B ⟨x₁, x₁inX₁⟩ ⟨y₁, y₁inY₁⟩ = 1
-    ∧ M₁.B ⟨x₁, x₁inX₁⟩ ⟨y₂, y₂inY₁⟩ = 1
-    ∧ M₁.B ⟨x₂, x₂inX₁⟩ ⟨y₃, y₃inY₁⟩ = 1
-    ∧ M₁.B ⟨x₃, x₃inX₁⟩ ⟨y₃, y₃inY₁⟩ = 1
-    ∧ M₂.B ⟨x₁, x₁inX₂⟩ ⟨y₁, y₁inY₂⟩ = 1
-    ∧ M₂.B ⟨x₁, x₁inX₂⟩ ⟨y₂, y₂inY₂⟩ = 1
-    ∧ M₂.B ⟨x₂, x₂inX₂⟩ ⟨y₃, y₃inY₂⟩ = 1
-    ∧ M₂.B ⟨x₃, x₃inX₂⟩ ⟨y₃, y₃inY₂⟩ = 1
-    ∧ (∀ x : α, ∀ hx : x ∈ M₁.X, x ≠ x₂ ∧ x ≠ x₃ → M₁.B ⟨x, hx⟩ ⟨y₃, y₃inY₁⟩ = 0) -- the rest of the rightmost column is `0`s
-    ∧ (∀ y : α, ∀ hy : y ∈ M₂.Y, y ≠ y₂ ∧ y ≠ y₁ → M₂.B ⟨x₁, x₁inX₂⟩ ⟨y, hy⟩ = 0) -- the rest of the topmost row is `0`s
+    ∧ S₁.B ⟨x₁, x₁inX₁⟩ ⟨y₁, y₁inY₁⟩ = 1
+    ∧ S₁.B ⟨x₁, x₁inX₁⟩ ⟨y₂, y₂inY₁⟩ = 1
+    ∧ S₁.B ⟨x₂, x₂inX₁⟩ ⟨y₃, y₃inY₁⟩ = 1
+    ∧ S₁.B ⟨x₃, x₃inX₁⟩ ⟨y₃, y₃inY₁⟩ = 1
+    ∧ S₂.B ⟨x₁, x₁inX₂⟩ ⟨y₁, y₁inY₂⟩ = 1
+    ∧ S₂.B ⟨x₁, x₁inX₂⟩ ⟨y₂, y₂inY₂⟩ = 1
+    ∧ S₂.B ⟨x₂, x₂inX₂⟩ ⟨y₃, y₃inY₂⟩ = 1
+    ∧ S₂.B ⟨x₃, x₃inX₂⟩ ⟨y₃, y₃inY₂⟩ = 1
+    ∧ (∀ x : α, ∀ hx : x ∈ S₁.X, x ≠ x₂ ∧ x ≠ x₃ → S₁.B ⟨x, hx⟩ ⟨y₃, y₃inY₁⟩ = 0) -- the rest of the rightmost column is `0`s
+    ∧ (∀ y : α, ∀ hy : y ∈ S₂.Y, y ≠ y₂ ∧ y ≠ y₁ → S₂.B ⟨x₁, x₁inX₂⟩ ⟨y, hy⟩ = 0) -- the rest of the topmost row is `0`s
   ⟩
 
 /-- Binary matroid `M` is a result of 2-summing `M₁` and `M₂` in some way. -/
 structure Matroid.Is3sumOf (M : Matroid α) (M₁ M₂ : Matroid α) where
-  B : StandardRepr α Z2
-  B₁ : StandardRepr α Z2
-  B₂ : StandardRepr α Z2
-  hM : B.toMatroid = M
-  hM₁ : B₁.toMatroid = M₁
-  hM₂ : B₂.toMatroid = M₂
+  S : StandardRepr α Z2
+  S₁ : StandardRepr α Z2
+  S₂ : StandardRepr α Z2
+  hM : S.toMatroid = M
+  hM₁ : S₁.toMatroid = M₁
+  hM₂ : S₂.toMatroid = M₂
   (x₁ x₂ x₃ y₁ y₂ y₃ : α)
-  hXX : B₁.X ∩ B₂.X = {x₁, x₂, x₃}
-  hYY : B₁.Y ∩ B₂.Y = {y₁, y₂, y₃}
-  hXY : B₁.X ⫗ B₂.Y
-  hYX : B₁.Y ⫗ B₂.X
-  is3sum : B = (StandardRepr_3sum hXX hYY hXY hYX).fst
-  isValid : (StandardRepr_3sum hXX hYY hXY hYX).snd
+  hXX : S₁.X ∩ S₂.X = {x₁, x₂, x₃}
+  hYY : S₁.Y ∩ S₂.Y = {y₁, y₂, y₃}
+  hXY : S₁.X ⫗ S₂.Y
+  hYX : S₁.Y ⫗ S₂.X
+  IsSum : (StandardRepr_3sum hXX hYY hXY hYX).fst = S
+  IsValid : (StandardRepr_3sum hXX hYY hXY hYX).snd
 
 /-- Any 3-sum of regular matroids is a regular matroid.
 This is the final of the three parts of the easy direction of the Seymour's theorem. -/
