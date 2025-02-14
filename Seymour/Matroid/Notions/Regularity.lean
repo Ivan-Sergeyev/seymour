@@ -17,25 +17,6 @@ variable {α : Type}
 def Matroid.IsRegular (M : Matroid α) : Prop :=
   ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsTotallyUnimodular ∧ (VectorMatroid.mk X Y A).toMatroid = M
 
-lemma Matrix.det_coe_ℤ_ℚ [DecidableEq α] [Fintype α] (A : Matrix α α ℤ) :
-    ((A.det : ℤ) : ℚ) = (A.map (fun (a : ℤ) => (a : ℚ))).det := by
-  simp [Matrix.det_apply]
-  congr
-  ext p
-  if h1 : Equiv.Perm.sign p = 1 then
-    simp [h1]
-  else
-    simp [Int.units_ne_iff_eq_neg.→ h1]
--- TODO can these two lemmas be generalized?
-lemma Matrix.det_coe_ℤ_Z2 [DecidableEq α] [Fintype α] {A : Matrix α α ℤ} :
-    ((A.det : ℤ) : Z2) = (A.map (fun (a : ℤ) => (a : Z2))).det := by
-  simp [Matrix.det_apply]
-  congr
-  ext p
-  if h1 : Equiv.Perm.sign p = 1 then
-    simp [h1]
-  else
-    simp [Int.units_ne_iff_eq_neg.→ h1]
 
 private lemma todoZ [DecidableEq α] [Fintype α] (A : Matrix α α ℤ)
     (hA : ∀ i j, A i j ∈ Set.range SignType.cast) (hA' : A.det ∈ Set.range SignType.cast) :
@@ -48,7 +29,7 @@ private lemma todoZ [DecidableEq α] [Fintype α] (A : Matrix α α ℤ)
       simp at hs
       rw [←hs]
       simp
-  rw [h0, A.det_coe_ℤ_Z2]
+  rw [h0, A.det_coe]
   constructor -- TODO eliminate repeated code below
   · intro foo
     convert foo
@@ -94,7 +75,7 @@ private lemma todo [DecidableEq α] [Fintype α] {A : Matrix α α ℚ}
     (hA : ∀ i j, A i j ∈ Set.range SignType.cast) (hA' : A.det ∈ Set.range SignType.cast) :
     A.det = (0 : ℚ) ↔ (Matrix.of (if A · · = 0 then 0 else 1)).det = (0 : Z2) := by
   have key : (((Matrix.of (if A · · = 0 then 0 else 1)).det : ℤ) : ℚ) = A.det
-  · convert (Matrix.of (if A · · = 0 then 0 else 1)).det_coe_ℤ_ℚ
+  · convert (Matrix.of (if A · · = 0 then 0 else 1)).det_coe ℚ
     ext i j
     simp
     obtain ⟨s, hs⟩ := hA i j

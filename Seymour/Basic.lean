@@ -38,6 +38,20 @@ lemma Z2val_toRat_mul_Z2val_toRat (a b : Z2) : (a.val : ℚ) * (b.val : ℚ) = (
 
 variable {α : Type}
 
+abbrev Matrix.prependId [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) : Matrix m (m ⊕ n) α :=
+  Matrix.fromCols 1 A
+
+lemma Matrix.det_coe [DecidableEq α] [Fintype α] (A : Matrix α α ℤ) (F : Type) [Field F] :
+    ((A.det : ℤ) : F) = ((A.map Int.cast).det : F) := by
+  simp [Matrix.det_apply]
+  congr
+  ext p
+  if h1 : Equiv.Perm.sign p = 1 then
+    simp [h1]
+  else
+    simp [Int.units_ne_iff_eq_neg.→ h1]
+
+
 /-- Given `X ⊆ Y` cast an element of `X` as an element of `Y`. -/
 def HasSubset.Subset.elem {X Y : Set α} (hXY : X ⊆ Y) (x : X.Elem) : Y.Elem :=
   ⟨x.val, hXY x.property⟩
@@ -46,9 +60,6 @@ lemma HasSubset.Subset.elem_injective {X Y : Set α} (hXY : X ⊆ Y) : hXY.elem.
   intro x y hxy
   ext
   simpa [HasSubset.Subset.elem] using hxy
-
-abbrev Matrix.prependId [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) : Matrix m (m ⊕ n) α :=
-  Matrix.fromCols 1 A
 
 /-- Convert `(X ∪ Y).Elem` to `X.Elem ⊕ Y.Elem`. -/
 def Subtype.toSum {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) : X.Elem ⊕ Y.Elem :=
