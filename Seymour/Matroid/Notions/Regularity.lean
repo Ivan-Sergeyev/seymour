@@ -1,14 +1,14 @@
 import Seymour.Matroid.Constructors.StandardRepresentation
 
 
-/-- Matrix `S` is a TU signing of `U` iff `S` is TU and its entries are the same as in `U` up to signs. -/
-def Matrix.IsTuSigningOf {X Y : Type} (S : Matrix X Y ℚ) {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
-  S.IsTotallyUnimodular ∧ ∀ i j, |S i j| = (U i j).val
--- do not ask `U.IsTotallyUnimodular` ... see `Matrix.overZ2_isTotallyUnimodular` for example
+/-- Matrix `A` is a TU signing of `U` iff `A` is TU and its entries are the same as in `U` up to signs.
+    Do not ask `U.IsTotallyUnimodular` ... see `Matrix.overZ2_isTotallyUnimodular` for example! -/
+def Matrix.IsTuSigningOf {X Y : Type} (A : Matrix X Y ℚ) {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
+  A.IsTotallyUnimodular ∧ ∀ i j, |A i j| = (U i j).val
 
-/-- Matrix `A` has a TU signing if there is a TU matrix whose entries are the same as in `A` up to signs. -/
-def Matrix.HasTuSigning {X Y : Type} {n : ℕ} (A : Matrix X Y (ZMod n)) : Prop :=
-  ∃ A' : Matrix X Y ℚ, A'.IsTuSigningOf A
+/-- Matrix `U` has a TU signing if there is a TU matrix whose entries are the same as in `U` up to signs. -/
+def Matrix.HasTuSigning {X Y : Type} {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
+  ∃ A : Matrix X Y ℚ, A.IsTuSigningOf U
 
 variable {α : Type}
 
@@ -18,15 +18,24 @@ def Matroid.IsRegular (M : Matroid α) : Prop :=
 
 /-- Every regular matroid is binary. -/
 lemma Matroid.IsRegular.isBinary {M : Matroid α} (hM : M.IsRegular) :
-    ∃ X Y : Set α, ∃ A : Matrix X Y Z2, (VectorMatroid.mk X Y A).toMatroid = M := by
-  sorry
+    ∃ V : VectorMatroid α Z2, V.toMatroid = M := by
+  obtain ⟨X, Y, A, hA, rfl⟩ := hM
+  use ⟨X, Y, Matrix.of (if A · · = 0 then 0 else 1)⟩
+  ext I hI
+  · simp
+  simp only [VectorMatroid.toMatroid_E] at hI
+  simp only [VectorMatroid.toMatroid_indep, VectorMatroid.IndepCols]
+  constructor <;> intro ⟨hI', hA'⟩ <;> use hI'
+  · sorry
+  · sorry
 
 /-- Every regular matroid has a standard binary representation. -/
 lemma Matroid.IsRegular.isBinaryStd [DecidableEq α] {M : Matroid α} (hM : M.IsRegular) :
-    ∃ X Y : Set α, ∃ hXY : X ⫗ Y, ∃ A : Matrix X Y Z2,
-      ∃ dinX : (∀ a, Decidable (a ∈ X)), ∃ dinY : (∀ a, Decidable (a ∈ Y)),
-        (StandardRepr.mk X Y hXY A dinX dinY).toMatroid = M := by
-  sorry
+    ∃ S : StandardRepr α Z2, S.toMatroid = M := by
+  obtain ⟨V, hV⟩ := hM.isBinary
+  obtain ⟨S, hS⟩ := V.exists_standardRepr
+  rw [←hS] at hV
+  exact ⟨S, hV⟩
 
 /-- Matroid `M` that can be represented by a matrix over `Z2` with a TU signing -/
 abbrev StandardRepr.HasTuSigning [DecidableEq α] (S : StandardRepr α Z2) : Prop :=
