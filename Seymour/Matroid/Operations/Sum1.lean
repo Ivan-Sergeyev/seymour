@@ -44,9 +44,15 @@ lemma StandardRepr_1sumComposition_as_disjointSum {S₁ S₂ : StandardRepr α Z
     (StandardRepr_1sumComposition hXY hYX).fst.toMatroid = Matroid.disjointSum S₁.toMatroid S₂.toMatroid (by
       simp [StandardRepr.toMatroid, StandardRepr.toVectorMatroid, Set.disjoint_union_left, Set.disjoint_union_right]
       exact ⟨⟨valid.left, hYX⟩, ⟨hXY, valid.right⟩⟩) := by
-  ext
-  · sorry
-  · sorry
+  ext I hI
+  · simp only [StandardRepr.toMatroid_E, Set.mem_union, Matroid.disjointSum_ground_eq, StandardRepr_1sumComposition]
+    tauto
+  · simp only [StandardRepr.toMatroid_indep_iff, Matroid.disjointSum_indep_iff, StandardRepr.toMatroid_E,
+      Set.inter_subset_right, exists_true_left]
+    constructor <;> intro linearlyI
+    · sorry
+    · use hI
+      sorry
 
 /-- A valid 1-sum of binary matroids is commutative. -/
 lemma StandardRepr_1sumComposition_comm {S₁ S₂ : StandardRepr α Z2} {hXY : S₁.X ⫗ S₂.Y} {hYX : S₁.Y ⫗ S₂.X}

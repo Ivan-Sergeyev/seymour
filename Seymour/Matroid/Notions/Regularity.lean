@@ -156,4 +156,8 @@ lemma StandardRepr.toMatroid_isRegular_iff_hasTuSigning [DecidableEq α] (S : St
     constructor
     · exact (hU.one_fromCols).comp_cols Subtype.toSum
     ext I hI <;> simp
-    sorry
+    simp only [VectorMatroid.toMatroid_E] at hI
+    constructor <;> intro linearlyI
+    · use hI
+      sorry
+    · sorry
