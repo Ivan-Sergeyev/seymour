@@ -60,6 +60,12 @@ lemma VectorMatroid.exists_standardRepr_base [Semiring R] {B : Set α}
 def StandardRepr.toMatroid [Semiring R] (S : StandardRepr α R) : Matroid α :=
   S.toVectorMatroid.toMatroid
 
+/-- Ground set of a vector matroid is union of row and column index sets of its standard matrix representation. -/
+@[simp]
+lemma StandardRepr.toMatroid_E [Semiring R] (S : StandardRepr α R) :
+    S.toMatroid.E = S.X ∪ S.Y :=
+  rfl
+
 /-- Set is independent in the resulting matroid iff
     the corresponding multiset of columns of `[1 | B]` is linearly independent over `R`. -/
 @[simp]

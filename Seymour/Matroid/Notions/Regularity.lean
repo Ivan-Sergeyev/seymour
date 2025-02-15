@@ -11,12 +11,43 @@ def Matrix.IsTuSigningOf {X Y : Type} (A : Matrix X Y ℚ) {n : ℕ} (U : Matrix
 def Matrix.HasTuSigning {X Y : Type} {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
   ∃ A : Matrix X Y ℚ, A.IsTuSigningOf U
 
-variable {α : Type}
-
 /-- The main definition of regularity: `M` is regular iff it is constructed from a `VectorMatroid` with a rational TU matrix. -/
-def Matroid.IsRegular (M : Matroid α) : Prop :=
+def Matroid.IsRegular {α : Type} (M : Matroid α) : Prop :=
   ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsTotallyUnimodular ∧ (VectorMatroid.mk X Y A).toMatroid = M
 
+
+private def Matrix.discretize {X Y : Type} (A : Matrix X Y ℚ) (n : ℕ) : Matrix X Y (ZMod n) :=
+  Matrix.of (if A · · = 0 then 0 else 1)
+
+private lemma Matrix.IsTotallyUnimodular.discretize {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular)
+    {n : ℕ} (hn : 1 < n) :
+    A.IsTuSigningOf (A.discretize n) := by
+  constructor
+  · exact hA
+  intro i j
+  if hAij : A i j = 0 then
+    simp [Matrix.discretize, hAij]
+  else
+    obtain ⟨s, hs⟩ := hA.apply i j
+    cases s with
+    | zero =>
+      simp_all [Matrix.discretize]
+    | pos =>
+      rw [SignType.pos_eq_one, SignType.coe_one] at hs
+      rw [←hs]
+      simp [Matrix.discretize, hAij]
+      rw [ZMod.val_one'']
+      · rfl
+      · omega
+    | neg =>
+      rw [SignType.neg_eq_neg_one, SignType.coe_neg, SignType.coe_one] at hs
+      rw [←hs]
+      simp [Matrix.discretize, hAij]
+      rw [ZMod.val_one'']
+      · rfl
+      · omega
+
+variable {α : Type}
 
 private lemma todoZ [DecidableEq α] [Fintype α] (A : Matrix α α ℤ)
     (hA : ∀ i j, A i j ∈ Set.range SignType.cast) (hA' : A.det ∈ Set.range SignType.cast) :
@@ -30,7 +61,7 @@ private lemma todoZ [DecidableEq α] [Fintype α] (A : Matrix α α ℤ)
       rw [←hs]
       simp
   rw [h0, A.det_coe]
-  constructor -- TODO eliminate repeated code below
+  constructor -- TODO eliminate repeated code below (if kept at all)
   · intro foo
     convert foo
     ext i j
@@ -119,6 +150,15 @@ abbrev StandardRepr.HasTuSigning [DecidableEq α] (S : StandardRepr α Z2) : Pro
   S.B.HasTuSigning
 
 /-- Matroid constructed from a standard representation is regular iff the binary matrix has a TU signing. -/
-lemma StandardRepr.toMatroid_isRegular_iff_hasTuSigning [DecidableEq α] (S : StandardRepr α Z2) :
+lemma StandardRepr.toMatroid_isRegular_iff_hasTuSigning [DecidableEq α] (S : StandardRepr α Z2) : -- TODO `S` finite ?
     S.toMatroid.IsRegular ↔ S.HasTuSigning := by
-  sorry
+  constructor
+  · intro hS
+    sorry
+  · intro ⟨U, hU, hUS⟩
+    use S.X, S.X ∪ S.Y, (U.prependId · ∘ Subtype.toSum)
+    constructor
+    · exact (hU.one_fromCols).comp_cols Subtype.toSum
+    ext I hI
+    · simp
+    sorry
