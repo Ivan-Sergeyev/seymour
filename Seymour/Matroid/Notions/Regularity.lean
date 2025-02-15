@@ -22,9 +22,7 @@ private def Matrix.discretize {X Y : Type} (A : Matrix X Y ℚ) (n : ℕ) : Matr
 private lemma Matrix.IsTotallyUnimodular.discretize {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular)
     {n : ℕ} (hn : 1 < n) :
     A.IsTuSigningOf (A.discretize n) := by
-  constructor
-  · exact hA
-  intro i j
+  refine ⟨hA, fun i j => ?_⟩
   if hAij : A i j = 0 then
     simp [Matrix.discretize, hAij]
   else
@@ -36,16 +34,14 @@ private lemma Matrix.IsTotallyUnimodular.discretize {X Y : Type} {A : Matrix X Y
       rw [SignType.pos_eq_one, SignType.coe_one] at hs
       rw [←hs]
       simp [Matrix.discretize, hAij]
-      rw [ZMod.val_one'']
-      · rfl
-      · omega
+      rewrite [ZMod.val_one'' (· ▸ hn |>.false)]
+      rfl
     | neg =>
       rw [SignType.neg_eq_neg_one, SignType.coe_neg, SignType.coe_one] at hs
       rw [←hs]
       simp [Matrix.discretize, hAij]
-      rw [ZMod.val_one'']
-      · rfl
-      · omega
+      rewrite [ZMod.val_one'' (· ▸ hn |>.false)]
+      rfl
 
 variable {α : Type}
 
@@ -153,12 +149,11 @@ abbrev StandardRepr.HasTuSigning [DecidableEq α] (S : StandardRepr α Z2) : Pro
 lemma StandardRepr.toMatroid_isRegular_iff_hasTuSigning [DecidableEq α] (S : StandardRepr α Z2) : -- TODO `S` finite ?
     S.toMatroid.IsRegular ↔ S.HasTuSigning := by
   constructor
-  · intro hS
+  · intro ⟨X, Y, A, hA, hS⟩
     sorry
   · intro ⟨U, hU, hUS⟩
     use S.X, S.X ∪ S.Y, (U.prependId · ∘ Subtype.toSum)
     constructor
     · exact (hU.one_fromCols).comp_cols Subtype.toSum
-    ext I hI
-    · simp
+    ext I hI <;> simp
     sorry
