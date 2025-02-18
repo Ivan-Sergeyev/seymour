@@ -51,6 +51,11 @@ lemma Matrix.det_coe [DecidableEq α] [Fintype α] (A : Matrix α α ℤ) (F : T
   else
     simp [Int.units_ne_iff_eq_neg.→ h1]
 
+lemma IsUnit.linearIndependent_matrix [DecidableEq α] [Fintype α] {R : Type} [CommRing R] {A : Matrix α α R} (hA : IsUnit A) :
+    LinearIndependent R A :=
+  A.linearIndependent_rows_of_isUnit hA
+
+
 
 /-- Given `X ⊆ Y` cast an element of `X` as an element of `Y`. -/
 def HasSubset.Subset.elem {X Y : Set α} (hXY : X ⊆ Y) (x : X.Elem) : Y.Elem :=

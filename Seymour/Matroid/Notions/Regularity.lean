@@ -125,7 +125,7 @@ lemma Matroid.IsRegular.isBinary [DecidableEq α] {M : Matroid α} [Finite M.E] 
   clear hI
   simp only [VectorMatroid.toMatroid_indep, VectorMatroid.indepCols_iff_submatrix]
   constructor <;> intro ⟨hIY, hA'⟩ <;> use hIY <;>
-      rw [Matrix.linearIndendent_iff_exists_submatrix_det] at hA' ⊢ <;>
+      rw [Matrix.linearIndependent_iff_exists_submatrix_det] at hA' ⊢ <;>
       obtain ⟨f, hAf⟩ := hA' <;> use f <;> intro contr <;>
       rw [Matrix.transpose_submatrix, Matrix.submatrix_submatrix, Function.comp_id, Function.id_comp] at hAf contr <;>
       apply hAf <;> have hAT := hA.transpose <;> have hAf' := (hAT.submatrix hIY.elem f).apply <;>
