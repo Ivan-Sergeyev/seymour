@@ -89,8 +89,8 @@ lemma Matrix.one_linearIndependent [Ring R] : LinearIndependent R (1 : Matrix α
 
 /-- The image of all rows of a standard representation is a base in the resulting matroid. -/
 lemma StandardRepr.toMatroid_base [Ring R] (S : StandardRepr α R) :
-    S.toMatroid.Base (Set.range (Subtype.val ∘ Sum.toUnion ∘ @Sum.inl S.X S.Y)) := by
-  apply Matroid.Indep.base_of_forall_insert
+    S.toMatroid.IsBase (Set.range (Subtype.val ∘ Sum.toUnion ∘ @Sum.inl S.X S.Y)) := by
+  apply Matroid.Indep.isBase_of_forall_insert
   · rw [StandardRepr.toMatroid_indep_iff_submatrix]
     use (fun a ha => by simp [Sum.toUnion] at ha; aesop)
     show LinearIndependent R (S.B.prependId.transpose.submatrix _ id)
