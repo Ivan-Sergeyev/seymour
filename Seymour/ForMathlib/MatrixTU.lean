@@ -58,8 +58,8 @@ noncomputable instance {f : Z → X₁ ⊕ X₂} : Fintype { x₂ : Z × X₂ //
   rw [←Sum.inr.injEq, ←hu, ←hv, huv]
 
 lemma decomposeSum_card_eq (f : Z → X₁ ⊕ X₂) :
-    Fintype.card { x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } + Fintype.card { x₂ : Z × X₂ // f x₂.fst = Sum.inr x₂.snd } =
-    Fintype.card Z := by
+    #{ x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } + #{ x₂ : Z × X₂ // f x₂.fst = Sum.inr x₂.snd } =
+    #Z := by
   rw [←Fintype.card_sum]
   exact Fintype.card_congr f.decomposeSum.symm
 
@@ -78,7 +78,7 @@ In the comments bellow, we will use the following shorthands:
 
 `I` is `Equiv.refl _`
 ` | ` denotes `Equiv.sumCongr`
-`|S|` denotes `Fintype.card S` for any `{S : Type} [Fintype S]`
+`|S|` denotes `#S` for any `{S : Type} [Fintype S]`
 -/
 variable [LinearOrderedCommRing R] [DecidableEq Z] [DecidableEq X₁] [DecidableEq X₂] {Y₁ Y₂ : Type}
 
@@ -87,19 +87,16 @@ private lemma Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_isTo
     {A₁ : Matrix X₁ Y₁ R} (hA₁ : A₁.IsTotallyUnimodular)
     {A₂ : Matrix X₂ Y₂ R} (hA₂ : A₂.IsTotallyUnimodular)
     {f : Z → X₁ ⊕ X₂} {g : Z → Y₁ ⊕ Y₂}
-    (hfg :
-      Fintype.card { x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } =
-      Fintype.card { y₁ : Z × Y₁ // g y₁.fst = Sum.inl y₁.snd } ∧
-      Fintype.card { x₂ : Z × X₂ // f x₂.fst = Sum.inr x₂.snd } =
-      Fintype.card { y₂ : Z × Y₂ // g y₂.fst = Sum.inr y₂.snd }) :
+    (hfg₁ : #{ x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } = #{ y₁ : Z × Y₁ // g y₁.fst = Sum.inl y₁.snd })
+    (hfg₂ : #{ x₂ : Z × X₂ // f x₂.fst = Sum.inr x₂.snd } = #{ y₂ : Z × Y₂ // g y₂.fst = Sum.inr y₂.snd }) :
     ((fromBlocks A₁ 0 0 A₂).submatrix f g).det ∈
       Set.range SignType.cast := by
   rw [Matrix.isTotallyUnimodular_iff_fintype] at hA₁ hA₂
   rw [Matrix.fromBlocks_submatrix]
   let e₁ : { x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } ≃ { y₁ : Z × Y₁ // g y₁.fst = Sum.inl y₁.snd } :=
-    Fintype.equivOfCardEq hfg.1
+    Fintype.equivOfCardEq hfg₁
   let e₂ : { x₂ : Z × X₂ // f x₂.fst = Sum.inr x₂.snd } ≃ { y₂ : Z × Y₂ // g y₂.fst = Sum.inr y₂.snd } :=
-    Fintype.equivOfCardEq hfg.2
+    Fintype.equivOfCardEq hfg₂
 /-
   ` f :  Z -> X₁ ⊕ X₂ `
   ` g :  Z -> Y₁ ⊕ Y₂ `
@@ -155,8 +152,8 @@ private lemma Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_isTo
 private lemma Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_card_lt
     (A₁ : Matrix X₁ Y₁ R) (A₂ : Matrix X₂ Y₂ R) {f : Z → X₁ ⊕ X₂} {g : Z → Y₁ ⊕ Y₂}
     (hfg :
-      Fintype.card { x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } <
-      Fintype.card { y₁ : Z × Y₁ // g y₁.fst = Sum.inl y₁.snd }) :
+      #{ x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } <
+      #{ y₁ : Z × Y₁ // g y₁.fst = Sum.inl y₁.snd }) :
     ((fromBlocks A₁ 0 0 A₂).submatrix f g).det ∈
       Set.range SignType.cast := by
   -- we will show that the submatrix is singular
@@ -166,9 +163,9 @@ private lemma Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_card
   -- then the bottom left blocks will be all `0`s, hence we can multiply the two determinants, and the top left block will
   -- have at least one row made of `0`s, hence its determinant is `0`
   have hZY₁ :
-      Fintype.card { y₁ : Z × Y₁ // g y₁.fst = Sum.inl y₁.snd } ≤
-      Fintype.card { x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } +
-      Fintype.card { x₂ : Z × X₂ // f x₂.fst = Sum.inr x₂.snd }
+      #{ y₁ : Z × Y₁ // g y₁.fst = Sum.inl y₁.snd } ≤
+      #{ x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } +
+      #{ x₂ : Z × X₂ // f x₂.fst = Sum.inr x₂.snd }
   · rw [decomposeSum_card_eq]
     apply Fintype.card_le_of_embedding
     use (·.val.fst)
@@ -176,11 +173,11 @@ private lemma Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_card
     simp_rw [Subtype.mk.injEq] at huv ⊢
     simp_all only [Sum.inl.injEq]
   obtain ⟨X', hY₁, hX'⟩ := finset_of_cardinality_between hfg hZY₁
-  have hY₂ : Fintype.card { y // y ∉ X' } = Fintype.card { y₂ : Z × Y₂ // g y₂.fst = Sum.inr y₂.snd }
+  have hY₂ : #{ y // y ∉ X' } = #{ y₂ : Z × Y₂ // g y₂.fst = Sum.inr y₂.snd }
   · suffices :
-        Fintype.card { y // y ∉ X' } + Fintype.card ({ x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } ⊕ X') =
-        Fintype.card { y₁ : Z × Y₁ // g y₁.fst = Sum.inl y₁.snd } +
-        Fintype.card { y₂ : Z × Y₂ // g y₂.fst = Sum.inr y₂.snd }
+        #{ y // y ∉ X' } + #({ x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } ⊕ X') =
+        #{ y₁ : Z × Y₁ // g y₁.fst = Sum.inl y₁.snd } +
+        #{ y₂ : Z × Y₂ // g y₂.fst = Sum.inr y₂.snd }
     · omega
     rw [Fintype.card_sum, add_comm, add_assoc, ←Fintype.card_sum, Fintype.card_congr (Equiv.sumCompl (· ∈ X')),
       decomposeSum_card_eq, decomposeSum_card_eq]
@@ -264,15 +261,12 @@ lemma Matrix.fromBlocks_isTotallyUnimodular {A₁ : Matrix X₁ Y₁ R} {A₂ : 
     (fromBlocks A₁ 0 0 A₂).IsTotallyUnimodular :=
   fun k f g _ _ =>
     if hxy :
-      Fintype.card { x₁ : Fin k × X₁ // f x₁.fst = Sum.inl x₁.snd } =
-      Fintype.card { y₁ : Fin k × Y₁ // g y₁.fst = Sum.inl y₁.snd } ∧
-      Fintype.card { x₂ : Fin k × X₂ // f x₂.fst = Sum.inr x₂.snd } =
-      Fintype.card { y₂ : Fin k × Y₂ // g y₂.fst = Sum.inr y₂.snd }
+      #{ x₁ : Fin k × X₁ // f x₁.fst = Sum.inl x₁.snd } = #{ y₁ : Fin k × Y₁ // g y₁.fst = Sum.inl y₁.snd } ∧
+      #{ x₂ : Fin k × X₂ // f x₂.fst = Sum.inr x₂.snd } = #{ y₂ : Fin k × Y₂ // g y₂.fst = Sum.inr y₂.snd }
     then
-      Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_isTotallyUnimodular_of_card_eq hA₁ hA₂ hxy
+      Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_isTotallyUnimodular_of_card_eq hA₁ hA₂ hxy.1 hxy.2
     else if hxy₁ :
-      Fintype.card { x₁ : Fin k × X₁ // f x₁.fst = Sum.inl x₁.snd } <
-      Fintype.card { y₁ : Fin k × Y₁ // g y₁.fst = Sum.inl y₁.snd }
+      #{ x₁ : Fin k × X₁ // f x₁.fst = Sum.inl x₁.snd } < #{ y₁ : Fin k × Y₁ // g y₁.fst = Sum.inl y₁.snd }
     then
       Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_card_lt A₁ A₂ hxy₁
     else by
