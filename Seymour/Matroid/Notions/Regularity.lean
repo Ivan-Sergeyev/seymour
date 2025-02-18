@@ -118,6 +118,7 @@ private lemma todo [DecidableEq α] [Fintype α] {A : Matrix α α ℚ}
 lemma Matroid.IsRegular.isBinary [DecidableEq α] {M : Matroid α} [Finite M.E] (hM : M.IsRegular) :
     ∃ V : VectorMatroid α Z2, V.toMatroid = M := by
   obtain ⟨X, Y, A, hA, rfl⟩ := hM
+  have : Fintype X := sorry
   use ⟨X, Y, Matrix.of (if A · · = 0 then 0 else 1)⟩
   ext I hI
   · simp
