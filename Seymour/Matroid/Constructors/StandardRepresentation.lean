@@ -1,5 +1,7 @@
 import Seymour.Matroid.Constructors.BinaryMatroid
 
+open scoped Matrix Set.Notation
+
 
 /-- Standard matrix representation of a vector matroid. -/
 structure StandardRepr (α R : Type) [DecidableEq α] where
@@ -32,17 +34,38 @@ lemma StandardRepr.toVectorMatroid_E [Semiring R] (S : StandardRepr α R) :
     S.toVectorMatroid.toMatroid.E = S.X ∪ S.Y :=
   rfl
 
-/-- Full representation matrix of vector matroid is `[1 | B]`. -/
+/-- If a vector matroid has a standard representation matrix `B`, its full representation matrix `[1 | B]`. -/
 @[simp]
 lemma StandardRepr.toVectorMatroid_A [Semiring R] (S : StandardRepr α R) :
     S.toVectorMatroid.A = (S.B.prependId · ∘ Subtype.toSum) :=
   rfl
 
-/-- Set is independent in the vector matroid iff
-    the corresponding multiset of columns of `[1 | B]` is linearly independent over `R`. -/
 lemma StandardRepr.toVectorMatroid_indep_iff [Semiring R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (fun i : I => (S.B.prependId · (hI.elem i).toSum)) := by
+    I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R (S.B.prependId · ∘ Subtype.toSum)ᵀ ((S.X ∪ S.Y) ↓∩ I) := by
+  rfl
+
+lemma StandardRepr.toVectorMatroid_indep_iff' [Semiring R] (S : StandardRepr α R) (I : Set α) :
+    S.toVectorMatroid.toMatroid.Indep I ↔
+    I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) ((S.X ∪ S.Y) ↓∩ I) := by
+  rfl
+
+lemma StandardRepr.toVectorMatroid_indep_iff_elem [Semiring R] (S : StandardRepr α R) (I : Set α) :
+    S.toVectorMatroid.toMatroid.Indep I ↔
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependId · ∘ Subtype.toSum)ᵀ (Set.range hI.elem) := by
+  rw [StandardRepr.toVectorMatroid_indep_iff]
+  unfold HasSubset.Subset.elem
+  aesop
+
+lemma StandardRepr.toVectorMatroid_indep_iff_elem' [Semiring R] (S : StandardRepr α R) (I : Set α) :
+    S.toVectorMatroid.toMatroid.Indep I ↔
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) (Set.range hI.elem) :=
+  S.toVectorMatroid_indep_iff_elem I
+
+lemma StandardRepr.toVectorMatroid_indep_iff_submatrix [Semiring R] (S : StandardRepr α R) (I : Set α) :
+    S.toVectorMatroid.toMatroid.Indep I ↔
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (S.B.prependId.submatrix id (Subtype.toSum ∘ hI.elem))ᵀ := by
+  simp only [StandardRepr.toVectorMatroid, VectorMatroid.toMatroid_indep, VectorMatroid.indepCols_iff_submatrix]
   rfl
 
 /-- Every vector matroid has a standard representation. -/
@@ -51,8 +74,8 @@ lemma VectorMatroid.exists_standardRepr [Semiring R] (M : VectorMatroid α R) :
   sorry
 
 /-- Every vector matroid has a standard representation whose rows are a given base. -/
-lemma VectorMatroid.exists_standardRepr_base [Semiring R] {B : Set α}
-    (M : VectorMatroid α R) (hMB : M.toMatroid.Base B) (hBY : B ⊆ M.Y) :
+lemma VectorMatroid.exists_standardRepr_isBase [Semiring R] {B : Set α}
+    (M : VectorMatroid α R) (hMB : M.toMatroid.IsBase B) (hBY : B ⊆ M.Y) :
     ∃ S : StandardRepr α R, M.X = B ∧ S.toVectorMatroid = M := by
   sorry
 
@@ -66,29 +89,42 @@ lemma StandardRepr.toMatroid_E [Semiring R] (S : StandardRepr α R) :
     S.toMatroid.E = S.X ∪ S.Y :=
   rfl
 
-/-- Set is independent in the resulting matroid iff
-    the corresponding multiset of columns of `[1 | B]` is linearly independent over `R`. -/
-@[simp]
 lemma StandardRepr.toMatroid_indep_iff [Semiring R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (fun i : I => (S.B.prependId · (hI.elem i).toSum)) := by
-  rfl
+    I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R (S.B.prependId · ∘ Subtype.toSum)ᵀ ((S.X ∪ S.Y) ↓∩ I) :=
+  S.toVectorMatroid_indep_iff I
+
+@[simp] -- TODO is it a good simp-normal form?
+lemma StandardRepr.toMatroid_indep_iff' [Semiring R] (S : StandardRepr α R) (I : Set α) :
+    S.toMatroid.Indep I ↔
+    I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) ((S.X ∪ S.Y) ↓∩ I) :=
+  S.toVectorMatroid_indep_iff' I
+
+lemma StandardRepr.toMatroid_indep_iff_elem [Semiring R] (S : StandardRepr α R) (I : Set α) :
+    S.toMatroid.Indep I ↔
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependId · ∘ Subtype.toSum)ᵀ (Set.range hI.elem) :=
+  S.toVectorMatroid_indep_iff_elem I
+
+lemma StandardRepr.toMatroid_indep_iff_elem' [Semiring R] (S : StandardRepr α R) (I : Set α) :
+    S.toMatroid.Indep I ↔
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) (Set.range hI.elem) :=
+  S.toVectorMatroid_indep_iff_elem' I
 
 lemma StandardRepr.toMatroid_indep_iff_submatrix [Semiring R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (S.B.prependId.submatrix id (Subtype.toSum ∘ hI.elem)).transpose := by
-  rfl
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (S.B.prependId.submatrix id (Subtype.toSum ∘ hI.elem))ᵀ :=
+  S.toVectorMatroid_indep_iff_submatrix I
 
 /-- The identity matrix has linearly independent rows. -/
 lemma Matrix.one_linearIndependent [Ring R] : LinearIndependent R (1 : Matrix α α R) := by
--- Riccardo Brasca proved:
+  -- Riccardo Brasca proved:
   rw [linearIndependent_iff]
   intro l hl
   ext j
   simpa [Finsupp.linearCombination_apply, Pi.zero_apply, Finsupp.sum_apply', Matrix.one_apply] using congr_fun hl j
 
 /-- The image of all rows of a standard representation is a base in the resulting matroid. -/
-lemma StandardRepr.toMatroid_base [Ring R] (S : StandardRepr α R) :
+lemma StandardRepr.toMatroid_isBase [Ring R] (S : StandardRepr α R) :
     S.toMatroid.IsBase (Set.range (Subtype.val ∘ Sum.toUnion ∘ @Sum.inl S.X S.Y)) := by
   apply Matroid.Indep.isBase_of_forall_insert
   · rw [StandardRepr.toMatroid_indep_iff_submatrix]

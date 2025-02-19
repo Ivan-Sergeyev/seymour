@@ -8,7 +8,7 @@ import Seymour.Basic
 open scoped Matrix Set.Notation
 
 
-/-- Data representing a vector matroid `M[A]` of matrix `A`. -/
+/-- Data representing a vector matroid given by matrix `A`. -/
 structure VectorMatroid (α R : Type) where
   /-- Row indices. -/
   X : Set α
@@ -20,40 +20,56 @@ structure VectorMatroid (α R : Type) where
 
 variable {α R : Type} [Semiring R]
 
-/-- A set `S` is independent in `M[A]` iff
-    `S ⊆ Y` and `S` corresponds to a linearly independent submultiset of columns in `A`. -/
+/-- A set is independent in a vector matroid iff it corresponds to a linearly independent submultiset of columns. -/
 def VectorMatroid.IndepCols (M : VectorMatroid α R) (I : Set α) : Prop :=
-  ∃ hI : I ⊆ M.Y, LinearIndependent R (fun i : I => (M.A · (hI.elem i)))
-
-def VectorMatroid.IndepColsOn (M : VectorMatroid α R) (I : Set α) : Prop :=
   I ⊆ M.Y ∧ LinearIndepOn R M.Aᵀ (M.Y ↓∩ I)
 
-lemma VectorMatroid.indepColsOn_iff_indepCols (M : VectorMatroid α R) (I : Set α) :
-    M.IndepColsOn I ↔ M.IndepCols I := by
+private def VectorMatroid.IndepColsOld (M : VectorMatroid α R) (I : Set α) : Prop :=
+  ∃ hI : I ⊆ M.Y, LinearIndependent R (fun i : I => (M.A · (hI.elem i)))
+
+private lemma VectorMatroid.indepCols_eq_indepColsOld (M : VectorMatroid α R) :
+    M.IndepCols = M.IndepColsOld := by
+  ext I
   constructor <;> intro ⟨hI, hAI⟩ <;> use hI <;> let e : I ≃ M.Y ↓∩ I :=
       (Equiv.ofInjective hI.elem hI.elem_injective).trans (Equiv.Set.ofEq hI.elem_range)
   · exact (linearIndependent_equiv' e (by aesop)).← hAI
   · exact (linearIndependent_equiv' e (by aesop)).→ hAI
 
+lemma VectorMatroid.indepCols_iff_elem (M : VectorMatroid α R) (I : Set α) :
+    M.IndepCols I ↔ ∃ hI : I ⊆ M.Y, LinearIndepOn R M.Aᵀ (Set.range hI.elem) := by
+  unfold IndepCols HasSubset.Subset.elem
+  aesop
+
 lemma VectorMatroid.indepCols_iff_submatrix (M : VectorMatroid α R) (I : Set α) :
-    M.IndepCols I ↔ ∃ hI : I ⊆ M.Y, LinearIndependent R (M.A.submatrix id (hI.elem))ᵀ := by
-  rfl
+    M.IndepCols I ↔ ∃ hI : I ⊆ M.Y, LinearIndependent R (M.A.submatrix id hI.elem)ᵀ :=
+  M.indepCols_eq_indepColsOld ▸ Iff.rfl
+
+
+/-- Empty set is independent. -/
+private theorem VectorMatroid.indepColsOld_empty (M : VectorMatroid α R) :
+    M.IndepColsOld ∅ :=
+  ⟨M.Y.empty_subset, linearIndependent_empty_type⟩
 
 /-- Empty set is independent. -/
 theorem VectorMatroid.indepCols_empty (M : VectorMatroid α R) :
     M.IndepCols ∅ :=
-  ⟨M.Y.empty_subset, linearIndependent_empty_type⟩
+  M.indepCols_eq_indepColsOld ▸ M.indepColsOld_empty
 
-/-- A subset of a linearly independent set of columns is linearly independent. -/
-theorem VectorMatroid.indepCols_subset (M : VectorMatroid α R) (I J : Set α) (hMJ : M.IndepCols J) (hIJ : I ⊆ J) :
-    M.IndepCols I :=
+/-- A subset of a independent set of columns is independent. -/
+private theorem VectorMatroid.indepColsOld_subset (M : VectorMatroid α R) (I J : Set α) (hMJ : M.IndepColsOld J) (hIJ : I ⊆ J) :
+    M.IndepColsOld I :=
   have ⟨hJ, hM⟩ := hMJ
   ⟨hIJ.trans hJ, hM.comp hIJ.elem hIJ.elem_injective⟩
 
-/-- A non-maximal linearly independent set of columns can be augmented with another linearly independent column. -/
-theorem VectorMatroid.indepCols_aug (M : VectorMatroid α R) (I J : Set α)
-    (hMI : M.IndepCols I) (hMI' : ¬Maximal M.IndepCols I) (hMJ : Maximal M.IndepCols J) :
-    ∃ x ∈ J \ I, M.IndepCols (x ᕃ I) := by
+/-- A subset of a independent set of columns is independent. -/
+theorem VectorMatroid.indepCols_subset (M : VectorMatroid α R) (I J : Set α) (hMJ : M.IndepCols J) (hIJ : I ⊆ J) :
+    M.IndepCols I :=
+  M.indepCols_eq_indepColsOld ▸ M.indepColsOld_subset I J (M.indepCols_eq_indepColsOld ▸ hMJ) hIJ
+
+/-- A non-maximal independent set of columns can be augmented with another independent column. -/
+private theorem VectorMatroid.indepColsOld_aug (M : VectorMatroid α R) (I J : Set α)
+    (hMI : M.IndepColsOld I) (hMI' : ¬Maximal M.IndepColsOld I) (hMJ : Maximal M.IndepColsOld J) :
+    ∃ x ∈ J \ I, M.IndepColsOld (x ᕃ I) := by
   by_contra! non_aug
   rw [Maximal] at hMI'
   push_neg at hMI'
@@ -72,11 +88,11 @@ theorem VectorMatroid.indepCols_aug (M : VectorMatroid α R) (I J : Set α)
     · have x_in_J : ↑x ∈ J := hxJ
       have x_ni_I : ↑x ∉ I := by aesop
       have x_in_JwoI : ↑x ∈ J \ I := Set.mem_diff_of_mem x_in_J x_ni_I
-      have hMxI : ¬M.IndepCols (↑x ᕃ I) := non_aug ↑x x_in_JwoI
+      have hMxI : ¬M.IndepColsOld (↑x ᕃ I) := non_aug ↑x x_in_JwoI
       sorry
   have Iᵥ_ss_Jₛ : Iᵥ ⊆ Jₛ
   · intro v ⟨x, hxI, hxv⟩
-    have hMxJ : M.IndepCols (↑x ᕃ J)
+    have hMxJ : M.IndepColsOld (↑x ᕃ J)
     · have hxJ : (↑x ᕃ J) ⊆ M.Y := Set.insert_subset (hI hxI) hJ
       have hvJ : (M.A.submatrix id hxJ.elem)ᵀ '' Set.univ = v ᕃ Jᵥ
       · sorry
@@ -88,6 +104,13 @@ theorem VectorMatroid.indepCols_aug (M : VectorMatroid α R) (I J : Set α)
   have Iₛ_eq_Jₛ : Iₛ = Jₛ := Submodule.span_eq_span Iᵥ_ss_Jₛ Jᵥ_ss_Iₛ
   clear Jᵥ_ss_Iₛ Iᵥ_ss_Jₛ Jₛ_le_Iₛ Iₛ_le_Jₛ
   sorry
+
+/-- A non-maximal independent set of columns can be augmented with another independent column. -/
+theorem VectorMatroid.indepCols_aug (M : VectorMatroid α R) (I J : Set α)
+    (hMI : M.IndepCols I) (hMI' : ¬Maximal M.IndepCols I) (hMJ : Maximal M.IndepCols J) :
+    ∃ x ∈ J \ I, M.IndepCols (x ᕃ I) :=
+  let hMM := M.indepCols_eq_indepColsOld
+  hMM ▸ M.indepColsOld_aug I J (hMM ▸ hMI) (hMM ▸ hMI') (hMM ▸ hMJ)
 
 /-- Every set of columns contains a maximal independent subset of columns. -/
 theorem VectorMatroid.indepCols_maximal (M : VectorMatroid α R) (I : Set α) :
@@ -102,7 +125,7 @@ def VectorMatroid.toIndepMatroid (M : VectorMatroid α R) : IndepMatroid α wher
   indep_subset := M.indepCols_subset
   indep_aug := M.indepCols_aug
   indep_maximal S _ := M.indepCols_maximal S
-  subset_ground _ := Exists.choose
+  subset_ground _ := And.left
 
 /-- `VectorMatroid` converted to `Matroid`. -/
 def VectorMatroid.toMatroid (M : VectorMatroid α R) : Matroid α :=
