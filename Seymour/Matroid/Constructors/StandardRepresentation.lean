@@ -34,7 +34,13 @@ lemma StandardRepr.toVectorMatroid_E [Semiring R] (S : StandardRepr α R) :
     S.toVectorMatroid.toMatroid.E = S.X ∪ S.Y :=
   rfl
 
-/-- If a vector matroid has a standard representation matrix `B`, its full representation matrix `[1 | B]`. -/
+/-- Converting standard representation to full representation does not change the set of row indices. -/
+@[simp]
+lemma StandardRepr.toVectorMatroid_X [Semiring R] (S : StandardRepr α R) :
+    S.toVectorMatroid.X = S.X :=
+  rfl
+
+/-- If a vector matroid has a standard representation matrix `B`, its full representation matrix is `[1 | B]`. -/
 @[simp]
 lemma StandardRepr.toVectorMatroid_A [Semiring R] (S : StandardRepr α R) :
     S.toVectorMatroid.A = (S.B.prependId · ∘ Subtype.toSum) :=

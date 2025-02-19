@@ -118,7 +118,7 @@ theorem VectorMatroid.indepCols_maximal (M : VectorMatroid α R) (I : Set α) :
   sorry
 
 /-- `VectorMatroid` expressed as `IndepMatroid`. -/
-def VectorMatroid.toIndepMatroid (M : VectorMatroid α R) : IndepMatroid α where
+private def VectorMatroid.toIndepMatroid (M : VectorMatroid α R) : IndepMatroid α where
   E := M.Y
   Indep := M.IndepCols
   indep_empty := M.indepCols_empty
