@@ -5,7 +5,7 @@ import Mathlib.Data.Matroid.Sum
 
 import Seymour.Basic
 
-open scoped Matrix
+open scoped Matrix Set.Notation
 
 
 /-- Data representing a vector matroid `M[A]` of matrix `A`. -/
@@ -26,53 +26,14 @@ def VectorMatroid.IndepCols (M : VectorMatroid α R) (I : Set α) : Prop :=
   ∃ hI : I ⊆ M.Y, LinearIndependent R (fun i : I => (M.A · (hI.elem i)))
 
 def VectorMatroid.IndepColsOn (M : VectorMatroid α R) (I : Set α) : Prop :=
-  I ⊆ M.Y ∧ LinearIndepOn R M.Aᵀ (·.val ∈ I)
+  I ⊆ M.Y ∧ LinearIndepOn R M.Aᵀ (M.Y ↓∩ I)
 
 lemma VectorMatroid.indepColsOn_iff_indepCols (M : VectorMatroid α R) (I : Set α) :
     M.IndepColsOn I ↔ M.IndepCols I := by
-  constructor <;> intro ⟨hI, hAI⟩
-  · use hI
-    simp [LinearIndepOn/-, Matrix.transpose-/] at hAI
-    #check linearIndependent_iff_finset_linearIndependent
-    #check LinearIndependent.map_of_injective_injectiveₛ
-    #check LinearIndependent.comp
-    #check LinearIndependent.of_comp
-    #check linearIndependent_subtype_range
-    --apply LinearIndependent.of_comp (M' := M.X → R)
-    --let f : (M.X.Elem → R) →ₗ[R] (M.X.Elem → R) := LinearMap.funLeft R R id
-    --apply LinearIndependent.of_comp f
-    #check LinearIndependent.map_injOn
-    #check linearIndependent_image
-    --rw [linearIndependent_image] at hAI
-    sorry
-  · simp [VectorMatroid.IndepColsOn, LinearIndepOn]
-    use hI
-    show LinearIndependent R fun (v : Set.Elem (fun y : M.Y => y.val ∈ I)) => M.Aᵀ v.val
-    show LinearIndependent R ((fun (j : M.Y) => M.Aᵀ j) ∘ (fun v : Set.Elem (fun y : M.Y => y.val ∈ I) => ⟨v.val, hI (v.property)⟩))
-    apply LinearIndependent.comp
-    · sorry
-    exact Subtype.val_injective
-
-private def VectorMatroid.IndepRows (M : VectorMatroid α R) (I : Set α) : Prop :=
-  ∃ hI : I ⊆ M.X, LinearIndependent R (fun i : I => (M.A (hI.elem i)))
-
-private def VectorMatroid.IndepRowsOn (M : VectorMatroid α R) (I : Set α) : Prop :=
-  I ⊆ M.X ∧ LinearIndepOn R M.A (·.val ∈ I)
-
-private lemma VectorMatroid.indepRowsOn_iff_indepRows (M : VectorMatroid α R) (I : Set α) :
-    M.IndepRowsOn I ↔ M.IndepRows I := by
-  unfold VectorMatroid.IndepRows VectorMatroid.IndepRowsOn LinearIndepOn
-  constructor <;> intro ⟨hI, hAI⟩ <;> use hI
-  · rw [linearIndependent_iff_finset_linearIndependent] at hAI ⊢
-    intro s
-    specialize hAI (s.map (⟨fun i => ⟨hI.elem i, by simp [HasSubset.Subset.elem]; aesop⟩,
-        fun x y hxy => by simp [HasSubset.Subset.elem] at hxy; exact SetCoe.ext hxy⟩))
-    apply LinearIndependent.comp
-    · apply LinearIndependent.comp
-      · sorry
-      exact HasSubset.Subset.elem_injective hI
-    exact Subtype.val_injective
-  · sorry
+  constructor <;> intro ⟨hI, hAI⟩ <;> use hI <;> let e : I ≃ M.Y ↓∩ I :=
+      (Equiv.ofInjective hI.elem hI.elem_injective).trans (Equiv.Set.ofEq hI.elem_range)
+  · exact (linearIndependent_equiv' e (by aesop)).← hAI
+  · exact (linearIndependent_equiv' e (by aesop)).→ hAI
 
 lemma VectorMatroid.indepCols_iff_submatrix (M : VectorMatroid α R) (I : Set α) :
     M.IndepCols I ↔ ∃ hI : I ⊆ M.Y, LinearIndependent R (M.A.submatrix id (hI.elem))ᵀ := by

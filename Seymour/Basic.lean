@@ -66,6 +66,10 @@ lemma HasSubset.Subset.elem_injective {X Y : Set α} (hXY : X ⊆ Y) : hXY.elem.
   ext
   simpa [HasSubset.Subset.elem] using hxy
 
+lemma HasSubset.Subset.elem_range {X Y : Set α} (hXY : X ⊆ Y) : Set.range hXY.elem = { a : Y.Elem | a.val ∈ X } := by
+  unfold HasSubset.Subset.elem
+  aesop
+
 /-- Convert `(X ∪ Y).Elem` to `X.Elem ⊕ Y.Elem`. -/
 def Subtype.toSum {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) : X.Elem ⊕ Y.Elem :=
   if hiX : i.val ∈ X then Sum.inl ⟨i, hiX⟩ else
