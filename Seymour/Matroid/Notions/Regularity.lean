@@ -170,7 +170,7 @@ lemma StandardRepr.toMatroid_isRegular_iff_hasTuSigning (S : StandardRepr α Z2)
       fun ⟨A, hA, hAS⟩ => ⟨A.submatrix id (Sum.toUnion ∘ Sum.inr), hA.submatrix id (Sum.toUnion ∘ Sum.inr), fun i j => ?_⟩,
       fun ⟨B, hB, hBS⟩ => ⟨(B.prependId · ∘ Subtype.toSum), (hB.one_fromCols).comp_cols Subtype.toSum, fun i j => ?_⟩⟩
   · convert hAS i (Sum.inr j).toUnion
-    have hjY : ((Sum.inr j).toUnion : (S.X ∪ S.Y).Elem).val ∈ S.Y := by simp [Sum.toUnion, HasSubset.Subset.elem]
+    have hjY : ((Sum.inr j).toUnion : (S.X ∪ S.Y).Elem).val ∈ S.Y := by simp [Sum.toUnion]
     have hjX : ((Sum.inr j).toUnion : (S.X ∪ S.Y).Elem).val ∉ S.X := by simp [Sum.toUnion]; have := S.hXY; tauto_set
     simp [Subtype.toSum, hjX, hjY]
     rfl

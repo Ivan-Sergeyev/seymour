@@ -57,18 +57,17 @@ lemma IsUnit.linearIndependent_matrix [DecidableEq α] [Fintype α] {R : Type} [
   A.linearIndependent_rows_of_isUnit hA
 
 
-
 /-- Given `X ⊆ Y` cast an element of `X` as an element of `Y`. -/
+@[simp]
 def HasSubset.Subset.elem {X Y : Set α} (hXY : X ⊆ Y) (x : X.Elem) : Y.Elem :=
   ⟨x.val, hXY x.property⟩
 
 lemma HasSubset.Subset.elem_injective {X Y : Set α} (hXY : X ⊆ Y) : hXY.elem.Injective := by
   intro x y hxy
   ext
-  simpa [HasSubset.Subset.elem] using hxy
+  simpa using hxy
 
 lemma HasSubset.Subset.elem_range {X Y : Set α} (hXY : X ⊆ Y) : Set.range hXY.elem = { a : Y.Elem | a.val ∈ X } := by
-  unfold HasSubset.Subset.elem
   aesop
 
 /-- Convert `(X ∪ Y).Elem` to `X.Elem ⊕ Y.Elem`. -/
@@ -85,9 +84,9 @@ def Sum.toUnion {X Y : Set α} (i : X.Elem ⊕ Y.Elem) : (X ∪ Y).Elem :=
 lemma toSum_toUnion {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) :
     i.toSum.toUnion = i := by
   if hiX : i.val ∈ X then
-    simp_all [Subtype.toSum, Sum.toUnion, HasSubset.Subset.elem]
+    simp [Subtype.toSum, Sum.toUnion, *]
   else if hiY : i.val ∈ Y then
-    simp_all [Subtype.toSum, Sum.toUnion, HasSubset.Subset.elem]
+    simp [Subtype.toSum, Sum.toUnion, *]
   else
     exfalso
     exact i.property.elim hiX hiY
@@ -97,7 +96,7 @@ lemma toSum_toUnion {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidabl
 lemma toUnion_toSum {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (hXY : X ⫗ Y) (i : X.Elem ⊕ Y.Elem) :
     i.toUnion.toSum = i := by
   rw [Set.disjoint_right] at hXY
-  cases i <;> simp [Subtype.toSum, Sum.toUnion, HasSubset.Subset.elem, hXY]
+  cases i <;> simp [Subtype.toSum, Sum.toUnion, hXY]
 
 variable {T₁ T₂ S₁ S₂ : Set α} {β : Type}
   [∀ a, Decidable (a ∈ T₁)]
@@ -120,13 +119,13 @@ both said unions are disjoint. -/
 lemma toMatrixUnionUnion_toMatrixSumSum (hT : T₁ ⫗ T₂) (hS : S₁ ⫗ S₂) (C : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) β) :
     C.toMatrixUnionUnion.toMatrixSumSum = C := by
   ext
-  simp_all [Matrix.toMatrixUnionUnion, Matrix.toMatrixSumSum, toUnion_toSum]
+  simp [Matrix.toMatrixUnionUnion, Matrix.toMatrixSumSum, toUnion_toSum, *]
 
 /-- Converting a matrix over set unions to a block matrix and back to a matrix over set unions gives the original matrix. -/
 lemma toMatrixSumSum_toMatrixUnionUnion (C : Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem β) :
     C.toMatrixSumSum.toMatrixUnionUnion = C := by
   ext
-  simp_all [Matrix.toMatrixUnionUnion, Matrix.toMatrixSumSum, toSum_toUnion]
+  simp [Matrix.toMatrixUnionUnion, Matrix.toMatrixSumSum, toSum_toUnion]
 
 /-- A totally unimodular block matrix stays totally unimodular after converting to a matrix over set unions. -/
 lemma Matrix.IsTotallyUnimodular.toMatrixUnionUnion [CommRing β] {C : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) β}
