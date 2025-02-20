@@ -158,7 +158,17 @@ private abbrev VectorMatroid.HasTuSigning (V : VectorMatroid α Z2) : Prop :=
 /-- Binary matroid constructed from a full representation is regular iff the binary matrix has a TU signing. -/
 private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatroid α Z2) : -- TODO `S` finite?
     V.toMatroid.IsRegular ↔ V.HasTuSigning := by
-  sorry
+  constructor
+  · intro ⟨X, Y, A, hA, hAV⟩
+    have hY : Y = V.Y := congr_arg Matroid.E hAV
+    have hX : X = V.X := sorry
+    use hX ▸ hY ▸ A
+    constructor
+    · subst hX hY
+      exact hA
+    -- Does not look plausible!
+    sorry
+  · sorry
 
 -- ## Main result of this file
 
