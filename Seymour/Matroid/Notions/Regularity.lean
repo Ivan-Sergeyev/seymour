@@ -2,6 +2,14 @@ import Seymour.Matroid.Constructors.StandardRepresentation
 import Seymour.ForMathlib.MatrixLI
 
 
+-- ## Main definition of this file
+
+/-- The main definition of regularity: `M` is regular iff it is constructed from a `VectorMatroid` with a rational TU matrix. -/
+def Matroid.IsRegular {α : Type} (M : Matroid α) : Prop :=
+  ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsTotallyUnimodular ∧ (VectorMatroid.mk X Y A).toMatroid = M
+
+-- ## Secondary definitions
+
 /-- Matrix `A` is a TU signing of `U` iff `A` is TU and its entries are the same as in `U` up to signs.
     Do not ask `U.IsTotallyUnimodular` ... see `Matrix.overZ2_isTotallyUnimodular` for example! -/
 def Matrix.IsTuSigningOf {X Y : Type} (A : Matrix X Y ℚ) {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
@@ -11,10 +19,11 @@ def Matrix.IsTuSigningOf {X Y : Type} (A : Matrix X Y ℚ) {n : ℕ} (U : Matrix
 def Matrix.HasTuSigning {X Y : Type} {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
   ∃ A : Matrix X Y ℚ, A.IsTuSigningOf U
 
-/-- The main definition of regularity: `M` is regular iff it is constructed from a `VectorMatroid` with a rational TU matrix. -/
-def Matroid.IsRegular {α : Type} (M : Matroid α) : Prop :=
-  ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsTotallyUnimodular ∧ (VectorMatroid.mk X Y A).toMatroid = M
+/-- Vector matroid given by standard representation that can be represented by a matrix over `Z2` with a TU signing. -/
+abbrev StandardRepr.HasTuSigning {α : Type} [DecidableEq α] (S : StandardRepr α Z2) : Prop :=
+  S.B.HasTuSigning
 
+-- ## Auxiliary stuff
 
 private def Matrix.discretize {X Y : Type} (A : Matrix X Y ℚ) (n : ℕ) : Matrix X Y (ZMod n) :=
   Matrix.of (if A · · = 0 then 0 else 1)
@@ -43,9 +52,9 @@ private lemma Matrix.IsTotallyUnimodular.discretize {X Y : Type} {A : Matrix X Y
       rewrite [ZMod.val_one'' (· ▸ hn |>.false)]
       rfl
 
-variable {α : Type}
+variable {α : Type} [DecidableEq α]
 
-private lemma todoZ [DecidableEq α] [Fintype α] (A : Matrix α α ℤ)
+private lemma todoZ [Fintype α] (A : Matrix α α ℤ)
     (hA : ∀ i j, A i j ∈ Set.range SignType.cast) (hA' : A.det ∈ Set.range SignType.cast) :
     A.det = (0 : ℤ) ↔ (Matrix.of (if A · · = 0 then 0 else 1)).det = (0 : Z2) := by
   have h0 : A.det = (0 : ℤ) ↔ (A.det : Z2) = (0 : Z2)
@@ -98,7 +107,7 @@ private lemma todoZ [DecidableEq α] [Fintype α] (A : Matrix α α ℤ)
         rw [←hs] at contr
         simp at contr
 
-private lemma todo [DecidableEq α] [Fintype α] {A : Matrix α α ℚ}
+private lemma todo [Fintype α] {A : Matrix α α ℚ}
     (hA : ∀ i j, A i j ∈ Set.range SignType.cast) (hA' : A.det ∈ Set.range SignType.cast) :
     A.det = (0 : ℚ) ↔ (Matrix.of (if A · · = 0 then 0 else 1)).det = (0 : Z2) := by
   have key : (((Matrix.of (if A · · = 0 then 0 else 1)).det : ℤ) : ℚ) = A.det
@@ -115,7 +124,7 @@ private lemma todo [DecidableEq α] [Fintype α] {A : Matrix α α ℚ}
   · simp
 
 /-- Every regular matroid is binary. -/
-lemma Matroid.IsRegular.isBinary [DecidableEq α] {M : Matroid α} [Finite M.E] (hM : M.IsRegular) :
+lemma Matroid.IsRegular.isBinary {M : Matroid α} [Finite M.E] (hM : M.IsRegular) :
     ∃ V : VectorMatroid α Z2, V.toMatroid = M := by
   obtain ⟨X, Y, A, hA, rfl⟩ := hM
   have : Fintype X := sorry
@@ -135,30 +144,46 @@ lemma Matroid.IsRegular.isBinary [DecidableEq α] {M : Matroid α} [Finite M.E] 
   · rwa [todo hAf' (hAT ..)]
 
 /-- Every regular matroid has a standard binary representation. -/
-lemma Matroid.IsRegular.isBinaryStd [DecidableEq α] {M : Matroid α} [Finite M.E] (hM : M.IsRegular) :
+lemma Matroid.IsRegular.isBinaryStd {M : Matroid α} [Finite M.E] (hM : M.IsRegular) :
     ∃ S : StandardRepr α Z2, S.toMatroid = M := by
   obtain ⟨V, hV⟩ := hM.isBinary
   obtain ⟨S, hS⟩ := V.exists_standardRepr
   rw [←hS] at hV
   exact ⟨S, hV⟩
 
-/-- Matroid `M` that can be represented by a matrix over `Z2` with a TU signing -/
-abbrev StandardRepr.HasTuSigning [DecidableEq α] (S : StandardRepr α Z2) : Prop :=
-  S.B.HasTuSigning
+/-- Vector matroid given by full representation that can be represented by a matrix over `Z2` with a TU signing. -/
+private abbrev VectorMatroid.HasTuSigning (V : VectorMatroid α Z2) : Prop :=
+  V.A.HasTuSigning
 
-/-- Matroid constructed from a standard representation is regular iff the binary matrix has a TU signing. -/
-lemma StandardRepr.toMatroid_isRegular_iff_hasTuSigning [DecidableEq α] (S : StandardRepr α Z2) : -- TODO `S` finite ?
+/-- Binary matroid constructed from a full representation is regular iff the binary matrix has a TU signing. -/
+private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatroid α Z2) : -- TODO `S` finite?
+    V.toMatroid.IsRegular ↔ V.HasTuSigning := by
+  sorry
+
+-- ## Main result of this file
+
+/-- Binary matroid constructed from a standard representation is regular iff the binary matrix has a TU signing. -/
+lemma StandardRepr.toMatroid_isRegular_iff_hasTuSigning (S : StandardRepr α Z2) :
     S.toMatroid.IsRegular ↔ S.HasTuSigning := by
-  constructor
-  · intro ⟨X, Y, A, hA, hS⟩
-    sorry
-  · intro ⟨U, hU, hUS⟩
-    use S.X, S.X ∪ S.Y, (U.prependId · ∘ Subtype.toSum)
-    constructor
-    · exact (hU.one_fromCols).comp_cols Subtype.toSum
-    ext I hI <;> simp
-    simp only [VectorMatroid.toMatroid_E] at hI
-    constructor <;> intro linearlyI
-    · use hI
-      sorry
-    · sorry
+  refine
+    S.toVectorMatroid.toMatroid_isRegular_iff_hasTuSigning.trans ⟨
+      fun ⟨A, hA, hAS⟩ => ⟨A.submatrix id (Sum.toUnion ∘ Sum.inr), hA.submatrix id (Sum.toUnion ∘ Sum.inr), fun i j => ?_⟩,
+      fun ⟨B, hB, hBS⟩ => ⟨(B.prependId · ∘ Subtype.toSum), (hB.one_fromCols).comp_cols Subtype.toSum, fun i j => ?_⟩⟩
+  · convert hAS i (Sum.inr j).toUnion
+    have hjY : ((Sum.inr j).toUnion : (S.X ∪ S.Y).Elem).val ∈ S.Y := by simp [Sum.toUnion, HasSubset.Subset.elem]
+    have hjX : ((Sum.inr j).toUnion : (S.X ∪ S.Y).Elem).val ∉ S.X := by simp [Sum.toUnion]; have := S.hXY; tauto_set
+    simp [Subtype.toSum, hjX, hjY]
+    rfl
+  · cases hj : j.toSum with
+    | inl x =>
+      simp [hj]
+      if hi : i = x then
+        rewrite [hi, Matrix.one_apply_eq, Matrix.one_apply_eq]
+        rfl
+      else
+        rewrite [Matrix.one_apply_ne hi, Matrix.one_apply_ne hi]
+        rfl
+    | inr y =>
+      have hjX : j.val ∉ S.X := (by simp [·, Subtype.toSum] at hj)
+      have hjY : j.val ∈ S.Y := by have : j.val ∈ S.X ∪ S.Y := j.property; tauto_set
+      convert hBS i y <;> simp_all [Subtype.toSum]

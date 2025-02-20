@@ -178,31 +178,31 @@ private lemma Matrix.IsTotallyUnimodular.addMultiples [DecidableEq X] [Field F] 
       | neg => exact hAxy' hs.symm
 
 /-- The small tableau consists of all columns but `x`th from the original matrix and the `y`th column of the square matrix. -/
-private def Matrix.getSmallTableau [DecidableEq Y] (A : Matrix X (X ⊕ Y) F) (x : X) (y : Y) :
+private def Matrix.getShortTableau [DecidableEq Y] (A : Matrix X (X ⊕ Y) F) (x : X) (y : Y) :
     Matrix X Y F :=
   Matrix.of (fun i : X => fun j : Y => if j = y then A i (Sum.inl x) else A i (Sum.inr j))
 
-private lemma Matrix.IsTotallyUnimodular.getSmallTableau [DecidableEq Y] [CommRing F]
+private lemma Matrix.IsTotallyUnimodular.getShortTableau [DecidableEq Y] [CommRing F]
     {A : Matrix X (X ⊕ Y) F} (hA : A.IsTotallyUnimodular) (x : X) (y : Y) :
-    (A.getSmallTableau x y).IsTotallyUnimodular := by
+    (A.getShortTableau x y).IsTotallyUnimodular := by
   convert
     hA.submatrix id (fun j : Y => if j = y then Sum.inl x else Sum.inr j)
-  unfold Matrix.getSmallTableau
+  unfold Matrix.getShortTableau
   aesop
 
 private lemma Matrix.shortTableauPivot_eq [DecidableEq X] [DecidableEq Y] [Field F] (A : Matrix X Y F) (x : X) (y : Y) :
     A.shortTableauPivot x y =
-    ((A.prependId.addMultiples x (- A · y / A x y)).getSmallTableau x y).mulRow x (1 / A x y) := by
+    ((A.prependId.addMultiples x (- A · y / A x y)).getShortTableau x y).mulRow x (1 / A x y) := by
   ext i j
   if hj : j = y then
     by_cases hi : i = x <;>
-      simp [Matrix.shortTableauPivot, Matrix.fromCols, Matrix.addMultiples, Matrix.getSmallTableau, Matrix.mulRow, hj, hi]
+      simp [Matrix.shortTableauPivot, Matrix.addMultiples, Matrix.getShortTableau, Matrix.mulRow, hj, hi]
   else
     if hi : i = x then
-      simp [Matrix.shortTableauPivot, Matrix.fromCols, Matrix.addMultiples, Matrix.getSmallTableau, Matrix.mulRow, hj, hi]
+      simp [Matrix.shortTableauPivot, Matrix.addMultiples, Matrix.getShortTableau, Matrix.mulRow, hj, hi]
       exact div_eq_inv_mul (A x j) (A x y)
     else
-      simp [Matrix.shortTableauPivot, Matrix.fromCols, Matrix.addMultiples, Matrix.getSmallTableau, Matrix.mulRow, hj, hi]
+      simp [Matrix.shortTableauPivot, Matrix.addMultiples, Matrix.getShortTableau, Matrix.mulRow, hj, hi]
       ring
 
 
@@ -213,6 +213,6 @@ lemma Matrix.IsTotallyUnimodular.shortTableauPivot [DecidableEq X] [DecidableEq 
   rw [Matrix.shortTableauPivot_eq]
   have hAxy : 1 / A x y ∈ Set.range SignType.cast
   · rw [inv_eq_self_of_in_set_range_singType_cast] <;> exact hA.apply x y
-  exact (((hA.one_fromCols).addMultiples x (Sum.inr y) hxy).getSmallTableau x y).mulRow x hAxy
+  exact (((hA.one_fromCols).addMultiples x (Sum.inr y) hxy).getShortTableau x y).mulRow x hAxy
 
 #print axioms Matrix.IsTotallyUnimodular.shortTableauPivot

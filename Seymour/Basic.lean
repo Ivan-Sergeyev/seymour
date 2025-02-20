@@ -38,6 +38,7 @@ lemma Z2val_toRat_mul_Z2val_toRat (a b : Z2) : (a.val : ℚ) * (b.val : ℚ) = (
 
 variable {α : Type}
 
+@[simp]
 abbrev Matrix.prependId [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) : Matrix m (m ⊕ n) α :=
   Matrix.fromCols 1 A
 
