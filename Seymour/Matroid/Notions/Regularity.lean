@@ -25,7 +25,7 @@ abbrev StandardRepr.HasTuSigning {α : Type} [DecidableEq α] (S : StandardRepr 
 
 -- ## Auxiliary stuff
 
-private def Matrix.discretize {X Y : Type} (A : Matrix X Y ℚ) (n : ℕ) : Matrix X Y (ZMod n) :=
+private def Matrix.discretize {X Y : Type} (A : Matrix X Y ℚ) (n : ℕ := 2) : Matrix X Y (ZMod n) :=
   Matrix.of (if A · · = 0 then 0 else 1)
 
 private lemma Matrix.IsTotallyUnimodular.discretize {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular)
@@ -52,7 +52,9 @@ private lemma Matrix.IsTotallyUnimodular.discretize {X Y : Type} {A : Matrix X Y
       rewrite [ZMod.val_one'' (· ▸ hn |>.false)]
       rfl
 
-variable {α : Type} [DecidableEq α]
+variable {α : Type}
+
+variable [DecidableEq α]
 
 private lemma todoZ [Fintype α] (A : Matrix α α ℤ)
     (hA : ∀ i j, A i j ∈ Set.range SignType.cast) (hA' : A.det ∈ Set.range SignType.cast) :
@@ -155,20 +157,57 @@ lemma Matroid.IsRegular.isBinaryStd {M : Matroid α} [Finite M.E] (hM : M.IsRegu
 private abbrev VectorMatroid.HasTuSigning (V : VectorMatroid α Z2) : Prop :=
   V.A.HasTuSigning
 
+private lemma Matroid_ext_vectorMatroid_discretize {X Y : Set α} (A : Matrix X Y ℚ) :
+    (VectorMatroid.mk X Y A).toMatroid = (VectorMatroid.mk X Y A.discretize).toMatroid := by
+  sorry
+
+private lemma Matroid_ext_of_vectorMatroid_discretize {X Y : Set α} {A : Matrix X Y ℚ} {U : Matrix X Y Z2}
+    (hAU : A.discretize = U) :
+    (VectorMatroid.mk X Y A).toMatroid = (VectorMatroid.mk X Y U).toMatroid :=
+  hAU ▸ Matroid_ext_vectorMatroid_discretize A
+
+private lemma hilfe {V W : VectorMatroid α Z2} (hVW : V.toMatroid = W.toMatroid) :
+    V.HasTuSigning ↔ W.HasTuSigning := by
+  sorry
+
 /-- Binary matroid constructed from a full representation is regular iff the binary matrix has a TU signing. -/
 private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatroid α Z2) : -- TODO `S` finite?
     V.toMatroid.IsRegular ↔ V.HasTuSigning := by
   constructor
   · intro ⟨X, Y, A, hA, hAV⟩
-    have hY : Y = V.Y := congr_arg Matroid.E hAV
-    have hX : X = V.X := sorry
-    use hX ▸ hY ▸ A
-    constructor
-    · subst hX hY
-      exact hA
-    -- Does not look plausible!
-    sorry
-  · sorry
+    have hV : V.toMatroid = (VectorMatroid.mk X Y A.discretize).toMatroid
+    · rw [←hAV, Matroid_ext_vectorMatroid_discretize]
+    rw [hilfe hV]
+    use A, hA
+    intro i j
+    simp [Matrix.discretize]
+    if h0 : A i j = 0 then
+      simp [h0]
+    else if h1 : A i j = 1 then
+      rewrite [h1]
+      rfl
+    else if h1 : A i j = -1 then
+      rewrite [h1]
+      rfl
+    else
+      exfalso
+      obtain ⟨s, hs⟩ := hA.apply i j
+      cases s <;> simp_all
+  · intro ⟨S, hS, hSV⟩
+    use V.X, V.Y, S, hS
+    apply Matroid_ext_of_vectorMatroid_discretize
+    ext i j
+    specialize hSV i j
+    simp [Matrix.discretize]
+    if h0 : V.A i j = 0 then
+      simp_all
+    else
+      have h1 := Fin2_eq_1_of_ne_0 h0
+      simp_all
+      intro hS0
+      rw [hS0, abs_zero, ZMod.cast] at hSV
+      simp only at hSV
+      sorry
 
 -- ## Main result of this file
 
