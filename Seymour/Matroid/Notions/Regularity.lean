@@ -54,96 +54,28 @@ private lemma Matrix.IsTotallyUnimodular.discretize {X Y : Type} {A : Matrix X Y
 
 variable {α : Type}
 
-variable [DecidableEq α]
+private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_discretize {X Y : Set α} {A : Matrix X Y ℚ}
+    (hA : A.IsTotallyUnimodular) :
+    (VectorMatroid.mk X Y A).toMatroid = (VectorMatroid.mk X Y A.discretize).toMatroid := by
+  sorry
 
-private lemma todoZ [Fintype α] (A : Matrix α α ℤ)
-    (hA : ∀ i j, A i j ∈ Set.range SignType.cast) (hA' : A.det ∈ Set.range SignType.cast) :
-    A.det = (0 : ℤ) ↔ (Matrix.of (if A · · = 0 then 0 else 1)).det = (0 : Z2) := by
-  have h0 : A.det = (0 : ℤ) ↔ (A.det : Z2) = (0 : Z2)
-  · obtain ⟨s, hs⟩ := hA'
-    cases s with
-    | zero => exact ⟨congrArg Int.cast, fun _ => hs.symm⟩
-    | pos | neg =>
-      simp at hs
-      rw [←hs]
-      simp
-  rw [h0, A.det_coe]
-  constructor -- TODO eliminate repeated code below (if kept at all)
-  · intro foo
-    convert foo
-    ext i j
-    simp
-    if hij0 : A i j = 0 then
-      simp_all
-    else
-      simp [*]
-      symm
-      apply Fin2_eq_1_of_ne_0
-      intro contr
-      apply hij0
-      obtain ⟨s, hs⟩ := hA i j
-      cases s with
-      | zero => exact hs.symm
-      | pos | neg =>
-        exfalso
-        simp at hs
-        rw [←hs] at contr
-        simp at contr
-  · intro foo
-    convert foo
-    ext i j
-    simp
-    if hij0 : A i j = 0 then
-      simp_all
-    else
-      simp [*]
-      apply Fin2_eq_1_of_ne_0
-      intro contr
-      apply hij0
-      obtain ⟨s, hs⟩ := hA i j
-      cases s with
-      | zero => exact hs.symm
-      | pos | neg =>
-        exfalso
-        simp at hs
-        rw [←hs] at contr
-        simp at contr
-
-private lemma todo [Fintype α] {A : Matrix α α ℚ}
-    (hA : ∀ i j, A i j ∈ Set.range SignType.cast) (hA' : A.det ∈ Set.range SignType.cast) :
-    A.det = (0 : ℚ) ↔ (Matrix.of (if A · · = 0 then 0 else 1)).det = (0 : Z2) := by
-  have key : (((Matrix.of (if A · · = 0 then 0 else 1)).det : ℤ) : ℚ) = A.det
-  · convert (Matrix.of (if A · · = 0 then 0 else 1)).det_coe ℚ
-    ext i j
-    simp
-    obtain ⟨s, hs⟩ := hA i j
-    cases s with
-    | zero => simp_all only [Set.mem_range, SignType.zero_eq_zero, SignType.coe_zero, ite_true]
-    | pos => aesop
-    | neg => sorry -- TODO does not work this way; preserving `-1` is necessary now.
-  convert todoZ (Matrix.of (if A · · = 0 then 0 else 1)) (by sorry) (by sorry)
-  · simp [←key]
-  · simp
+private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_of_discretize {X Y : Set α} {A : Matrix X Y ℚ} {U : Matrix X Y Z2}
+    (hA : A.IsTotallyUnimodular) (hAU : A.discretize = U) :
+    (VectorMatroid.mk X Y A).toMatroid = (VectorMatroid.mk X Y U).toMatroid :=
+  hAU ▸ hA.toMatroid_eq_discretize
 
 /-- Every regular matroid is binary. -/
-lemma Matroid.IsRegular.isBinary {M : Matroid α} [Finite M.E] (hM : M.IsRegular) :
+lemma Matroid.IsRegular.isBinary {M : Matroid α} [hE : Finite M.E] (hM : M.IsRegular) :
     ∃ V : VectorMatroid α Z2, V.toMatroid = M := by
   obtain ⟨X, Y, A, hA, rfl⟩ := hM
   have : Fintype X := sorry
-  use ⟨X, Y, Matrix.of (if A · · = 0 then 0 else 1)⟩
-  ext I hI
-  · simp
-  have : Fintype I.Elem := Set.Finite.fintype (Finite.Set.subset (VectorMatroid.mk X Y A).toMatroid.E hI)
-  clear hI
-  simp only [VectorMatroid.toMatroid_indep, VectorMatroid.indepCols_iff_submatrix]
-  constructor <;> intro ⟨hIY, hA'⟩ <;> use hIY <;>
-      rw [Matrix.linearIndependent_iff_exists_submatrix_det] at hA' ⊢ <;>
-      obtain ⟨f, hAf⟩ := hA' <;> use f <;> intro contr <;>
-      rw [Matrix.transpose_submatrix, Matrix.submatrix_submatrix, Function.comp_id, Function.id_comp] at hAf contr <;>
-      apply hAf <;> have hAT := hA.transpose <;> have hAf' := (hAT.submatrix hIY.elem f).apply <;>
-      rw [Matrix.isTotallyUnimodular_iff_fintype] at hAT
-  · rwa [todo hAf' (hAT ..)] at contr
-  · rwa [todo hAf' (hAT ..)]
+  exact ⟨⟨X, Y, A.discretize⟩, hA.toMatroid_eq_discretize.symm⟩
+
+/-- Vector matroid given by full representation that can be represented by a matrix over `Z2` with a TU signing. -/
+private abbrev VectorMatroid.HasTuSigning (V : VectorMatroid α Z2) : Prop :=
+  V.A.HasTuSigning
+
+variable [DecidableEq α]
 
 /-- Every regular matroid has a standard binary representation. -/
 lemma Matroid.IsRegular.isBinaryStd {M : Matroid α} [Finite M.E] (hM : M.IsRegular) :
@@ -153,22 +85,14 @@ lemma Matroid.IsRegular.isBinaryStd {M : Matroid α} [Finite M.E] (hM : M.IsRegu
   rw [←hS] at hV
   exact ⟨S, hV⟩
 
-/-- Vector matroid given by full representation that can be represented by a matrix over `Z2` with a TU signing. -/
-private abbrev VectorMatroid.HasTuSigning (V : VectorMatroid α Z2) : Prop :=
-  V.A.HasTuSigning
-
-private lemma Matroid_ext_vectorMatroid_discretize {X Y : Set α} (A : Matrix X Y ℚ) :
-    (VectorMatroid.mk X Y A).toMatroid = (VectorMatroid.mk X Y A.discretize).toMatroid := by
-  sorry
-
-private lemma Matroid_ext_of_vectorMatroid_discretize {X Y : Set α} {A : Matrix X Y ℚ} {U : Matrix X Y Z2}
-    (hAU : A.discretize = U) :
-    (VectorMatroid.mk X Y A).toMatroid = (VectorMatroid.mk X Y U).toMatroid :=
-  hAU ▸ Matroid_ext_vectorMatroid_discretize A
-
-private lemma hilfe {V W : VectorMatroid α Z2} (hVW : V.toMatroid = W.toMatroid) :
+private lemma hasTuSigning_iff_hasTuSigning_of_toMatroid_eq_toMatroid {V W : VectorMatroid α Z2}
+    (hVW : V.toMatroid = W.toMatroid) :
     V.HasTuSigning ↔ W.HasTuSigning := by
-  sorry
+  obtain ⟨S, rfl⟩ := V.exists_standardRepr
+  have based := S.toMatroid_isBase
+  rw [show S.toMatroid = W.toMatroid from hVW] at based
+  obtain ⟨S', hS', rfl⟩ := W.exists_standardRepr_isBase based
+  rw [ext_standardRepr_of_same_matroid_same_X hVW hS'.symm]
 
 /-- Binary matroid constructed from a full representation is regular iff the binary matrix has a TU signing. -/
 private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatroid α Z2) : -- TODO `S` finite?
@@ -176,8 +100,8 @@ private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatr
   constructor
   · intro ⟨X, Y, A, hA, hAV⟩
     have hV : V.toMatroid = (VectorMatroid.mk X Y A.discretize).toMatroid
-    · rw [←hAV, Matroid_ext_vectorMatroid_discretize]
-    rw [hilfe hV]
+    · rw [←hAV, hA.toMatroid_eq_discretize]
+    rw [hasTuSigning_iff_hasTuSigning_of_toMatroid_eq_toMatroid hV]
     use A, hA
     intro i j
     simp [Matrix.discretize]
@@ -195,7 +119,7 @@ private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatr
       cases s <;> simp_all
   · intro ⟨S, hS, hSV⟩
     use V.X, V.Y, S, hS
-    apply Matroid_ext_of_vectorMatroid_discretize
+    apply hS.toMatroid_eq_of_discretize
     ext i j
     specialize hSV i j
     simp [Matrix.discretize]

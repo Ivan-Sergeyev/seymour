@@ -81,8 +81,9 @@ lemma VectorMatroid.exists_standardRepr [Semiring R] (M : VectorMatroid α R) :
 
 /-- Every vector matroid has a standard representation whose rows are a given base. -/
 lemma VectorMatroid.exists_standardRepr_isBase [Semiring R] {B : Set α}
-    (M : VectorMatroid α R) (hMB : M.toMatroid.IsBase B) (hBY : B ⊆ M.Y) :
+    (M : VectorMatroid α R) (hMB : M.toMatroid.IsBase B) :
     ∃ S : StandardRepr α R, M.X = B ∧ S.toVectorMatroid = M := by
+  have hBY := hMB.subset_ground
   sorry
 
 /-- Construct a matroid from standard representation. -/
@@ -129,16 +130,21 @@ lemma Matrix.one_linearIndependent [Ring R] : LinearIndependent R (1 : Matrix α
   ext j
   simpa [Finsupp.linearCombination_apply, Pi.zero_apply, Finsupp.sum_apply', Matrix.one_apply] using congr_fun hl j
 
-/-- The image of all rows of a standard representation is a base in the resulting matroid. -/
+/-- The set of all rows of a standard representation is a base in the resulting matroid. -/
 lemma StandardRepr.toMatroid_isBase [Ring R] (S : StandardRepr α R) :
-    S.toMatroid.IsBase (Set.range (Subtype.val ∘ Sum.toUnion ∘ @Sum.inl S.X S.Y)) := by
+    S.toMatroid.IsBase S.X := by
   apply Matroid.Indep.isBase_of_forall_insert
   · rw [StandardRepr.toMatroid_indep_iff_submatrix]
-    use (fun a ha => by simp [Sum.toUnion] at ha; aesop)
-    show LinearIndependent R (S.B.prependId.transpose.submatrix _ id)
-    rw [Matrix.transpose_fromCols, Matrix.transpose_one]
-    convert @Matrix.one_linearIndependent S.X R _ _
-    · aesop
-    sorry
+    use Set.subset_union_left
+    simp [Matrix.submatrix, Subtype.toSum]
+    show LinearIndependent (ι := S.X) R 1ᵀ
+    rw [Matrix.transpose_one]
+    exact Matrix.one_linearIndependent
   · intro e he
-    sorry --  if you add anything extra to the identity matrix, it becomes singular
+    sorry -- if you add anything extra to the identity matrix, it becomes singular
+
+/-- If two standard representations of the same matroid have the same base, they are identical. -/
+lemma ext_standardRepr_of_same_matroid_same_X [Semiring R] {S₁ S₂ : StandardRepr α R}
+    (hSS : S₁.toMatroid = S₂.toMatroid) (hXX : S₁.X = S₂.X) :
+    S₁ = S₂ := by
+  sorry
