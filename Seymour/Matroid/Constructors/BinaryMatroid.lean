@@ -8,7 +8,7 @@ import Seymour.Basic
 open scoped Matrix Set.Notation
 
 
-/-- Data representing a vector matroid given by matrix `A`. -/
+/-- Data representing a vector matroid. -/
 structure VectorMatroid (α R : Type) where
   /-- Row indices. -/
   X : Set α
@@ -24,6 +24,7 @@ variable {α R : Type} [Semiring R]
 def VectorMatroid.IndepCols (M : VectorMatroid α R) (I : Set α) : Prop :=
   I ⊆ M.Y ∧ LinearIndepOn R M.Aᵀ (M.Y ↓∩ I)
 
+/-- Our old (equivalent) definition. -/
 private def VectorMatroid.IndepColsOld (M : VectorMatroid α R) (I : Set α) : Prop :=
   ∃ hI : I ⊆ M.Y, LinearIndependent R (fun i : I => (M.A · (hI.elem i)))
 

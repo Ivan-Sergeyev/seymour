@@ -28,22 +28,28 @@ variable {α R : Type} [DecidableEq α]
 def StandardRepr.toVectorMatroid [Zero R] [One R] (S : StandardRepr α R) : VectorMatroid α R :=
   ⟨S.X, S.X ∪ S.Y, (S.B.prependId · ∘ Subtype.toSum)⟩
 
-/-- Ground set of a vector matroid is union of row and column index sets of its standard matrix representation. -/
-@[simp]
-lemma StandardRepr.toVectorMatroid_E [Semiring R] (S : StandardRepr α R) :
-    S.toVectorMatroid.toMatroid.E = S.X ∪ S.Y :=
-  rfl
-
 /-- Converting standard representation to full representation does not change the set of row indices. -/
 @[simp]
 lemma StandardRepr.toVectorMatroid_X [Semiring R] (S : StandardRepr α R) :
     S.toVectorMatroid.X = S.X :=
   rfl
 
+/-- Ground set of a vector matroid is union of row and column index sets of its standard matrix representation. -/
+@[simp]
+lemma StandardRepr.toVectorMatroid_Y [Semiring R] (S : StandardRepr α R) :
+    S.toVectorMatroid.Y = S.X ∪ S.Y :=
+  rfl
+
 /-- If a vector matroid has a standard representation matrix `B`, its full representation matrix is `[1 | B]`. -/
 @[simp]
 lemma StandardRepr.toVectorMatroid_A [Semiring R] (S : StandardRepr α R) :
     S.toVectorMatroid.A = (S.B.prependId · ∘ Subtype.toSum) :=
+  rfl
+
+/-- Ground set of a vector matroid is union of row and column index sets of its standard matrix representation. -/
+@[simp]
+lemma StandardRepr.toVectorMatroid_E [Semiring R] (S : StandardRepr α R) :
+    S.toVectorMatroid.toMatroid.E = S.X ∪ S.Y :=
   rfl
 
 lemma StandardRepr.toVectorMatroid_indep_iff [Semiring R] (S : StandardRepr α R) (I : Set α) :
@@ -137,7 +143,7 @@ lemma StandardRepr.toMatroid_isBase [Ring R] (S : StandardRepr α R) :
   · rw [StandardRepr.toMatroid_indep_iff_submatrix]
     use Set.subset_union_left
     simp [Matrix.submatrix, Subtype.toSum]
-    show LinearIndependent (ι := S.X) R 1ᵀ
+    show @LinearIndependent S.X R _ 1ᵀ ..
     rw [Matrix.transpose_one]
     exact Matrix.one_linearIndependent
   · intro e he
