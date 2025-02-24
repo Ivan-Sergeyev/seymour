@@ -1,4 +1,5 @@
 import Seymour.Matroid.Constructors.BinaryMatroid
+import Mathlib.Data.Matrix.Rank
 
 open scoped Matrix Set.Notation
 
@@ -51,6 +52,9 @@ lemma StandardRepr.toVectorMatroid_A [Semiring R] (S : StandardRepr α R) :
 lemma StandardRepr.toVectorMatroid_E [Semiring R] (S : StandardRepr α R) :
     S.toVectorMatroid.toMatroid.E = S.X ∪ S.Y :=
   rfl
+
+instance {S : StandardRepr α R} [Zero R] [One R] [hSX : Finite S.X] : Finite S.toVectorMatroid.X :=
+  hSX
 
 lemma StandardRepr.toVectorMatroid_indep_iff [Semiring R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
@@ -187,8 +191,25 @@ lemma Matrix.one_linearIndependent [Ring R] : LinearIndependent R (1 : Matrix α
   ext j
   simpa [Finsupp.linearCombination_apply, Pi.zero_apply, Finsupp.sum_apply', Matrix.one_apply] using congr_fun hl j
 
+omit [DecidableEq α] in -- TODO move
+lemma Matrix.not_linearIndependent_of_rank_lt {β : Type} [Fintype α] [Fintype β] [Field R] (A : Matrix α β R)
+    (hA : A.rank < #α) :
+    ¬ LinearIndependent R A := by
+  intro contr
+  have hA' : A.rank = #α
+  · rw [Matrix.rank_eq_finrank_span_row]
+    exact finrank_span_eq_card contr
+  exact (hA' ▸ hA).false
+
+omit [DecidableEq α] in -- TODO move
+lemma Matrix.not_linearIndependent_of_too_many_rows {β : Type} [Fintype α] [Fintype β] [Field R] (A : Matrix α β R)
+    (hαβ : #β < #α) :
+    ¬ LinearIndependent R A := by
+  apply Matrix.not_linearIndependent_of_rank_lt
+  exact (rank_le_card_width A).trans_lt hαβ
+
 /-- The set of all rows of a standard representation is a base in the resulting matroid. -/
-lemma StandardRepr.toMatroid_isBase_X [Ring R] (S : StandardRepr α R) :
+lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype S.X] :
     S.toMatroid.IsBase S.X := by
   apply Matroid.Indep.isBase_of_forall_insert
   · rw [StandardRepr.toMatroid_indep_iff_submatrix]
@@ -200,25 +221,10 @@ lemma StandardRepr.toMatroid_isBase_X [Ring R] (S : StandardRepr α R) :
   · intro e he
     rw [StandardRepr.toMatroid_indep_iff_submatrix]
     push_neg
-    intro he'
-    have heX : e ∉ S.X := Set.not_mem_of_mem_diff he
-    have heY : e ∈ S.Y := Set.mem_of_mem_diff (by simpa using he)
-    simp [Matrix.transpose_fromCols]
-    suffices :
-      ¬LinearIndependent (ι := (e ᕃ S.X).Elem) R
-        ((Matrix.fromRows 1 (Matrix.row Unit (S.Bᵀ ⟨e, heY⟩))).submatrix (Equiv.Set.insert heX) (Equiv.refl _))
-    · convert this using 2
-      ext i j
-      simp [Subtype.toSum, Matrix.row]
-      if hiX : i.val ∈ S.X then
-        simp [hiX]
-        sorry
-      else
-        have hie : i.val = e := by aesop
-        have hiY : i.val ∈ S.Y := hie.symm ▸ heY
-        simp [hiX, hiY, hie]
-        sorry
-    sorry -- if you add anything extra to the identity matrix, it becomes singular
+    intro _
+    apply Matrix.not_linearIndependent_of_too_many_rows
+    have heX : e ∉ S.X.toFinset := (Set.not_mem_of_mem_diff he <| Set.mem_toFinset.→ ·)
+    simp [heX]
 
 /-- If two standard representations of the same matroid have the same base, they are identical. -/
 lemma ext_standardRepr_of_same_matroid_same_X [Semiring R] {S₁ S₂ : StandardRepr α R}

@@ -65,10 +65,10 @@ private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_of_discretize {X Y : Set �
   hAU ▸ hA.toMatroid_eq_discretize
 
 /-- Every regular matroid is binary. -/
-lemma Matroid.IsRegular.isBinary {M : Matroid α} [hE : Finite M.E] (hM : M.IsRegular) :
+lemma Matroid.IsRegular.isBinary {M : Matroid α} (hM : M.IsRegular) :
     ∃ V : VectorMatroid α Z2, V.toMatroid = M := by
   obtain ⟨X, Y, A, hA, rfl⟩ := hM
-  have : Fintype X := sorry
+  have : Fintype X := sorry -- TODO !!
   exact ⟨⟨X, Y, A.discretize⟩, hA.toMatroid_eq_discretize.symm⟩
 
 /-- Vector matroid given by full representation that can be represented by a matrix over `Z2` with a TU signing. -/
@@ -85,17 +85,18 @@ lemma Matroid.IsRegular.isBinaryStd {M : Matroid α} [Finite M.E] (hM : M.IsRegu
   rw [←hS] at hV
   exact ⟨S, hV⟩
 
-private lemma hasTuSigning_iff_hasTuSigning_of_toMatroid_eq_toMatroid {V W : VectorMatroid α Z2}
+private lemma hasTuSigning_iff_hasTuSigning_of_toMatroid_eq_toMatroid {V W : VectorMatroid α Z2} [hVX : Finite V.X]
     (hVW : V.toMatroid = W.toMatroid) :
     V.HasTuSigning ↔ W.HasTuSigning := by
   obtain ⟨S, rfl⟩ := V.exists_standardRepr
+  have : Fintype S.X := Set.Finite.fintype hVX
   have hS := S.toMatroid_isBase_X
   rw [show S.toMatroid = W.toMatroid from hVW] at hS
   obtain ⟨S', hS', rfl⟩ := W.exists_standardRepr_isBase hS
   rw [ext_standardRepr_of_same_matroid_same_X hVW hS'.symm]
 
 /-- Binary matroid constructed from a full representation is regular iff the binary matrix has a TU signing. -/
-private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatroid α Z2) : -- TODO `S` finite?
+private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatroid α Z2) [Finite V.X] :
     V.toMatroid.IsRegular ↔ V.HasTuSigning := by
   constructor
   · intro ⟨X, Y, A, hA, hAV⟩
@@ -136,7 +137,7 @@ private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatr
 -- ## Main result of this file
 
 /-- Binary matroid constructed from a standard representation is regular iff the binary matrix has a TU signing. -/
-lemma StandardRepr.toMatroid_isRegular_iff_hasTuSigning (S : StandardRepr α Z2) :
+lemma StandardRepr.toMatroid_isRegular_iff_hasTuSigning (S : StandardRepr α Z2) [Finite S.X] :
     S.toMatroid.IsRegular ↔ S.HasTuSigning := by
   refine
     S.toVectorMatroid.toMatroid_isRegular_iff_hasTuSigning.trans ⟨

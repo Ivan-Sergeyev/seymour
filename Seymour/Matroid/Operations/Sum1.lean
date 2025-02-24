@@ -30,6 +30,9 @@ structure Matroid.Is1sumOf (M : Matroid α) (M₁ M₂ : Matroid α) where
   S : StandardRepr α Z2
   S₁ : StandardRepr α Z2
   S₂ : StandardRepr α Z2
+  hS : Finite S.X -- TODO infer automatically
+  hS₁ : Finite S₁.X
+  hS₂ : Finite S₂.X
   hM : S.toMatroid = M
   hM₁ : S₁.toMatroid = M₁
   hM₂ : S₂.toMatroid = M₂
@@ -97,7 +100,7 @@ This is the first of the three parts of the easy direction of the Seymour's theo
 theorem Matroid.Is1sumOf.isRegular {M M₁ M₂ : Matroid α}
     (hM : M.Is1sumOf M₁ M₂) (hM₁ : M₁.IsRegular) (hM₂ : M₂.IsRegular) :
     M.IsRegular := by
-  obtain ⟨_, _, _, rfl, rfl, rfl, -, -, rfl, -⟩ := hM
+  obtain ⟨_, _, _, _, _, _, rfl, rfl, rfl, _, _, rfl, -⟩ := hM
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hM₁ hM₂ ⊢
   apply StandardRepr_1sumComposition_hasTuSigning
   · exact hM₁

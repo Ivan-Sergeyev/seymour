@@ -97,6 +97,25 @@ noncomputable def StandardRepr_3sum {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ 
     ∧ (∀ y : α, ∀ hy : y ∈ S₂.Y, y ≠ y₂ ∧ y ≠ y₁ → S₂.B ⟨x₁, x₁inX₂⟩ ⟨y, hy⟩ = 0) -- the rest of the topmost row is `0`s
   ⟩
 
+/-- Binary matroid `M` is a result of 2-summing `M₁` and `M₂` in some way. -/
+structure Matroid.Is3sumOf (M : Matroid α) (M₁ M₂ : Matroid α) where
+  S : StandardRepr α Z2
+  S₁ : StandardRepr α Z2
+  S₂ : StandardRepr α Z2
+  hS : Finite S.X -- TODO infer automatically
+  hS₁ : Finite S₁.X
+  hS₂ : Finite S₂.X
+  hM : S.toMatroid = M
+  hM₁ : S₁.toMatroid = M₁
+  hM₂ : S₂.toMatroid = M₂
+  (x₁ x₂ x₃ y₁ y₂ y₃ : α)
+  hXX : S₁.X ∩ S₂.X = {x₁, x₂, x₃}
+  hYY : S₁.Y ∩ S₂.Y = {y₁, y₂, y₃}
+  hXY : S₁.X ⫗ S₂.Y
+  hYX : S₁.Y ⫗ S₂.X
+  IsSum : (StandardRepr_3sum hXX hYY hXY hYX).fst = S
+  IsValid : (StandardRepr_3sum hXX hYY hXY hYX).snd
+
 lemma StandardRepr_3sum_X {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ y₂ y₃ : α}
     (hXX : S₁.X ∩ S₂.X = {x₁, x₂, x₃}) (hYY : S₁.Y ∩ S₂.Y = {y₁, y₂, y₃}) (hXY : S₁.X ⫗ S₂.Y) (hYX : S₁.Y ⫗ S₂.X) :
     (StandardRepr_3sum hXX hYY hXY hYX).fst.X = (S₁.X \ {x₁, x₂, x₃}) ∪ S₂.X :=
@@ -170,22 +189,6 @@ lemma StandardRepr_3sum_B {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ 
       sorry
     else
       sorry
-
-/-- Binary matroid `M` is a result of 2-summing `M₁` and `M₂` in some way. -/
-structure Matroid.Is3sumOf (M : Matroid α) (M₁ M₂ : Matroid α) where
-  S : StandardRepr α Z2
-  S₁ : StandardRepr α Z2
-  S₂ : StandardRepr α Z2
-  hM : S.toMatroid = M
-  hM₁ : S₁.toMatroid = M₁
-  hM₂ : S₂.toMatroid = M₂
-  (x₁ x₂ x₃ y₁ y₂ y₃ : α)
-  hXX : S₁.X ∩ S₂.X = {x₁, x₂, x₃}
-  hYY : S₁.Y ∩ S₂.Y = {y₁, y₂, y₃}
-  hXY : S₁.X ⫗ S₂.Y
-  hYX : S₁.Y ⫗ S₂.X
-  IsSum : (StandardRepr_3sum hXX hYY hXY hYX).fst = S
-  IsValid : (StandardRepr_3sum hXX hYY hXY hYX).snd
 
 /-- Any 3-sum of regular matroids is a regular matroid.
 This is the final of the three parts of the easy direction of the Seymour's theorem. -/
