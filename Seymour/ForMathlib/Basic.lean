@@ -1,6 +1,8 @@
 import Mathlib.Tactic
 
 prefix:max "#" => Fintype.card
+prefix:max "◩" => Sum.inl
+prefix:max "◪" => Sum.inr
 
 variable {α : Type}
 

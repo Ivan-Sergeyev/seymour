@@ -72,8 +72,8 @@ lemma HasSubset.Subset.elem_range {X Y : Set α} (hXY : X ⊆ Y) : Set.range hXY
 
 /-- Convert `(X ∪ Y).Elem` to `X.Elem ⊕ Y.Elem`. -/
 def Subtype.toSum {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) : X.Elem ⊕ Y.Elem :=
-  if hiX : i.val ∈ X then Sum.inl ⟨i, hiX⟩ else
-  if hiY : i.val ∈ Y then Sum.inr ⟨i, hiY⟩ else
+  if hiX : i.val ∈ X then ◩⟨i, hiX⟩ else
+  if hiY : i.val ∈ Y then ◪⟨i, hiY⟩ else
   (i.property.elim hiX hiY).elim
 
 /-- Convert `X.Elem ⊕ Y.Elem` to `(X ∪ Y).Elem`. -/

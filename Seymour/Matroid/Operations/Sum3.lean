@@ -66,18 +66,18 @@ noncomputable def StandardRepr_3sum {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ 
           ⟨⟨S₁.hXY.disjoint_sdiff_left, hYX.symm⟩, ⟨hXY.disjoint_sdiff_right.disjoint_sdiff_left, S₂.hXY.disjoint_sdiff_right⟩⟩,
       Matrix.of (fun i j =>
         Matrix_3sumComposition A₁ A₂ z₁ z₂ D_₁ D₁ D₂ (
-          if hi₁ : i.val ∈ S₁.X \ {x₁, x₂, x₃} then Sum.inl (Sum.inl ⟨i, hi₁⟩) else
-          if hi₂ : i.val ∈ S₂.X \ {x₁, x₂, x₃} then Sum.inr (Sum.inr ⟨i, hi₂⟩) else
-          if hx₁ : i.val = x₁ then Sum.inl (Sum.inr ()) else
-          if hx₂ : i.val = x₂ then Sum.inr (Sum.inl 0) else
-          if hx₃ : i.val = x₃ then Sum.inr (Sum.inl 1) else
+          if hi₁ : i.val ∈ S₁.X \ {x₁, x₂, x₃} then ◩◩⟨i, hi₁⟩ else
+          if hi₂ : i.val ∈ S₂.X \ {x₁, x₂, x₃} then ◪◪⟨i, hi₂⟩ else
+          if hx₁ : i.val = x₁ then ◩◪() else
+          if hx₂ : i.val = x₂ then ◪◩0 else
+          if hx₃ : i.val = x₃ then ◪◩1 else
           (i.property.elim hi₁ (by simp_all)).elim
         ) (
-          if hj₁ : j.val ∈ S₁.Y \ {y₁, y₂, y₃} then Sum.inl (Sum.inl ⟨j, hj₁⟩) else
-          if hj₂ : j.val ∈ S₂.Y \ {y₁, y₂, y₃} then Sum.inr (Sum.inr ⟨j, hj₂⟩) else
-          if hy₁ : j.val = y₁ then Sum.inl (Sum.inr 1) else
-          if hy₂ : j.val = y₂ then Sum.inl (Sum.inr 0) else
-          if hy₃ : j.val = y₃ then Sum.inr (Sum.inl ()) else
+          if hj₁ : j.val ∈ S₁.Y \ {y₁, y₂, y₃} then ◩◩⟨j, hj₁⟩ else
+          if hj₂ : j.val ∈ S₂.Y \ {y₁, y₂, y₃} then ◪◪⟨j, hj₂⟩ else
+          if hy₁ : j.val = y₁ then ◩◪1 else
+          if hy₂ : j.val = y₂ then ◩◪0 else
+          if hy₃ : j.val = y₃ then ◪◩() else
           (j.property.elim (by simp_all) hj₂).elim
         )
       ),
@@ -145,16 +145,16 @@ lemma StandardRepr_3sum_B {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ 
     ((Matrix_3sumComposition A₁ A₂ z₁ z₂ D_₁ D₁ D₂).submatrix
       ((Equiv.sumAssoc (S₁.X \ {x₁, x₂, x₃}).Elem Unit (Fin 2 ⊕ (S₂.X \ {x₁, x₂, x₃}).Elem)).invFun ∘
         Sum.map id (fun i : S₂.X =>
-          if hx₁ : i.val = x₁ then Sum.inl () else
-          if hx₂ : i.val = x₂ then Sum.inr (Sum.inl 0) else
-          if hx₃ : i.val = x₃ then Sum.inr (Sum.inl 1) else
-          Sum.inr (Sum.inr ⟨i, by simp_all⟩)))
+          if hx₁ : i.val = x₁ then ◩() else
+          if hx₂ : i.val = x₂ then ◪◩0 else
+          if hx₃ : i.val = x₃ then ◪◩1 else
+          ◪(◪⟨i, by simp_all⟩)))
       ((Equiv.sumAssoc ((S₁.Y \ {y₁, y₂, y₃}).Elem ⊕ Fin 2) Unit (S₂.Y \ {y₁, y₂, y₃}).Elem).toFun ∘
         Sum.map (fun j : S₁.Y =>
-          if hy₁ : j.val = y₁ then Sum.inl (Sum.inr 1) else
-          if hy₂ : j.val = y₂ then Sum.inl (Sum.inr 0) else
-          if hy₃ : j.val = y₃ then Sum.inr () else
-          Sum.inl (Sum.inl ⟨j, by simp_all⟩)) id)
+          if hy₁ : j.val = y₁ then ◩◪1 else
+          if hy₂ : j.val = y₂ then ◩◪0 else
+          if hy₃ : j.val = y₃ then ◪() else
+          ◩(◩⟨j, by simp_all⟩)) id)
       ).toMatrixUnionUnion
     := by
   ext i j

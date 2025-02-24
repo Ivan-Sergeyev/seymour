@@ -1,4 +1,4 @@
-import Mathlib.Tactic
+import Seymour.ForMathlib.Basic
 
 /-!
 # Function to Sum decomposition
@@ -11,11 +11,11 @@ variable {α β₁ β₂ : Type}
 /-- Given `f : α → β₁ ⊕ β₂` decompose `α` into two preïmages. -/
 @[simp]
 def Function.decomposeSum (f : α → β₁ ⊕ β₂) :
-    α ≃ { x₁ : α × β₁ // f x₁.fst = Sum.inl x₁.snd } ⊕ { x₂ : α × β₂ // f x₂.fst = Sum.inr x₂.snd } where
+    α ≃ { x₁ : α × β₁ // f x₁.fst = ◩x₁.snd } ⊕ { x₂ : α × β₂ // f x₂.fst = ◪x₂.snd } where
   toFun a :=
     (match hfa : f a with
-      | .inl b₁ => Sum.inl ⟨(a, b₁), hfa⟩
-      | .inr b₂ => Sum.inr ⟨(a, b₂), hfa⟩
+      | .inl b₁ => ◩⟨⟨a, b₁⟩, hfa⟩
+      | .inr b₂ => ◪⟨⟨a, b₂⟩, hfa⟩
     )
   invFun x :=
     x.casesOn (·.val.fst) (·.val.fst)

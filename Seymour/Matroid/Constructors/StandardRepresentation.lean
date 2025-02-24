@@ -157,7 +157,7 @@ lemma StandardRepr.toMatroid_isBase_X [Ring R] (S : StandardRepr α R) :
     suffices : -- TODO make the outer submatrix `Equiv.toFun`
       ¬LinearIndependent (ι := (e ᕃ S.X).Elem) R
         ((Matrix.fromRows 1 (Matrix.row Unit (S.Bᵀ ⟨e, heY⟩))).submatrix
-          (fun x : (e ᕃ S.X).Elem => (if hx : x.val ∈ S.X then .inl ⟨x.val, hx⟩ else .inr () : S.X ⊕ Unit)) id)
+          (fun x : (e ᕃ S.X).Elem => (if hx : x.val ∈ S.X then ◩⟨x.val, hx⟩ else ◪() : S.X ⊕ Unit)) id)
     · convert this using 2
       ext i j
       simp [Subtype.toSum, Matrix.row]

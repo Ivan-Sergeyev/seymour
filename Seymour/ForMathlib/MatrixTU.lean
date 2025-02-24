@@ -25,12 +25,12 @@ private lemma Matrix.fromBlocks_submatrix {Y₁ Y₂ : Type} [Zero R] (A₁ : Ma
     (fromBlocks A₁ 0 0 A₂).submatrix f g =
     (fromBlocks
       (A₁.submatrix
-        ((·.val.snd) : { x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } → X₁)
-        ((·.val.snd) : { y₁ : Z × Y₁ // g y₁.fst = Sum.inl y₁.snd } → Y₁)
+        ((·.val.snd) : { x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } → X₁)
+        ((·.val.snd) : { y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd } → Y₁)
       ) 0 0
       (A₂.submatrix
-        ((·.val.snd) : { x₂ : Z × X₂ // f x₂.fst = Sum.inr x₂.snd } → X₂)
-        ((·.val.snd) : { y₂ : Z × Y₂ // g y₂.fst = Sum.inr y₂.snd } → Y₂)
+        ((·.val.snd) : { x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd } → X₂)
+        ((·.val.snd) : { y₂ : Z × Y₂ // g y₂.fst = ◪y₂.snd } → Y₂)
       )
     ).submatrix f.decomposeSum g.decomposeSum := by
   rw [
@@ -41,7 +41,7 @@ private lemma Matrix.fromBlocks_submatrix {Y₁ Y₂ : Type} [Zero R] (A₁ : Ma
 
 variable [Fintype Z]
 
-noncomputable instance {f : Z → X₁ ⊕ X₂} : Fintype { x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } := by
+noncomputable instance {f : Z → X₁ ⊕ X₂} : Fintype { x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } := by
   apply Fintype.ofInjective (·.val.fst)
   intro ⟨⟨u, u₁⟩, hu⟩ ⟨⟨v, v₁⟩, hv⟩ huv
   dsimp only at hu hv huv
@@ -49,7 +49,7 @@ noncomputable instance {f : Z → X₁ ⊕ X₂} : Fintype { x₁ : Z × X₁ //
   refine ⟨huv, ?_⟩
   rw [←Sum.inl.injEq, ←hu, ←hv, huv]
 
-noncomputable instance {f : Z → X₁ ⊕ X₂} : Fintype { x₂ : Z × X₂ // f x₂.fst = Sum.inr x₂.snd } := by
+noncomputable instance {f : Z → X₁ ⊕ X₂} : Fintype { x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd } := by
   apply Fintype.ofInjective (·.val.fst)
   intro ⟨⟨u, u₁⟩, hu⟩ ⟨⟨v, v₁⟩, hv⟩ huv
   dsimp only at hu hv huv
@@ -58,7 +58,7 @@ noncomputable instance {f : Z → X₁ ⊕ X₂} : Fintype { x₂ : Z × X₂ //
   rw [←Sum.inr.injEq, ←hu, ←hv, huv]
 
 lemma decomposeSum_card_eq (f : Z → X₁ ⊕ X₂) :
-    #{ x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } + #{ x₂ : Z × X₂ // f x₂.fst = Sum.inr x₂.snd } =
+    #{ x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } + #{ x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd } =
     #Z := by
   rw [←Fintype.card_sum]
   exact Fintype.card_congr f.decomposeSum.symm
@@ -68,10 +68,10 @@ In the comments bellow, we will use the following shorthands:
 
 `Z` is the next indexing type (for both rows and cols of the big square submatrix), typically `Fin k`
 
-`▫X₁` denotes `{ x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd }`
-`▫X₂` denotes `{ x₂ : Z × X₂ // f x₂.fst = Sum.inr x₂.snd }`
-`▫Y₁` denotes `{ y₁ : Z × Y₁ // g y₁.fst = Sum.inl y₁.snd }`
-`▫Y₂` denotes `{ y₂ : Z × Y₂ // g y₂.fst = Sum.inr y₂.snd }`
+`▫X₁` denotes `{ x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd }`
+`▫X₂` denotes `{ x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd }`
+`▫Y₁` denotes `{ y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd }`
+`▫Y₂` denotes `{ y₂ : Z × Y₂ // g y₂.fst = ◪y₂.snd }`
 
 `X'` is a specific subset of `▫X₂` converted to a type
 `(▫X₂ \ X')` is its complement as a type, formally written as `{ x // x ∉ X' }` (where `x : ▫X₂` implicitly)
@@ -87,15 +87,15 @@ private lemma Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_isTo
     {A₁ : Matrix X₁ Y₁ R} (hA₁ : A₁.IsTotallyUnimodular)
     {A₂ : Matrix X₂ Y₂ R} (hA₂ : A₂.IsTotallyUnimodular)
     {f : Z → X₁ ⊕ X₂} {g : Z → Y₁ ⊕ Y₂}
-    (hfg₁ : #{ x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } = #{ y₁ : Z × Y₁ // g y₁.fst = Sum.inl y₁.snd })
-    (hfg₂ : #{ x₂ : Z × X₂ // f x₂.fst = Sum.inr x₂.snd } = #{ y₂ : Z × Y₂ // g y₂.fst = Sum.inr y₂.snd }) :
+    (hfg₁ : #{ x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } = #{ y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd })
+    (hfg₂ : #{ x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd } = #{ y₂ : Z × Y₂ // g y₂.fst = ◪y₂.snd }) :
     ((fromBlocks A₁ 0 0 A₂).submatrix f g).det ∈
       Set.range SignType.cast := by
   rw [Matrix.isTotallyUnimodular_iff_fintype] at hA₁ hA₂
   rw [Matrix.fromBlocks_submatrix]
-  let e₁ : { x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } ≃ { y₁ : Z × Y₁ // g y₁.fst = Sum.inl y₁.snd } :=
+  let e₁ : { x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } ≃ { y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd } :=
     Fintype.equivOfCardEq hfg₁
-  let e₂ : { x₂ : Z × X₂ // f x₂.fst = Sum.inr x₂.snd } ≃ { y₂ : Z × Y₂ // g y₂.fst = Sum.inr y₂.snd } :=
+  let e₂ : { x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd } ≃ { y₂ : Z × Y₂ // g y₂.fst = ◪y₂.snd } :=
     Fintype.equivOfCardEq hfg₂
 /-
   ` f :  Z -> X₁ ⊕ X₂ `
@@ -121,12 +121,12 @@ private lemma Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_isTo
   have hAfg : -- make the outer submatrix bijective
     (fromBlocks
       (A₁.submatrix
-        ((·.val.snd) : { x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } → X₁)
-        ((·.val.snd) : { y₁ : Z × Y₁ // g y₁.fst = Sum.inl y₁.snd } → Y₁)
+        ((·.val.snd) : { x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } → X₁)
+        ((·.val.snd) : { y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd } → Y₁)
       ) 0 0
       (A₂.submatrix
-        ((·.val.snd) : { x₂ : Z × X₂ // f x₂.fst = Sum.inr x₂.snd } → X₂)
-        ((·.val.snd) : { y₂ : Z × Y₂ // g y₂.fst = Sum.inr y₂.snd } → Y₂)
+        ((·.val.snd) : { x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd } → X₂)
+        ((·.val.snd) : { y₂ : Z × Y₂ // g y₂.fst = ◪y₂.snd } → Y₂)
       )
     ).submatrix f.decomposeSum g.decomposeSum
     =
@@ -152,8 +152,8 @@ private lemma Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_isTo
 private lemma Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_card_lt
     (A₁ : Matrix X₁ Y₁ R) (A₂ : Matrix X₂ Y₂ R) {f : Z → X₁ ⊕ X₂} {g : Z → Y₁ ⊕ Y₂}
     (hfg :
-      #{ x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } <
-      #{ y₁ : Z × Y₁ // g y₁.fst = Sum.inl y₁.snd }) :
+      #{ x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } <
+      #{ y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd }) :
     ((fromBlocks A₁ 0 0 A₂).submatrix f g).det ∈
       Set.range SignType.cast := by
   -- we will show that the submatrix is singular
@@ -163,9 +163,9 @@ private lemma Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_card
   -- then the bottom left blocks will be all `0`s, hence we can multiply the two determinants, and the top left block will
   -- have at least one row made of `0`s, hence its determinant is `0`
   have hZY₁ :
-      #{ y₁ : Z × Y₁ // g y₁.fst = Sum.inl y₁.snd } ≤
-      #{ x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } +
-      #{ x₂ : Z × X₂ // f x₂.fst = Sum.inr x₂.snd }
+      #{ y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd } ≤
+      #{ x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } +
+      #{ x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd }
   · rw [decomposeSum_card_eq]
     apply Fintype.card_le_of_embedding
     use (·.val.fst)
@@ -173,17 +173,17 @@ private lemma Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_card
     simp_rw [Subtype.mk.injEq] at huv ⊢
     simp_all only [Sum.inl.injEq]
   obtain ⟨X', hY₁, hX'⟩ := finset_of_cardinality_between hfg hZY₁
-  have hY₂ : #{ y // y ∉ X' } = #{ y₂ : Z × Y₂ // g y₂.fst = Sum.inr y₂.snd }
+  have hY₂ : #{ y // y ∉ X' } = #{ y₂ : Z × Y₂ // g y₂.fst = ◪y₂.snd }
   · suffices :
-        #{ y // y ∉ X' } + #({ x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } ⊕ X') =
-        #{ y₁ : Z × Y₁ // g y₁.fst = Sum.inl y₁.snd } +
-        #{ y₂ : Z × Y₂ // g y₂.fst = Sum.inr y₂.snd }
+        #{ y // y ∉ X' } + #({ x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } ⊕ X') =
+        #{ y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd } +
+        #{ y₂ : Z × Y₂ // g y₂.fst = ◪y₂.snd }
     · omega
     rw [Fintype.card_sum, add_comm, add_assoc, ←Fintype.card_sum, Fintype.card_congr (Equiv.sumCompl (· ∈ X')),
       decomposeSum_card_eq, decomposeSum_card_eq]
   let e₁ := Fintype.equivOfCardEq hY₁
   let e₂ := Fintype.equivOfCardEq hY₂
-  let e₃ := (Equiv.sumAssoc { x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } X' { x // x ∉ X' }).symm
+  let e₃ := (Equiv.sumAssoc { x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } X' { x // x ∉ X' }).symm
   let e' := (Equiv.sumCompl (· ∈ X')).symm
 /-
   ` f :  Z -> X₁ ⊕ X₂ `
@@ -214,12 +214,12 @@ private lemma Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_card
   have hAfg : -- make the outer submatrix bijective
     (fromBlocks
       (A₁.submatrix
-        ((·.val.snd) : { x₁ : Z × X₁ // f x₁.fst = Sum.inl x₁.snd } → X₁)
-        ((·.val.snd) : { y₁ : Z × Y₁ // g y₁.fst = Sum.inl y₁.snd } → Y₁)
+        ((·.val.snd) : { x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } → X₁)
+        ((·.val.snd) : { y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd } → Y₁)
       ) 0 0
       (A₂.submatrix
-        ((·.val.snd) : { x₂ : Z × X₂ // f x₂.fst = Sum.inr x₂.snd } → X₂)
-        ((·.val.snd) : { y₂ : Z × Y₂ // g y₂.fst = Sum.inr y₂.snd } → Y₂)
+        ((·.val.snd) : { x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd } → X₂)
+        ((·.val.snd) : { y₂ : Z × Y₂ // g y₂.fst = ◪y₂.snd } → Y₂)
       )
     ).submatrix f.decomposeSum g.decomposeSum
     =
@@ -250,7 +250,7 @@ private lemma Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_card
         (fromRows 0 (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂)))
         (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂))
   convert zero_mul _
-  exact Matrix.det_eq_zero_of_row_eq_zero (Sum.inr (Classical.choice hX')) (fun _ => rfl)
+  exact Matrix.det_eq_zero_of_row_eq_zero ◪(Classical.choice hX') (fun _ => rfl)
 
 omit Z
 variable [DecidableEq Y₁] [DecidableEq Y₂]
@@ -261,12 +261,12 @@ lemma Matrix.fromBlocks_isTotallyUnimodular {A₁ : Matrix X₁ Y₁ R} {A₂ : 
     (fromBlocks A₁ 0 0 A₂).IsTotallyUnimodular :=
   fun k f g _ _ =>
     if hxy :
-      #{ x₁ : Fin k × X₁ // f x₁.fst = Sum.inl x₁.snd } = #{ y₁ : Fin k × Y₁ // g y₁.fst = Sum.inl y₁.snd } ∧
-      #{ x₂ : Fin k × X₂ // f x₂.fst = Sum.inr x₂.snd } = #{ y₂ : Fin k × Y₂ // g y₂.fst = Sum.inr y₂.snd }
+      #{ x₁ : Fin k × X₁ // f x₁.fst = ◩x₁.snd } = #{ y₁ : Fin k × Y₁ // g y₁.fst = ◩y₁.snd } ∧
+      #{ x₂ : Fin k × X₂ // f x₂.fst = ◪x₂.snd } = #{ y₂ : Fin k × Y₂ // g y₂.fst = ◪y₂.snd }
     then
       Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_isTotallyUnimodular_of_card_eq hA₁ hA₂ hxy.1 hxy.2
     else if hxy₁ :
-      #{ x₁ : Fin k × X₁ // f x₁.fst = Sum.inl x₁.snd } < #{ y₁ : Fin k × Y₁ // g y₁.fst = Sum.inl y₁.snd }
+      #{ x₁ : Fin k × X₁ // f x₁.fst = ◩x₁.snd } < #{ y₁ : Fin k × Y₁ // g y₁.fst = ◩y₁.snd }
     then
       Matrix.fromBlocks_submatrix_det_in_set_range_singType_cast_of_card_lt A₁ A₂ hxy₁
     else by

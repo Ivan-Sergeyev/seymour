@@ -180,13 +180,13 @@ private lemma Matrix.IsTotallyUnimodular.addMultiples [DecidableEq X] [Field F] 
 /-- The small tableau consists of all columns but `x`th from the original matrix and the `y`th column of the square matrix. -/
 private def Matrix.getShortTableau [DecidableEq Y] (A : Matrix X (X ⊕ Y) F) (x : X) (y : Y) :
     Matrix X Y F :=
-  Matrix.of (fun i : X => fun j : Y => if j = y then A i (Sum.inl x) else A i (Sum.inr j))
+  Matrix.of (fun i : X => fun j : Y => if j = y then A i ◩x else A i ◪j)
 
 private lemma Matrix.IsTotallyUnimodular.getShortTableau [DecidableEq Y] [CommRing F]
     {A : Matrix X (X ⊕ Y) F} (hA : A.IsTotallyUnimodular) (x : X) (y : Y) :
     (A.getShortTableau x y).IsTotallyUnimodular := by
   convert
-    hA.submatrix id (fun j : Y => if j = y then Sum.inl x else Sum.inr j)
+    hA.submatrix id (fun j : Y => if j = y then ◩x else ◪j)
   unfold Matrix.getShortTableau
   aesop
 
@@ -205,7 +205,6 @@ private lemma Matrix.shortTableauPivot_eq [DecidableEq X] [DecidableEq Y] [Field
       simp [Matrix.shortTableauPivot, Matrix.addMultiples, Matrix.getShortTableau, Matrix.mulRow, hj, hi]
       ring
 
-
 /-- Pivoting preserves total unimodularity. -/
 lemma Matrix.IsTotallyUnimodular.shortTableauPivot [DecidableEq X] [DecidableEq Y] [Field F] {A : Matrix X Y F}
     (hA : A.IsTotallyUnimodular) {x : X} {y : Y} (hxy : A x y ≠ 0) :
@@ -213,6 +212,6 @@ lemma Matrix.IsTotallyUnimodular.shortTableauPivot [DecidableEq X] [DecidableEq 
   rw [Matrix.shortTableauPivot_eq]
   have hAxy : 1 / A x y ∈ Set.range SignType.cast
   · rw [inv_eq_self_of_in_set_range_singType_cast] <;> exact hA.apply x y
-  exact (((hA.one_fromCols).addMultiples x (Sum.inr y) hxy).getShortTableau x y).mulRow x hAxy
+  exact (((hA.one_fromCols).addMultiples x ◪y hxy).getShortTableau x y).mulRow x hAxy
 
 #print axioms Matrix.IsTotallyUnimodular.shortTableauPivot

@@ -49,7 +49,7 @@ The guideline below is written primarily to assist you in reading the code.
 
   `{ x : X | ∃ y : Y, Bar x y }`
 
-  `{ x₁ : α × β₁ // f x₁.fst = Sum.inl x₁.snd }`
+  `{ x₁ : α × β₁ // f x₁.fst = ◩x₁.snd }`
 
 - With a comma, a space is written only after it, not before.
 - With a colon, a space is written from both sides.
