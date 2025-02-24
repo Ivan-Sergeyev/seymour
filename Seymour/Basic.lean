@@ -88,7 +88,7 @@ lemma HasSubset.Subset.elem_injective {X Y : Set α} (hXY : X ⊆ Y) : hXY.elem.
   ext
   simpa using hxy
 
-lemma HasSubset.Subset.elem_range {X Y : Set α} (hXY : X ⊆ Y) : Set.range hXY.elem = { a : Y.Elem | a.val ∈ X } := by
+lemma HasSubset.Subset.elem_range {X Y : Set α} (hXY : X ⊆ Y) : hXY.elem.range = { a : Y.Elem | a.val ∈ X } := by
   aesop
 
 /-- Convert `(X ∪ Y).Elem` to `X.Elem ⊕ Y.Elem`. -/

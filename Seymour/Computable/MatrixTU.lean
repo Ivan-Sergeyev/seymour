@@ -5,11 +5,11 @@ import Seymour.ForMathlib.Basic
 
 /-- Formally verified algorithm for testing total unimodularity. -/
 def Matrix.testTotallyUnimodular {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Bool :=
-  ∀ k : ℕ, k ≤ min m n → ∀ x : Fin k → Fin m, ∀ y : Fin k → Fin n, (A.submatrix x y).det ∈ Set.range SignType.cast
+  ∀ k : ℕ, k ≤ min m n → ∀ x : Fin k → Fin m, ∀ y : Fin k → Fin n, (A.submatrix x y).det ∈ SignType.cast.range
 
 
 lemma Matrix.isTotallyUnimodular_of_aux_le {m n : ℕ} {A : Matrix (Fin m) (Fin n) ℚ}
-    (hA : ∀ k : ℕ, k ≤ m → ∀ x : Fin k → Fin m, ∀ y : Fin k → Fin n, (A.submatrix x y).det ∈ Set.range SignType.cast) :
+    (hA : ∀ k : ℕ, k ≤ m → ∀ x : Fin k → Fin m, ∀ y : Fin k → Fin n, (A.submatrix x y).det ∈ SignType.cast.range) :
     A.IsTotallyUnimodular := by
   intro k f g hf _
   have hkm : k ≤ m
@@ -51,10 +51,10 @@ instance {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Decidable A.IsTotallyUni
 
 /-- Faster algorithm for testing total unimodularity but without formal guarantees. -/
 def Matrix.testTotallyUnimodularFaster {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Bool :=
-  (∀ k : ℕ, k < min m n → ∀ x : Fin k → Fin m, ∀ y : Fin k → Fin n, (A.submatrix x y).det ∈ Set.range SignType.cast) ∧ (
+  (∀ k : ℕ, k < min m n → ∀ x : Fin k → Fin m, ∀ y : Fin k → Fin n, (A.submatrix x y).det ∈ SignType.cast.range) ∧ (
     if hmn : m = n
-      then (A.submatrix id (finCongr hmn)).det ∈ Set.range SignType.cast
+      then (A.submatrix id (finCongr hmn)).det ∈ SignType.cast.range
     else if m < n
-      then (∀ y : Fin m → Fin n, (A.submatrix id y).det ∈ Set.range SignType.cast)
-      else (∀ x : Fin n → Fin m, (A.submatrix x id).det ∈ Set.range SignType.cast)
+      then (∀ y : Fin m → Fin n, (A.submatrix id y).det ∈ SignType.cast.range)
+      else (∀ x : Fin n → Fin m, (A.submatrix x id).det ∈ SignType.cast.range)
   )

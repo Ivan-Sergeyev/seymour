@@ -40,12 +40,12 @@ private def Matrix.mulRow [DecidableEq X] [Mul F] (A : Matrix X Y F) (x : X) (c 
   A.updateRow x (c • A x)
 
 private lemma Matrix.IsTotallyUnimodular.mulRow [DecidableEq X] [CommRing F] {A : Matrix X Y F}
-    (hA : A.IsTotallyUnimodular) (x : X) {c : F} (hc : c ∈ Set.range SignType.cast) :
+    (hA : A.IsTotallyUnimodular) (x : X) {c : F} (hc : c ∈ SignType.cast.range) :
     (A.mulRow x c).IsTotallyUnimodular := by
   intro k f g hf hg
   if hi : ∃ i : Fin k, f i = x then
     obtain ⟨i, rfl⟩ := hi
-    convert_to ((A.submatrix f g).updateRow i (c • (A.submatrix id g) (f i))).det ∈ Set.range SignType.cast
+    convert_to ((A.submatrix f g).updateRow i (c • (A.submatrix id g) (f i))).det ∈ SignType.cast.range
     · congr
       ext i' j'
       if hii : i' = i then
@@ -54,7 +54,7 @@ private lemma Matrix.IsTotallyUnimodular.mulRow [DecidableEq X] [CommRing F] {A 
         have hfii : f i' ≠ f i := (hii <| hf ·)
         simp [Matrix.mulRow, hii, hfii]
     rw [Matrix.det_updateRow_smul]
-    apply in_set_range_singType_cast_mul_in_set_range_singType_cast hc
+    apply in_singTypeCastRange_mul_in_singTypeCastRange hc
     have hAf := hA.submatrix f id
     rw [Matrix.isTotallyUnimodular_iff] at hAf
     convert hAf k id g
@@ -82,7 +82,7 @@ private lemma Matrix.IsTotallyUnimodular.addMultiples [DecidableEq X] [Field F] 
   -- If `x` is in the selected rows, the determinant won't change.
   if hx : ∃ r : Fin k, f r = x then
     obtain ⟨r, hr⟩ := hx
-    convert_to ((A.submatrix f g).addMultiples r (fun i : Fin k => (- A (f i) y / A x y))).det ∈ Set.range SignType.cast using 2
+    convert_to ((A.submatrix f g).addMultiples r (fun i : Fin k => (- A (f i) y / A x y))).det ∈ SignType.cast.range using 2
     · ext i j
       if hir : i = r then
         simp [Matrix.addMultiples, hir, hr]
@@ -93,7 +93,7 @@ private lemma Matrix.IsTotallyUnimodular.addMultiples [DecidableEq X] [Field F] 
     exact hA k f g hf hg
   -- Else if `y` is in the selected columns, its column is all zeros, so the determinant is zero.
   else if hy : ∃ c : Fin k, g c = y then
-    convert zero_in_set_range_singType_cast
+    convert zero_in_singTypeCastRange
     obtain ⟨c, hc⟩ := hy
     apply Matrix.det_eq_zero_of_column_eq_zero c
     intro i
@@ -137,9 +137,9 @@ private lemma Matrix.IsTotallyUnimodular.addMultiples [DecidableEq X] [Field F] 
           rw [←ha', ←hb'] at hab ⊢
           simp [f'] at hab
           rw [hf hab]
-    have similar : ((A.addMultiples x (- A · y / A x y)).submatrix f' g').det ∈ Set.range SignType.cast
+    have similar : ((A.addMultiples x (- A · y / A x y)).submatrix f' g').det ∈ SignType.cast.range
     · convert_to
-        ((A.submatrix f' g').addMultiples 0 (fun i : Fin k.succ => (- A (f' i) y / A x y))).det ∈ Set.range SignType.cast
+        ((A.submatrix f' g').addMultiples 0 (fun i : Fin k.succ => (- A (f' i) y / A x y))).det ∈ SignType.cast.range
           using 2
       · ext i j
         if hi0 : i = 0 then
@@ -168,7 +168,7 @@ private lemma Matrix.IsTotallyUnimodular.addMultiples [DecidableEq X] [Field F] 
     if hAxy : A x y = 1 then
       simpa [hAxy] using similar
     else if hAxy' : A x y = -1 then
-      exact in_set_range_singType_cast_of_neg_one_mul_self (hAxy' ▸ similar)
+      exact in_singTypeCastRange_of_neg_one_mul_self (hAxy' ▸ similar)
     else
       exfalso
       obtain ⟨s, hs⟩ := hA.apply x y
@@ -210,8 +210,8 @@ lemma Matrix.IsTotallyUnimodular.shortTableauPivot [DecidableEq X] [DecidableEq 
     (hA : A.IsTotallyUnimodular) {x : X} {y : Y} (hxy : A x y ≠ 0) :
     (A.shortTableauPivot x y).IsTotallyUnimodular := by
   rw [Matrix.shortTableauPivot_eq]
-  have hAxy : 1 / A x y ∈ Set.range SignType.cast
-  · rw [inv_eq_self_of_in_set_range_singType_cast] <;> exact hA.apply x y
+  have hAxy : 1 / A x y ∈ SignType.cast.range
+  · rw [inv_eq_self_of_in_singTypeCastRange] <;> exact hA.apply x y
   exact (((hA.one_fromCols).addMultiples x ◪y hxy).getShortTableau x y).mulRow x hAxy
 
 #print axioms Matrix.IsTotallyUnimodular.shortTableauPivot

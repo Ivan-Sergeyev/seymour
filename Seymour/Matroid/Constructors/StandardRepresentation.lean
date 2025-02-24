@@ -70,19 +70,19 @@ lemma StandardRepr.toVectorMatroid_indep_iff'' [Semiring R] (S : StandardRepr α
 
 lemma StandardRepr.toVectorMatroid_indep_iff_elem [Semiring R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependId · ∘ Subtype.toSum)ᵀ (Set.range hI.elem) := by
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependId · ∘ Subtype.toSum)ᵀ hI.elem.range := by
   rw [StandardRepr.toVectorMatroid_indep_iff]
   unfold HasSubset.Subset.elem
   aesop
 
 lemma StandardRepr.toVectorMatroid_indep_iff_elem' [Semiring R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) (Set.range hI.elem) :=
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) hI.elem.range :=
   S.toVectorMatroid_indep_iff_elem I
 
 lemma StandardRepr.toVectorMatroid_indep_iff_elem'' [Semiring R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.Bᵀ.uppendId ∘ Subtype.toSum) (Set.range hI.elem) := by
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.Bᵀ.uppendId ∘ Subtype.toSum) hI.elem.range := by
   simpa using S.toVectorMatroid_indep_iff_elem' I
 
 lemma StandardRepr.toVectorMatroid_indep_iff_submatrix [Semiring R] (S : StandardRepr α R) (I : Set α) :
@@ -141,17 +141,17 @@ lemma StandardRepr.toMatroid_indep_iff'' [Semiring R] (S : StandardRepr α R) (I
 
 lemma StandardRepr.toMatroid_indep_iff_elem [Semiring R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependId · ∘ Subtype.toSum)ᵀ (Set.range hI.elem) :=
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependId · ∘ Subtype.toSum)ᵀ hI.elem.range :=
   S.toVectorMatroid_indep_iff_elem I
 
 lemma StandardRepr.toMatroid_indep_iff_elem' [Semiring R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) (Set.range hI.elem) :=
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) hI.elem.range :=
   S.toVectorMatroid_indep_iff_elem' I
 
 lemma StandardRepr.toMatroid_indep_iff_elem'' [Semiring R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.Bᵀ.uppendId ∘ Subtype.toSum) (Set.range hI.elem) :=
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.Bᵀ.uppendId ∘ Subtype.toSum) hI.elem.range :=
   S.toVectorMatroid_indep_iff_elem'' I
 
 lemma StandardRepr.toMatroid_indep_iff_submatrix [Semiring R] (S : StandardRepr α R) (I : Set α) :
@@ -171,9 +171,13 @@ lemma StandardRepr.toMatroid_indep_iff_submatrix'' [Semiring R] (S : StandardRep
 
 @[simp]
 lemma StandardRepr.toMatroid_indep [Semiring R] (S : StandardRepr α R) :
-    S.toMatroid.Indep = (∃ hI : · ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) (Set.range hI.elem)) := by
+    S.toMatroid.Indep = (∃ hI : · ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) hI.elem.range) := by
   ext I
   exact S.toVectorMatroid_indep_iff_elem' I
+
+lemma StandardRepr.toMatroid_indep' [Semiring R] (S : StandardRepr α R) :
+    S.toMatroid.Indep = (∃ hI : · ⊆ S.X ∪ S.Y, LinearIndepOn R (S.Bᵀ.uppendId ∘ Subtype.toSum) hI.elem.range) := by
+  simp
 
 /-- The identity matrix has linearly independent rows. -/
 lemma Matrix.one_linearIndependent [Ring R] : LinearIndependent R (1 : Matrix α α R) := by

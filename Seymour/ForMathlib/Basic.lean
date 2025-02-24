@@ -6,6 +6,8 @@ prefix:max "◪" => Sum.inr
 
 variable {α : Type}
 
+@[simp]
+abbrev Function.range {ι : Type} (f : ι → α) : Set α := Set.range f
 
 lemma Sum.swap_inj {β : Type} : (@Sum.swap α β).Injective := by
   intro
@@ -39,30 +41,30 @@ lemma sum_over_fin_succ_of_only_zeroth_nonzero {n : ℕ} [AddCommMonoid α] {f :
   simpa using hx
 
 
-lemma zero_in_set_range_singType_cast [Ring α] : (0 : α) ∈ Set.range SignType.cast :=
+lemma zero_in_singTypeCastRange [Ring α] : (0 : α) ∈ SignType.cast.range :=
   ⟨0, rfl⟩
 
-lemma in_set_range_singType_cast_mul_in_set_range_singType_cast [Ring α] {a b : α}
-    (ha : a ∈ Set.range SignType.cast) (hb : b ∈ Set.range SignType.cast) :
-    a * b ∈ Set.range SignType.cast := by
+lemma in_singTypeCastRange_mul_in_singTypeCastRange [Ring α] {a b : α}
+    (ha : a ∈ SignType.cast.range) (hb : b ∈ SignType.cast.range) :
+    a * b ∈ SignType.cast.range := by
   obtain ⟨a', rfl⟩ := ha
   obtain ⟨b', rfl⟩ := hb
   exact ⟨_, SignType.coe_mul a' b'⟩
 
-lemma neg_one_mul_in_set_range_singType_cast [Ring α] {a : α}
-    (ha : a ∈ Set.range SignType.cast) :
-    (-1) * a ∈ Set.range SignType.cast :=
-  in_set_range_singType_cast_mul_in_set_range_singType_cast ⟨-1, rfl⟩ ha
+lemma neg_one_mul_in_singTypeCastRange [Ring α] {a : α}
+    (ha : a ∈ SignType.cast.range) :
+    (-1) * a ∈ SignType.cast.range :=
+  in_singTypeCastRange_mul_in_singTypeCastRange ⟨-1, rfl⟩ ha
 
-lemma in_set_range_singType_cast_of_neg_one_mul_self [Ring α] {a : α}
-    (ha : (-1) * a ∈ Set.range SignType.cast) :
-    a ∈ Set.range SignType.cast := by
+lemma in_singTypeCastRange_of_neg_one_mul_self [Ring α] {a : α}
+    (ha : (-1) * a ∈ SignType.cast.range) :
+    a ∈ SignType.cast.range := by
   rw [←neg_neg a, neg_eq_neg_one_mul]
-  apply neg_one_mul_in_set_range_singType_cast
+  apply neg_one_mul_in_singTypeCastRange
   rwa [neg_eq_neg_one_mul]
 
-lemma in_set_range_singType_cast_iff_abs [LinearOrderedCommRing α] (a : α) :
-    a ∈ Set.range SignType.cast ↔ |a| ∈ Set.range SignType.cast := by
+lemma in_singTypeCastRange_iff_abs [LinearOrderedCommRing α] (a : α) :
+    a ∈ SignType.cast.range ↔ |a| ∈ SignType.cast.range := by
   constructor
   · rintro ⟨s, rfl⟩
     cases s with
@@ -90,7 +92,7 @@ lemma in_set_range_singType_cast_iff_abs [LinearOrderedCommRing α] (a : α) :
       have h0 := (abs_nonneg a).trans_eq hs
       norm_num at h0
 
-lemma inv_eq_self_of_in_set_range_singType_cast [Field α] {a : α} (ha : a ∈ Set.range SignType.cast) :
+lemma inv_eq_self_of_in_singTypeCastRange [Field α] {a : α} (ha : a ∈ SignType.cast.range) :
     1 / a = a := by
   obtain ⟨s, rfl⟩ := ha
   cases s <;> simp

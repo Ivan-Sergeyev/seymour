@@ -37,7 +37,7 @@ private lemma VectorMatroid.indepCols_eq_indepColsOld (M : VectorMatroid α R) :
   · exact (linearIndependent_equiv' e (by aesop)).→ hAI
 
 lemma VectorMatroid.indepCols_iff_elem (M : VectorMatroid α R) (I : Set α) :
-    M.IndepCols I ↔ ∃ hI : I ⊆ M.Y, LinearIndepOn R M.Aᵀ (Set.range hI.elem) := by
+    M.IndepCols I ↔ ∃ hI : I ⊆ M.Y, LinearIndepOn R M.Aᵀ hI.elem.range := by
   unfold IndepCols HasSubset.Subset.elem
   aesop
 
