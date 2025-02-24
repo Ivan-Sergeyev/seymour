@@ -89,7 +89,7 @@ private lemma hasTuSigning_iff_hasTuSigning_of_toMatroid_eq_toMatroid {V W : Vec
     (hVW : V.toMatroid = W.toMatroid) :
     V.HasTuSigning ↔ W.HasTuSigning := by
   obtain ⟨S, rfl⟩ := V.exists_standardRepr
-  have hS := S.toMatroid_isBase
+  have hS := S.toMatroid_isBase_X
   rw [show S.toMatroid = W.toMatroid from hVW] at hS
   obtain ⟨S', hS', rfl⟩ := W.exists_standardRepr_isBase hS
   rw [ext_standardRepr_of_same_matroid_same_X hVW hS'.symm]

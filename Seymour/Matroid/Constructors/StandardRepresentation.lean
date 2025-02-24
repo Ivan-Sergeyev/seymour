@@ -92,7 +92,7 @@ lemma VectorMatroid.exists_standardRepr_isBase [Semiring R] {B : Set α}
   have hBY := hMB.subset_ground
   sorry
 
-/-- Construct a matroid from standard representation. -/
+/-- Construct a matroid from a standard representation. -/
 def StandardRepr.toMatroid [Semiring R] (S : StandardRepr α R) : Matroid α :=
   S.toVectorMatroid.toMatroid
 
@@ -137,7 +137,7 @@ lemma Matrix.one_linearIndependent [Ring R] : LinearIndependent R (1 : Matrix α
   simpa [Finsupp.linearCombination_apply, Pi.zero_apply, Finsupp.sum_apply', Matrix.one_apply] using congr_fun hl j
 
 /-- The set of all rows of a standard representation is a base in the resulting matroid. -/
-lemma StandardRepr.toMatroid_isBase [Ring R] (S : StandardRepr α R) :
+lemma StandardRepr.toMatroid_isBase_X [Ring R] (S : StandardRepr α R) :
     S.toMatroid.IsBase S.X := by
   apply Matroid.Indep.isBase_of_forall_insert
   · rw [StandardRepr.toMatroid_indep_iff_submatrix]
@@ -147,6 +147,29 @@ lemma StandardRepr.toMatroid_isBase [Ring R] (S : StandardRepr α R) :
     rw [Matrix.transpose_one]
     exact Matrix.one_linearIndependent
   · intro e he
+    --apply Matroid.Dep.not_indep
+    rw [StandardRepr.toMatroid_indep_iff_submatrix]
+    push_neg
+    intro he'
+    have heY : e ∈ S.Y
+    · simp_all
+    simp [Matrix.transpose_fromCols]
+    suffices : -- TODO make the outer submatrix `Equiv.toFun`
+      ¬LinearIndependent (ι := (e ᕃ S.X).Elem) R
+        ((Matrix.fromRows 1 (Matrix.row Unit (S.Bᵀ ⟨e, heY⟩))).submatrix
+          (fun x : (e ᕃ S.X).Elem => (if hx : x.val ∈ S.X then .inl ⟨x.val, hx⟩ else .inr () : S.X ⊕ Unit)) id)
+    · convert this using 2
+      ext i j
+      simp [Subtype.toSum, Matrix.row]
+      if hiX : i.val ∈ S.X then
+        simp [hiX]
+      else
+        have hiY : i.val ∈ S.Y
+        · sorry
+        have hie : i.val = e
+        · sorry
+        simp [hiX, hiY]
+        congr
     sorry -- if you add anything extra to the identity matrix, it becomes singular
 
 /-- If two standard representations of the same matroid have the same base, they are identical. -/
