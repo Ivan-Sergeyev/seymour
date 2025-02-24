@@ -2,6 +2,22 @@ import Seymour.Basic
 import Mathlib.Data.Matrix.Rank
 
 
+/-- Reindexing preserves the rank of a matrix. -/
+lemma Matrix.rank_reindex_generalized {X Y X' Y' R : Type} [Fintype Y] [Fintype Y'] [CommRing R]
+    (A : Matrix X Y R) (x : X ≃ X') (y : Y ≃ Y') :
+    (A.reindex x y).rank = A.rank := by
+  rw [ -- Mathlib proof:
+    Matrix.rank, Matrix.rank, Matrix.mulVecLin_reindex,
+    LinearMap.range_comp, LinearMap.range_comp, LinearEquiv.range,
+    Submodule.map_top, LinearEquiv.finrank_map_eq]
+
+/-- Pseudoreindexing preserves the rank of a matrix. -/
+lemma Matrix.rank_submatrix_generalized {X Y X' Y' R : Type} [Fintype Y] [Fintype Y'] [CommRing R]
+    (A : Matrix X Y R) (x : X' ≃ X) (y : Y' ≃ Y) :
+    (A.submatrix x y).rank = A.rank :=
+  A.rank_reindex_generalized x.symm y.symm
+
+
 variable {X Y F : Type} [Fintype X] [Fintype Y] [Field F]
 
 lemma Matrix.not_linearIndependent_of_rank_lt (A : Matrix X Y F) (hA : A.rank < #X) :
@@ -27,18 +43,12 @@ lemma Matrix.linearIndependent_iff_exists_submatrix_unit (A : Matrix X Y F) :
     have hXA : #X = A.transpose.rank := (A.rank_transpose.trans hA.rank_matrix).symm
     obtain ⟨f, hf⟩ := A.transpose.exists_submatrix_rank
     use f ∘ Fintype.equivFinOfCardEq hXA
-    rw [←Matrix.transpose_submatrix, Matrix.rank_transpose] at hf
     have hX : #X = (A.submatrix id (f ∘ Fintype.equivFinOfCardEq hXA)).rank
-    · conv => lhs; rw [hXA, ←hf]
-      show (A.submatrix id f).rank = ((A.submatrix id f).submatrix (Equiv.refl X) (Fintype.equivFinOfCardEq hXA)).rank
-      --have := (A.submatrix id f).rank_submatrix (Equiv.refl X) (Fintype.equivFinOfCardEq hXA)
-      --have := (A.submatrix id f).rank_reindex (Equiv.refl X) (Fintype.equivFinOfCardEq hXA)
-      sorry
-    rw [←Matrix.linearIndependent_rows_iff_isUnit]
-    show LinearIndependent F (A.submatrix id (f ∘ Fintype.equivFinOfCardEq hXA))
-    rw [linearIndependent_iff_card_eq_finrank_span, hX]
-    --simp [Set.finrank, Module.finrank, Matrix.rank, Submodule.span, LinearMap.range]
-    sorry
+    · rw [←Matrix.transpose_submatrix, Matrix.rank_transpose] at hf
+      conv => lhs; rw [hXA, ←hf]
+      exact ((A.submatrix id f).rank_reindex_generalized (Equiv.refl X) (Fintype.equivFinOfCardEq hXA).symm).symm
+    rewrite [←Matrix.linearIndependent_rows_iff_isUnit, linearIndependent_iff_card_eq_finrank_span, hX]
+    apply Matrix.rank_eq_finrank_span_row
   · intro ⟨f, hAf⟩
     exact hAf.linearIndependent_matrix.of_comp (LinearMap.funLeft F F f)
 
