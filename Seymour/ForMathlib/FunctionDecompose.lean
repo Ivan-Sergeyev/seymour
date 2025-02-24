@@ -9,7 +9,7 @@ Here we decompose a function `f : α → β₁ ⊕ β₂` into a function and tw
 variable {α β₁ β₂ : Type}
 
 /-- Given `f : α → β₁ ⊕ β₂` decompose `α` into two preïmages. -/
-@[simp]
+@[simp low]
 def Function.decomposeSum (f : α → β₁ ⊕ β₂) :
     α ≃ { x₁ : α × β₁ // f x₁.fst = ◩x₁.snd } ⊕ { x₂ : α × β₂ // f x₂.fst = ◪x₂.snd } where
   toFun a :=
@@ -28,6 +28,7 @@ def Function.decomposeSum (f : α → β₁ ⊕ β₂) :
     | inl => aesop
     | inr => aesop
 
+@[simp ←]
 lemma Function.eq_comp_decomposeSum (f : α → β₁ ⊕ β₂) :
     f = Sum.elim (Sum.inl ∘ (·.val.snd)) (Sum.inr ∘ (·.val.snd)) ∘ f.decomposeSum := by
   aesop

@@ -2,13 +2,13 @@ import Seymour.Matroid.Constructors.StandardRepresentation
 import Seymour.ForMathlib.MatrixLI
 
 
--- ## Primary definition (LI over ℚ, TU over ℚ)
+-- ## Primary definition (LI over ℚ while TU over ℚ)
 
 /-- The main definition of regularity: `M` is regular iff it is constructed from a `VectorMatroid` with a rational TU matrix. -/
 def Matroid.IsRegular {α : Type} (M : Matroid α) : Prop :=
   ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsTotallyUnimodular ∧ (VectorMatroid.mk X Y A).toMatroid = M
 
--- ## Secondary definition (LI over Z2, TU over ℚ)
+-- ## Secondary definition (LI over Z2 while TU over ℚ)
 
 /-- Matrix `A` is a TU signing of `U` iff `A` is TU and its entries are the same as in `U` up to signs.
     Do not ask `U.IsTotallyUnimodular` ... see `Matrix.overZ2_isTotallyUnimodular` for example! -/

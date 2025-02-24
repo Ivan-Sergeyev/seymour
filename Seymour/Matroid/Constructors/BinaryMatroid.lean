@@ -45,6 +45,10 @@ lemma VectorMatroid.indepCols_iff_submatrix (M : VectorMatroid α R) (I : Set α
     M.IndepCols I ↔ ∃ hI : I ⊆ M.Y, LinearIndependent R (M.A.submatrix id hI.elem)ᵀ :=
   M.indepCols_eq_indepColsOld ▸ Iff.rfl
 
+lemma VectorMatroid.indepCols_iff_submatrix' (M : VectorMatroid α R) (I : Set α) :
+    M.IndepCols I ↔ ∃ hI : I ⊆ M.Y, LinearIndependent R (M.Aᵀ.submatrix hI.elem id) :=
+  M.indepCols_eq_indepColsOld ▸ Iff.rfl
+
 
 /-- Empty set is independent. -/
 private theorem VectorMatroid.indepColsOld_empty (M : VectorMatroid α R) :
