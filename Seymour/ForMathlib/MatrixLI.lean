@@ -1,10 +1,12 @@
 import Seymour.Basic
 import Mathlib.Data.Matrix.Rank
 
+section rank_reindexing
+
+variable {X Y X' Y' R : Type} [Fintype Y] [Fintype Y'] [CommRing R]
 
 /-- Reindexing preserves the rank of a matrix. -/
-lemma Matrix.rank_reindex_generalized {X Y X' Y' R : Type} [Fintype Y] [Fintype Y'] [CommRing R]
-    (A : Matrix X Y R) (x : X ≃ X') (y : Y ≃ Y') :
+lemma Matrix.rank_reindex_generalized (A : Matrix X Y R) (x : X ≃ X') (y : Y ≃ Y') :
     (A.reindex x y).rank = A.rank := by
   rw [ -- Mathlib proof:
     Matrix.rank, Matrix.rank, Matrix.mulVecLin_reindex,
@@ -12,10 +14,11 @@ lemma Matrix.rank_reindex_generalized {X Y X' Y' R : Type} [Fintype Y] [Fintype 
     Submodule.map_top, LinearEquiv.finrank_map_eq]
 
 /-- Pseudoreindexing preserves the rank of a matrix. -/
-lemma Matrix.rank_submatrix_generalized {X Y X' Y' R : Type} [Fintype Y] [Fintype Y'] [CommRing R]
-    (A : Matrix X Y R) (x : X' ≃ X) (y : Y' ≃ Y) :
+lemma Matrix.rank_submatrix_generalized (A : Matrix X Y R) (x : X' ≃ X) (y : Y' ≃ Y) :
     (A.submatrix x y).rank = A.rank :=
   A.rank_reindex_generalized x.symm y.symm
+
+end rank_reindexing
 
 
 variable {X Y F : Type} [Fintype X] [Fintype Y] [Field F]
@@ -24,9 +27,9 @@ lemma Matrix.not_linearIndependent_of_rank_lt (A : Matrix X Y F) (hA : A.rank < 
     ¬ LinearIndependent F A :=
   (A.rank_eq_finrank_span_row ▸ finrank_span_eq_card · ▸ hA |>.false)
 
-lemma Matrix.not_linearIndependent_of_too_many_rows (A : Matrix X Y F) (hXY : #Y < #X) :
+lemma Matrix.not_linearIndependent_of_too_many_rows (A : Matrix X Y F) (hYX : #Y < #X) :
     ¬ LinearIndependent F A :=
-  A.not_linearIndependent_of_rank_lt (A.rank_le_card_width.trans_lt hXY)
+  A.not_linearIndependent_of_rank_lt (A.rank_le_card_width.trans_lt hYX)
 
 
 variable [DecidableEq X] [DecidableEq Y]
@@ -46,8 +49,8 @@ lemma Matrix.linearIndependent_iff_exists_submatrix_unit (A : Matrix X Y F) :
     have hX : #X = (A.submatrix id (f ∘ Fintype.equivFinOfCardEq hXA)).rank
     · rw [←Matrix.transpose_submatrix, Matrix.rank_transpose] at hf
       conv => lhs; rw [hXA, ←hf]
-      exact ((A.submatrix id f).rank_reindex_generalized (Equiv.refl X) (Fintype.equivFinOfCardEq hXA).symm).symm
-    rewrite [←Matrix.linearIndependent_rows_iff_isUnit, linearIndependent_iff_card_eq_finrank_span, hX]
+      exact ((A.submatrix id f).rank_submatrix_generalized (Equiv.refl X) (Fintype.equivFinOfCardEq hXA)).symm
+    rw [←Matrix.linearIndependent_rows_iff_isUnit, linearIndependent_iff_card_eq_finrank_span, hX]
     apply Matrix.rank_eq_finrank_span_row
   · intro ⟨f, hAf⟩
     exact hAf.linearIndependent_matrix.of_comp (LinearMap.funLeft F F f)
