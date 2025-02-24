@@ -5,17 +5,12 @@ import Mathlib.Data.Matrix.Rank
 variable {X Y F : Type} [Fintype X] [Fintype Y] [Field F]
 
 lemma Matrix.not_linearIndependent_of_rank_lt (A : Matrix X Y F) (hA : A.rank < #X) :
-    ¬ LinearIndependent F A := by
-  intro contr
-  have hA' : A.rank = #X
-  · rw [Matrix.rank_eq_finrank_span_row]
-    exact finrank_span_eq_card contr
-  exact (hA' ▸ hA).false
+    ¬ LinearIndependent F A :=
+  (A.rank_eq_finrank_span_row ▸ finrank_span_eq_card · ▸ hA |>.false)
 
-lemma Matrix.not_linearIndependent_of_too_many_rows (A : Matrix X Y F) (hαβ : #Y < #X) :
-    ¬ LinearIndependent F A := by
-  apply Matrix.not_linearIndependent_of_rank_lt
-  exact (rank_le_card_width A).trans_lt hαβ
+lemma Matrix.not_linearIndependent_of_too_many_rows (A : Matrix X Y F) (hXY : #Y < #X) :
+    ¬ LinearIndependent F A :=
+  A.not_linearIndependent_of_rank_lt (A.rank_le_card_width.trans_lt hXY)
 
 
 variable [DecidableEq X] [DecidableEq Y]
