@@ -2,13 +2,13 @@ import Seymour.Matroid.Constructors.StandardRepresentation
 import Seymour.ForMathlib.MatrixLI
 
 
--- ## Main definition of this file
+-- ## Primary definition (LI over ℚ, TU over ℚ)
 
 /-- The main definition of regularity: `M` is regular iff it is constructed from a `VectorMatroid` with a rational TU matrix. -/
 def Matroid.IsRegular {α : Type} (M : Matroid α) : Prop :=
   ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsTotallyUnimodular ∧ (VectorMatroid.mk X Y A).toMatroid = M
 
--- ## Secondary definitions
+-- ## Secondary definition (LI over Z2, TU over ℚ)
 
 /-- Matrix `A` is a TU signing of `U` iff `A` is TU and its entries are the same as in `U` up to signs.
     Do not ask `U.IsTotallyUnimodular` ... see `Matrix.overZ2_isTotallyUnimodular` for example! -/
@@ -89,9 +89,9 @@ private lemma hasTuSigning_iff_hasTuSigning_of_toMatroid_eq_toMatroid {V W : Vec
     (hVW : V.toMatroid = W.toMatroid) :
     V.HasTuSigning ↔ W.HasTuSigning := by
   obtain ⟨S, rfl⟩ := V.exists_standardRepr
-  have based := S.toMatroid_isBase
-  rw [show S.toMatroid = W.toMatroid from hVW] at based
-  obtain ⟨S', hS', rfl⟩ := W.exists_standardRepr_isBase based
+  have hS := S.toMatroid_isBase
+  rw [show S.toMatroid = W.toMatroid from hVW] at hS
+  obtain ⟨S', hS', rfl⟩ := W.exists_standardRepr_isBase hS
   rw [ext_standardRepr_of_same_matroid_same_X hVW hS'.symm]
 
 /-- Binary matroid constructed from a full representation is regular iff the binary matrix has a TU signing. -/
