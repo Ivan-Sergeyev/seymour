@@ -1,5 +1,5 @@
 import Seymour.Matroid.Constructors.BinaryMatroid
-import Mathlib.Data.Matrix.Rank
+import Seymour.ForMathlib.MatrixLI
 
 open scoped Matrix Set.Notation
 
@@ -190,23 +190,6 @@ lemma Matrix.one_linearIndependent [Ring R] : LinearIndependent R (1 : Matrix α
   intro l hl
   ext j
   simpa [Finsupp.linearCombination_apply, Pi.zero_apply, Finsupp.sum_apply', Matrix.one_apply] using congr_fun hl j
-
-omit [DecidableEq α] in -- TODO move
-lemma Matrix.not_linearIndependent_of_rank_lt {β : Type} [Fintype α] [Fintype β] [Field R] (A : Matrix α β R)
-    (hA : A.rank < #α) :
-    ¬ LinearIndependent R A := by
-  intro contr
-  have hA' : A.rank = #α
-  · rw [Matrix.rank_eq_finrank_span_row]
-    exact finrank_span_eq_card contr
-  exact (hA' ▸ hA).false
-
-omit [DecidableEq α] in -- TODO move
-lemma Matrix.not_linearIndependent_of_too_many_rows {β : Type} [Fintype α] [Fintype β] [Field R] (A : Matrix α β R)
-    (hαβ : #β < #α) :
-    ¬ LinearIndependent R A := by
-  apply Matrix.not_linearIndependent_of_rank_lt
-  exact (rank_le_card_width A).trans_lt hαβ
 
 /-- The set of all rows of a standard representation is a base in the resulting matroid. -/
 lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype S.X] :
