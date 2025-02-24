@@ -132,7 +132,6 @@ lemma StandardRepr.toMatroid_indep_iff [Semiring R] (S : StandardRepr α R) (I :
     I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R (S.B.prependId · ∘ Subtype.toSum)ᵀ ((S.X ∪ S.Y) ↓∩ I) :=
   S.toVectorMatroid_indep_iff I
 
-@[simp high] -- TODO is it a good simp-normal form?
 lemma StandardRepr.toMatroid_indep_iff' [Semiring R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
     I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) ((S.X ∪ S.Y) ↓∩ I) :=
@@ -148,6 +147,7 @@ lemma StandardRepr.toMatroid_indep_iff_elem [Semiring R] (S : StandardRepr α R)
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependId · ∘ Subtype.toSum)ᵀ hI.elem.range :=
   S.toVectorMatroid_indep_iff_elem I
 
+@[simp high]
 lemma StandardRepr.toMatroid_indep_iff_elem' [Semiring R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) hI.elem.range :=
