@@ -4,8 +4,7 @@ import Mathlib.Data.Matrix.Rank
 
 variable {X Y F : Type} [Fintype X] [Fintype Y] [Field F]
 
-lemma Matrix.not_linearIndependent_of_rank_lt (A : Matrix X Y F)
-    (hA : A.rank < #X) :
+lemma Matrix.not_linearIndependent_of_rank_lt (A : Matrix X Y F) (hA : A.rank < #X) :
     ¬ LinearIndependent F A := by
   intro contr
   have hA' : A.rank = #X
@@ -13,8 +12,7 @@ lemma Matrix.not_linearIndependent_of_rank_lt (A : Matrix X Y F)
     exact finrank_span_eq_card contr
   exact (hA' ▸ hA).false
 
-lemma Matrix.not_linearIndependent_of_too_many_rows (A : Matrix X Y F)
-    (hαβ : #Y < #X) :
+lemma Matrix.not_linearIndependent_of_too_many_rows (A : Matrix X Y F) (hαβ : #Y < #X) :
     ¬ LinearIndependent F A := by
   apply Matrix.not_linearIndependent_of_rank_lt
   exact (rank_le_card_width A).trans_lt hαβ
@@ -23,6 +21,7 @@ lemma Matrix.not_linearIndependent_of_too_many_rows (A : Matrix X Y F)
 variable [DecidableEq X] [DecidableEq Y]
 
 lemma Matrix.exists_submatrix_rank (A : Matrix X Y F) : ∃ r : Fin A.rank → X, (A.submatrix r id).rank = A.rank := by
+  simp only [Matrix.rank_eq_finrank_span_row]
   sorry
 
 /-- Rows of a matrix are linearly independent iff the matrix contains a nonsigular square submatrix of full height. -/

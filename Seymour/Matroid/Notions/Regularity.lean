@@ -68,7 +68,6 @@ private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_of_discretize {X Y : Set �
 lemma Matroid.IsRegular.isBinary {M : Matroid α} (hM : M.IsRegular) :
     ∃ V : VectorMatroid α Z2, V.toMatroid = M := by
   obtain ⟨X, Y, A, hA, rfl⟩ := hM
-  have : Fintype X := sorry -- TODO !!
   exact ⟨⟨X, Y, A.discretize⟩, hA.toMatroid_eq_discretize.symm⟩
 
 /-- Vector matroid given by full representation that can be represented by a matrix over `Z2` with a TU signing. -/
@@ -78,7 +77,7 @@ private abbrev VectorMatroid.HasTuSigning (V : VectorMatroid α Z2) : Prop :=
 variable [DecidableEq α]
 
 /-- Every regular matroid has a standard binary representation. -/
-lemma Matroid.IsRegular.isBinaryStd {M : Matroid α} [Finite M.E] (hM : M.IsRegular) :
+lemma Matroid.IsRegular.isBinaryStd {M : Matroid α} (hM : M.IsRegular) :
     ∃ S : StandardRepr α Z2, S.toMatroid = M := by
   obtain ⟨V, hV⟩ := hM.isBinary
   obtain ⟨S, hS⟩ := V.exists_standardRepr
