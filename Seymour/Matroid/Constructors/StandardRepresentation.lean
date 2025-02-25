@@ -57,6 +57,9 @@ lemma StandardRepr.toVectorMatroid_E [Semiring R] (S : StandardRepr α R) :
 instance {S : StandardRepr α R} [Zero R] [One R] [hSX : Finite S.X] : Finite S.toVectorMatroid.X :=
   hSX
 
+instance {S : StandardRepr α R} [Zero R] [One R] [Finite S.X] [Finite S.Y] : Finite S.toVectorMatroid.Y :=
+  Finite.Set.finite_union S.X S.Y
+
 lemma StandardRepr.toVectorMatroid_indep_iff [Semiring R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
     I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R (S.B.prependId · ∘ Subtype.toSum)ᵀ ((S.X ∪ S.Y) ↓∩ I) := by
@@ -248,14 +251,15 @@ lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype
     simp [heX]
 
 private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁ B₂ : Matrix X Y Z2}
-    {hX : ∀ a, Decidable (a ∈ X)} {hY : ∀ a, Decidable (a ∈ Y)}
+    {hX : ∀ a, Decidable (a ∈ X)} {hY : ∀ a, Decidable (a ∈ Y)} [Fintype X]
     (hSS : (StandardRepr.mk X Y hXY B₁ hX hY).toMatroid = (StandardRepr.mk X Y hXY B₂ hX hY).toMatroid) :
     B₁ = B₂ := by
   rw [←Matrix.transpose_inj]
   apply Matrix.ext_col
   intro y
+  have hXXY : X ⊆ X ∪ Y := Set.subset_union_left
+  have hYXY : Y ⊆ X ∪ Y := Set.subset_union_right
   have hSS' := congr_arg Matroid.Indep hSS
-  simp at hSS'
   let D₁ := { x : X | B₁ᵀ y x ≠ 0 }
   let D₂ := { x : X | B₂ᵀ y x ≠ 0 }
   suffices hDD : D₁ = D₂
@@ -273,10 +277,36 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
         simpa [D₁] using Fin2_eq_0_of_ne_1 hx₁
       simp only [D₂, Set.mem_setOf_eq, not_not] at hx₂
       rw [Fin2_eq_0_of_ne_1 hx₁, hx₂]
-  sorry
+  apply Set.eq_of_subset_of_subset
+  · -- show `D₁ ⊆ D₂`
+    by_contra hD
+    rw [Set.not_subset_iff_exists_mem_not_mem] at hD
+    -- otherwise `y ᕃ D₂` is dependent in `M₂` but indep in `M₁`
+    have hM₂ : ¬ (StandardRepr.mk X Y hXY B₂ hX hY).toMatroid.Indep (y.val ᕃ D₂)
+    · sorry -- see below
+    have hM₁ : (StandardRepr.mk X Y hXY B₁ hX hY).toMatroid.Indep (y.val ᕃ D₂)
+    · sorry -- see below
+    exact hM₂ (hSS' ▸ hM₁)
+  · -- show `D₂ ⊆ D₁`
+    by_contra hD
+    rw [Set.not_subset_iff_exists_mem_not_mem] at hD
+    -- otherwise `y ᕃ D₁` is dependent in `M₁` but indep in `M₂`
+    have hM₁ : ¬ (StandardRepr.mk X Y hXY B₁ hX hY).toMatroid.Indep (y.val ᕃ D₁)
+    · rw [StandardRepr.toMatroid_indep_iff_elem', not_exists]
+      intro hD₁
+      erw [not_linearIndependent_iff]
+      refine ⟨Finset.univ, 1, ?_, ⟨hYXY.elem y, by simp_all⟩, Finset.mem_univ _, Ne.symm (zero_ne_one' Z2)⟩
+      simp -- there are exactly two `1`s in rows from `D₁` and all `0`s otherwise
+      sorry
+    have hM₂ : (StandardRepr.mk X Y hXY B₂ hX hY).toMatroid.Indep (y.val ᕃ D₁)
+    · obtain ⟨d, hd₂, hd₁⟩ := hD
+      -- if the coefficient in from of `y` is `0` then all coefficients must be `0`
+      -- if the coefficient in from of `y` is `1` then the sum will always have `1` on `d` position
+      sorry
+    exact (hSS' ▸ hM₁) hM₂
 
 /-- If two standard representations of the same binary matroid have the same base, they are identical. -/
-lemma ext_standardRepr_of_same_matroid_same_X {S₁ S₂ : StandardRepr α Z2}
+lemma ext_standardRepr_of_same_matroid_same_X {S₁ S₂ : StandardRepr α Z2} [Fintype S₁.X]
     (hSS : S₁.toMatroid = S₂.toMatroid) (hXX : S₁.X = S₂.X) :
     S₁ = S₂ := by
   have hYY : S₁.Y = S₂.Y := right_eq_right_of_union_eq_union hXX S₁.hXY S₂.hXY (congr_arg Matroid.E hSS)
