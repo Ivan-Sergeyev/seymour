@@ -30,7 +30,6 @@ structure Matroid.Is1sumOf (M : Matroid α) (M₁ M₂ : Matroid α) where
   S : StandardRepr α Z2
   S₁ : StandardRepr α Z2
   S₂ : StandardRepr α Z2
-  hS : Finite S.X -- TODO infer automatically
   hS₁ : Finite S₁.X
   hS₂ : Finite S₂.X
   hM : S.toMatroid = M
@@ -40,6 +39,10 @@ structure Matroid.Is1sumOf (M : Matroid α) (M₁ M₂ : Matroid α) where
   hYX : S₁.Y ⫗ S₂.X
   IsSum : (StandardRepr_1sumComposition hXY hYX).fst = S
   IsValid : (StandardRepr_1sumComposition hXY hYX).snd
+
+instance Matroid.Is1sumOf.finS {M M₁ M₂ : Matroid α} (hM : M.Is1sumOf M₁ M₂) : Finite hM.S.X := by
+  obtain ⟨_, S₁, S₂, _, _, _, _, _, _, _, rfl, _⟩ := hM
+  exact Finite.Set.finite_union S₁.X S₂.X
 
 /-- Matroid constructed from a valid 1-sum of binary matroids is the same as disjoint sum of matroids constructed from them. -/
 lemma StandardRepr_1sumComposition_as_disjointSum {S₁ S₂ : StandardRepr α Z2} {hXY : S₁.X ⫗ S₂.Y} {hYX : S₁.Y ⫗ S₂.X}
@@ -100,7 +103,8 @@ lemma StandardRepr_1sumComposition_hasTuSigning {S₁ S₂ : StandardRepr α Z2}
 theorem Matroid.Is1sumOf.isRegular {M M₁ M₂ : Matroid α}
     (hM : M.Is1sumOf M₁ M₂) (hM₁ : M₁.IsRegular) (hM₂ : M₂.IsRegular) :
     M.IsRegular := by
-  obtain ⟨_, _, _, _, _, _, rfl, rfl, rfl, _, _, rfl, -⟩ := hM
+  have := hM.finS
+  obtain ⟨_, _, _, _, _, rfl, rfl, rfl, _, _, rfl, _⟩ := hM
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hM₁ hM₂ ⊢
   apply StandardRepr_1sumComposition_hasTuSigning
   · exact hM₁

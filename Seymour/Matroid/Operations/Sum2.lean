@@ -39,7 +39,6 @@ structure Matroid.Is2sumOf (M : Matroid α) (M₁ M₂ : Matroid α) where
   S : StandardRepr α Z2
   S₁ : StandardRepr α Z2
   S₂ : StandardRepr α Z2
-  hS : Finite S.X -- TODO infer automatically
   hS₁ : Finite S₁.X
   hS₂ : Finite S₂.X
   hM : S.toMatroid = M
@@ -50,6 +49,10 @@ structure Matroid.Is2sumOf (M : Matroid α) (M₁ M₂ : Matroid α) where
   hXY : S₂.X ⫗ S₁.Y
   IsSum : (StandardRepr_2sum ha hXY).fst = S
   IsValid : (StandardRepr_2sum ha hXY).snd
+
+instance Matroid.Is2sumOf.finS {M M₁ M₂ : Matroid α} (hM : M.Is2sumOf M₁ M₂) : Finite hM.S.X := by
+  obtain ⟨_, _, _, _, _, _, _, _, _, _, _, rfl, _⟩ := hM
+  apply Finite.Set.finite_union
 
 lemma Matrix_2sumComposition_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {A₂ : Matrix X₂ Y₂ ℚ}
     (hA₁ : A₁.IsTotallyUnimodular) (hA₂ : A₂.IsTotallyUnimodular) (x : Y₁ → ℚ) (y : X₂ → ℚ) :
@@ -125,7 +128,8 @@ lemma StandardRepr_2sum_hasTuSigning {S₁ S₂ : StandardRepr α Z2} {a : α} (
 theorem Matroid.Is2sumOf.isRegular {M M₁ M₂ : Matroid α}
     (hM : M.Is2sumOf M₁ M₂) (hM₁ : M₁.IsRegular) (hM₂ : M₂.IsRegular) :
     M.IsRegular := by
-  obtain ⟨_, _, _, _, _, _, rfl, rfl, rfl, _, _, _, rfl, -⟩ := hM
+  have := hM.finS
+  obtain ⟨_, _, _, _, _, rfl, rfl, rfl, _, _, _, rfl, _⟩ := hM
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hM₁ hM₂ ⊢
   apply StandardRepr_2sum_hasTuSigning
   · exact hM₁

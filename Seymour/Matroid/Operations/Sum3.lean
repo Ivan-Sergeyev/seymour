@@ -103,7 +103,6 @@ structure Matroid.Is3sumOf (M : Matroid α) (M₁ M₂ : Matroid α) where
   S : StandardRepr α Z2
   S₁ : StandardRepr α Z2
   S₂ : StandardRepr α Z2
-  hS : Finite S.X -- TODO infer automatically
   hS₁ : Finite S₁.X
   hS₂ : Finite S₂.X
   hM : S.toMatroid = M
@@ -191,9 +190,15 @@ lemma StandardRepr_3sum_B {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ 
     else
       sorry
 
+instance Matroid.Is3sumOf.finS {M M₁ M₂ : Matroid α} (hM : M.Is3sumOf M₁ M₂) : Finite hM.S.X := by
+  obtain ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, rfl, _⟩ := hM
+  rw [StandardRepr_3sum_X]
+  apply Finite.Set.finite_union
+
 /-- Any 3-sum of regular matroids is a regular matroid.
     This is the final of the three parts of the easy direction of the Seymour's theorem. -/
 theorem Matroid.Is3sumOf.isRegular {M M₁ M₂ : Matroid α}
     (hM : M.Is3sumOf M₁ M₂) (hM₁ : M₁.IsRegular) (hM₂ : M₂.IsRegular) :
     M.IsRegular := by
+  have := hM.finS
   sorry
