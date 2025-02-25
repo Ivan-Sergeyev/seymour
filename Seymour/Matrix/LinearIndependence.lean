@@ -1,6 +1,7 @@
 import Seymour.Basic.Basic
 import Mathlib.Data.Matrix.Rank
 
+
 section rank_reindexing
 
 variable {X Y X' Y' R : Type} [Fintype Y] [Fintype Y'] [CommRing R]

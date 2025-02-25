@@ -33,6 +33,9 @@ prefix:max "◪" => Sum.inr
 lemma Fin2_eq_1_of_ne_0 {a : Fin 2} (ha : a ≠ 0) : a = 1 := by
   omega
 
+lemma Fin2_eq_0_of_ne_1 {a : Fin 2} (ha : a ≠ 1) : a = 0 := by
+  omega
+
 lemma Fin3_eq_2_of_ne_0_1 {a : Fin 3} (ha0 : a ≠ 0) (ha1 : a ≠ 1) : a = 2 := by
   omega
 
@@ -69,6 +72,9 @@ lemma Matrix.prependId_transpose [Zero α] [One α] {m n : Type} [DecidableEq m]
 lemma Matrix.uppendId_transpose [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) :
     A.uppendId.transpose = A.transpose.prependId := by
   rw [←Matrix.transpose_transpose A.transpose.prependId, Matrix.prependId_transpose, Matrix.transpose_transpose]
+
+lemma Matrix.ext_col {m n : Type} {A B : Matrix m n α} (hAB : ∀ i : m, A i = B i) : A = B :=
+  Matrix.ext (congr_fun <| hAB ·)
 
 lemma Matrix.det_coe [DecidableEq α] [Fintype α] (A : Matrix α α ℤ) (F : Type) [Field F] :
     ((A.det : ℤ) : F) = ((A.map Int.cast).det : F) := by

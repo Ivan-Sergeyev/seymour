@@ -1,3 +1,4 @@
+import Seymour.Basic.Sets
 import Seymour.Matrix.LinearIndependence
 import Seymour.Matroid.Constructors.BinaryMatroid
 
@@ -121,6 +122,43 @@ lemma VectorMatroid.exists_standardRepr_isBase [Semiring R] {B : Set α}
 def StandardRepr.toMatroid [Semiring R] (S : StandardRepr α R) : Matroid α :=
   S.toVectorMatroid.toMatroid
 
+attribute [local ext] StandardRepr
+
+/-- Kinda extensionality on `StandardRepr` but `@[ext]` cannot be here. -/
+lemma standardRepr_eq_standardRepr_of_B_eq_B [Semiring R] {S₁ S₂ : StandardRepr α R}
+    (hX : S₁.X = S₂.X) (hY : S₁.Y = S₂.Y) (hB : S₁.B = hX ▸ hY ▸ S₂.B) :
+    S₁ = S₂ := by
+  ext1
+  · exact hX
+  · exact hY
+  · aesop
+  · apply Function.hfunext rfl
+    intro a₁ a₂ haa
+    apply Subsingleton.helim
+    if ha₁ : a₁ ∈ S₁.X then
+      have ha₂ : a₂ ∈ S₂.X
+      · rw [heq_eq_eq] at haa
+        rwa [haa, hX] at ha₁
+      simp [ha₁, ha₂]
+    else
+      have ha₂ : a₂ ∉ S₂.X
+      · rw [heq_eq_eq] at haa
+        rwa [haa, hX] at ha₁
+      simp [ha₁, ha₂]
+  · apply Function.hfunext rfl
+    intro a₁ a₂ haa
+    apply Subsingleton.helim
+    if ha₁ : a₁ ∈ S₁.Y then
+      have ha₂ : a₂ ∈ S₂.Y
+      · rw [heq_eq_eq] at haa
+        rwa [haa, hY] at ha₁
+      simp [ha₁, ha₂]
+    else
+      have ha₂ : a₂ ∉ S₂.Y
+      · rw [heq_eq_eq] at haa
+        rwa [haa, hY] at ha₁
+      simp [ha₁, ha₂]
+
 /-- Ground set of a vector matroid is union of row and column index sets of its standard matrix representation. -/
 @[simp high]
 lemma StandardRepr.toMatroid_E [Semiring R] (S : StandardRepr α R) :
@@ -209,8 +247,40 @@ lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype
     have heX : e ∉ S.X.toFinset := (Set.not_mem_of_mem_diff he <| Set.mem_toFinset.→ ·)
     simp [heX]
 
-/-- If two standard representations of the same matroid have the same base, they are identical. -/
-lemma ext_standardRepr_of_same_matroid_same_X [Semiring R] {S₁ S₂ : StandardRepr α R}
+private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁ B₂ : Matrix X Y Z2}
+    {hX : ∀ a, Decidable (a ∈ X)} {hY : ∀ a, Decidable (a ∈ Y)}
+    (hSS : (StandardRepr.mk X Y hXY B₁ hX hY).toMatroid = (StandardRepr.mk X Y hXY B₂ hX hY).toMatroid) :
+    B₁ = B₂ := by
+  rw [←Matrix.transpose_inj]
+  apply Matrix.ext_col
+  intro y
+  have hSS' := congr_arg Matroid.Indep hSS
+  simp at hSS'
+  let D₁ := { x : X | B₁ᵀ y x ≠ 0 }
+  let D₂ := { x : X | B₂ᵀ y x ≠ 0 }
+  suffices hDD : D₁ = D₂
+  · ext x
+    if hx₁ : B₁ᵀ y x = 1 then
+      have hx₂ : x ∈ D₂
+      · rw [←hDD]
+        simp only [D₁, Set.mem_setOf_eq]
+        rw [hx₁]
+        norm_num
+      rw [hx₁, Fin2_eq_1_of_ne_0 hx₂]
+    else
+      have hx₂ : x ∉ D₂
+      · rw [←hDD]
+        simpa [D₁] using Fin2_eq_0_of_ne_1 hx₁
+      simp only [D₂, Set.mem_setOf_eq, not_not] at hx₂
+      rw [Fin2_eq_0_of_ne_1 hx₁, hx₂]
+  sorry
+
+/-- If two standard representations of the same binary matroid have the same base, they are identical. -/
+lemma ext_standardRepr_of_same_matroid_same_X {S₁ S₂ : StandardRepr α Z2}
     (hSS : S₁.toMatroid = S₂.toMatroid) (hXX : S₁.X = S₂.X) :
     S₁ = S₂ := by
-  sorry
+  have hYY : S₁.Y = S₂.Y := right_eq_right_of_union_eq_union hXX S₁.hXY S₂.hXY (congr_arg Matroid.E hSS)
+  apply standardRepr_eq_standardRepr_of_B_eq_B hXX hYY
+  apply B_eq_B_of_same_matroid_same_X
+  convert hSS
+  cc

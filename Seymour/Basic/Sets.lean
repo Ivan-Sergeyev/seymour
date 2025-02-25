@@ -236,6 +236,11 @@ lemma diff_inter_disjoint_diff_inter (X₁ X₂ : Set α) :
   rw [Set.diff_self_inter, Set.diff_inter_self_eq_diff]
   exact disjoint_sdiff_sdiff
 
+lemma right_eq_right_of_union_eq_union {A₁ A₂ B₁ B₂ : Set α}
+    (hA : A₁ = A₂) (hB₁ : A₁ ⫗ B₁) (hB₂ : A₂ ⫗ B₂) (hAB : A₁ ∪ B₁ = A₂ ∪ B₂) :
+    B₁ = B₂ := by
+  tauto_set
+
 end Disjoint
 
 
