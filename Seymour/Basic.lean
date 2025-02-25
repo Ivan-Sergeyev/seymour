@@ -1,4 +1,4 @@
-import Seymour.ForMathlib.MatrixTU
+import Seymour.Matrix.TotalUnimodularity
 
 /-!
 This file provides notation used in the project and conversions between set-theoretical and type-theoretical definitions.

@@ -1,6 +1,5 @@
 import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
-import Seymour.ForMathlib.Basic
-import Seymour.ForMathlib.FunctionDecompose
+import Seymour.Basic.FunctionDecompose
 
 
 variable {X₁ X₂ Z R : Type}

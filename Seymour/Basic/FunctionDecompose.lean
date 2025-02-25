@@ -1,4 +1,4 @@
-import Seymour.ForMathlib.Basic
+import Seymour.Basic.Basic
 
 /-!
 # Function to Sum decomposition

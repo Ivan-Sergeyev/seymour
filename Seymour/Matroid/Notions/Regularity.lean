@@ -1,5 +1,5 @@
 import Seymour.Matroid.Constructors.StandardRepresentation
-import Seymour.ForMathlib.MatrixLI
+import Seymour.Matrix.LinearIndependence
 
 
 -- ## Primary definition (LI over ℚ while TU over ℚ)

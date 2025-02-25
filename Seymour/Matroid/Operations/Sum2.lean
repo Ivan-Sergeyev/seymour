@@ -1,6 +1,6 @@
+import Seymour.Basic.Sets
+import Seymour.Matrix.Pivoting
 import Seymour.Matroid.Notions.Regularity
-import Seymour.ForMathlib.SetTheory
-import Seymour.ForMathlib.MatrixPivot
 
 
 variable {α : Type} [DecidableEq α]

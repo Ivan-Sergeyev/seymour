@@ -1,6 +1,6 @@
 import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 import Mathlib.Data.Fintype.Card
-import Seymour.ForMathlib.Basic
+import Seymour.Basic.Basic
 
 
 /-- Formally verified algorithm for testing total unimodularity. -/

@@ -1,5 +1,5 @@
+import Seymour.Matrix.LinearIndependence
 import Seymour.Matroid.Constructors.BinaryMatroid
-import Seymour.ForMathlib.MatrixLI
 
 open scoped Matrix Set.Notation
 

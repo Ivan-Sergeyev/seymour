@@ -1,5 +1,4 @@
 import Seymour.Basic
-import Seymour.Computable.MatrixTU
 
 
 variable {X Y F : Type}
@@ -167,15 +166,15 @@ private lemma Matrix.IsTotallyUnimodular.addMultiples [DecidableEq X] [Field F] 
     rw [laplaced, eq_Axy] at similar
     if hAxy : A x y = 1 then
       simpa [hAxy] using similar
-    else if hAxy' : A x y = -1 then
-      exact in_singTypeCastRange_of_neg_one_mul_self (hAxy' ▸ similar)
+    else if hAyx : A x y = -1 then
+      exact in_singTypeCastRange_of_neg_one_mul_self (hAyx ▸ similar)
     else
       exfalso
       obtain ⟨s, hs⟩ := hA.apply x y
       cases s with
       | zero => exact hxy hs.symm
       | pos => exact hAxy hs.symm
-      | neg => exact hAxy' hs.symm
+      | neg => exact hAyx hs.symm
 
 /-- The small tableau consists of all columns but `x`th from the original matrix and the `y`th column of the square matrix. -/
 private def Matrix.getShortTableau [DecidableEq Y] (A : Matrix X (X ⊕ Y) F) (x : X) (y : Y) :
