@@ -4,7 +4,7 @@ import Mathlib.Order.Disjoint
 import Mathlib.Order.SymmDiff
 import Mathlib.Tactic
 
-import Seymour.Basic
+import Seymour.Basic.Basic
 
 /-!
 This provides lemmas about sets (mostly dealing with disjointness) that are missing in Mathlib.

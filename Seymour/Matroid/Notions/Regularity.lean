@@ -1,5 +1,6 @@
-import Seymour.Matroid.Constructors.StandardRepresentation
 import Seymour.Matrix.LinearIndependence
+import Seymour.Matrix.TotalUnimodularity
+import Seymour.Matroid.Constructors.StandardRepresentation
 
 
 -- ## Primary definition (LI over ℚ while TU over ℚ)

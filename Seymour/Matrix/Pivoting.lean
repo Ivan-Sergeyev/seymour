@@ -1,4 +1,4 @@
-import Seymour.Basic
+import Seymour.Basic.SignTypeCast
 
 
 variable {X Y F : Type}

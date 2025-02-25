@@ -3,7 +3,7 @@ import Mathlib.Data.Matroid.Dual
 import Mathlib.Data.Matroid.Map
 import Mathlib.Data.Matroid.Sum
 
-import Seymour.Basic
+import Seymour.Basic.Basic
 
 open scoped Matrix Set.Notation
 

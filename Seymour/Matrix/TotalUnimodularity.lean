@@ -1,6 +1,42 @@
 import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 import Seymour.Basic.FunctionDecompose
+import Seymour.Basic.SignTypeCast
 
+
+/-- Every matrix over `Z2` is TU. -/
+lemma Matrix.overZ2_isTotallyUnimodular {X Y : Type} (A : Matrix X Y Z2) : A.IsTotallyUnimodular := by
+  intro k f g hf hg
+  if h0 : (A.submatrix f g).det = 0 then
+    use 0
+    rewrite [h0]
+    rfl
+  else
+    use 1
+    rewrite [Fin2_eq_1_of_ne_0 h0]
+    rfl
+
+/-- Every matrix over `Z3` is TU. -/
+lemma Matrix.overZ3_isTotallyUnimodular {X Y : Type} (A : Matrix X Y Z3) : A.IsTotallyUnimodular := by
+  intro k f g hf hg
+  if h0 : (A.submatrix f g).det = 0 then
+    use 0
+    rewrite [h0]
+    rfl
+  else if h1 : (A.submatrix f g).det = 1 then
+    use 1
+    rewrite [h1]
+    rfl
+  else
+    use -1
+    rewrite [Fin3_eq_2_of_ne_0_1 h0 h1]
+    rfl
+
+-- Not every matrix over `Z4` is TU.
+example : ¬ (!![2] : Matrix _ _ (ZMod 4)).IsTotallyUnimodular := by
+  rw [Matrix.isTotallyUnimodular_iff]
+  push_neg
+  use 1, id, id
+  decide
 
 variable {X₁ X₂ Z R : Type}
 

@@ -1,13 +1,88 @@
 import Mathlib.Tactic
+import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 
+
+/-- The finite field on 2 elements; write `Z2` for "value" type but `Fin 2` for "indexing" type. -/
+abbrev Z2 : Type := ZMod 2
+
+/-- The finite field on 3 elements; write `Z3` for "value" type but `Fin 3` for "indexing" type. -/
+abbrev Z3 : Type := ZMod 3
+
+/-- Roughly speaking `a ᕃ A` is `A ∪ {a}`. -/
+infixr:66 " ᕃ " => Insert.insert
+
+/-- Writing `X ⫗ Y` is slightly more general than writing `X ∩ Y = ∅`. -/
+infix:61 " ⫗ " => Disjoint
+
+/-- The left-to-right direction of `↔`. -/
+postfix:max ".→" => Iff.mp
+
+/-- The right-to-left direction of `↔`. -/
+postfix:max ".←" => Iff.mpr
+
+/-- We denote the cardinality of a `Fintype` the same way the cardinality of a `Finset` is denoted. -/
 prefix:max "#" => Fintype.card
+
+/-- The "left" or "top" variant. -/
 prefix:max "◩" => Sum.inl
+
+/-- The "right" or "bottom" variant. -/
 prefix:max "◪" => Sum.inr
+
+
+lemma Fin2_eq_1_of_ne_0 {a : Fin 2} (ha : a ≠ 0) : a = 1 := by
+  omega
+
+lemma Fin3_eq_2_of_ne_0_1 {a : Fin 3} (ha0 : a ≠ 0) (ha1 : a ≠ 1) : a = 2 := by
+  omega
+
+lemma Z2val_toRat_mul_Z2val_toRat (a b : Z2) : (a.val : ℚ) * (b.val : ℚ) = ((a*b).val : ℚ) := by
+  fin_cases a <;> fin_cases b <;> simp
+  apply one_mul
 
 variable {α : Type}
 
 @[simp]
 abbrev Function.range {ι : Type} (f : ι → α) : Set α := Set.range f
+
+@[simp low]
+abbrev Matrix.prependId [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) : Matrix m (m ⊕ n) α :=
+  Matrix.fromCols 1 A
+
+@[simp low]
+abbrev Matrix.uppendId [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) : Matrix (n ⊕ m) n α :=
+  Matrix.fromRows 1 A
+
+@[simp]
+lemma Matrix.prependId_transpose [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) :
+    A.prependId.transpose = A.transpose.uppendId := by
+  ext i j
+  cases i with
+  | inr => rfl
+  | inl i' =>
+    if hi' : i' = j then
+      simp [Matrix.one_apply_eq, hi']
+    else
+      simp [Matrix.one_apply_ne, hi', Ne.symm hi']
+
+@[simp]
+lemma Matrix.uppendId_transpose [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) :
+    A.uppendId.transpose = A.transpose.prependId := by
+  rw [←Matrix.transpose_transpose A.transpose.prependId, Matrix.prependId_transpose, Matrix.transpose_transpose]
+
+lemma Matrix.det_coe [DecidableEq α] [Fintype α] (A : Matrix α α ℤ) (F : Type) [Field F] :
+    ((A.det : ℤ) : F) = ((A.map Int.cast).det : F) := by
+  simp [Matrix.det_apply]
+  congr
+  ext p
+  if h1 : Equiv.Perm.sign p = 1 then
+    simp [h1]
+  else
+    simp [Int.units_ne_iff_eq_neg.→ h1]
+
+lemma IsUnit.linearIndependent_matrix [DecidableEq α] [Fintype α] {R : Type} [CommRing R] {A : Matrix α α R} (hA : IsUnit A) :
+    LinearIndependent R A :=
+  A.linearIndependent_rows_of_isUnit hA
 
 lemma Sum.swap_inj {β : Type} : (@Sum.swap α β).Injective := by
   intro
@@ -40,59 +115,80 @@ lemma sum_over_fin_succ_of_only_zeroth_nonzero {n : ℕ} [AddCommMonoid α] {f :
   apply hf
   simpa using hx
 
+/-- Given `X ⊆ Y` cast an element of `X` as an element of `Y`. -/
+@[simp low]
+def HasSubset.Subset.elem {X Y : Set α} (hXY : X ⊆ Y) (x : X.Elem) : Y.Elem :=
+  ⟨x.val, hXY x.property⟩
 
-lemma zero_in_singTypeCastRange [Ring α] : (0 : α) ∈ SignType.cast.range :=
-  ⟨0, rfl⟩
+lemma HasSubset.Subset.elem_injective {X Y : Set α} (hXY : X ⊆ Y) : hXY.elem.Injective := by
+  intro x y hxy
+  ext
+  simpa using hxy
 
-lemma in_singTypeCastRange_mul_in_singTypeCastRange [Ring α] {a b : α}
-    (ha : a ∈ SignType.cast.range) (hb : b ∈ SignType.cast.range) :
-    a * b ∈ SignType.cast.range := by
-  obtain ⟨a', rfl⟩ := ha
-  obtain ⟨b', rfl⟩ := hb
-  exact ⟨_, SignType.coe_mul a' b'⟩
+lemma HasSubset.Subset.elem_range {X Y : Set α} (hXY : X ⊆ Y) : hXY.elem.range = { a : Y.Elem | a.val ∈ X } := by
+  aesop
 
-lemma neg_one_mul_in_singTypeCastRange [Ring α] {a : α}
-    (ha : a ∈ SignType.cast.range) :
-    (-1) * a ∈ SignType.cast.range :=
-  in_singTypeCastRange_mul_in_singTypeCastRange ⟨-1, rfl⟩ ha
+/-- Convert `(X ∪ Y).Elem` to `X.Elem ⊕ Y.Elem`. -/
+def Subtype.toSum {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) : X.Elem ⊕ Y.Elem :=
+  if hiX : i.val ∈ X then ◩⟨i, hiX⟩ else
+  if hiY : i.val ∈ Y then ◪⟨i, hiY⟩ else
+  (i.property.elim hiX hiY).elim
 
-lemma in_singTypeCastRange_of_neg_one_mul_self [Ring α] {a : α}
-    (ha : (-1) * a ∈ SignType.cast.range) :
-    a ∈ SignType.cast.range := by
-  rw [←neg_neg a, neg_eq_neg_one_mul]
-  apply neg_one_mul_in_singTypeCastRange
-  rwa [neg_eq_neg_one_mul]
+/-- Convert `X.Elem ⊕ Y.Elem` to `(X ∪ Y).Elem`. -/
+def Sum.toUnion {X Y : Set α} (i : X.Elem ⊕ Y.Elem) : (X ∪ Y).Elem :=
+  i.casesOn Set.subset_union_left.elem Set.subset_union_right.elem
 
-lemma in_singTypeCastRange_iff_abs [LinearOrderedCommRing α] (a : α) :
-    a ∈ SignType.cast.range ↔ |a| ∈ SignType.cast.range := by
-  constructor
-  · rintro ⟨s, rfl⟩
-    cases s with
-    | zero => use 0; simp
-    | pos => use 1; simp
-    | neg => use 1; simp
-  · intro ⟨s, hs⟩
-    symm at hs
-    cases s with
-    | zero =>
-      rw [SignType.zero_eq_zero, SignType.coe_zero, abs_eq_zero] at hs
-      exact ⟨0, hs.symm⟩
-    | pos =>
-      rw [SignType.pos_eq_one, abs_eq_max_neg, max_eq_iff] at hs
-      cases hs with
-      | inl poz =>
-        exact ⟨1, poz.left.symm⟩
-      | inr neg =>
-        use -1
-        rw [neg_eq_iff_eq_neg] at neg
-        exact neg.left.symm
-    | neg =>
-      exfalso
-      rw [SignType.neg_eq_neg_one, SignType.coe_neg, SignType.coe_one] at hs
-      have h0 := (abs_nonneg a).trans_eq hs
-      norm_num at h0
+/-- Converting `(X ∪ Y).Elem` to `X.Elem ⊕ Y.Elem` and back to `(X ∪ Y).Elem` gives the original element. -/
+lemma toSum_toUnion {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) :
+    i.toSum.toUnion = i := by
+  if hiX : i.val ∈ X then
+    simp [Subtype.toSum, Sum.toUnion, *]
+  else if hiY : i.val ∈ Y then
+    simp [Subtype.toSum, Sum.toUnion, *]
+  else
+    exfalso
+    exact i.property.elim hiX hiY
 
-lemma inv_eq_self_of_in_singTypeCastRange [Field α] {a : α} (ha : a ∈ SignType.cast.range) :
-    1 / a = a := by
-  obtain ⟨s, rfl⟩ := ha
-  cases s <;> simp
+/-- Converting `X.Elem ⊕ Y.Elem` to `(X ∪ Y).Elem` and back to `X.Elem ⊕ Y.Elem` gives the original element, assuming that
+`X` and `Y` are disjoint. -/
+lemma toUnion_toSum {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (hXY : X ⫗ Y) (i : X.Elem ⊕ Y.Elem) :
+    i.toUnion.toSum = i := by
+  rw [Set.disjoint_right] at hXY
+  cases i <;> simp [Subtype.toSum, Sum.toUnion, hXY]
+
+variable {T₁ T₂ S₁ S₂ : Set α} {β : Type}
+  [∀ a, Decidable (a ∈ T₁)]
+  [∀ a, Decidable (a ∈ T₂)]
+  [∀ a, Decidable (a ∈ S₁)]
+  [∀ a, Decidable (a ∈ S₂)]
+
+/-- Convert a block matrix to a matrix over set unions. -/
+def Matrix.toMatrixUnionUnion (C : Matrix (T₁.Elem ⊕ T₂.Elem) (S₁.Elem ⊕ S₂.Elem) β) :
+    Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem β :=
+  ((C ∘ Subtype.toSum) · ∘ Subtype.toSum)
+
+/-- Convert a matrix over set unions to a block matrix. -/
+def Matrix.toMatrixSumSum (C : Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem β) :
+    Matrix (T₁.Elem ⊕ T₂.Elem) (S₁.Elem ⊕ S₂.Elem) β :=
+  ((C ∘ Sum.toUnion) · ∘ Sum.toUnion)
+
+/-- Converting a block matrix to a matrix over set unions and back to a block matrix gives the original matrix, assuming that
+both said unions are disjoint. -/
+lemma toMatrixUnionUnion_toMatrixSumSum (hT : T₁ ⫗ T₂) (hS : S₁ ⫗ S₂) (C : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) β) :
+    C.toMatrixUnionUnion.toMatrixSumSum = C := by
+  ext
+  simp [Matrix.toMatrixUnionUnion, Matrix.toMatrixSumSum, toUnion_toSum, *]
+
+/-- Converting a matrix over set unions to a block matrix and back to a matrix over set unions gives the original matrix. -/
+lemma toMatrixSumSum_toMatrixUnionUnion (C : Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem β) :
+    C.toMatrixSumSum.toMatrixUnionUnion = C := by
+  ext
+  simp [Matrix.toMatrixUnionUnion, Matrix.toMatrixSumSum, toSum_toUnion]
+
+/-- A totally unimodular block matrix stays totally unimodular after converting to a matrix over set unions. -/
+lemma Matrix.IsTotallyUnimodular.toMatrixUnionUnion [CommRing β] {C : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) β}
+    (hC : C.IsTotallyUnimodular) :
+    C.toMatrixUnionUnion.IsTotallyUnimodular := by
+  rw [Matrix.isTotallyUnimodular_iff] at hC ⊢
+  intros
+  apply hC

@@ -1,4 +1,4 @@
-import Seymour.Basic
+import Seymour.Basic.Basic
 import Mathlib.Data.Matrix.Rank
 
 section rank_reindexing
