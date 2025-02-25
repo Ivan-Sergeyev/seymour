@@ -99,18 +99,17 @@ lemma finset_of_cardinality_between {β : Type} [Fintype α] [Fintype β] {n : �
     ∃ b : Finset β, #(α ⊕ b) = n ∧ Nonempty b := by
   have beta : n - #α ≤ #β
   · omega
-  obtain ⟨s, hs⟩ : ∃ s : Finset β, s.card = n - #α :=
-    (Finset.exists_subset_card_eq beta).imp (by simp)
+  obtain ⟨s, hs⟩ : ∃ s : Finset β, s.card = n - #α := (Finset.exists_subset_card_eq beta).imp (by simp)
   use s
   rw [Fintype.card_sum, Fintype.card_coe, hs]
   constructor
   · omega
-  · by_contra ifempty
-    have : s.card = 0
-    · rw [Finset.card_eq_zero]
-      rw [nonempty_subtype, not_exists] at ifempty
-      exact Finset.eq_empty_of_forall_not_mem ifempty
-    omega
+  by_contra ifempty
+  have : s.card = 0
+  · rw [Finset.card_eq_zero]
+    rw [nonempty_subtype, not_exists] at ifempty
+    exact Finset.eq_empty_of_forall_not_mem ifempty
+  omega
 
 lemma sum_over_fin_succ_of_only_zeroth_nonzero {n : ℕ} [AddCommMonoid α] {f : Fin n.succ → α}
     (hf : ∀ i : Fin n.succ, i ≠ 0 → f i = 0) :
@@ -156,7 +155,7 @@ lemma toSum_toUnion {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidabl
     exact i.property.elim hiX hiY
 
 /-- Converting `X.Elem ⊕ Y.Elem` to `(X ∪ Y).Elem` and back to `X.Elem ⊕ Y.Elem` gives the original element, assuming that
-`X` and `Y` are disjoint. -/
+    `X` and `Y` are disjoint. -/
 lemma toUnion_toSum {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (hXY : X ⫗ Y) (i : X.Elem ⊕ Y.Elem) :
     i.toUnion.toSum = i := by
   rw [Set.disjoint_right] at hXY
@@ -179,7 +178,7 @@ def Matrix.toMatrixSumSum (C : Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem 
   ((C ∘ Sum.toUnion) · ∘ Sum.toUnion)
 
 /-- Converting a block matrix to a matrix over set unions and back to a block matrix gives the original matrix, assuming that
-both said unions are disjoint. -/
+    both said unions are disjoint. -/
 lemma toMatrixUnionUnion_toMatrixSumSum (hT : T₁ ⫗ T₂) (hS : S₁ ⫗ S₂) (C : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) β) :
     C.toMatrixUnionUnion.toMatrixSumSum = C := by
   ext

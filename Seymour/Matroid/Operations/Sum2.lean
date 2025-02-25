@@ -12,8 +12,8 @@ abbrev Matrix_2sumComposition {β : Type} [Semiring β] {X₁ Y₁ X₂ Y₂ : S
   Matrix.fromBlocks A₁ 0 (fun i j => y i * x j) A₂
 
 /-- `StandardRepresentation`-level 2-sum of two matroids.
-The second part checks legitimacy: the ground sets of `M₁` and `M₂` are disjoint except for the element `a ∈ M₁.X ∩ M₂.Y`,
-and the bottom-most row of `M₁` and the left-most column of `M₂` are each nonzero vectors. -/
+    The second part checks legitimacy: the ground sets of `M₁` and `M₂` are disjoint except for the element `a ∈ M₁.X ∩ M₂.Y`,
+    and the bottom-most row of `M₁` and the left-most column of `M₂` are each nonzero vectors. -/
 def StandardRepr_2sum {a : α} {S₁ S₂ : StandardRepr α Z2} (ha : S₁.X ∩ S₂.Y = {a}) (hXY : S₂.X ⫗ S₁.Y) :
     StandardRepr α Z2 × Prop :=
   let A₁ : Matrix (S₁.X \ {a}).Elem S₁.Y.Elem Z2 := S₁.B ∘ Set.diff_subset.elem -- the top submatrix of `B₁`
@@ -121,7 +121,7 @@ lemma StandardRepr_2sum_hasTuSigning {S₁ S₂ : StandardRepr α Z2} {a : α} (
         simp_all [x', y', A₁', A₂', B']
 
 /-- Any 2-sum of regular matroids is a regular matroid.
-This is the middle of the three parts of the easy direction of the Seymour's theorem. -/
+    This is the middle of the three parts of the easy direction of the Seymour's theorem. -/
 theorem Matroid.Is2sumOf.isRegular {M M₁ M₂ : Matroid α}
     (hM : M.Is2sumOf M₁ M₂) (hM₁ : M₁.IsRegular) (hM₂ : M₂.IsRegular) :
     M.IsRegular := by

@@ -10,7 +10,7 @@ abbrev Matrix_1sumComposition {β : Type} [Zero β] {X₁ Y₁ X₂ Y₂ : Set �
   Matrix.fromBlocks A₁ 0 0 A₂
 
 /-- `StandardRepr`-level 1-sum of two matroids.
-It checks that everything is disjoint (returned as `.snd` of the output). -/
+    It checks that everything is disjoint (returned as `.snd` of the output). -/
 def StandardRepr_1sumComposition {S₁ S₂ : StandardRepr α Z2} (hXY : S₁.X ⫗ S₂.Y) (hYX : S₁.Y ⫗ S₂.X) :
     StandardRepr α Z2 × Prop :=
   ⟨
@@ -96,7 +96,7 @@ lemma StandardRepr_1sumComposition_hasTuSigning {S₁ S₂ : StandardRepr α Z2}
         simp_all
 
 /-- Any 1-sum of regular matroids is a regular matroid.
-This is the first of the three parts of the easy direction of the Seymour's theorem. -/
+    This is the first of the three parts of the easy direction of the Seymour's theorem. -/
 theorem Matroid.Is1sumOf.isRegular {M M₁ M₂ : Matroid α}
     (hM : M.Is1sumOf M₁ M₂) (hM₁ : M₁.IsRegular) (hM₂ : M₂.IsRegular) :
     M.IsRegular := by

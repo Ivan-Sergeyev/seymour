@@ -15,7 +15,8 @@ noncomputable abbrev Matrix_3sumComposition {β : Type} [CommRing β] {X₁ Y₁
     (Matrix.fromBlocks D₁ D D₁₂ D₂) (Matrix.fromCols (Matrix.col Unit (Sum.elim ![1, 1] z₂)) A₂)
 
 /-- `StandardRepresentation`-level 3-sum of two matroids.
-The second part checks legitimacy (invertibility of a certain 2x2 submatrix and specific 1s and 0s on concrete positions). -/
+    The second part checks legitimacy (invertibility of a certain 2x2 submatrix and
+    specific `1`s and `0`s on concrete positions). -/
 noncomputable def StandardRepr_3sum {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ y₂ y₃ : α}
     (hXX : S₁.X ∩ S₂.X = {x₁, x₂, x₃}) (hYY : S₁.Y ∩ S₂.Y = {y₁, y₂, y₃}) (hXY : S₁.X ⫗ S₂.Y) (hYX : S₁.Y ⫗ S₂.X) :
     StandardRepr α Z2 × Prop :=
@@ -97,7 +98,7 @@ noncomputable def StandardRepr_3sum {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ 
     ∧ (∀ y : α, ∀ hy : y ∈ S₂.Y, y ≠ y₂ ∧ y ≠ y₁ → S₂.B ⟨x₁, x₁inX₂⟩ ⟨y, hy⟩ = 0) -- the rest of the topmost row is `0`s
   ⟩
 
-/-- Binary matroid `M` is a result of 2-summing `M₁` and `M₂` in some way. -/
+/-- Binary matroid `M` is a result of 3-summing `M₁` and `M₂` in some way. -/
 structure Matroid.Is3sumOf (M : Matroid α) (M₁ M₂ : Matroid α) where
   S : StandardRepr α Z2
   S₁ : StandardRepr α Z2
@@ -191,7 +192,7 @@ lemma StandardRepr_3sum_B {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ 
       sorry
 
 /-- Any 3-sum of regular matroids is a regular matroid.
-This is the final of the three parts of the easy direction of the Seymour's theorem. -/
+    This is the final of the three parts of the easy direction of the Seymour's theorem. -/
 theorem Matroid.Is3sumOf.isRegular {M M₁ M₂ : Matroid α}
     (hM : M.Is3sumOf M₁ M₂) (hM₁ : M₁.IsRegular) (hM₂ : M₂.IsRegular) :
     M.IsRegular := by

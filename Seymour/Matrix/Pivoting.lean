@@ -4,7 +4,7 @@ import Seymour.Basic.SignTypeCast
 variable {X Y F : Type}
 
 /-- The result of the pivot operation in a short tableau (without exchanging the indices that define the pivot).
-This definition makes sense only if `A x y` is nonzero. -/
+    This definition makes sense only if `A x y` is nonzero. -/
 def Matrix.shortTableauPivot [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (x : X) (y : Y) :
     Matrix X Y F :=
   Matrix.of <| fun i j =>
