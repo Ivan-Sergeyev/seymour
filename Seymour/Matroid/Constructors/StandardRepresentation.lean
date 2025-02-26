@@ -238,7 +238,7 @@ lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype
   apply Matroid.Indep.isBase_of_forall_insert
   · rw [StandardRepr.toMatroid_indep_iff_submatrix]
     use Set.subset_union_left
-    simp [Matrix.submatrix, Subtype.toSum]
+    simp [Matrix.submatrix]
     show @LinearIndependent S.X R _ 1ᵀ ..
     rw [Matrix.transpose_one]
     exact Matrix.one_linearIndependent
