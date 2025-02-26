@@ -39,6 +39,12 @@ lemma Fin2_eq_0_of_ne_1 {a : Fin 2} (ha : a ≠ 1) : a = 0 := by
 lemma Fin3_eq_2_of_ne_0_1 {a : Fin 3} (ha0 : a ≠ 0) (ha1 : a ≠ 1) : a = 2 := by
   omega
 
+lemma Fin3_eq_1_of_ne_0_2 {a : Fin 3} (ha0 : a ≠ 0) (ha2 : a ≠ 2) : a = 1 := by
+  omega
+
+lemma Fin3_eq_0_of_ne_1_2 {a : Fin 3} (ha1 : a ≠ 1) (ha2 : a ≠ 2) : a = 0 := by
+  omega
+
 lemma Z2val_toRat_mul_Z2val_toRat (a b : Z2) : (a.val : ℚ) * (b.val : ℚ) = ((a*b).val : ℚ) := by
   fin_cases a <;> fin_cases b <;> simp
   apply one_mul
@@ -139,27 +145,48 @@ def Subtype.toSum {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable 
   if hiY : i.val ∈ Y then ◪⟨i, hiY⟩ else
   (i.property.elim hiX hiY).elim
 
+@[simp]
+lemma toSum_left {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] {i : (X ∪ Y).Elem} (hi : i.val ∈ X) :
+    i.toSum = ◩⟨i.val, hi⟩ := by
+  simp [Subtype.toSum, hi]
+
+@[simp]
+lemma toSum_right {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] {i : (X ∪ Y).Elem}
+    (hiX : i.val ∉ X) (hiY : i.val ∈ Y) :
+    i.toSum = ◪⟨i.val, hiY⟩ := by
+  simp [Subtype.toSum, hiY, hiX]
+
 /-- Convert `X.Elem ⊕ Y.Elem` to `(X ∪ Y).Elem`. -/
 def Sum.toUnion {X Y : Set α} (i : X.Elem ⊕ Y.Elem) : (X ∪ Y).Elem :=
   i.casesOn Set.subset_union_left.elem Set.subset_union_right.elem
 
+@[simp]
+lemma toUnion_left {X Y : Set α} (x : X.Elem) : @Sum.toUnion α X Y ◩x = ⟨x.val, Set.subset_union_left x.property⟩ :=
+  rfl
+
+@[simp]
+lemma toUnion_right {X Y : Set α} (y : Y.Elem) : @Sum.toUnion α X Y ◪y = ⟨y.val, Set.subset_union_right y.property⟩ :=
+  rfl
+
 /-- Converting `(X ∪ Y).Elem` to `X.Elem ⊕ Y.Elem` and back to `(X ∪ Y).Elem` gives the original element. -/
+@[simp]
 lemma toSum_toUnion {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) :
     i.toSum.toUnion = i := by
   if hiX : i.val ∈ X then
-    simp [Subtype.toSum, Sum.toUnion, *]
+    simp [hiX]
   else if hiY : i.val ∈ Y then
-    simp [Subtype.toSum, Sum.toUnion, *]
+    simp [hiX, hiY]
   else
     exfalso
     exact i.property.elim hiX hiY
 
 /-- Converting `X.Elem ⊕ Y.Elem` to `(X ∪ Y).Elem` and back to `X.Elem ⊕ Y.Elem` gives the original element, assuming that
     `X` and `Y` are disjoint. -/
+@[simp]
 lemma toUnion_toSum {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (hXY : X ⫗ Y) (i : X.Elem ⊕ Y.Elem) :
     i.toUnion.toSum = i := by
   rw [Set.disjoint_right] at hXY
-  cases i <;> simp [Subtype.toSum, Sum.toUnion, hXY]
+  cases i <;> simp [hXY]
 
 variable {T₁ T₂ S₁ S₂ : Set α} {β : Type}
   [∀ a, Decidable (a ∈ T₁)]
@@ -179,16 +206,18 @@ def Matrix.toMatrixSumSum (C : Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem 
 
 /-- Converting a block matrix to a matrix over set unions and back to a block matrix gives the original matrix, assuming that
     both said unions are disjoint. -/
+@[simp]
 lemma toMatrixUnionUnion_toMatrixSumSum (hT : T₁ ⫗ T₂) (hS : S₁ ⫗ S₂) (C : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) β) :
     C.toMatrixUnionUnion.toMatrixSumSum = C := by
   ext
-  simp [Matrix.toMatrixUnionUnion, Matrix.toMatrixSumSum, toUnion_toSum, *]
+  simp [Matrix.toMatrixUnionUnion, Matrix.toMatrixSumSum, *]
 
 /-- Converting a matrix over set unions to a block matrix and back to a matrix over set unions gives the original matrix. -/
+@[simp]
 lemma toMatrixSumSum_toMatrixUnionUnion (C : Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem β) :
     C.toMatrixSumSum.toMatrixUnionUnion = C := by
   ext
-  simp [Matrix.toMatrixUnionUnion, Matrix.toMatrixSumSum, toSum_toUnion]
+  simp [Matrix.toMatrixUnionUnion, Matrix.toMatrixSumSum]
 
 /-- A totally unimodular block matrix stays totally unimodular after converting to a matrix over set unions. -/
 lemma Matrix.IsTotallyUnimodular.toMatrixUnionUnion [CommRing β] {C : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) β}

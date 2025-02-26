@@ -144,10 +144,9 @@ lemma StandardRepr.toMatroid_isRegular_iff_hasTuSigning (S : StandardRepr α Z2)
       fun ⟨A, hA, hAS⟩ => ⟨A.submatrix id (Sum.toUnion ∘ Sum.inr), hA.submatrix id (Sum.toUnion ∘ Sum.inr), fun i j => ?_⟩,
       fun ⟨B, hB, hBS⟩ => ⟨(B.prependId · ∘ Subtype.toSum), (hB.one_fromCols).comp_cols Subtype.toSum, fun i j => ?_⟩⟩
   · convert hAS i (◪j).toUnion
-    have hjY : ((◪j).toUnion : (S.X ∪ S.Y).Elem).val ∈ S.Y := by simp [Sum.toUnion]
-    have hjX : ((◪j).toUnion : (S.X ∪ S.Y).Elem).val ∉ S.X := by simp [Sum.toUnion]; have := S.hXY; tauto_set
-    simp [Subtype.toSum, hjX, hjY]
-    rfl
+    have hjY : ((◪j).toUnion : (S.X ∪ S.Y).Elem).val ∈ S.Y := by simp
+    have hjX : ((◪j).toUnion : (S.X ∪ S.Y).Elem).val ∉ S.X := by simp; have := S.hXY; tauto_set
+    simp_all
   · cases hj : j.toSum with
     | inl x =>
       simp [hj]
@@ -158,6 +157,6 @@ lemma StandardRepr.toMatroid_isRegular_iff_hasTuSigning (S : StandardRepr α Z2)
         rewrite [Matrix.one_apply_ne hi, Matrix.one_apply_ne hi]
         rfl
     | inr y =>
-      have hjX : j.val ∉ S.X := (by simp [·, Subtype.toSum] at hj)
+      have hjX : j.val ∉ S.X := (by simp [·] at hj)
       have hjY : j.val ∈ S.Y := by have : j.val ∈ S.X ∪ S.Y := j.property; tauto_set
-      convert hBS i y <;> simp_all [Subtype.toSum]
+      convert hBS i y <;> simp_all
