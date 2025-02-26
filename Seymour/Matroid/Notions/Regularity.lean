@@ -131,8 +131,8 @@ private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatr
       simp_all
       intro hS0
       rw [hS0, abs_zero, ZMod.cast] at hSV
-      simp only at hSV
-      sorry
+      simp only [ZMod.val_one_eq_one_mod] at hSV
+      norm_num at hSV
 
 -- ## Main result of this file
 
