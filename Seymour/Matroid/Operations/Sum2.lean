@@ -54,8 +54,10 @@ instance Matroid.Is2sumOf.finS {M M₁ M₂ : Matroid α} (hM : M.Is2sumOf M₁ 
   obtain ⟨_, _, _, _, _, _, _, _, _, _, _, rfl, _⟩ := hM
   apply Finite.Set.finite_union
 
-lemma Matrix_2sumComposition_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {A₂ : Matrix X₂ Y₂ ℚ}
-    (hA₁ : A₁.IsTotallyUnimodular) (hA₂ : A₂.IsTotallyUnimodular) (x : Y₁ → ℚ) (y : X₂ → ℚ) :
+lemma Matrix_2sumComposition_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ : Set α}
+    {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
+    (hA₁ : (Matrix.fromRows A₁ (Matrix.row Unit x)).IsTotallyUnimodular)
+    (hA₂ : (Matrix.fromCols (Matrix.col Unit y) A₂).IsTotallyUnimodular) :
     (Matrix_2sumComposition A₁ x A₂ y).IsTotallyUnimodular := by
   sorry
 
@@ -102,8 +104,12 @@ lemma StandardRepr_2sum_hasTuSigning {S₁ S₂ : StandardRepr α Z2} {a : α} (
   constructor
   · apply Matrix.IsTotallyUnimodular.toMatrixUnionUnion
     apply Matrix_2sumComposition_isTotallyUnimodular
-    · apply hB₁.comp_rows
-    · apply hB₂.comp_cols
+    · convert hB₁.comp_rows
+        (fun i : (S₁.X \ {a}).Elem ⊕ Unit => i.casesOn Set.diff_subset.elem (fun _ => ⟨a, haX₁⟩))
+      aesop
+    · convert hB₂.comp_cols
+        (fun j : Unit ⊕ (S₂.Y \ {a}).Elem => j.casesOn (fun _ => ⟨a, haY₂⟩) Set.diff_subset.elem)
+      aesop
   · intro i j
     simp only [hB, Matrix.toMatrixUnionUnion, Function.comp_apply]
     cases hi : i.toSum with
