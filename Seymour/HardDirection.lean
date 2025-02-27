@@ -1,7 +1,7 @@
 import Seymour.Matroid.Operations.Sum1
 import Seymour.Matroid.Operations.Sum2
 import Seymour.Matroid.Operations.Sum3
-import Seymour.Matroid.Notions.Graphicity
+import Seymour.Matroid.Notions.Graphic
 
 
 variable {α : Type} [DecidableEq α]

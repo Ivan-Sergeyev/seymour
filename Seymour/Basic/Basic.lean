@@ -107,15 +107,15 @@ lemma finset_of_cardinality_between {β : Type} [Fintype α] [Fintype β] {n : �
   · omega
   obtain ⟨s, hs⟩ : ∃ s : Finset β, s.card = n - #α := (Finset.exists_subset_card_eq beta).imp (by simp)
   use s
-  rw [Fintype.card_sum, Fintype.card_coe, hs]
   constructor
-  · omega
-  by_contra ifempty
-  have : s.card = 0
-  · rw [Finset.card_eq_zero]
-    rw [nonempty_subtype, not_exists] at ifempty
-    exact Finset.eq_empty_of_forall_not_mem ifempty
-  omega
+  · rw [Fintype.card_sum, Fintype.card_coe, hs]
+    omega
+  · by_contra hs'
+    have : s.card = 0
+    · rw [Finset.card_eq_zero]
+      rw [nonempty_subtype, not_exists] at hs'
+      exact Finset.eq_empty_of_forall_not_mem hs'
+    omega
 
 lemma sum_over_fin_succ_of_only_zeroth_nonzero {n : ℕ} [AddCommMonoid α] {f : Fin n.succ → α}
     (hf : ∀ i : Fin n.succ, i ≠ 0 → f i = 0) :

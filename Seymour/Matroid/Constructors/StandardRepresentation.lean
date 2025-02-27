@@ -300,8 +300,8 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
       sorry
     have hM₂ : (StandardRepr.mk X Y hXY B₂ hX hY).toMatroid.Indep (y.val ᕃ D₁)
     · obtain ⟨d, hd₂, hd₁⟩ := hD
-      -- if the coefficient in from of `y` is `0` then all coefficients must be `0`
-      -- if the coefficient in from of `y` is `1` then the sum will always have `1` on `d` position
+      -- if the coefficient in front of `y` is `0` then all coefficients must be `0`
+      -- if the coefficient in front of `y` is `1` then the sum will always have `1` on `d` position
       sorry
     exact (hSS' ▸ hM₁) hM₂
 
