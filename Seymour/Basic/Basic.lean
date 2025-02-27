@@ -49,6 +49,9 @@ lemma Z2val_toRat_mul_Z2val_toRat (a b : Z2) : (a.val : ℚ) * (b.val : ℚ) = (
   fin_cases a <;> fin_cases b <;> simp
   apply one_mul
 
+lemma Int.neg_one_ne_zero : -1 ≠ 0 := by
+  norm_num
+
 variable {α : Type}
 
 @[simp]

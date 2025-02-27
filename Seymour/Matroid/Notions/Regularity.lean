@@ -53,7 +53,7 @@ private lemma Matrix.IsTotallyUnimodular.discretize {X Y : Type} {A : Matrix X Y
       rewrite [ZMod.val_one'' (· ▸ hn |>.false)]
       rfl
 
-private def Matrix.auxZ2 {X Y : Type} (A : Matrix X Y ℤ) (n : ℕ := 2) : Matrix X Y (ZMod n) :=
+private def Matrix.auxZ2 {X Y : Type} (A : Matrix X Y ℤ) : Matrix X Y Z2 :=
   Matrix.of (if A · · = 0 then 0 else 1)
 
 variable {α : Type}
@@ -107,18 +107,16 @@ private lemma Matrix.IsTotallyUnimodular.ratCast_det_eq_discretize_det [Fintype 
   rw [hA.det_eq_map_ratFloor_det, Rat.cast_intCast, hA.map_ratFloor.intCast_det_eq_auxZ2_det]
   congr
   ext i j
-  simp [Matrix.discretize, Matrix.auxZ2]
+  simp only [Matrix.discretize, Matrix.auxZ2]
   if zer : A i j = 0 then
     simp [zer]
     rfl
   else if pos : A i j = 1 then
     simp [pos]
-    show 1 ≠ 0
-    norm_num
+    exact Int.one_ne_zero
   else if neg : A i j = -1 then
     simp [neg]
-    show -1 ≠ 0
-    norm_num
+    exact Int.neg_one_ne_zero
   else
     exfalso
     obtain ⟨s, hs⟩ := hA.apply i j
