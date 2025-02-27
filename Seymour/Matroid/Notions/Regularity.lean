@@ -56,13 +56,7 @@ private lemma Matrix.IsTotallyUnimodular.discretize {X Y : Type} {A : Matrix X Y
 private def Matrix.auxZ2 {X Y : Type} (A : Matrix X Y ℤ) : Matrix X Y Z2 :=
   Matrix.of (if A · · = 0 then 0 else 1)
 
-variable {α : Type}
-
-/-- Vector matroid given by full representation that can be represented by a matrix over `Z2` with a TU signing. -/
-private abbrev VectorMatroid.HasTuSigning (V : VectorMatroid α Z2) : Prop :=
-  V.A.HasTuSigning
-
-variable [DecidableEq α]
+variable {α : Type} [DecidableEq α]
 
 private lemma Matrix.IsTotallyUnimodular.intCast_det_eq_auxZ2_det [Fintype α] {A : Matrix α α ℤ}
     (hA : A.IsTotallyUnimodular) :
@@ -84,52 +78,6 @@ private lemma Matrix.IsTotallyUnimodular.intCast_det_eq_auxZ2_det [Fintype α] {
     exfalso
     obtain ⟨s, hs⟩ := hA.apply i j
     cases s <;> simp_all
-
-lemma Matrix.IsTotallyUnimodular.det_eq_map_ratFloor_det [Fintype α] {A : Matrix α α ℚ}
-    (hA : A.IsTotallyUnimodular) :
-    A.det = (A.map Rat.floor).det := by
-  rw [Matrix.det_int_coe, Matrix.map_map]
-  congr
-  ext i j
-  rw [Matrix.map_apply]
-  obtain ⟨s, hs⟩ := hA.apply i j
-  cases s <;> simp at hs <;> rw [←hs] <;> rfl
-
-omit [DecidableEq α] in
-lemma Matrix.IsTotallyUnimodular.map_ratFloor {A : Matrix α α ℚ} (hA : A.IsTotallyUnimodular) :
-    (A.map Rat.floor).IsTotallyUnimodular := by
-  rw [Matrix.isTotallyUnimodular_iff]
-  intro k f g
-  rw [Matrix.submatrix_map]
-  have hAfg := (hA.submatrix f g).det_eq_map_ratFloor_det
-  rw [Matrix.isTotallyUnimodular_iff] at hA
-  if zer : ((A.submatrix f g).map Rat.floor).det = 0 then
-    rewrite [zer]
-    exact ⟨0, rfl⟩
-  else if pos1 : ((A.submatrix f g).map Rat.floor).det = 1 then
-    rewrite [pos1]
-    exact ⟨1, rfl⟩
-  else if neg1 : ((A.submatrix f g).map Rat.floor).det = -1 then
-    rewrite [neg1]
-    exact ⟨-1, rfl⟩
-  else
-    exfalso
-    obtain ⟨s, hs⟩ := hAfg ▸ hA k f g
-    cases s with
-    | zero =>
-      apply zer
-      convert hs.symm
-      simp
-    | pos =>
-      apply pos1
-      convert hs.symm
-      simp
-    | neg =>
-      apply neg1
-      rw [SignType.neg_eq_neg_one, SignType.coe_neg, SignType.coe_one, neg_eq_iff_eq_neg, ←Int.cast_neg] at hs
-      symm at hs
-      rw [Int.cast_eq_one] at hs
-      rwa [←neg_eq_iff_eq_neg]
 
 private lemma Matrix.IsTotallyUnimodular.ratCast_det_eq_discretize_det [Fintype α] {A : Matrix α α ℚ}
     (hA : A.IsTotallyUnimodular) :
@@ -202,7 +150,7 @@ lemma Matroid.IsRegular.isBinaryStd {M : Matroid α} (hM : M.IsRegular) :
 
 private lemma hasTuSigning_iff_hasTuSigning_of_toMatroid_eq_toMatroid {V W : VectorMatroid α Z2} [Finite V.X]
     (hVW : V.toMatroid = W.toMatroid) :
-    V.HasTuSigning ↔ W.HasTuSigning := by
+    V.A.HasTuSigning ↔ W.A.HasTuSigning := by
   obtain ⟨S, rfl⟩ := V.exists_standardRepr
   have : Fintype S.X := Set.Finite.fintype (by assumption)
   have hS := S.toMatroid_isBase_X
@@ -212,7 +160,7 @@ private lemma hasTuSigning_iff_hasTuSigning_of_toMatroid_eq_toMatroid {V W : Vec
 
 /-- Binary matroid constructed from a full representation is regular iff the binary matrix has a TU signing. -/
 private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatroid α Z2) [Finite V.X] :
-    V.toMatroid.IsRegular ↔ V.HasTuSigning := by
+    V.toMatroid.IsRegular ↔ V.A.HasTuSigning := by
   constructor
   · intro ⟨X, Y, A, hA, hAV⟩
     have hV : V.toMatroid = (VectorMatroid.mk X Y A.discretize).toMatroid

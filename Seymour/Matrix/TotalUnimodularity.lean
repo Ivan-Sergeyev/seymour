@@ -38,24 +38,96 @@ example : ¬ (!![2] : Matrix _ _ (ZMod 4)).IsTotallyUnimodular := by
   use 1, id, id
   decide
 
-variable {X₁ X₂ Z R : Type}
+lemma Matrix.IsTotallyUnimodular.det_eq_map_ratFloor_det {X : Type} [DecidableEq X] [Fintype X] {A : Matrix X X ℚ}
+    (hA : A.IsTotallyUnimodular) :
+    A.det = (A.map Rat.floor).det := by
+  rw [Matrix.det_int_coe, Matrix.map_map]
+  congr
+  ext i j
+  rw [Matrix.map_apply]
+  obtain ⟨s, hs⟩ := hA.apply i j
+  cases s <;> simp at hs <;> rw [←hs] <;> rfl
 
-lemma Matrix.IsTotallyUnimodular.comp_rows [CommRing R] {A : Matrix X₁ X₂ R}
-    (hA : A.IsTotallyUnimodular) (e : Z → X₁) :
+lemma Matrix.IsTotallyUnimodular.map_ratFloor {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
+    (A.map Rat.floor).IsTotallyUnimodular := by
+  rw [Matrix.isTotallyUnimodular_iff]
+  intro k f g
+  rw [Matrix.submatrix_map]
+  have hAfg := (hA.submatrix f g).det_eq_map_ratFloor_det
+  rw [Matrix.isTotallyUnimodular_iff] at hA
+  if zer : ((A.submatrix f g).map Rat.floor).det = 0 then
+    rewrite [zer]
+    exact ⟨0, rfl⟩
+  else if pos1 : ((A.submatrix f g).map Rat.floor).det = 1 then
+    rewrite [pos1]
+    exact ⟨1, rfl⟩
+  else if neg1 : ((A.submatrix f g).map Rat.floor).det = -1 then
+    rewrite [neg1]
+    exact ⟨-1, rfl⟩
+  else
+    exfalso
+    obtain ⟨s, hs⟩ := hAfg ▸ hA k f g
+    cases s with
+    | zero =>
+      apply zer
+      convert hs.symm
+      simp
+    | pos =>
+      apply pos1
+      convert hs.symm
+      simp
+    | neg =>
+      apply neg1
+      rw [SignType.neg_eq_neg_one, SignType.coe_neg, SignType.coe_one, neg_eq_iff_eq_neg, ←Int.cast_neg] at hs
+      symm at hs
+      rw [Int.cast_eq_one] at hs
+      rwa [←neg_eq_iff_eq_neg]
+
+variable {Z : Type}
+
+lemma Matrix.IsTotallyUnimodular.comp_rows {X Y R : Type} [CommRing R] {A : Matrix X Y R}
+    (hA : A.IsTotallyUnimodular) (e : Z → X) :
     Matrix.IsTotallyUnimodular (A ∘ e) := by
   rw [Matrix.isTotallyUnimodular_iff] at hA ⊢
   intro k f g
   exact hA k (e ∘ f) g
 
-lemma Matrix.IsTotallyUnimodular.comp_cols [CommRing R] {A : Matrix X₁ X₂ R}
-    (hA : A.IsTotallyUnimodular) (e : Z → X₂) :
+lemma Matrix.IsTotallyUnimodular.comp_cols {X Y R : Type} [CommRing R] {A : Matrix X Y R}
+    (hA : A.IsTotallyUnimodular) (e : Z → Y) :
     Matrix.IsTotallyUnimodular (A · ∘ e) := by
   rw [Matrix.isTotallyUnimodular_iff] at hA ⊢
   intro k f g
   exact hA k f (e ∘ g)
 
+-- The rest of the file deals with a block matrix made of two TU matrices and two `0` matrices.
+
+variable {X₁ X₂ : Type}
+
+noncomputable instance [Fintype Z] {f : Z → X₁ ⊕ X₂} : Fintype { x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } := by
+  apply Fintype.ofInjective (·.val.fst)
+  intro ⟨⟨u, u₁⟩, hu⟩ ⟨⟨v, v₁⟩, hv⟩ huv
+  dsimp only at hu hv huv
+  rw [Subtype.mk_eq_mk, Prod.mk.inj_iff]
+  refine ⟨huv, ?_⟩
+  rw [←Sum.inl.injEq, ←hu, ←hv, huv]
+
+noncomputable instance [Fintype Z] {f : Z → X₁ ⊕ X₂} : Fintype { x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd } := by
+  apply Fintype.ofInjective (·.val.fst)
+  intro ⟨⟨u, u₁⟩, hu⟩ ⟨⟨v, v₁⟩, hv⟩ huv
+  dsimp only at hu hv huv
+  rw [Subtype.mk_eq_mk, Prod.mk.inj_iff]
+  refine ⟨huv, ?_⟩
+  rw [←Sum.inr.injEq, ←hu, ←hv, huv]
+
+lemma decomposeSum_card_eq [Fintype Z] (f : Z → X₁ ⊕ X₂) :
+    #{ x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } + #{ x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd } = #Z := by
+  rw [←Fintype.card_sum]
+  exact Fintype.card_congr f.decomposeSum.symm
+
+variable {Y₁ Y₂ R : Type}
+
 /-- `Matrix.fromBlocks_isTotallyUnimodular` preprocessing. -/
-private lemma Matrix.fromBlocks_submatrix {Y₁ Y₂ : Type} [Zero R] (A₁ : Matrix X₁ Y₁ R) (A₂ : Matrix X₂ Y₂ R)
+private lemma Matrix.fromBlocks_submatrix [Zero R] (A₁ : Matrix X₁ Y₁ R) (A₂ : Matrix X₂ Y₂ R)
     (f : Z → X₁ ⊕ X₂) (g : Z → Y₁ ⊕ Y₂) :
     (fromBlocks A₁ 0 0 A₂).submatrix f g =
     (fromBlocks
@@ -74,30 +146,6 @@ private lemma Matrix.fromBlocks_submatrix {Y₁ Y₂ : Type} [Zero R] (A₁ : Ma
     ←Matrix.submatrix_submatrix]
   aesop
 
-variable [Fintype Z]
-
-noncomputable instance {f : Z → X₁ ⊕ X₂} : Fintype { x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } := by
-  apply Fintype.ofInjective (·.val.fst)
-  intro ⟨⟨u, u₁⟩, hu⟩ ⟨⟨v, v₁⟩, hv⟩ huv
-  dsimp only at hu hv huv
-  rw [Subtype.mk_eq_mk, Prod.mk.inj_iff]
-  refine ⟨huv, ?_⟩
-  rw [←Sum.inl.injEq, ←hu, ←hv, huv]
-
-noncomputable instance {f : Z → X₁ ⊕ X₂} : Fintype { x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd } := by
-  apply Fintype.ofInjective (·.val.fst)
-  intro ⟨⟨u, u₁⟩, hu⟩ ⟨⟨v, v₁⟩, hv⟩ huv
-  dsimp only at hu hv huv
-  rw [Subtype.mk_eq_mk, Prod.mk.inj_iff]
-  refine ⟨huv, ?_⟩
-  rw [←Sum.inr.injEq, ←hu, ←hv, huv]
-
-lemma decomposeSum_card_eq (f : Z → X₁ ⊕ X₂) :
-    #{ x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } + #{ x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd } =
-    #Z := by
-  rw [←Fintype.card_sum]
-  exact Fintype.card_congr f.decomposeSum.symm
-
 /-
 In the comments bellow, we will use the following shorthands:
 
@@ -115,7 +163,7 @@ In the comments bellow, we will use the following shorthands:
 ` | ` denotes `Equiv.sumCongr`
 `|S|` denotes `#S` for any `{S : Type} [Fintype S]`
 -/
-variable [LinearOrderedCommRing R] [DecidableEq Z] [DecidableEq X₁] [DecidableEq X₂] {Y₁ Y₂ : Type}
+variable [LinearOrderedCommRing R] [Fintype Z] [DecidableEq Z] [DecidableEq X₁] [DecidableEq X₂]
 
 /-- `Matrix.fromBlocks_isTotallyUnimodular` square case. -/
 private lemma Matrix.fromBlocks_submatrix_det_in_singTypeCastRange_of_isTotallyUnimodular_of_card_eq
