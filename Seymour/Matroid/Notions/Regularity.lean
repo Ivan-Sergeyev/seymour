@@ -95,7 +95,8 @@ lemma Matrix.IsTotallyUnimodular.det_eq_map_ratFloor_det [Fintype α] {A : Matri
   obtain ⟨s, hs⟩ := hA.apply i j
   cases s <;> simp at hs <;> rw [←hs] <;> rfl
 
-lemma Matrix.IsTotallyUnimodular.map_ratFloor [Fintype α] {A : Matrix α α ℚ} (hA : A.IsTotallyUnimodular) :
+omit [DecidableEq α] in
+lemma Matrix.IsTotallyUnimodular.map_ratFloor {A : Matrix α α ℚ} (hA : A.IsTotallyUnimodular) :
     (A.map Rat.floor).IsTotallyUnimodular := by
   rw [Matrix.isTotallyUnimodular_iff]
   intro k f g
@@ -104,7 +105,36 @@ lemma Matrix.IsTotallyUnimodular.map_ratFloor [Fintype α] {A : Matrix α α ℚ
   rw [Matrix.isTotallyUnimodular_iff] at hA
   specialize hA k f g
   rw [hAfg] at hA
-  sorry
+  if zer : ((A.submatrix f g).map Rat.floor).det = 0 then
+    rewrite [zer]
+    use 0
+    rfl
+  else if pos1 : ((A.submatrix f g).map Rat.floor).det = 1 then
+    rewrite [pos1]
+    use 1
+    rfl
+  else if neg1 : ((A.submatrix f g).map Rat.floor).det = -1 then
+    rewrite [neg1]
+    use -1
+    rfl
+  else
+    exfalso
+    obtain ⟨s, hs⟩ := hA
+    cases s with
+    | zero =>
+      apply zer
+      convert hs.symm
+      simp
+    | pos =>
+      apply pos1
+      convert hs.symm
+      simp
+    | neg =>
+      apply neg1
+      rw [SignType.neg_eq_neg_one, SignType.coe_neg, SignType.coe_one, neg_eq_iff_eq_neg, ←Int.cast_neg] at hs
+      symm at hs
+      rw [Int.cast_eq_one] at hs
+      rwa [←neg_eq_iff_eq_neg]
 
 private lemma Matrix.IsTotallyUnimodular.ratCast_det_eq_discretize_det [Fintype α] {A : Matrix α α ℚ}
     (hA : A.IsTotallyUnimodular) :
