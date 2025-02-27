@@ -88,7 +88,12 @@ private lemma Matrix.IsTotallyUnimodular.intCast_det_eq_auxZ2_det [Fintype α] {
 lemma Matrix.IsTotallyUnimodular.det_eq_map_ratFloor_det [Fintype α] {A : Matrix α α ℚ}
     (hA : A.IsTotallyUnimodular) :
     A.det = (A.map Rat.floor).det := by
-  sorry
+  rw [Matrix.det_int_coe, Matrix.map_map]
+  congr
+  ext i j
+  rw [Matrix.map_apply]
+  obtain ⟨s, hs⟩ := hA.apply i j
+  cases s <;> simp at hs <;> rw [←hs] <;> rfl
 
 lemma Matrix.IsTotallyUnimodular.map_ratFloor [Fintype α] {A : Matrix α α ℚ} (hA : A.IsTotallyUnimodular) :
     (A.map Rat.floor).IsTotallyUnimodular := by
