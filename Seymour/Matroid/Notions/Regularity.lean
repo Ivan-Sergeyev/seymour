@@ -53,29 +53,116 @@ private lemma Matrix.IsTotallyUnimodular.discretize {X Y : Type} {A : Matrix X Y
       rewrite [ZMod.val_one'' (· ▸ hn |>.false)]
       rfl
 
+private def Matrix.auxZ2 {X Y : Type} (A : Matrix X Y ℤ) (n : ℕ := 2) : Matrix X Y (ZMod n) :=
+  Matrix.of (if A · · = 0 then 0 else 1)
+
 variable {α : Type}
-
-private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_discretize {X Y : Set α} {A : Matrix X Y ℚ}
-    (hA : A.IsTotallyUnimodular) :
-    (VectorMatroid.mk X Y A).toMatroid = (VectorMatroid.mk X Y A.discretize).toMatroid := by
-  sorry
-
-private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_of_discretize {X Y : Set α} {A : Matrix X Y ℚ} {U : Matrix X Y Z2}
-    (hA : A.IsTotallyUnimodular) (hAU : A.discretize = U) :
-    (VectorMatroid.mk X Y A).toMatroid = (VectorMatroid.mk X Y U).toMatroid :=
-  hAU ▸ hA.toMatroid_eq_discretize
-
-/-- Every regular matroid is binary. -/
-lemma Matroid.IsRegular.isBinary {M : Matroid α} (hM : M.IsRegular) :
-    ∃ V : VectorMatroid α Z2, V.toMatroid = M := by
-  obtain ⟨X, Y, A, hA, rfl⟩ := hM
-  exact ⟨⟨X, Y, A.discretize⟩, hA.toMatroid_eq_discretize.symm⟩
 
 /-- Vector matroid given by full representation that can be represented by a matrix over `Z2` with a TU signing. -/
 private abbrev VectorMatroid.HasTuSigning (V : VectorMatroid α Z2) : Prop :=
   V.A.HasTuSigning
 
 variable [DecidableEq α]
+
+private lemma Matrix.IsTotallyUnimodular.intCast_det_eq_auxZ2_det [Fintype α] {A : Matrix α α ℤ}
+    (hA : A.IsTotallyUnimodular) :
+    A.det.cast = A.auxZ2.det := by
+  rw [Matrix.det_int_coe]
+  congr
+  ext i j
+  simp [Matrix.auxZ2]
+  if zer : A i j = 0 then
+    rewrite [zer]
+    rfl
+  else if pos : A i j = 1 then
+    rewrite [pos]
+    rfl
+  else if neg : A i j = -1 then
+    rewrite [neg]
+    rfl
+  else
+    exfalso
+    obtain ⟨s, hs⟩ := hA.apply i j
+    cases s <;> simp_all
+
+lemma Matrix.IsTotallyUnimodular.det_eq_map_ratFloor_det [Fintype α] {A : Matrix α α ℚ}
+    (hA : A.IsTotallyUnimodular) :
+    A.det = (A.map Rat.floor).det := by
+  sorry
+
+lemma Matrix.IsTotallyUnimodular.map_ratFloor [Fintype α] {A : Matrix α α ℚ} (hA : A.IsTotallyUnimodular) :
+    (A.map Rat.floor).IsTotallyUnimodular := by
+  rw [Matrix.isTotallyUnimodular_iff]
+  intro k f g
+  rw [Matrix.submatrix_map]
+  have hAfg := (hA.submatrix f g).det_eq_map_ratFloor_det
+  rw [Matrix.isTotallyUnimodular_iff] at hA
+  specialize hA k f g
+  rw [hAfg] at hA
+  sorry
+
+private lemma Matrix.IsTotallyUnimodular.ratCast_det_eq_discretize_det [Fintype α] {A : Matrix α α ℚ}
+    (hA : A.IsTotallyUnimodular) :
+    A.det.cast = A.discretize.det := by
+  rw [hA.det_eq_map_ratFloor_det, Rat.cast_intCast, hA.map_ratFloor.intCast_det_eq_auxZ2_det]
+  congr
+  ext i j
+  simp [Matrix.discretize, Matrix.auxZ2]
+  if zer : A i j = 0 then
+    simp [zer]
+    rfl
+  else if pos : A i j = 1 then
+    simp [pos]
+    show 1 ≠ 0
+    norm_num
+  else if neg : A i j = -1 then
+    simp [neg]
+    show -1 ≠ 0
+    norm_num
+  else
+    exfalso
+    obtain ⟨s, hs⟩ := hA.apply i j
+    cases s <;> simp_all
+
+private lemma Matrix.IsTotallyUnimodular.det_eq_zero_iff_discretize [Fintype α] {A : Matrix α α ℚ}
+    (hA : A.IsTotallyUnimodular) :
+    A.det = (0 : ℚ) ↔ A.discretize.det = (0 : Z2) := by
+  rw [←hA.ratCast_det_eq_discretize_det]
+  apply zero_iff_ratCast_zero_of_in_singTypeCastRange
+  rw [Matrix.isTotallyUnimodular_iff_fintype] at hA
+  specialize hA α id id
+  exact hA
+
+private lemma Matrix.IsTotallyUnimodular.det_ne_zero_iff_discretize [Fintype α] {A : Matrix α α ℚ}
+    (hA : A.IsTotallyUnimodular) :
+    A.det ≠ (0 : ℚ) ↔ A.discretize.det ≠ (0 : Z2) :=
+  hA.det_eq_zero_iff_discretize.ne
+
+private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_discretize_toMatroid {X Y : Set α} {A : Matrix X Y ℚ}
+    (hA : A.IsTotallyUnimodular) :
+    (VectorMatroid.mk X Y A).toMatroid = (VectorMatroid.mk X Y A.discretize).toMatroid := by
+  ext I hI
+  · simp
+  simp only [VectorMatroid.toMatroid_indep, VectorMatroid.indepCols_iff_submatrix']
+  -- TODO assumptions?
+  have : Fintype X := sorry
+  have : Fintype I := sorry
+  constructor <;> intro ⟨hIY, hAI⟩ <;> use hIY <;> rw [Matrix.linearIndependent_iff_exists_submatrix_det] at hAI ⊢ <;>
+      obtain ⟨f, hAf⟩ := hAI <;> use f <;> rw [Matrix.submatrix_submatrix, Function.comp_id, Function.id_comp] at hAf ⊢ <;>
+      have result := (hA.transpose.submatrix hIY.elem f).det_ne_zero_iff_discretize
+  · exact result.→ hAf
+  · exact result.← hAf
+
+private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_of_discretize {X Y : Set α} {A : Matrix X Y ℚ} {U : Matrix X Y Z2}
+    (hA : A.IsTotallyUnimodular) (hAU : A.discretize = U) :
+    (VectorMatroid.mk X Y A).toMatroid = (VectorMatroid.mk X Y U).toMatroid :=
+  hAU ▸ hA.toMatroid_eq_discretize_toMatroid
+
+/-- Every regular matroid is binary. -/
+lemma Matroid.IsRegular.isBinary {M : Matroid α} (hM : M.IsRegular) :
+    ∃ V : VectorMatroid α Z2, V.toMatroid = M := by
+  obtain ⟨X, Y, A, hA, rfl⟩ := hM
+  exact ⟨⟨X, Y, A.discretize⟩, hA.toMatroid_eq_discretize_toMatroid.symm⟩
 
 /-- Every regular matroid has a standard binary representation. -/
 lemma Matroid.IsRegular.isBinaryStd {M : Matroid α} (hM : M.IsRegular) :
@@ -101,7 +188,7 @@ private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatr
   constructor
   · intro ⟨X, Y, A, hA, hAV⟩
     have hV : V.toMatroid = (VectorMatroid.mk X Y A.discretize).toMatroid
-    · rw [←hAV, hA.toMatroid_eq_discretize]
+    · rw [←hAV, hA.toMatroid_eq_discretize_toMatroid]
     rw [hasTuSigning_iff_hasTuSigning_of_toMatroid_eq_toMatroid hV]
     use A, hA
     intro i j

@@ -1,6 +1,18 @@
 import Seymour.Basic.Basic
 
 
+lemma zero_iff_ratCast_zero_of_in_singTypeCastRange {a : ℚ} (ha : a ∈ SignType.cast.range) :
+    a = 0 ↔ (a.cast : Z2) = 0 := by
+  constructor <;> intro h0
+  · rw [h0, Rat.cast_zero]
+  · obtain ⟨s, hs⟩ := ha
+    cases s <;> aesop
+
+lemma ratCast_eq_intCast_ratFloor_of_in_singTypeCastRange {a : ℚ} (ha : a ∈ SignType.cast.range) :
+    (a.cast : Z2) = (a.floor.cast : Z2) := by
+  obtain ⟨s, hs⟩ := ha
+  cases s <;> aesop
+
 variable {R : Type}
 
 lemma zero_in_singTypeCastRange [Ring R] : (0 : R) ∈ SignType.cast.range :=
