@@ -74,11 +74,11 @@ private lemma Matrix.IsTotallyUnimodular.intCast_det_eq_auxZ2_det [Fintype α] {
   if zer : A i j = 0 then
     rewrite [zer]
     rfl
-  else if pos : A i j = 1 then
-    rewrite [pos]
+  else if pos1 : A i j = 1 then
+    rewrite [pos1]
     rfl
-  else if neg : A i j = -1 then
-    rewrite [neg]
+  else if neg1 : A i j = -1 then
+    rewrite [neg1]
     rfl
   else
     exfalso
@@ -103,23 +103,18 @@ lemma Matrix.IsTotallyUnimodular.map_ratFloor {A : Matrix α α ℚ} (hA : A.IsT
   rw [Matrix.submatrix_map]
   have hAfg := (hA.submatrix f g).det_eq_map_ratFloor_det
   rw [Matrix.isTotallyUnimodular_iff] at hA
-  specialize hA k f g
-  rw [hAfg] at hA
   if zer : ((A.submatrix f g).map Rat.floor).det = 0 then
     rewrite [zer]
-    use 0
-    rfl
+    exact ⟨0, rfl⟩
   else if pos1 : ((A.submatrix f g).map Rat.floor).det = 1 then
     rewrite [pos1]
-    use 1
-    rfl
+    exact ⟨1, rfl⟩
   else if neg1 : ((A.submatrix f g).map Rat.floor).det = -1 then
     rewrite [neg1]
-    use -1
-    rfl
+    exact ⟨-1, rfl⟩
   else
     exfalso
-    obtain ⟨s, hs⟩ := hA
+    obtain ⟨s, hs⟩ := hAfg ▸ hA k f g
     cases s with
     | zero =>
       apply zer
