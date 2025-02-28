@@ -127,8 +127,6 @@ theorem VectorMatroid.indepCols_maximal (M : VectorMatroid α R) (I : Set α) :
     have hss' : Set.sUnion s' = M.Y ↓∩ ⋃₀ s := by aesop
     rw [← hss']
     have hs' : DirectedOn (· ⊆ ·) s' := by
-      rw [DirectedOn]
-      rw [DirectedOn] at hs
       intros x' hx' y' hy'
       have hx : ∃ x ∈ s, x' = M.Y ↓∩ x := by aesop
       have hy : ∃ y ∈ s, y' = M.Y ↓∩ y := by aesop
