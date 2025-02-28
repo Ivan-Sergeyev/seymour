@@ -135,7 +135,6 @@ theorem VectorMatroid.indepCols_maximal (M : VectorMatroid α R) (I : Set α) :
       obtain ⟨x, hx⟩ := hx
       obtain ⟨y, hy⟩ := hy
       obtain ⟨z, hz⟩ := hs x hx.left y hy.left
-      let z' := M.Y ↓∩ z
       use M.Y ↓∩ z
       constructor
       · aesop
@@ -150,7 +149,7 @@ theorem VectorMatroid.indepCols_maximal (M : VectorMatroid α R) (I : Set α) :
     intro a' ha'
     have _ : ∃ a ∈ s, a' = M.Y ↓∩ a := by aesop
     aesop
-  exact zorn_subset_nonempty S (fun c hcss hchain _ ↦ ⟨⋃₀ c, ⟨⟨Set.sUnion_subset (fun _ hxc ↦ (hcss hxc).left.left),linearIndepOn_sUnion_of_directed_in_M hchain.directedOn (fun _ hxc ↦ (hcss hxc).left.right)⟩, Set.sUnion_subset (fun _ hxc ↦ (hcss hxc).right)⟩, fun _ hs ↦ Set.subset_sUnion_of_mem hs⟩) J ⟨hIndepJ, hJI⟩
+  exact zorn_subset_nonempty S (fun c hcss hchain _ ↦ ⟨⋃₀ c, ⟨⟨Set.sUnion_subset (fun _ hxc ↦ (hcss hxc).left.left), linearIndepOn_sUnion_of_directed_in_M hchain.directedOn (fun _ hxc ↦ (hcss hxc).left.right)⟩, Set.sUnion_subset (fun _ hxc ↦ (hcss hxc).right)⟩, fun _ hs ↦ Set.subset_sUnion_of_mem hs⟩) J ⟨hIndepJ, hJI⟩
 
 /-- `VectorMatroid` expressed as `IndepMatroid`. -/
 private def VectorMatroid.toIndepMatroid (M : VectorMatroid α R) : IndepMatroid α where
