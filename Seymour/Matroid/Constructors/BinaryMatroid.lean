@@ -120,7 +120,37 @@ theorem VectorMatroid.indepCols_aug (M : VectorMatroid α R) (I J : Set α)
 /-- Every set of columns contains a maximal independent subset of columns. -/
 theorem VectorMatroid.indepCols_maximal (M : VectorMatroid α R) (I : Set α) :
     Matroid.ExistsMaximalSubsetProperty M.IndepCols I := by
-  sorry
+  intros J hIndepJ hJI
+  let S : Set (Set α) := {K | M.IndepCols K ∧ K ⊆ I}
+  have linearIndepOn_sUnion_of_directed_in_M {s : Set (Set α)} (hs : DirectedOn (· ⊆ ·) s) (h : ∀ a ∈ s, LinearIndepOn R M.Aᵀ (M.Y ↓∩ a)) : LinearIndepOn R M.Aᵀ (M.Y ↓∩ (⋃₀ s)) := by
+    let s' : Set (Set ↑M.Y) := Set.range fun t : s => M.Y ↓∩ t
+    have hss' : Set.sUnion s' = M.Y ↓∩ ⋃₀ s := by aesop
+    rw [← hss']
+    have hs' : DirectedOn (· ⊆ ·) s' := by
+      rw [DirectedOn]
+      rw [DirectedOn] at hs
+      intros x' hx' y' hy'
+      have hx : ∃ x ∈ s, x' = M.Y ↓∩ x := by aesop
+      have hy : ∃ y ∈ s, y' = M.Y ↓∩ y := by aesop
+      obtain ⟨x, hx⟩ := hx
+      obtain ⟨y, hy⟩ := hy
+      obtain ⟨z, hz⟩ := hs x hx.left y hy.left
+      let z' := M.Y ↓∩ z
+      use M.Y ↓∩ z
+      constructor
+      · aesop
+      · constructor
+        · rw [hx.right]
+          refine Set.preimage_mono ?_
+          exact hz.right.left
+        · rw [hy.right]
+          refine Set.preimage_mono ?_
+          exact hz.right.right
+    apply linearIndepOn_sUnion_of_directed hs'
+    intro a' ha'
+    have _ : ∃ a ∈ s, a' = M.Y ↓∩ a := by aesop
+    aesop
+  exact zorn_subset_nonempty S (fun c hcss hchain _ ↦ ⟨⋃₀ c, ⟨⟨Set.sUnion_subset (fun _ hxc ↦ (hcss hxc).left.left),linearIndepOn_sUnion_of_directed_in_M hchain.directedOn (fun _ hxc ↦ (hcss hxc).left.right)⟩, Set.sUnion_subset (fun _ hxc ↦ (hcss hxc).right)⟩, fun _ hs ↦ Set.subset_sUnion_of_mem hs⟩) J ⟨hIndepJ, hJI⟩
 
 /-- `VectorMatroid` expressed as `IndepMatroid`. -/
 private def VectorMatroid.toIndepMatroid (M : VectorMatroid α R) : IndepMatroid α where
