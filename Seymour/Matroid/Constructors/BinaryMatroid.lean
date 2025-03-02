@@ -130,17 +130,10 @@ theorem VectorMatroid.indepCols_maximal (M : VectorMatroid α R) (I : Set α) :
     rw [hss']
     have hs' : DirectedOn (· ⊆ ·) s' := by
       intros x' hx' y' hy'
-      obtain ⟨x, hx⟩ : ∃ x ∈ s, x' = M.Y ↓∩ x := by aesop
-      obtain ⟨y, hy⟩ : ∃ y ∈ s, y' = M.Y ↓∩ y := by aesop
-      obtain ⟨z, hz⟩ := hs x hx.left y hy.left
-      use M.Y ↓∩ z
-      constructor
-      · aesop
-      · constructor
-        · rw [hx.right]
-          exact Set.preimage_mono hz.right.left
-        · rw [hy.right]
-          exact Set.preimage_mono hz.right.right
+      obtain ⟨x, hxs, hxM⟩ : ∃ x ∈ s, x' = M.Y ↓∩ x := by aesop
+      obtain ⟨y, hys, hyM⟩ : ∃ y ∈ s, y' = M.Y ↓∩ y := by aesop
+      obtain ⟨z, _, hz⟩ := hs x hxs y hys
+      exact ⟨M.Y ↓∩ z, by aesop, hxM ▸ Set.preimage_mono hz.left, hyM ▸ Set.preimage_mono hz.right⟩
     apply linearIndepOn_sUnion_of_directed hs'
     intros
     aesop
