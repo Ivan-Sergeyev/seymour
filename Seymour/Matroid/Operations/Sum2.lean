@@ -1,6 +1,5 @@
 import Seymour.Basic.Sets
-import Seymour.Matrix.Pivoting
-import Seymour.Matrix.MinimalTUViolation
+import Seymour.Matrix.TotalUnimodularityViolation
 import Seymour.Matroid.Notions.Regularity
 
 
@@ -46,7 +45,7 @@ lemma Matrix_2sum.Composition_isTotallyUnimodular_bottom {X₁ Y₁ X₂ Y₂ : 
   (This doesn't actually hold, but rather is used in proof by contradiction.) -/
 def Matrix_2sum.Composition_contains_MVM {X₁ Y₁ X₂ Y₂ : Set α} {β : Type} [CommRing β]
     (Operands : Matrix_2sum.Operands X₁ Y₁ X₂ Y₂ β) (k : ℕ) : Prop :=
-  (Matrix_2sum.Composition Operands).ContainsMinimalTUViolating k
+  (Matrix_2sum.Composition Operands).ContainsMinimalNonTU k
 
 /-- If a 2-sum composition of TU matrices contains a minimal violating matrix of order `k ≥ 3`,
   then there is a 2-sum composition of TU matrices containing a minimal violating matrix of order `k - 1`. -/

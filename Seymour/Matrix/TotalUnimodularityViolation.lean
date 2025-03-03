@@ -7,19 +7,19 @@ section
 variable {R : Type} [CommRing R]
 
 /-- A matrix is minimal TU violating if it is not TU, but its every proper submatrix is TU. -/
-def Matrix.IsMinimalTUViolating (A : Matrix X Y R) : Prop :=
+def Matrix.IsMinimalNonTU (A : Matrix X Y R) : Prop :=
   ¬A.IsTotallyUnimodular ∧
   ∀ k : ℕ, ∀ f : Fin k → X, ∀ g : Fin k → Y, (¬f.Surjective ∨ ¬g.Surjective) → (A.submatrix f g).IsTotallyUnimodular
 
 /-- The order of a minimal TU violating matrix is the number of its rows. -/
-def Matrix.IsMinimalTUViolating.order [Fintype X] [Fintype Y] {A : Matrix X Y R} (_hA : A.IsMinimalTUViolating) :=
+def Matrix.IsMinimalNonTU.order [Fintype X] [Fintype Y] {A : Matrix X Y R} (_hA : A.IsMinimalNonTU) :=
   #X
 
-def Matrix.ContainsMinimalTUViolating (A : Matrix X Y R) (k : ℕ) : Prop :=
-  ∃ f : Fin k → X, ∃ g : Fin k → Y, f.Bijective ∧ g.Bijective ∧ (A.submatrix f g).IsMinimalTUViolating
+def Matrix.ContainsMinimalNonTU (A : Matrix X Y R) (k : ℕ) : Prop :=
+  ∃ f : Fin k → X, ∃ g : Fin k → Y, f.Bijective ∧ g.Bijective ∧ (A.submatrix f g).IsMinimalNonTU
 
 /-- A minimal TU violating matrix is square. -/
-lemma Matrix.IsMinimalTUViolating_is_square [Fintype X] [Fintype Y] {A : Matrix X Y R} (hA : A.IsMinimalTUViolating) :
+lemma Matrix.IsMinimalNonTU_is_square [Fintype X] [Fintype Y] {A : Matrix X Y R} (hA : A.IsMinimalNonTU) :
     #X = #Y := by
   obtain ⟨hAnot, hAyes⟩ := hA
   rw [Matrix.IsTotallyUnimodular] at hAnot
@@ -39,20 +39,20 @@ lemma Matrix.IsMinimalTUViolating_is_square [Fintype X] [Fintype Y] {A : Matrix 
   · exact Fintype.card_of_bijective ⟨inj_g, surj_g⟩
 
 /-- A 2 × 2 minimal TU violating matrix has four ±1 entries. -/
-lemma Matrix.IsMinimalTUViolating.two_by_two_entries [Fintype X] [Fintype Y] {A : Matrix X Y R}
-    (hA : A.IsMinimalTUViolating) (h2 : hA.order = 2) :
+lemma Matrix.IsMinimalNonTU.two_by_two_entries [Fintype X] [Fintype Y] {A : Matrix X Y R}
+    (hA : A.IsMinimalNonTU) (h2 : hA.order = 2) :
     ∀ i j, A i j = -1 ∨ A i j = 1 :=
   sorry
 
 /-- Every non-TU matrix contains a minimal TU violating matrix. -/
-lemma Matrix.IsMinimalTUViolating_in_non_TU {A : Matrix X Y R} (hA : ¬A.IsTotallyUnimodular) :
-    ∃ k : ℕ, A.ContainsMinimalTUViolating k :=
+lemma Matrix.containsMinimalNonTU_of_not_isTotallyUnimodular {A : Matrix X Y R} (hA : ¬A.IsTotallyUnimodular) :
+    ∃ k : ℕ, A.ContainsMinimalNonTU k :=
   sorry
 
 /-- Pivoting in a minimal TU violating matrix and removing the pivot row and column
   yields a minimal TU violating matrix. -/
-lemma Matrix.IsMinimalTUViolating_after_pivot {A : Matrix X Y R} {x : X} {y : Y}
-    (hA : A.IsMinimalTUViolating) (hX : Fintype X) (hY : Fintype Y) (hXY : hX.card ≥ 2) (hxy : A x y ≠ 0) :
+lemma Matrix.IsMinimalNonTU_after_pivot {A : Matrix X Y R} {x : X} {y : Y}
+    (hA : A.IsMinimalNonTU) (hX : Fintype X) (hY : Fintype Y) (hXY : hX.card ≥ 2) (hxy : A x y ≠ 0) :
     False := -- fixme: pivot on A x y + delete pivot row & col => MVM
   sorry
 
