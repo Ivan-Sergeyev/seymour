@@ -215,7 +215,7 @@ lemma StandardRepr_2sum.Composition_hasTuSigning {Operands : StandardRepr_2sum.O
     | inr i₂ =>
       cases hj : j.toSum with
       | inl j₁ =>
-        simp only [Matrix.fromBlocks_apply₂₁, B', hx', hy', abs_mul]
+        -- simp only [Matrix.fromBlocks_apply₂₁, B', hx', hy', abs_mul]
         -- apply Z2val_toRat_mul_Z2val_toRat
         sorry -- fixme: automatic inference doesn't pierce definitions, have to unfold manually?
       | inr j₂ =>
