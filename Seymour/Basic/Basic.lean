@@ -21,7 +21,7 @@ postfix:max ".→" => Iff.mp
 postfix:max ".←" => Iff.mpr
 
 /-- We denote the cardinality of a `Fintype` the same way the cardinality of a `Finset` is denoted. -/
-prefix:max "#" => Fintype.card
+prefix:1000 "#" => Fintype.card
 
 /-- The "left" or "top" variant. -/
 prefix:max "◩" => Sum.inl
