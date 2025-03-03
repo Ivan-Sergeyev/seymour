@@ -13,7 +13,7 @@ def Matrix.IsMinimalNonTU (A : Matrix X Y R) : Prop :=
 
 /-- The order of a minimal TU violating matrix is the number of its rows. -/
 def Matrix.IsMinimalNonTU.order [Fintype X] [Fintype Y] {A : Matrix X Y R} (_hA : A.IsMinimalNonTU) :=
-  #X
+  #X -- Why is this definition useful?
 
 def Matrix.ContainsMinimalNonTU (A : Matrix X Y R) (k : ℕ) : Prop :=
   ∃ f : Fin k → X, ∃ g : Fin k → Y, f.Bijective ∧ g.Bijective ∧ (A.submatrix f g).IsMinimalNonTU
@@ -41,8 +41,46 @@ lemma Matrix.IsMinimalNonTU_is_square [Fintype X] [Fintype Y] {A : Matrix X Y R}
 /-- A 2 × 2 minimal TU violating matrix has four ±1 entries. -/
 lemma Matrix.IsMinimalNonTU.two_by_two_entries [Fintype X] [Fintype Y] {A : Matrix X Y R}
     (hA : A.IsMinimalNonTU) (h2 : hA.order = 2) :
-    ∀ i j, A i j = -1 ∨ A i j = 1 :=
-  sorry
+    ∀ i : X, ∀ j : Y, A i j = -1 ∨ A i j = 1 := by
+  have hX2 : #X = 2 := h2
+  have trichotomy (i : X) (j : Y) : A i j = 0 ∨ A i j = -1 ∨ A i j = 1
+  · obtain ⟨s, hs⟩ :=
+      (hA.right 1 ![i] ![j] (by
+        left
+        intro contr
+        have impos := hX2 ▸ Fintype.card_fin 1 ▸ Fintype.card_le_of_surjective _ contr
+        norm_num at impos)
+      ).apply 0 0
+    cases s with
+    | zero =>
+      left
+      exact hs.symm
+    | neg =>
+      right
+      left
+      exact hs.symm
+    | pos =>
+      right
+      right
+      exact hs.symm
+  intro i j
+  cases trichotomy i j with
+  | inl h0 =>
+    exfalso
+    apply hA.left
+    intro k f g hf hg
+    if k_eq_0 : k = 0 then
+      sorry -- empty matrix has determinant `1`
+    else if k_eq_1 : k = 1 then
+      sorry -- directly from `trichotomy`
+    else if k_eq_2 : k = 2 then
+      sorry -- laplace at `A i j` and plug `h0`
+    else
+      exfalso
+      have : k ≤ #X := Fintype.card_fin k ▸ Fintype.card_le_of_injective f hf
+      omega
+  | inr h1 =>
+    exact h1
 
 /-- Every non-TU matrix contains a minimal TU violating matrix. -/
 lemma Matrix.containsMinimalNonTU_of_not_isTotallyUnimodular {A : Matrix X Y R} (hA : ¬A.IsTotallyUnimodular) :
@@ -64,8 +102,7 @@ lemma Matrix.containsMinimalNonTU_of_not_isTotallyUnimodular {A : Matrix X Y R} 
   rw [Matrix.submatrix_submatrix, Matrix.isTotallyUnimodular_iff] at contr
   sorry
 
-/-- Pivoting in a minimal TU violating matrix and removing the pivot row and column
-  yields a minimal TU violating matrix. -/
+/-- Pivoting in a minimal TU violating matrix and removing the pivot row and col yields a minimal TU violating matrix. -/
 lemma Matrix.IsMinimalNonTU_after_pivot {A : Matrix X Y R} {x : X} {y : Y}
     (hA : A.IsMinimalNonTU) (hX : Fintype X) (hY : Fintype Y) (hXY : hX.card ≥ 2) (hxy : A x y ≠ 0) :
     False := -- fixme: pivot on A x y + delete pivot row & col => MVM
