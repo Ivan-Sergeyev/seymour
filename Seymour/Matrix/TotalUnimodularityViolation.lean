@@ -46,7 +46,22 @@ lemma Matrix.IsMinimalNonTU.two_by_two_entries [Fintype X] [Fintype Y] {A : Matr
 
 /-- Every non-TU matrix contains a minimal TU violating matrix. -/
 lemma Matrix.containsMinimalNonTU_of_not_isTotallyUnimodular {A : Matrix X Y R} (hA : ¬A.IsTotallyUnimodular) :
-    ∃ k : ℕ, A.ContainsMinimalNonTU k :=
+    ∃ k : ℕ, A.ContainsMinimalNonTU k := by
+  rw [Matrix.isTotallyUnimodular_iff] at hA
+  push_neg at hA
+  obtain ⟨k, ⟨f, g, hfg⟩, hAk⟩ := exists_minimal_nat_of_exists hA
+  use k, f, g, sorry, sorry
+  constructor
+  · rw [Matrix.isTotallyUnimodular_iff]
+    push_neg
+    exact ⟨k, id, id, hfg⟩
+  intro n f' g'
+  specialize @hAk n
+  simp only [not_exists, forall_exists_index] at hAk
+  specialize hAk (f ∘ f') (g ∘ g')
+  intro huh
+  by_contra contr
+  rw [Matrix.submatrix_submatrix, Matrix.isTotallyUnimodular_iff] at contr
   sorry
 
 /-- Pivoting in a minimal TU violating matrix and removing the pivot row and column

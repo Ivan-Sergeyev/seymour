@@ -52,6 +52,17 @@ lemma Z2val_toRat_mul_Z2val_toRat (a b : Z2) : (a.val : ℚ) * (b.val : ℚ) = (
 lemma Int.neg_one_ne_zero : -1 ≠ 0 := by
   norm_num
 
+-- The following lemma could be private:
+lemma exists_minimal_nat_le_of_exists {n : ℕ} (P : { a : ℕ | a ≤ n } → Prop) (hP : P ⟨n, le_refl n⟩) :
+    ∃ n : { a : ℕ | a ≤ n }, Minimal P n := by
+  obtain ⟨b, -, hb⟩ := Finite.exists_minimal_le hP
+  exact ⟨b, hb⟩
+
+lemma exists_minimal_nat_of_exists {P : ℕ → Prop} (hP : ∃ n : ℕ, P n) : ∃ n : ℕ, Minimal P n := by
+  obtain ⟨n, hn⟩ := hP
+  obtain ⟨c, hc⟩ := exists_minimal_nat_le_of_exists (P ·.val) hn
+  exact ⟨c.val, hc.left, fun m hPm hmc => @hc.right ⟨m, hmc.trans c.property⟩ hPm hmc⟩
+
 variable {α : Type}
 
 @[simp]
