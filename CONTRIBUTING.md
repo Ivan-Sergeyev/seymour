@@ -160,6 +160,7 @@ The guideline below is written primarily to assist you in reading the code.
 ### Other
 
 - We currently prefer `Type` over universe-polymorphic types. Generalization to `Type*` will probably be done at the end of the project.
+- Do not open namespaces.
 - We usually annotate types even in situations where they can be inferred automatically.
 - We prefer not to write parentheses after quantifiers.
 - We do not write a space after `¬` but we write redundant parentheses around the negated expression when it contains any infix operator.
