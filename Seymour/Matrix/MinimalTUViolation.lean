@@ -17,8 +17,23 @@ def Matrix.ContainsMinimalTUViolating (A : Matrix X Y R) (k : ℕ) : Prop :=
 
 /-- A minimal TU violating matrix is square. -/
 lemma Matrix.IsMinimalTUViolating_is_square {A : Matrix X Y R} (hA : A.IsMinimalTUViolating) (hX : Fintype X) (hY : Fintype Y) :
-    hX.card = hY.card :=
-  sorry
+    hX.card = hY.card := by
+  obtain ⟨hAnot, hAyes⟩ := hA
+  rw [Matrix.IsTotallyUnimodular] at hAnot
+  push_neg at hAnot
+  obtain ⟨k, f, g, inj_f, inj_g, hAfg⟩ := hAnot
+  specialize hAyes k f g
+  by_contra hXY
+  apply hAfg
+  rw [Matrix.isTotallyUnimodular_iff] at hAyes
+  apply hAyes
+  rw [← Mathlib.Tactic.PushNeg.not_and_or_eq]
+  intro ⟨surj_f, surj_g⟩
+  apply hXY
+  trans k <;> rw [←Fintype.card_fin k]
+  · symm
+    exact Fintype.card_of_bijective ⟨inj_f, surj_f⟩
+  · exact Fintype.card_of_bijective ⟨inj_g, surj_g⟩
 
 /-- A 2 × 2 minimal TU violating matrix has four ±1 entries. -/
 lemma Matrix.IsMinimalTUViolating_two_by_two_entries {A : Matrix X Y R}
