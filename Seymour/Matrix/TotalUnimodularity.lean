@@ -1,6 +1,7 @@
 import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 import Seymour.Basic.FunctionDecompose
 import Seymour.Basic.SignTypeCast
+import Seymour.Matrix.Basic
 
 
 /-- Every matrix over `Z2` is TU. -/

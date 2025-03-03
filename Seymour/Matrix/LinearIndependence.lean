@@ -1,4 +1,4 @@
-import Seymour.Basic.Basic
+import Seymour.Matrix.Basic
 import Mathlib.Data.Matrix.Rank
 
 

@@ -1,4 +1,5 @@
 import Seymour.Basic.SignTypeCast
+import Seymour.Matrix.Basic
 
 
 variable {X Y F : Type}

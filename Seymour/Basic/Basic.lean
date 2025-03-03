@@ -68,58 +68,6 @@ variable {α : Type}
 @[simp]
 abbrev Function.range {ι : Type} (f : ι → α) : Set α := Set.range f
 
-@[simp low]
-abbrev Matrix.prependId [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) : Matrix m (m ⊕ n) α :=
-  Matrix.fromCols 1 A
-
-@[simp low]
-abbrev Matrix.uppendId [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) : Matrix (n ⊕ m) n α :=
-  Matrix.fromRows 1 A
-
-@[simp]
-lemma Matrix.prependId_transpose [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) :
-    A.prependId.transpose = A.transpose.uppendId := by
-  ext i j
-  cases i with
-  | inr => rfl
-  | inl i' =>
-    if hi' : i' = j then
-      simp [Matrix.one_apply_eq, hi']
-    else
-      simp [Matrix.one_apply_ne, hi', Ne.symm hi']
-
-@[simp]
-lemma Matrix.uppendId_transpose [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) :
-    A.uppendId.transpose = A.transpose.prependId := by
-  rw [←Matrix.transpose_transpose A.transpose.prependId, Matrix.prependId_transpose, Matrix.transpose_transpose]
-
-lemma Matrix.ext_col {m n : Type} {A B : Matrix m n α} (hAB : ∀ i : m, A i = B i) : A = B :=
-  Matrix.ext (congr_fun <| hAB ·)
-
-lemma Matrix.det_int_coe [DecidableEq α] [Fintype α] (A : Matrix α α ℤ) (F : Type) [Field F] :
-    ((A.det : ℤ) : F) = ((A.map Int.cast).det : F) := by
-  simp [Matrix.det_apply]
-  congr
-  ext p
-  if h1 : Equiv.Perm.sign p = 1 then
-    simp [h1]
-  else
-    simp [Int.units_ne_iff_eq_neg.→ h1]
-
-lemma Matrix.det_rat_coe [DecidableEq α] [Fintype α] (A : Matrix α α ℚ) (F : Type) [Field F] [CharZero F] :
-    ((A.det : ℚ) : F) = ((A.map Rat.cast).det : F) := by
-  simp [Matrix.det_apply]
-  congr
-  ext p
-  if h1 : Equiv.Perm.sign p = 1 then
-    simp [h1]
-  else
-    simp [Int.units_ne_iff_eq_neg.→ h1]
-
-lemma IsUnit.linearIndependent_matrix [DecidableEq α] [Fintype α] {R : Type} [CommRing R] {A : Matrix α α R} (hA : IsUnit A) :
-    LinearIndependent R A :=
-  A.linearIndependent_rows_of_isUnit hA
-
 lemma Sum.swap_inj {β : Type} : (@Sum.swap α β).Injective := by
   intro
   aesop
@@ -150,51 +98,53 @@ lemma sum_over_fin_succ_of_only_zeroth_nonzero {n : ℕ} [AddCommMonoid α] {f :
   apply hf
   simpa using hx
 
+variable {X Y : Set α}
+
 /-- Given `X ⊆ Y` cast an element of `X` as an element of `Y`. -/
 @[simp low]
-def HasSubset.Subset.elem {X Y : Set α} (hXY : X ⊆ Y) (x : X.Elem) : Y.Elem :=
+def HasSubset.Subset.elem (hXY : X ⊆ Y) (x : X.Elem) : Y.Elem :=
   ⟨x.val, hXY x.property⟩
 
-lemma HasSubset.Subset.elem_injective {X Y : Set α} (hXY : X ⊆ Y) : hXY.elem.Injective := by
+lemma HasSubset.Subset.elem_injective (hXY : X ⊆ Y) : hXY.elem.Injective := by
   intro x y hxy
   ext
   simpa using hxy
 
-lemma HasSubset.Subset.elem_range {X Y : Set α} (hXY : X ⊆ Y) : hXY.elem.range = { a : Y.Elem | a.val ∈ X } := by
+lemma HasSubset.Subset.elem_range (hXY : X ⊆ Y) : hXY.elem.range = { a : Y.Elem | a.val ∈ X } := by
   aesop
 
 /-- Convert `(X ∪ Y).Elem` to `X.Elem ⊕ Y.Elem`. -/
-def Subtype.toSum {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) : X.Elem ⊕ Y.Elem :=
+def Subtype.toSum [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) : X.Elem ⊕ Y.Elem :=
   if hiX : i.val ∈ X then ◩⟨i, hiX⟩ else
   if hiY : i.val ∈ Y then ◪⟨i, hiY⟩ else
   (i.property.elim hiX hiY).elim
 
 @[simp]
-lemma toSum_left {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] {i : (X ∪ Y).Elem} (hi : i.val ∈ X) :
+lemma toSum_left [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] {i : (X ∪ Y).Elem} (hi : i.val ∈ X) :
     i.toSum = ◩⟨i.val, hi⟩ := by
   simp [Subtype.toSum, hi]
 
 @[simp]
-lemma toSum_right {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] {i : (X ∪ Y).Elem}
+lemma toSum_right [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] {i : (X ∪ Y).Elem}
     (hiX : i.val ∉ X) (hiY : i.val ∈ Y) :
     i.toSum = ◪⟨i.val, hiY⟩ := by
   simp [Subtype.toSum, hiY, hiX]
 
 /-- Convert `X.Elem ⊕ Y.Elem` to `(X ∪ Y).Elem`. -/
-def Sum.toUnion {X Y : Set α} (i : X.Elem ⊕ Y.Elem) : (X ∪ Y).Elem :=
+def Sum.toUnion (i : X.Elem ⊕ Y.Elem) : (X ∪ Y).Elem :=
   i.casesOn Set.subset_union_left.elem Set.subset_union_right.elem
 
 @[simp]
-lemma toUnion_left {X Y : Set α} (x : X.Elem) : @Sum.toUnion α X Y ◩x = ⟨x.val, Set.subset_union_left x.property⟩ :=
+lemma toUnion_left (x : X.Elem) : @Sum.toUnion α X Y ◩x = ⟨x.val, Set.subset_union_left x.property⟩ :=
   rfl
 
 @[simp]
-lemma toUnion_right {X Y : Set α} (y : Y.Elem) : @Sum.toUnion α X Y ◪y = ⟨y.val, Set.subset_union_right y.property⟩ :=
+lemma toUnion_right (y : Y.Elem) : @Sum.toUnion α X Y ◪y = ⟨y.val, Set.subset_union_right y.property⟩ :=
   rfl
 
 /-- Converting `(X ∪ Y).Elem` to `X.Elem ⊕ Y.Elem` and back to `(X ∪ Y).Elem` gives the original element. -/
 @[simp]
-lemma toSum_toUnion {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) :
+lemma toSum_toUnion [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) :
     i.toSum.toUnion = i := by
   if hiX : i.val ∈ X then
     simp [hiX]
@@ -207,46 +157,7 @@ lemma toSum_toUnion {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidabl
 /-- Converting `X.Elem ⊕ Y.Elem` to `(X ∪ Y).Elem` and back to `X.Elem ⊕ Y.Elem` gives the original element, assuming that
     `X` and `Y` are disjoint. -/
 @[simp]
-lemma toUnion_toSum {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (hXY : X ⫗ Y) (i : X.Elem ⊕ Y.Elem) :
+lemma toUnion_toSum [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (hXY : X ⫗ Y) (i : X.Elem ⊕ Y.Elem) :
     i.toUnion.toSum = i := by
   rw [Set.disjoint_right] at hXY
   cases i <;> simp [hXY]
-
-variable {T₁ T₂ S₁ S₂ : Set α} {β : Type}
-  [∀ a, Decidable (a ∈ T₁)]
-  [∀ a, Decidable (a ∈ T₂)]
-  [∀ a, Decidable (a ∈ S₁)]
-  [∀ a, Decidable (a ∈ S₂)]
-
-/-- Convert a block matrix to a matrix over set unions. -/
-def Matrix.toMatrixUnionUnion (C : Matrix (T₁.Elem ⊕ T₂.Elem) (S₁.Elem ⊕ S₂.Elem) β) :
-    Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem β :=
-  ((C ∘ Subtype.toSum) · ∘ Subtype.toSum)
-
-/-- Convert a matrix over set unions to a block matrix. -/
-def Matrix.toMatrixSumSum (C : Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem β) :
-    Matrix (T₁.Elem ⊕ T₂.Elem) (S₁.Elem ⊕ S₂.Elem) β :=
-  ((C ∘ Sum.toUnion) · ∘ Sum.toUnion)
-
-/-- Converting a block matrix to a matrix over set unions and back to a block matrix gives the original matrix, assuming that
-    both said unions are disjoint. -/
-@[simp]
-lemma toMatrixUnionUnion_toMatrixSumSum (hT : T₁ ⫗ T₂) (hS : S₁ ⫗ S₂) (C : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) β) :
-    C.toMatrixUnionUnion.toMatrixSumSum = C := by
-  ext
-  simp [Matrix.toMatrixUnionUnion, Matrix.toMatrixSumSum, *]
-
-/-- Converting a matrix over set unions to a block matrix and back to a matrix over set unions gives the original matrix. -/
-@[simp]
-lemma toMatrixSumSum_toMatrixUnionUnion (C : Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem β) :
-    C.toMatrixSumSum.toMatrixUnionUnion = C := by
-  ext
-  simp [Matrix.toMatrixUnionUnion, Matrix.toMatrixSumSum]
-
-/-- A totally unimodular block matrix stays totally unimodular after converting to a matrix over set unions. -/
-lemma Matrix.IsTotallyUnimodular.toMatrixUnionUnion [CommRing β] {C : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) β}
-    (hC : C.IsTotallyUnimodular) :
-    C.toMatrixUnionUnion.IsTotallyUnimodular := by
-  rw [Matrix.isTotallyUnimodular_iff] at hC ⊢
-  intros
-  apply hC
