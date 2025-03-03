@@ -1,4 +1,5 @@
 import Seymour.Basic.Basic
+import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 
 
 variable {α : Type}
