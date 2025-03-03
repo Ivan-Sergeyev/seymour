@@ -254,27 +254,6 @@ lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype
 --     ∑ i : A.Elem, f i.val = ∑ i : B.Elem, f i.val := by
 --   sorry
 
-omit [DecidableEq α] in -- TODO move
-lemma sum_of_single_nonzero [Fintype α] [AddCommMonoid R] (f : α → R) (a : α) (hf : ∀ i : α, i ≠ a → f i = 0) :
-    Finset.univ.sum f = f a := by
-  rw [←Finset.sum_subset (Finset.subset_univ {a})]
-  · simp
-  intro x _ hx
-  apply hf
-  simpa using hx
-
-omit [DecidableEq α] in -- TODO move
-lemma sum_elem_of_single_nonzero [AddCommMonoid R] {f : α → R} {S : Set α} [Fintype S] {a : α} (haS : a ∈ S)
-    (hf : ∀ i : α, i ≠ a → f i = 0) :
-    ∑ i : S.Elem, f i = f a := by
-  apply sum_of_single_nonzero (fun s : S.Elem => f s.val) ⟨a, haS⟩
-  intro i hi
-  apply hf
-  intro contr
-  apply hi
-  ext
-  exact contr
-
 lemma sum_elem_matrix_row_of_mem [AddCommMonoidWithOne R] {x : α} {S : Set α} [Fintype S] (hxS : x ∈ S) :
     ∑ i : S.Elem, (1 : Matrix α α R) x i.val = 1 := by
   convert sum_elem_of_single_nonzero hxS (fun _ => Matrix.one_apply_ne')
