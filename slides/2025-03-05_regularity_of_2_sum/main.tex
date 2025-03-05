@@ -1,0 +1,166 @@
+\documentclass{article}
+
+\usepackage{amsmath} % Matrices, etc.
+\usepackage{amssymb} % \mathbb, etc.
+
+\usepackage{amsthm} % Theorem environments
+
+\newtheorem{lemma}{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\usepackage[margin=2.5cm]{geometry} % Page margins
+
+\usepackage{graphicx} % Required for inserting images
+
+% Title
+\title{Proof of Regularity of 2-Sum}
+\author{Ivan Sergeev}
+\date{March 2025}
+
+\begin{document}
+
+\maketitle
+
+\section{Minimal Violation Matrices of Total Unimodularity}
+
+\begin{definition}
+    A minimal violation matrix of total unimodularity (a ``minimal TU violating" matrix) is a matrix with entries in a commutative ring that is not TU, but whose every proper submatrix is TU.
+\end{definition}
+
+Note: Truemper's definition is: a minimal violation matrix of total unimodularity is a $\{0, \pm 1\}$ matrix that is not TU but whose every proper submatrix is TU. The only difference between these two definitions is the case of $1 \times 1$ matrices, which can be minimal TU violating by our definition, but not by Truemper's definition.
+
+\begin{lemma}
+    A minimal TU violating matrix is square.
+\end{lemma}
+
+\begin{proof}
+    Suppose the matrix is not square. Then every square submatrix of it is proper and is TU by the definition of minimal TU violating matrices. But then the entire matrix is TU, which contradicts the definition.
+\end{proof}
+
+\begin{lemma}
+    A $2 \times 2$ minimal TU violating matrix consists of four $\pm 1$ entries.
+\end{lemma}
+
+\begin{proof}
+    If there is an entry not in $\{0, \pm 1\}$, then the $1 \times 1$ square submatrix consisting of that entry is not TU, which contradicts the definition of minimal TU violation matrices.
+
+    If there is a $0$ entry, then the determinant of the entire matrix is in $\{0, \pm 1\}$. Indeed, in this case the determinant up to sign equals the product of the two entries in the diagonal not containing the $0$ entry, and both of those entries are in $\{0, \pm 1\}$. Thus, the entire matrix is TU, which contradicts the definition of minimal TU violation matrices.
+
+    Thus, the matrix can only have $\pm 1$ entries.
+\end{proof}
+
+\begin{lemma}\label{lem:mvm_pivot_smaller_mvm}
+    Let a minimal violation matrix have order $k \geq 3$. Suppose we perform a real pivot in that matrix, then delete the pivot row and column. Then the resulting matrix is smaller than the original matrix and is also minimal TU violating.
+\end{lemma}
+
+\begin{proof}
+    The resulting matrix is smaller, since it has 1 fewer row and column than the original matrix.
+
+    Let $A$ denote the original matrix, $A'$ the matrix after the pivoting step, and $A''$ the final matrix after the pivot row and column are removed from $A'$.
+
+    Consider an arbitrary proper square submatrix $B''$ of $A''$. Our goal is to show that $B''$ is TU. Consider the corresponding submatrix $B$ of the original matrix (formed by the same choice of row and column indices). Append the pivoting row and column to $B$ and call the resulting matrix $C$. Note that $C$ is a proper submatrix of the original matrix (otherwise $B''$ contains all rows and columns of $A''$ and thus is not a proper submatrix of $A''$), so it is TU. Thus, after the pivoting step it is transformed into a TU matrix $C'$. Removing the pivoting row and column from $C'$ gives the starting submatrix $B''$ and does not affect TUness. Thus, every square submatrix of $A''$ is TU.
+
+    It remains to show that $A''$ itself is not TU. Note that the entries of $A''$ can be expressed as $a_{ij} - \frac{a_{ic} a_{rj}}{a_{rc}}$ where $i, j$ are row and column indices in $A''$ and $r, c$ are the indices of the pivot row and column. Using the linearity of the determinant we can express the determinant of $A''$ as follows:
+    \[
+        \det A'' = \det A' - \sum_{k = 1}^{n} \frac{a_{rk}}{a_{rc}} \det \left[ a_{\cdot 1} \mid \dots \mid \hat{a}_{\cdot k} \mid a_{\cdot c} \mid \dots \mid a_{\cdot n} \right].
+    \]
+    Here the last matrix on the right hand side is obtained from $A''$ by replacing the column $a_{\cdot k}$ with the column $a_{\cdot c}$. By the determinant expansion formula applied to the pivot row of $A$, the expression on the right-hand side of the formula above is precisely $\det A$. Since $A$ is not TU, we have $\det A \notin \{0, \pm 1\}$, so $\det A'' \notin \{0, \pm 1\}$, and hence $A''$ is also not TU.
+\end{proof}
+
+\begin{lemma}
+    A TU matrix does not contain a minimal TU violating matrix as a submatrix.
+\end{lemma}
+
+\begin{proof}
+    Every square submatrix of a TU matrix is TU, so it cannot be minimal TU violating, which is not TU.
+\end{proof}
+
+\begin{lemma}
+    A non-TU matrix contains a minimal TU violating matrix as a submatrix.
+\end{lemma}
+
+\begin{proof}
+    Consider the following statement for every $k \in \mathbb{Z}_{\geq 1}$: the original matrix contains a square matrix of size $k$ with determinant not in $\{0, \pm 1\}$. If this statement does not hold for any $k \in \mathbb{Z}_{\geq 1}$, then the original matrix is TU. Thus this statement does not hold for some $k$. Choose the smallest such $k$ and consider the corresponding square submatrix. It is minimal TU violating:
+    \begin{itemize}
+        \item Its determinant is not in $\{0, \pm 1\}$, so it is not TU.
+        \item Every its proper square submatrix is a square submatrix of the original matrix of size strictly less than $k$. Hence it has determinant in $\{0, \pm 1\}$ by the statement above.
+    \end{itemize}
+\end{proof}
+
+
+\section{Regularity of 2-Sum}
+
+\begin{definition}
+    Let $B_{1}, B_{2}$ be matrices with $\{0, \pm 1\}$ entries expressed as $B_{1} = \left[A_{1} / x\right]$ and $B_{2} = \left[y \mid A_{2}\right]$, where $A_{1}, A_{2}$ are matrices, $x$ is a row vector, and $y$ is a column vector. Let $D$ be the outer product of column $y$ and row $x$. The $2$-sum of $B_{1}$ and $B_{2}$ is defined as
+    \[
+        B_{1} \oplus_{2, x, y} B_{2} = \begin{bmatrix}
+            A_{1} & 0 \\
+            D & A_{2} \\
+        \end{bmatrix}.
+    \]
+\end{definition}
+
+\begin{lemma}
+    Suppose that $B_{1}$ and $B_{2}$ are TU. Then $\left[A_{1} / D\right]$ and $\left[D \mid A_{2}\right]$ are also TU.
+\end{lemma}
+
+\begin{proof}
+    Note that $D$ can be viewed as a matrix consisting of $0$ rows and copies of the rows $x$ and $-x$. Since $B_{1} = \left[A_{1} / x\right]$ is TU and since adding copies of a row multiplied by ${0, \pm 1}$ does not affect TUness, we conclude that $\left[A_{1} / D\right]$ is TU.
+
+    Similarly, $D$ can be viewed as a matrix consisting of $0$ columns and copies of the columns $y$ and $-y$. Since $B_{2} = \left[y \mid A_{2}\right]$ is TU and since adding copies of a column multiplied by ${0, \pm 1}$ does not affect TUness, we conclude that $\left[D \mid A_{2}\right]$ is TU.
+\end{proof}
+
+\begin{lemma}\label{lem:two_sum_reg_mvm_12}
+    Suppose that $B_{1}$ and $B_{2}$ are TU and let $B = B_{1} \oplus_{2, x, y} B_{2}$. Then all entries in $B$ are in $\{0, \pm 1\}$ and $B$ does not contain a $2 \times 2$ minimal TU violating matrix.
+\end{lemma}
+
+\begin{proof}
+    Note that $B$ is a $\{0, \pm 1\}$ matrix by construction.
+
+    Suppose that $B$ contains a $2 \times 2$ minimal TU violating matrix $V$. Note that $V$ cannot be a submatrix of $\left[A_{1} / D\right]$, $\left[D \mid A_{2}\right]$, $\left[A_{1} \mid 0\right]$, or $\left[0 / A_{2}\right]$, as all of those four matrices are TU. Thus, $V$ shares one row and one column index with $A_{1}$ and $A_{2}$ each. Let $i$ be the row shared by $V$ and $A_{1}$ and $j$ be the column shared by $V$ and $A_{2}$. Note that the entry $V_{ij} = 0$. Thus, $V$ cannot be a minimal TU violating matrix, since a $2 \times 2$ minimal TU violating matrix must have all four entries in $\pm 1$.
+\end{proof}
+
+\begin{lemma}\label{lem:two_sum_reg_mvm_induction}
+    Suppose that $B_{1}$ and $B_{2}$ are TU and let $B = B_{1} \oplus_{2, x, y} B_{2}$. Suppose that $B$ contains a minimal TU violating matrix of size $k \geq 3$. Then there exist matrices $\tilde{B}_{1}$ and $\tilde{B}_{2}$ with the following properties:
+    \begin{itemize}
+        \item $\tilde{B}_{1}$ and $\tilde{B}_{2}$ are the same size as $B_{1}$ and $B_{2}$, respectively.
+        \item $\tilde{B}_{1}$ and $\tilde{B}_{2}$ are TU.
+        \item $\tilde{B}_{1} \oplus_{2, \tilde{x}, \tilde{y}} \tilde{B}_{2}$ contains a minimal TU violating matrix of size $k - 1$. Here $\tilde{x}$ and $\tilde{y}$ are the row and column of $\tilde{B}_{1}$ and $\tilde{B}_{2}$ with the same indices as $x$ and $y$, respectively.
+    \end{itemize}
+\end{lemma}
+
+\begin{proof}
+    Note that $V$ cannot be a submatrix of $\left[A_{1} / D\right]$, $\left[D \mid A_{2}\right]$, $\left[A_{1} \mid 0\right]$, or $\left[0 / A_{2}\right]$, as all of those four matrices are TU. Thus, $V$ shares at least one row and one column index with $A_{1}$ and $A_{2}$ each.
+
+    Consider the row of $V$ whose index appears in $A_{1}$. Note that it cannot consist of only $0$ entries, as otherwise $V$ has determinant $0$ and hence cannot be minimal TU violating. Therefore there exists a $\pm 1$ entry shared by $V$ and $A_{1}$. Let $r$ and $c$ denote the row and column index of this entry, respectively.
+
+    Perform a rational pivot in $B$ on the element $B_{rc}$. For every object, its modified counterpart after pivoting is denoted by the same symbol with an added tilde; for example, $\tilde{B}$ denotes the entire matrix after the pivot. Note that after pivoting the following statements hold:
+    \begin{itemize}
+        \item $\left[\tilde{A}_{1} / \tilde{D}\right]$ is TU, since TUness is preserved by pivoting.
+        \item $\tilde{A}_{2} = A_{2}$, i.e., $A_{2}$ remains unchanged. This holds because of the $0$ block in $B$.
+        \item $\tilde{D}$ consists of copies of a column of $D$ scaled by factors in $\{0, \pm 1\}$. This can be verified by performing a case distinction and simple calculation.
+        \item $\left[\tilde{D} \mid \tilde{A}_{2}\right]$ is TU, since this matrix consists of $A_{2}$ and copies of $y$ scaled by factors $\{0, \pm 1\}$.
+        \item $\tilde{D}$ can be represented as an outer product of a column vector $\tilde{y}$ and a row vector $\tilde{x}$, and we can define $\tilde{B}_{1} = \left[\tilde{A}_{1} / \tilde{x}\right]$ and $\tilde{B}_{2} = \left[\tilde{y} \mid \tilde{A}_{2}\right]$ similar to $B_{1}$ and $B_{2}$, respectively. Note that $\tilde{B}_{1}$ and $\tilde{B}_{2}$ have the same size as $B_{1}$ and $B_{2}$, respectively, are both TU, and satisfy $\tilde{B} = \tilde{B}_{1} \oplus_{2, \tilde{x}, tilde{y}} \tilde{B}_{2}$.
+        \item $\tilde{B}$ contains a minimal violation matrix of size $k - 1$. This holds by Lemma~\ref{lem:mvm_pivot_smaller_mvm}.
+    \end{itemize}
+    To sum up, after pivoting we obtain a matrix $\tilde{B}$ that represents a $2$-sum of TU matrices $\tilde{B}_{1}$ and $\tilde{B}_{2}$ and contains a minimal TU violating matrix of size $k - 1$. Thus, all the desired properties are satisfied.
+\end{proof}
+
+\begin{lemma}
+    Suppose that $B_{1}$ and $B_{2}$ are TU. Then $B_{1} \oplus_{2, x, y} B_{2}$ is also TU.
+\end{lemma}
+
+\begin{proof}
+    Proof by induction.
+
+    Proposition for any $k \in \mathbb{Z}_{\geq 1}$: For any TU matrices $B_{1}$ and $B_{2}$, their $2$-sum $B_{1} \oplus_{2, x, y} B_{2}$ does not contain a minimal TU violating matrix of size $k$.
+
+    Base: The Proposition holds for $k = 1$ and $k = 2$ by Lemma~\ref{lem:two_sum_reg_mvm_12}.
+
+    Step: Suppose the Proposition holds for some $k$. If it does not hold for $k + 1$, then by Lemma~\ref{lem:two_sum_reg_mvm_induction} there exist matrices $B_{1}'$ and $B_{2}'$ that are TU but whose $2$-sum contains a minimal TU violating matrix of size $k$, which contradicts the induction hypothesis.
+
+    Conclusion: For any TU matrices $B_{1}$ and $B_{2}$, their $2$-sum $B_{1} \oplus_{2, x, y} B_{2}$ does not contain a minimal TU violating matrix of any size $k \in \mathbb{Z}_{\geq 1}$. Thus, $B_{1} \oplus_{2, x, y} B_{2}$ is TU.
+\end{proof}
+
+\end{document}
