@@ -4,7 +4,7 @@ import Seymour.Matroid.Notions.Regularity
 variable {α : Type} [DecidableEq α]
 
 /-- `Matrix`-level 3-sum for matroids defined by their standard representation matrices; does not check legitimacy. -/
-noncomputable abbrev Matrix_3sumComposition {β : Type} [CommRing β] {X₁ Y₁ X₂ Y₂ : Set α}
+noncomputable abbrev matrix3sumComposition {β : Type} [CommRing β] {X₁ Y₁ X₂ Y₂ : Set α}
     (A₁ : Matrix X₁ (Y₁ ⊕ Fin 2) β) (A₂ : Matrix (Fin 2 ⊕ X₂) Y₂ β)
     (z₁ : Y₁ → β) (z₂ : X₂ → β) (D : Matrix (Fin 2) (Fin 2) β) (D₁ : Matrix (Fin 2) Y₁ β) (D₂ : Matrix X₂ (Fin 2) β) :
     Matrix ((X₁ ⊕ Unit) ⊕ (Fin 2 ⊕ X₂)) ((Y₁ ⊕ Fin 2) ⊕ (Unit ⊕ Y₂)) β :=
@@ -14,10 +14,10 @@ noncomputable abbrev Matrix_3sumComposition {β : Type} [CommRing β] {X₁ Y₁
     (Matrix.fromRows A₁ (Matrix.row Unit (Sum.elim z₁ ![1, 1]))) 0
     (Matrix.fromBlocks D₁ D D₁₂ D₂) (Matrix.fromCols (Matrix.col Unit (Sum.elim ![1, 1] z₂)) A₂)
 
-/-- `StandardRepresentation`-level 3-sum of two matroids.
+/-- `StandardRepr`-level 3-sum of two matroids.
     The second part checks legitimacy (invertibility of a certain 2x2 submatrix and
     specific `1`s and `0`s on concrete positions). -/
-noncomputable def StandardRepr_3sum {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ y₂ y₃ : α}
+noncomputable def standardRepr3sumComposition {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ y₂ y₃ : α}
     (hXX : S₁.X ∩ S₂.X = {x₁, x₂, x₃}) (hYY : S₁.Y ∩ S₂.Y = {y₁, y₂, y₃}) (hXY : S₁.X ⫗ S₂.Y) (hYX : S₁.Y ⫗ S₂.X) :
     StandardRepr α Z2 × Prop :=
   have hxxx₁ : {x₁, x₂, x₃} ⊆ S₁.X := hXX.symm.subset.trans Set.inter_subset_left
@@ -66,7 +66,7 @@ noncomputable def StandardRepr_3sum {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ 
         exact
           ⟨⟨S₁.hXY.disjoint_sdiff_left, hYX.symm⟩, ⟨hXY.disjoint_sdiff_right.disjoint_sdiff_left, S₂.hXY.disjoint_sdiff_right⟩⟩,
       Matrix.of (fun i j =>
-        Matrix_3sumComposition A₁ A₂ z₁ z₂ D_₁ D₁ D₂ (
+        matrix3sumComposition A₁ A₂ z₁ z₂ D_₁ D₁ D₂ (
           if hi₁ : i.val ∈ S₁.X \ {x₁, x₂, x₃} then ◩◩⟨i, hi₁⟩ else
           if hi₂ : i.val ∈ S₂.X \ {x₁, x₂, x₃} then ◪◪⟨i, hi₂⟩ else
           if hx₁ : i.val = x₁ then ◩◪() else
@@ -113,22 +113,22 @@ structure Matroid.Is3sumOf (M : Matroid α) (M₁ M₂ : Matroid α) where
   hYY : S₁.Y ∩ S₂.Y = {y₁, y₂, y₃}
   hXY : S₁.X ⫗ S₂.Y
   hYX : S₁.Y ⫗ S₂.X
-  IsSum : (StandardRepr_3sum hXX hYY hXY hYX).fst = S
-  IsValid : (StandardRepr_3sum hXX hYY hXY hYX).snd
+  IsSum : (standardRepr3sumComposition hXX hYY hXY hYX).fst = S
+  IsValid : (standardRepr3sumComposition hXX hYY hXY hYX).snd
 
-lemma StandardRepr_3sum_X {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ y₂ y₃ : α}
+lemma standardRepr3sumComposition_X {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ y₂ y₃ : α}
     (hXX : S₁.X ∩ S₂.X = {x₁, x₂, x₃}) (hYY : S₁.Y ∩ S₂.Y = {y₁, y₂, y₃}) (hXY : S₁.X ⫗ S₂.Y) (hYX : S₁.Y ⫗ S₂.X) :
-    (StandardRepr_3sum hXX hYY hXY hYX).fst.X = (S₁.X \ {x₁, x₂, x₃}) ∪ S₂.X :=
+    (standardRepr3sumComposition hXX hYY hXY hYX).fst.X = (S₁.X \ {x₁, x₂, x₃}) ∪ S₂.X :=
   rfl
 
-lemma StandardRepr_3sum_Y {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ y₂ y₃ : α}
+lemma standardRepr3sumComposition_Y {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ y₂ y₃ : α}
     (hXX : S₁.X ∩ S₂.X = {x₁, x₂, x₃}) (hYY : S₁.Y ∩ S₂.Y = {y₁, y₂, y₃}) (hXY : S₁.X ⫗ S₂.Y) (hYX : S₁.Y ⫗ S₂.X) :
-    (StandardRepr_3sum hXX hYY hXY hYX).fst.Y = S₁.Y ∪ (S₂.Y \ {y₁, y₂, y₃}) :=
+    (standardRepr3sumComposition hXX hYY hXY hYX).fst.Y = S₁.Y ∪ (S₂.Y \ {y₁, y₂, y₃}) :=
   rfl
 
-lemma StandardRepr_3sum_B {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ y₂ y₃ : α}
+lemma standardRepr3sumComposition_B {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ y₂ y₃ : α}
     (hXX : S₁.X ∩ S₂.X = {x₁, x₂, x₃}) (hYY : S₁.Y ∩ S₂.Y = {y₁, y₂, y₃}) (hXY : S₁.X ⫗ S₂.Y) (hYX : S₁.Y ⫗ S₂.X) :
-    (StandardRepr_3sum hXX hYY hXY hYX).fst.B =
+    (standardRepr3sumComposition hXX hYY hXY hYX).fst.B =
     have hxxx₁ : {x₁, x₂, x₃} ⊆ S₁.X := hXX.symm.subset.trans Set.inter_subset_left
     have hxxx₂ : {x₁, x₂, x₃} ⊆ S₂.X := hXX.symm.subset.trans Set.inter_subset_right
     have hyyy₁ : {y₁, y₂, y₃} ⊆ S₁.Y := hYY.symm.subset.trans Set.inter_subset_left
@@ -161,7 +161,7 @@ lemma StandardRepr_3sum_B {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ 
       Matrix.of (fun i j => S₁.B (![⟨x₂, x₂inX₁⟩, ⟨x₃, x₃inX₁⟩] i) ⟨j.val, Set.mem_of_mem_diff j.property⟩)
     let D₂ : Matrix (S₂.X \ {x₁, x₂, x₃}).Elem (Fin 2) Z2 := -- the bottom left submatrix
       Matrix.of (fun i j => S₂.B ⟨i.val, Set.mem_of_mem_diff i.property⟩ (![⟨y₂, y₂inY₂⟩, ⟨y₁, y₁inY₂⟩] j))
-    ((Matrix_3sumComposition A₁ A₂ z₁ z₂ D_₁ D₁ D₂).submatrix
+    ((matrix3sumComposition A₁ A₂ z₁ z₂ D_₁ D₁ D₂).submatrix
       ((Equiv.sumAssoc (S₁.X \ {x₁, x₂, x₃}).Elem Unit (Fin 2 ⊕ (S₂.X \ {x₁, x₂, x₃}).Elem)).invFun ∘
         Sum.map id (fun i : S₂.X =>
           if hx₁ : i.val = x₁ then ◩() else
@@ -177,8 +177,8 @@ lemma StandardRepr_3sum_B {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ 
       ).toMatrixUnionUnion
     := by
   ext i j
-  rw [StandardRepr_3sum_X] at i
-  rw [StandardRepr_3sum_Y] at j
+  rw [standardRepr3sumComposition_X] at i
+  rw [standardRepr3sumComposition_Y] at j
   if hi : i.val ∈ S₂.X then
     if hj : j.val ∈ S₁.Y then
       sorry
@@ -192,7 +192,7 @@ lemma StandardRepr_3sum_B {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ 
 
 instance Matroid.Is3sumOf.finS {M M₁ M₂ : Matroid α} (hM : M.Is3sumOf M₁ M₂) : Finite hM.S.X := by
   obtain ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, rfl, _⟩ := hM
-  rw [StandardRepr_3sum_X]
+  rw [standardRepr3sumComposition_X]
   apply Finite.Set.finite_union
 
 /-- Any 3-sum of regular matroids is a regular matroid.

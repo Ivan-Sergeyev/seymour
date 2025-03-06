@@ -1,4 +1,3 @@
-import Seymour.Basic.Sets
 import Seymour.Matrix.Pivoting
 import Seymour.Matrix.TotalUnimodularityViolation
 import Seymour.Matroid.Notions.Regularity
@@ -7,15 +6,15 @@ import Seymour.Matroid.Notions.Regularity
 variable {α : Type} [DecidableEq α]
 
 /-- `Matrix`-level 2-sum for matroids defined by their standard representation matrices; does not check legitimacy. -/
-abbrev Matrix_2sumComposition {β : Type} [Semiring β] {X₁ Y₁ X₂ Y₂ : Set α}
+abbrev matrix2sumComposition {β : Type} [Semiring β] {X₁ Y₁ X₂ Y₂ : Set α}
     (A₁ : Matrix X₁ Y₁ β) (x : Y₁ → β) (A₂ : Matrix X₂ Y₂ β) (y : X₂ → β) :
     Matrix (X₁ ⊕ X₂) (Y₁ ⊕ Y₂) β :=
   Matrix.fromBlocks A₁ 0 (fun i j => y i * x j) A₂
 
-/-- `StandardRepresentation`-level 2-sum of two matroids.
+/-- `StandardRepr`-level 2-sum of two matroids.
     The second part checks legitimacy: the ground sets of `M₁` and `M₂` are disjoint except for the element `a ∈ M₁.X ∩ M₂.Y`,
     and the bottom-most row of `M₁` and the left-most column of `M₂` are each nonzero vectors. -/
-def StandardRepr_2sum {a : α} {S₁ S₂ : StandardRepr α Z2} (ha : S₁.X ∩ S₂.Y = {a}) (hXY : S₂.X ⫗ S₁.Y) :
+def standardRepr2sumComposition {a : α} {S₁ S₂ : StandardRepr α Z2} (ha : S₁.X ∩ S₂.Y = {a}) (hXY : S₂.X ⫗ S₁.Y) :
     StandardRepr α Z2 × Prop :=
   let A₁ : Matrix (S₁.X \ {a}).Elem S₁.Y.Elem Z2 := S₁.B ∘ Set.diff_subset.elem -- the top submatrix of `B₁`
   let A₂ : Matrix S₂.X.Elem (S₂.Y \ {a}).Elem Z2 := (S₂.B · ∘ Set.diff_subset.elem) -- the right submatrix of `B₂`
@@ -28,7 +27,7 @@ def StandardRepr_2sum {a : α} {S₁ S₂ : StandardRepr α Z2} (ha : S₁.X ∩
       by
         rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
         exact ⟨⟨S₁.hXY.disjoint_sdiff_left, hXY⟩, ⟨disjoint_of_singleton_inter_both_wo ha, S₂.hXY.disjoint_sdiff_right⟩⟩,
-      (Matrix_2sumComposition A₁ x A₂ y).toMatrixUnionUnion,
+      (matrix2sumComposition A₁ x A₂ y).toMatrixUnionUnion,
       inferInstance,
       inferInstance,
     ⟩,
@@ -48,8 +47,8 @@ structure Matroid.Is2sumOf (M : Matroid α) (M₁ M₂ : Matroid α) where
   a : α
   ha : S₁.X ∩ S₂.Y = {a}
   hXY : S₂.X ⫗ S₁.Y
-  IsSum : (StandardRepr_2sum ha hXY).fst = S
-  IsValid : (StandardRepr_2sum ha hXY).snd
+  IsSum : (standardRepr2sumComposition ha hXY).fst = S
+  IsValid : (standardRepr2sumComposition ha hXY).snd
 
 instance Matroid.Is2sumOf.finS {M M₁ M₂ : Matroid α} (hM : M.Is2sumOf M₁ M₂) : Finite hM.S.X := by
   obtain ⟨_, _, _, _, _, _, _, _, _, _, _, rfl, _⟩ := hM
@@ -62,17 +61,17 @@ notation:64 "▮"c:81 => Matrix.col Unit c
 
 lemma lemma8 {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ} {k : ℕ}
     (hk : 2 ≤ k) (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular)
-    (hAxAy : (Matrix_2sumComposition A₁ x A₂ y).MinimumViolationSizeIs k.succ) :
+    (hAxAy : (matrix2sumComposition A₁ x A₂ y).MinimumViolationSizeIs k.succ) :
     ∃ A₁' : Matrix X₁ Y₁ ℚ, ∃ x' : Y₁ → ℚ, ∃ A₂' : Matrix X₂ Y₂ ℚ, ∃ y' : X₂ → ℚ,
       (A₁' ⊟ (▬x')).IsTotallyUnimodular ∧
       ((▮y') ◫ A₂').IsTotallyUnimodular ∧
-      (Matrix_2sumComposition A₁' x' A₂' y').MinimumViolationSizeIs k := by
+      (matrix2sumComposition A₁' x' A₂' y').MinimumViolationSizeIs k := by
   sorry -- lots of work with pivoting
 
-lemma Matrix_2sumComposition_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ : Set α}
+lemma matrix2sumComposition_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
     (hA₁ : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hA₂ : (▮y ◫ A₂).IsTotallyUnimodular) :
-    (Matrix_2sumComposition A₁ x A₂ y).IsTotallyUnimodular := by
+    (matrix2sumComposition A₁ x A₂ y).IsTotallyUnimodular := by
   rw [Matrix.isTotallyUnimodular_iff_none_minimumViolationSizeIs]
   intro k
   cases k with
@@ -88,10 +87,10 @@ lemma Matrix_2sumComposition_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ : Set α}
         obtain ⟨_, _, _, _, hA₁', hA₂', result⟩ := lemma8 (Nat.le_add_left 2 k) hA₁ hA₂ contr
         exact ih hA₁' hA₂' result
 
-lemma StandardRepr_2sum_B {S₁ S₂ : StandardRepr α Z2} {a : α} (ha : S₁.X ∩ S₂.Y = {a}) (hXY : S₂.X ⫗ S₁.Y) :
+lemma standardRepr2sumComposition_B {S₁ S₂ : StandardRepr α Z2} {a : α} (ha : S₁.X ∩ S₂.Y = {a}) (hXY : S₂.X ⫗ S₁.Y) :
     ∃ haX₁ : a ∈ S₁.X, ∃ haY₂ : a ∈ S₂.Y,
-      (StandardRepr_2sum ha hXY).fst.B =
-      (Matrix_2sumComposition
+      (standardRepr2sumComposition ha hXY).fst.B =
+      (matrix2sumComposition
         (S₁.B ∘ Set.diff_subset.elem)
         (S₁.B ⟨a, haX₁⟩)
         (S₂.B · ∘ Set.diff_subset.elem)
@@ -100,12 +99,12 @@ lemma StandardRepr_2sum_B {S₁ S₂ : StandardRepr α Z2} {a : α} (ha : S₁.X
   have haXY : a ∈ S₁.X ∩ S₂.Y := ha ▸ rfl
   ⟨Set.mem_of_mem_inter_left haXY, Set.mem_of_mem_inter_right haXY, rfl⟩
 
-lemma StandardRepr_2sum_hasTuSigning {S₁ S₂ : StandardRepr α Z2} {a : α} (ha : S₁.X ∩ S₂.Y = {a}) (hXY : S₂.X ⫗ S₁.Y)
+lemma standardRepr2sumComposition_hasTuSigning {S₁ S₂ : StandardRepr α Z2} {a : α} (ha : S₁.X ∩ S₂.Y = {a}) (hXY : S₂.X ⫗ S₁.Y)
     (hS₁ : S₁.HasTuSigning) (hS₂ : S₂.HasTuSigning) :
-    (StandardRepr_2sum ha hXY).fst.HasTuSigning := by
+    (standardRepr2sumComposition ha hXY).fst.HasTuSigning := by
   obtain ⟨B₁, hB₁, hBB₁⟩ := hS₁
   obtain ⟨B₂, hB₂, hBB₂⟩ := hS₂
-  obtain ⟨haX₁, haY₂, hB⟩ := StandardRepr_2sum_B ha hXY
+  obtain ⟨haX₁, haY₂, hB⟩ := standardRepr2sumComposition_B ha hXY
   let x' : S₁.Y.Elem → ℚ := B₁ ⟨a, haX₁⟩
   let y' : S₂.X.Elem → ℚ := (B₂ · ⟨a, haY₂⟩)
   let A₁' : Matrix (S₁.X \ {a}).Elem S₁.Y.Elem ℚ := B₁ ∘ Set.diff_subset.elem
@@ -126,11 +125,11 @@ lemma StandardRepr_2sum_hasTuSigning {S₁ S₂ : StandardRepr α Z2} {a : α} (
   have hy' : ∀ i, |y' i| = (S₂.B i ⟨a, haY₂⟩).val
   · intro i
     exact hBB₂ i ⟨a, haY₂⟩
-  let B' := Matrix_2sumComposition A₁' x' A₂' y' -- the signing is obtained using the same function but for `ℚ`
+  let B' := matrix2sumComposition A₁' x' A₂' y' -- the signing is obtained using the same function but for `ℚ`
   use B'.toMatrixUnionUnion
   constructor
   · apply Matrix.IsTotallyUnimodular.toMatrixUnionUnion
-    apply Matrix_2sumComposition_isTotallyUnimodular
+    apply matrix2sumComposition_isTotallyUnimodular
     · convert hB₁.comp_rows
         (fun i : (S₁.X \ {a}).Elem ⊕ Unit => i.casesOn Set.diff_subset.elem (fun _ => ⟨a, haX₁⟩))
       aesop
@@ -164,6 +163,6 @@ theorem Matroid.Is2sumOf.isRegular {M M₁ M₂ : Matroid α}
   have := hM.finS
   obtain ⟨_, _, _, _, _, rfl, rfl, rfl, _, _, _, rfl, _⟩ := hM
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hM₁ hM₂ ⊢
-  apply StandardRepr_2sum_hasTuSigning
+  apply standardRepr2sumComposition_hasTuSigning
   · exact hM₁
   · exact hM₂
