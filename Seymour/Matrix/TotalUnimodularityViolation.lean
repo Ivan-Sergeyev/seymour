@@ -1,19 +1,12 @@
-import Seymour.Matrix.Pivoting
+import Seymour.Matrix.Basic
 
 
-variable {X Y : Type}
-
-section
-variable {R : Type} [CommRing R]
+variable {X Y R : Type} [CommRing R]
 
 /-- A matrix is minimal TU violating if it is not TU, but its every proper submatrix is TU. -/
 def Matrix.IsMinimalNonTU (A : Matrix X Y R) : Prop :=
   ¬A.IsTotallyUnimodular ∧
   ∀ k : ℕ, ∀ f : Fin k → X, ∀ g : Fin k → Y, (¬f.Surjective ∨ ¬g.Surjective) → (A.submatrix f g).IsTotallyUnimodular
-
-/-- The order of a minimal TU violating matrix is the number of its rows. -/
-def Matrix.IsMinimalNonTU.order [Fintype X] [Fintype Y] {A : Matrix X Y R} (_hA : A.IsMinimalNonTU) :=
-  #X -- Why is this definition useful?
 
 def Matrix.ContainsMinimalNonTU (A : Matrix X Y R) (k : ℕ) : Prop :=
   ∃ f : Fin k → X, ∃ g : Fin k → Y, f.Bijective ∧ g.Bijective ∧ (A.submatrix f g).IsMinimalNonTU
@@ -40,15 +33,14 @@ lemma Matrix.IsMinimalNonTU_is_square [Fintype X] [Fintype Y] {A : Matrix X Y R}
 
 /-- A 2 × 2 minimal TU violating matrix has four ±1 entries. -/
 lemma Matrix.IsMinimalNonTU.two_by_two_entries [Fintype X] [Fintype Y] {A : Matrix X Y R}
-    (hA : A.IsMinimalNonTU) (h2 : hA.order = 2) :
+    (hA : A.IsMinimalNonTU) (h2 : #X = 2) :
     ∀ i : X, ∀ j : Y, A i j = -1 ∨ A i j = 1 := by
-  have hX2 : #X = 2 := h2
   have trichotomy (i : X) (j : Y) : A i j = 0 ∨ A i j = -1 ∨ A i j = 1
   · obtain ⟨s, hs⟩ :=
       (hA.right 1 ![i] ![j] (by
         left
         intro contr
-        have impos := hX2 ▸ Fintype.card_fin 1 ▸ Fintype.card_le_of_surjective _ contr
+        have impos := h2 ▸ Fintype.card_fin 1 ▸ Fintype.card_le_of_surjective _ contr
         norm_num at impos)
       ).apply 0 0
     cases s with
@@ -97,10 +89,24 @@ lemma Matrix.containsMinimalNonTU_of_not_isTotallyUnimodular {A : Matrix X Y R} 
   specialize @hAk n
   simp only [not_exists, forall_exists_index] at hAk
   specialize hAk (f ∘ f') (g ∘ g')
-  intro huh
+  intro
   by_contra contr
   rw [Matrix.submatrix_submatrix, Matrix.isTotallyUnimodular_iff] at contr
   sorry
+
+lemma Matrix.containsMinimalNonTU_iff_not_isTotallyUnimodular (A : Matrix X Y R) :
+    (∃ k : ℕ, A.ContainsMinimalNonTU k) ↔ ¬A.IsTotallyUnimodular := by
+  constructor
+  · sorry
+  · exact A.containsMinimalNonTU_of_not_isTotallyUnimodular
+
+lemma Matrix.isTotallyUnimodular_iff_not_containsMinimalNonTU (A : Matrix X Y R) :
+    A.IsTotallyUnimodular ↔ ¬(∃ k : ℕ, A.ContainsMinimalNonTU k) :=
+  iff_not_comm.→ A.containsMinimalNonTU_iff_not_isTotallyUnimodular
+
+lemma Matrix.isTotallyUnimodular_iff_none_containsMinimalNonTU (A : Matrix X Y R) :
+    A.IsTotallyUnimodular ↔ ∀ k : ℕ, ¬(A.ContainsMinimalNonTU k) :=
+  A.isTotallyUnimodular_iff_not_containsMinimalNonTU.trans not_exists
 
 /-- Pivoting in a minimal TU violating matrix and removing the pivot row and col yields a minimal TU violating matrix. -/
 lemma Matrix.IsMinimalNonTU_after_pivot {A : Matrix X Y R} {x : X} {y : Y}
@@ -108,18 +114,34 @@ lemma Matrix.IsMinimalNonTU_after_pivot {A : Matrix X Y R} {x : X} {y : Y}
     False := -- fixme: pivot on A x y + delete pivot row & col => MVM
   sorry
 
-end
+-- Let's do the same but better...
 
-section
-variable {F : Type} [Field F]
+/-- The smallest submatrix of `A` that is not totally unimodular has size `k` (propositionally equal to what is written). -/
+def Matrix.MinimumViolationSizeIs (A : Matrix X Y R) (k : ℕ) : Prop :=
+  (∀ n : ℕ, ∀ f : Fin n → X, ∀ g : Fin n → Y, n < k → f.Injective → g.Injective →
+    (A.submatrix f g).det ∈ SignType.cast.range) ∧
+  ¬(∀ f : Fin k → X, ∀ g : Fin k → Y, f.Injective → g.Injective → (A.submatrix f g).det ∈ SignType.cast.range)
 
-/-- The form of a matrix after pivoting and removing the pivot row and column. -/
-lemma Matrix.shortTableauPivot_no_pivot_row_col [DecidableEq X] [DecidableEq Y]
-    (A : Matrix X Y F) (x : X) (y : Y) (i : X) (j : Y) (hix : i ≠ x) (hjx : j ≠ y) :
-    A.shortTableauPivot x y i j = A i j - A i y * A x j / A x y := by
-  simp [Matrix.shortTableauPivot, hix, hjx]
-  -- sketch:
-  -- * the resulting matrix has the same determinant as the original one (cofactor computation), hence not TU
-  -- * every proper submatrix is TU, because TUness is preserved under pivoting
+lemma Matrix.minimumViolationSizeIs_iff (A : Matrix X Y R) (k : ℕ) :
+    A.MinimumViolationSizeIs k ↔
+    ((∀ n < k, ∀ f : Fin n → X, ∀ g : Fin n → Y, (A.submatrix f g).det ∈ SignType.cast.range) ∧
+    ¬(∀ f : Fin k → X, ∀ g : Fin k → Y, f.Injective → g.Injective → (A.submatrix f g).det ∈ SignType.cast.range)) := by
+  -- if not injective then `∈ SignType.cast.range` is tautological
+  sorry
 
-end
+lemma Matrix.minimumViolationSizeIs_iff' (A : Matrix X Y R) (k : ℕ) :
+    A.MinimumViolationSizeIs k ↔
+    ((∀ n < k, ∀ f : Fin n → X, ∀ g : Fin n → Y, (A.submatrix f g).det ∈ SignType.cast.range) ∧
+    ∃ f : Fin k → X, ∃ g : Fin k → Y, f.Injective ∧ g.Injective ∧ (A.submatrix f g).det ∉ SignType.cast.range) := by
+  simp [Matrix.minimumViolationSizeIs_iff]
+
+lemma Matrix.minimumViolationSizeIs_iff'' (A : Matrix X Y R) (k : ℕ) :
+    A.MinimumViolationSizeIs k ↔
+    ((∀ n < k, ∀ f : Fin n → X, ∀ g : Fin n → Y, (A.submatrix f g).det ∈ SignType.cast.range) ∧
+    ∃ f : Fin k → X, ∃ g : Fin k → Y, (A.submatrix f g).det ∉ SignType.cast.range) := by
+  -- `∉ SignType.cast.range` itself implies `f.Injective` and `g.Injective`
+  sorry
+
+lemma Matrix.isTotallyUnimodular_iff_none_minimumViolationSizeIs (A : Matrix X Y R) :
+    A.IsTotallyUnimodular ↔ ∀ k : ℕ, ¬(A.MinimumViolationSizeIs k) := by
+  sorry

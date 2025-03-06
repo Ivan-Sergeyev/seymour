@@ -20,6 +20,11 @@ def Matrix.shortTableauPivot [Field F] [DecidableEq X] [DecidableEq Y] (A : Matr
       else
         A i j - A i y * A x j / A x y
 
+lemma Matrix.shortTableauPivot_elem_of_ne_ne [Field F] [DecidableEq X] [DecidableEq Y] {A : Matrix X Y F}
+    {x : X} {y : Y} {i : X} {j : Y} (hix : i ≠ x) (hjx : j ≠ y) :
+    A.shortTableauPivot x y i j = A i j - A i y * A x j / A x y := by
+  simp [Matrix.shortTableauPivot, hix, hjx]
+
 lemma Matrix.shortTableauPivot_row_pivot [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (x : X) (y : Y) :
     A.shortTableauPivot x y x =
     (fun j : Y => if j = y then 1 / A x y else A x j / A x y) := by

@@ -32,7 +32,7 @@ inductive Matroid.IsGood : Matroid α → Prop
 | theR10 {M : Matroid α} {e : α ≃ Fin 10} (hM : M.mapEquiv e = matroidR10.toMatroid) : M.IsGood
 -- fork constructors
 | is1sum {M M₁ M₂ : Matroid α} (hM : M.Is1sumOf M₁ M₂) : M.IsGood
---| is2sum {M M₁ M₂ : Matroid α} (hM : M.Is2sumOf M₁ M₂) : M.IsGood
+| is2sum {M M₁ M₂ : Matroid α} (hM : M.Is2sumOf M₁ M₂) : M.IsGood
 | is3sum {M M₁ M₂ : Matroid α} (hM : M.Is3sumOf M₁ M₂) : M.IsGood
 
 /-- THE HOLY GRAIL. -/
