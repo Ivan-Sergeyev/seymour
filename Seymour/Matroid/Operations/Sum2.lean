@@ -63,10 +63,52 @@ lemma lemma8 {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y
     (hk : 2 ≤ k) (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular)
     (hAxAy : (matrix2sumComposition A₁ x A₂ y).MinimumViolationSizeIs k.succ) :
     ∃ A₁' : Matrix X₁ Y₁ ℚ, ∃ x' : Y₁ → ℚ, ∃ A₂' : Matrix X₂ Y₂ ℚ, ∃ y' : X₂ → ℚ,
-      (A₁' ⊟ (▬x')).IsTotallyUnimodular ∧
-      ((▮y') ◫ A₂').IsTotallyUnimodular ∧
+      (A₁' ⊟ ▬x').IsTotallyUnimodular ∧
+      (▮y' ◫ A₂').IsTotallyUnimodular ∧
       (matrix2sumComposition A₁' x' A₂' y').MinimumViolationSizeIs k := by
-  sorry -- lots of work with pivoting
+  obtain ⟨hA, hA'⟩ := hAxAy
+  push_neg at hA'
+  obtain ⟨f, g, hf, hg, hAfg⟩ := hA'
+  -- first paragraph
+  obtain ⟨i₁, x₁, hix₁⟩ : ∃ i₁ : Fin k.succ, ∃ x₁ : X₁, f i₁ = ◩x₁
+  · sorry -- because `D ◫ A₂` is TU
+  obtain ⟨i₂, x₂, hix₂⟩ : ∃ i₂ : Fin k.succ, ∃ x₂ : X₂, f i₂ = ◪x₂
+  · sorry -- because `A₁ ◫ 0` is TU
+  obtain ⟨j₁, y₁, hjy₁⟩ : ∃ j₁ : Fin k.succ, ∃ y₁ : Y₁, g j₁ = ◩y₁
+  · sorry -- because `0 ⊟ A₂` is TU
+  obtain ⟨j₂, y₂, hjy₂⟩ : ∃ j₂ : Fin k.succ, ∃ y₂ : Y₂, g j₂ = ◪y₂
+  · sorry -- because `A₁ ⊟ D` is TU
+  -- second paragraph
+  obtain ⟨j₀, y₀, hyj₀⟩ : ∃ j₀ : Fin k.succ, ∃ y₀ : Y₁, g j₀ = ◩y₀ ∧ A₁ x₁ y₀ ≠ 0
+  · sorry -- because the `x₁` row cannot be all `0`s
+  -- third paragraph
+  let B' := (matrix2sumComposition A₁ x A₂ y).shortTableauPivot ◩x₁ ◩y₀
+  have hB' : B' = matrix2sumComposition B'.toBlocks₁₁ x B'.toBlocks₂₂ y -- TODO modify `x` and `y` to make it hold
+  · sorry
+  use B'.toBlocks₁₁, x, B'.toBlocks₂₂, y -- TODO the same modified `x` and `y` here
+  -- first bullet
+  have B'_toCols₁_TU : B'.toCols₁.IsTotallyUnimodular
+  · sorry -- follows from `hAx` using `Matrix.IsTotallyUnimodular.shortTableauPivot`
+  -- second bullet
+  have eq_A₂ : B'.toBlocks₂₂ = A₂
+  · sorry
+  -- TODO thirt bullet
+  -- fourth bullet
+  have B'_toRows₂_TU : B'.toRows₂.IsTotallyUnimodular
+  · rw [hB', eq_A₂]
+    show ((fun i j => y i * x j) ◫ A₂).IsTotallyUnimodular
+    -- TODO utilize `hAy` here
+    sorry
+  -- TODO fifth bullet
+  -- TODO sixth bullet
+  -- conclusion
+  constructor
+  · sorry -- follows from `B'_toCols₁_TU`
+  constructor
+  · sorry -- follows from `B'_toRows₂_TU`
+  constructor
+  · sorry -- missing in the write-up
+  · sorry -- the sixth bullet will go here
 
 lemma matrix2sumComposition_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
