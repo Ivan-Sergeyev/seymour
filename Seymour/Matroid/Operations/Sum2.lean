@@ -59,6 +59,26 @@ infix:63 " ◫ " => Matrix.fromCols
 notation:64 "▬"r:81 => Matrix.row Unit r
 notation:64 "▮"c:81 => Matrix.col Unit c
 
+private lemma lemma6₁_aux {X₁ Y₁ X₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {y : X₂ → ℚ}
+    (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hy : ∀ i, y i ∈ SignType.cast.range) :
+    (A₁ ⊟ (fun i j => y i * x j)).IsTotallyUnimodular := by
+  sorry
+
+private lemma lemma6₂_aux {Y₁ X₂ Y₂ : Set α} {A₂ : Matrix X₂ Y₂ ℚ} {x : Y₁ → ℚ} {y : X₂ → ℚ}
+    (hAy : (▮y ◫ A₂).IsTotallyUnimodular) (hx : ∀ i, x i ∈ SignType.cast.range) :
+    ((fun i j => y i * x j) ◫ A₂).IsTotallyUnimodular := by
+  sorry
+
+lemma lemma6₁ {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
+    (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular) :
+    (A₁ ⊟ (fun i j => y i * x j)).IsTotallyUnimodular :=
+  lemma6₁_aux hAx (hAy.apply · ◩())
+
+lemma lemma6₂ {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
+    (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular) :
+    ((fun i j => y i * x j) ◫ A₂).IsTotallyUnimodular :=
+  lemma6₂_aux hAy (hAx.apply ◪())
+
 lemma lemma8 {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ} {k : ℕ}
     (hk : 2 ≤ k) (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular)
     (hAxAy : (matrix2sumComposition A₁ x A₂ y).MinimumViolationSizeIs k.succ) :
@@ -71,13 +91,15 @@ lemma lemma8 {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y
   obtain ⟨f, g, hf, hg, hAfg⟩ := hA'
   -- first paragraph
   obtain ⟨i₁, x₁, hix₁⟩ : ∃ i₁ : Fin k.succ, ∃ x₁ : X₁, f i₁ = ◩x₁
-  · sorry -- because `D ◫ A₂` is TU
+  · have := lemma6₂ hAx hAy
+    sorry -- because `D ◫ A₂` is TU
   obtain ⟨i₂, x₂, hix₂⟩ : ∃ i₂ : Fin k.succ, ∃ x₂ : X₂, f i₂ = ◪x₂
   · sorry -- because `A₁ ◫ 0` is TU
   obtain ⟨j₁, y₁, hjy₁⟩ : ∃ j₁ : Fin k.succ, ∃ y₁ : Y₁, g j₁ = ◩y₁
   · sorry -- because `0 ⊟ A₂` is TU
   obtain ⟨j₂, y₂, hjy₂⟩ : ∃ j₂ : Fin k.succ, ∃ y₂ : Y₂, g j₂ = ◪y₂
-  · sorry -- because `A₁ ⊟ D` is TU
+  · have := lemma6₁ hAx hAy
+    sorry -- because `A₁ ⊟ D` is TU
   -- second paragraph
   obtain ⟨j₀, y₀, hyj₀⟩ : ∃ j₀ : Fin k.succ, ∃ y₀ : Y₁, g j₀ = ◩y₀ ∧ A₁ x₁ y₀ ≠ 0
   · sorry -- because the `x₁` row cannot be all `0`s
