@@ -60,12 +60,39 @@ notation:64 "▬"r:81 => Matrix.row Unit r
 notation:64 "▮"c:81 => Matrix.col Unit c
 
 private lemma lemma6₁_aux {X₁ Y₁ X₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {y : X₂ → ℚ}
-    (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hy : ∀ i, y i ∈ SignType.cast.range) :
+    (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hy : ∀ x : X₂, y x ∈ SignType.cast.range) :
     (A₁ ⊟ (fun i j => y i * x j)).IsTotallyUnimodular := by
-  sorry
+  rw [Matrix.isTotallyUnimodular_iff]
+  intro k f g
+  if h0 : ∃ i : Fin k, ∃ x : X₂, f i = ◪x ∧ y x = 0 then
+    convert zero_in_singTypeCastRange
+    obtain ⟨i, x, hi, hx⟩ := h0
+    apply Matrix.det_eq_zero_of_row_eq_zero i
+    intro
+    rw [Matrix.submatrix_apply, hi, Matrix.fromRows_apply_inr, mul_eq_zero]
+    left
+    exact hx
+  else if h11 : ∃ i i' : Fin k, ∃ x x' : X₂, i ≠ i' ∧ (f i = ◪x ∧ y x = 1) ∧ (f i' = ◪x' ∧ y x' = 1) then
+    convert zero_in_singTypeCastRange
+    obtain ⟨i, i', x, x', hii, ⟨hi, hx⟩, ⟨hi', hx'⟩⟩ := h11
+    apply Matrix.det_zero_of_row_eq hii
+    ext
+    simp [*]
+  else if h99 : ∃ i i' : Fin k, ∃ x x' : X₂, i ≠ i' ∧ (f i = ◪x ∧ y x = -1) ∧ (f i' = ◪x' ∧ y x' = -1) then
+    convert zero_in_singTypeCastRange
+    obtain ⟨i, i', x, x', hii, ⟨hi, hx⟩, ⟨hi', hx'⟩⟩ := h99
+    apply Matrix.det_zero_of_row_eq hii
+    ext
+    simp [*]
+  else if h19 : ∃ i i' : Fin k, ∃ x x' : X₂, i ≠ i' ∧ (f i = ◪x ∧ y x = 1) ∧ (f i' = ◪x' ∧ y x' = -1) then
+    convert zero_in_singTypeCastRange
+    obtain ⟨i, i', x, x', hii, ⟨hi, hx⟩, ⟨hi', hx'⟩⟩ := h19
+    sorry
+  else
+    sorry
 
 private lemma lemma6₂_aux {Y₁ X₂ Y₂ : Set α} {A₂ : Matrix X₂ Y₂ ℚ} {x : Y₁ → ℚ} {y : X₂ → ℚ}
-    (hAy : (▮y ◫ A₂).IsTotallyUnimodular) (hx : ∀ i, x i ∈ SignType.cast.range) :
+    (hAy : (▮y ◫ A₂).IsTotallyUnimodular) (hx : ∀ y : Y₁, x y ∈ SignType.cast.range) :
     ((fun i j => y i * x j) ◫ A₂).IsTotallyUnimodular := by
   sorry
 
