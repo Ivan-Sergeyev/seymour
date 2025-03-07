@@ -9,12 +9,34 @@ def Matrix.MinimumViolationSizeIs (A : Matrix X Y R) (k : ℕ) : Prop :=
     (A.submatrix f g).det ∈ SignType.cast.range) ∧
   ¬(∀ f : Fin k → X, ∀ g : Fin k → Y, f.Injective → g.Injective → (A.submatrix f g).det ∈ SignType.cast.range)
 
+lemma ll {P₁ P₂ : Prop} (hP : P₁ ↔ P₂) (Q : Prop) : P₁ ∧ Q ↔ P₂ ∧ Q :=
+  and_congr_left (fun _ => hP)
+
+lemma lll {P₁ P₂ : Prop} (hP : P₁ ↔ P₂) (Q : Prop) : Q ∧ P₁ ↔ Q ∧ P₂ :=
+  and_congr_right (fun _ => hP)
+
 lemma Matrix.minimumViolationSizeIs_iff (A : Matrix X Y R) (k : ℕ) :
     A.MinimumViolationSizeIs k ↔
     ((∀ n < k, ∀ f : Fin n → X, ∀ g : Fin n → Y, (A.submatrix f g).det ∈ SignType.cast.range) ∧
     ¬(∀ f : Fin k → X, ∀ g : Fin k → Y, f.Injective → g.Injective → (A.submatrix f g).det ∈ SignType.cast.range)) := by
-  -- if not injective then `∈ SignType.cast.range` is tautological
-  sorry
+  apply ll
+  constructor
+  · intro hA n hn f g
+    if hfg : f.Injective ∧ g.Injective then
+      obtain ⟨hf, hg⟩ := hfg
+      exact hA n f g hn hf hg
+    else
+      use 0
+      rw [SignType.coe_zero, eq_comm]
+      simp_rw [not_and_or, Function.not_injective_iff] at hfg
+      obtain ⟨i, j, hfij, hij⟩ | ⟨i, j, hgij, hij⟩ := hfg
+      · rw [← Matrix.det_transpose, Matrix.transpose_submatrix]
+        apply det_zero_of_column_eq hij.symm
+        simp [hfij]
+      · apply det_zero_of_column_eq hij
+        simp [hgij]
+  · intro hA n f g hn hf hg
+    exact hA n hn f g
 
 lemma Matrix.minimumViolationSizeIs_iff' (A : Matrix X Y R) (k : ℕ) :
     A.MinimumViolationSizeIs k ↔
@@ -25,9 +47,28 @@ lemma Matrix.minimumViolationSizeIs_iff' (A : Matrix X Y R) (k : ℕ) :
 lemma Matrix.minimumViolationSizeIs_iff'' (A : Matrix X Y R) (k : ℕ) :
     A.MinimumViolationSizeIs k ↔
     ((∀ n < k, ∀ f : Fin n → X, ∀ g : Fin n → Y, (A.submatrix f g).det ∈ SignType.cast.range) ∧
-      ∃ f : Fin k → X, ∃ g : Fin k → Y, (A.submatrix f g).det ∉ SignType.cast.range) := by
-  -- `∉ SignType.cast.range` itself implies `f.Injective` and `g.Injective`
-  sorry
+      ∃ f : Fin k → X, ∃ g : Fin k → Y, (A.submatrix f g).det ∉ SignType.cast.range) :=
+  (A.minimumViolationSizeIs_iff' k).trans <| by
+  apply lll
+  constructor
+  · intro ⟨f, g, hf, hg, hA⟩
+    exact ⟨f, g, hA⟩
+  · intro ⟨f, g, hA⟩
+    if hfg : f.Injective ∧ g.Injective then
+      obtain ⟨hf, hg⟩ := hfg
+      exact ⟨f, g, hf, hg, hA⟩
+    else
+      exfalso
+      apply hA
+      use 0
+      rw [SignType.coe_zero, eq_comm]
+      simp_rw [not_and_or, Function.not_injective_iff] at hfg
+      obtain ⟨i, j, hfij, hij⟩ | ⟨i, j, hgij, hij⟩ := hfg
+      · rw [← Matrix.det_transpose, Matrix.transpose_submatrix]
+        apply det_zero_of_column_eq hij.symm
+        simp [hfij]
+      · apply det_zero_of_column_eq hij
+        simp [hgij]
 
 private lemma Matrix.isTotallyUnimodular_of_none_minimumViolationSizeIs_aux (A : Matrix X Y R) (n : ℕ) :
     (∀ m ≤ n, ¬(A.MinimumViolationSizeIs m)) →
