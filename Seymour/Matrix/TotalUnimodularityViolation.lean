@@ -9,7 +9,7 @@ def Matrix.MinimumViolationSizeIs (A : Matrix X Y R) (k : ℕ) : Prop :=
     (A.submatrix f g).det ∈ SignType.cast.range) ∧
   ¬(∀ f : Fin k → X, ∀ g : Fin k → Y, f.Injective → g.Injective → (A.submatrix f g).det ∈ SignType.cast.range)
 
-lemma Matrix.submatrix_det_zero_of_not_injective_right {Z : Type} [Fintype Z] [DecidableEq Z] {f : Z → X} {g : Z → Y}
+lemma Matrix.submatrix_det_zero_of_not_injective_snd {Z : Type} [Fintype Z] [DecidableEq Z] {f : Z → X} {g : Z → Y}
     (A : Matrix X Y R) (hg : ¬g.Injective) :
     (A.submatrix f g).det = 0 := by
   rw [Function.not_injective_iff] at hg
@@ -17,19 +17,19 @@ lemma Matrix.submatrix_det_zero_of_not_injective_right {Z : Type} [Fintype Z] [D
   apply Matrix.det_zero_of_column_eq hij
   simp [hgij]
 
-lemma Matrix.submatrix_det_zero_of_not_injective_left {Z : Type} [Fintype Z] [DecidableEq Z] {f : Z → X} {g : Z → Y}
+lemma Matrix.submatrix_det_zero_of_not_injective_fst {Z : Type} [Fintype Z] [DecidableEq Z] {f : Z → X} {g : Z → Y}
     (A : Matrix X Y R) (hf : ¬f.Injective) :
     (A.submatrix f g).det = 0 := by
   rw [←Matrix.det_transpose, Matrix.transpose_submatrix]
-  exact A.transpose.submatrix_det_zero_of_not_injective_right hf
+  exact A.transpose.submatrix_det_zero_of_not_injective_snd hf
 
 lemma Matrix.submatrix_det_zero_of_not_injective {Z : Type} [Fintype Z] [DecidableEq Z] {f : Z → X} {g : Z → Y}
     (A : Matrix X Y R) (hfg : ¬(f.Injective ∧ g.Injective)) :
     (A.submatrix f g).det = 0 := by
   rw [not_and_or] at hfg
   cases hfg with
-  | inl hf => exact A.submatrix_det_zero_of_not_injective_left hf
-  | inr hg => exact A.submatrix_det_zero_of_not_injective_right hg
+  | inl hf => exact A.submatrix_det_zero_of_not_injective_fst hf
+  | inr hg => exact A.submatrix_det_zero_of_not_injective_snd hg
 
 lemma Matrix.submatrix_det_in_singTypeCastRange_of_not_injective {Z : Type} [Fintype Z] [DecidableEq Z] {f : Z → X} {g : Z → Y}
     (A : Matrix X Y R) (hfg : ¬(f.Injective ∧ g.Injective)) :
