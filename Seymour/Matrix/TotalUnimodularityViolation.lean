@@ -9,32 +9,45 @@ def Matrix.MinimumViolationSizeIs (A : Matrix X Y R) (k : ℕ) : Prop :=
     (A.submatrix f g).det ∈ SignType.cast.range) ∧
   ¬(∀ f : Fin k → X, ∀ g : Fin k → Y, f.Injective → g.Injective → (A.submatrix f g).det ∈ SignType.cast.range)
 
-lemma ll {P₁ P₂ : Prop} (hP : P₁ ↔ P₂) (Q : Prop) : P₁ ∧ Q ↔ P₂ ∧ Q :=
-  and_congr_left (fun _ => hP)
+lemma Matrix.submatrix_det_zero_of_not_injective_right {Z : Type} [Fintype Z] [DecidableEq Z] {f : Z → X} {g : Z → Y}
+    (A : Matrix X Y R) (hg : ¬g.Injective) :
+    (A.submatrix f g).det = 0 := by
+  rw [Function.not_injective_iff] at hg
+  obtain ⟨i, j, hgij, hij⟩ := hg
+  apply Matrix.det_zero_of_column_eq hij
+  simp [hgij]
 
-lemma lll {P₁ P₂ : Prop} (hP : P₁ ↔ P₂) (Q : Prop) : Q ∧ P₁ ↔ Q ∧ P₂ :=
-  and_congr_right (fun _ => hP)
+lemma Matrix.submatrix_det_zero_of_not_injective_left {Z : Type} [Fintype Z] [DecidableEq Z] {f : Z → X} {g : Z → Y}
+    (A : Matrix X Y R) (hf : ¬f.Injective) :
+    (A.submatrix f g).det = 0 := by
+  rw [←Matrix.det_transpose, Matrix.transpose_submatrix]
+  exact A.transpose.submatrix_det_zero_of_not_injective_right hf
+
+lemma Matrix.submatrix_det_zero_of_not_injective {Z : Type} [Fintype Z] [DecidableEq Z] {f : Z → X} {g : Z → Y}
+    (A : Matrix X Y R) (hfg : ¬(f.Injective ∧ g.Injective)) :
+    (A.submatrix f g).det = 0 := by
+  rw [not_and_or] at hfg
+  cases hfg with
+  | inl hf => exact A.submatrix_det_zero_of_not_injective_left hf
+  | inr hg => exact A.submatrix_det_zero_of_not_injective_right hg
+
+lemma Matrix.submatrix_det_in_singTypeCastRange_of_not_injective {Z : Type} [Fintype Z] [DecidableEq Z] {f : Z → X} {g : Z → Y}
+    (A : Matrix X Y R) (hfg : ¬(f.Injective ∧ g.Injective)) :
+    (A.submatrix f g).det ∈ SignType.cast.range :=
+  ⟨SignType.zero, (A.submatrix_det_zero_of_not_injective hfg).symm⟩
 
 lemma Matrix.minimumViolationSizeIs_iff (A : Matrix X Y R) (k : ℕ) :
     A.MinimumViolationSizeIs k ↔
     ((∀ n < k, ∀ f : Fin n → X, ∀ g : Fin n → Y, (A.submatrix f g).det ∈ SignType.cast.range) ∧
     ¬(∀ f : Fin k → X, ∀ g : Fin k → Y, f.Injective → g.Injective → (A.submatrix f g).det ∈ SignType.cast.range)) := by
-  apply ll
+  apply and_congr_l
   constructor
   · intro hA n hn f g
     if hfg : f.Injective ∧ g.Injective then
       obtain ⟨hf, hg⟩ := hfg
       exact hA n f g hn hf hg
     else
-      use 0
-      rw [SignType.coe_zero, eq_comm]
-      simp_rw [not_and_or, Function.not_injective_iff] at hfg
-      obtain ⟨i, j, hfij, hij⟩ | ⟨i, j, hgij, hij⟩ := hfg
-      · rw [← Matrix.det_transpose, Matrix.transpose_submatrix]
-        apply det_zero_of_column_eq hij.symm
-        simp [hfij]
-      · apply det_zero_of_column_eq hij
-        simp [hgij]
+      exact A.submatrix_det_in_singTypeCastRange_of_not_injective hfg
   · intro hA n f g hn hf hg
     exact hA n hn f g
 
@@ -47,9 +60,9 @@ lemma Matrix.minimumViolationSizeIs_iff' (A : Matrix X Y R) (k : ℕ) :
 lemma Matrix.minimumViolationSizeIs_iff'' (A : Matrix X Y R) (k : ℕ) :
     A.MinimumViolationSizeIs k ↔
     ((∀ n < k, ∀ f : Fin n → X, ∀ g : Fin n → Y, (A.submatrix f g).det ∈ SignType.cast.range) ∧
-      ∃ f : Fin k → X, ∃ g : Fin k → Y, (A.submatrix f g).det ∉ SignType.cast.range) :=
-  (A.minimumViolationSizeIs_iff' k).trans <| by
-  apply lll
+      ∃ f : Fin k → X, ∃ g : Fin k → Y, (A.submatrix f g).det ∉ SignType.cast.range) := by
+  rw [A.minimumViolationSizeIs_iff']
+  apply and_congr_r
   constructor
   · intro ⟨f, g, hf, hg, hA⟩
     exact ⟨f, g, hA⟩
@@ -59,16 +72,7 @@ lemma Matrix.minimumViolationSizeIs_iff'' (A : Matrix X Y R) (k : ℕ) :
       exact ⟨f, g, hf, hg, hA⟩
     else
       exfalso
-      apply hA
-      use 0
-      rw [SignType.coe_zero, eq_comm]
-      simp_rw [not_and_or, Function.not_injective_iff] at hfg
-      obtain ⟨i, j, hfij, hij⟩ | ⟨i, j, hgij, hij⟩ := hfg
-      · rw [← Matrix.det_transpose, Matrix.transpose_submatrix]
-        apply det_zero_of_column_eq hij.symm
-        simp [hfij]
-      · apply det_zero_of_column_eq hij
-        simp [hgij]
+      exact hA (A.submatrix_det_in_singTypeCastRange_of_not_injective hfg)
 
 private lemma Matrix.isTotallyUnimodular_of_none_minimumViolationSizeIs_aux (A : Matrix X Y R) (n : ℕ) :
     (∀ m ≤ n, ¬(A.MinimumViolationSizeIs m)) →

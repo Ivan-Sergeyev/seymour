@@ -48,6 +48,12 @@ lemma Z2val_toRat_mul_Z2val_toRat (a b : Z2) : (a.val : ℚ) * (b.val : ℚ) = (
   fin_cases a <;> fin_cases b <;> simp
   apply one_mul
 
+lemma and_congr_l {P₁ P₂ : Prop} (hP : P₁ ↔ P₂) (Q : Prop) : P₁ ∧ Q ↔ P₂ ∧ Q :=
+  and_congr_left (fun _ => hP)
+
+lemma and_congr_r {P₁ P₂ : Prop} (hP : P₁ ↔ P₂) (Q : Prop) : Q ∧ P₁ ↔ Q ∧ P₂ :=
+  and_congr_right (fun _ => hP)
+
 lemma Int.neg_one_ne_zero : -1 ≠ 0 := by
   norm_num
 
