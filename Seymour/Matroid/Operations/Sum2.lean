@@ -54,56 +54,112 @@ instance Matroid.Is2sumOf.finS {M M₁ M₂ : Matroid α} (hM : M.Is2sumOf M₁ 
   obtain ⟨_, _, _, _, _, _, _, _, _, _, _, rfl, _⟩ := hM
   apply Finite.Set.finite_union
 
-infix:63 " ⊟ " => Matrix.fromRows
-infix:63 " ◫ " => Matrix.fromCols
+infixl:63 " ⊟ " => Matrix.fromRows
+infixl:63 " ◫ " => Matrix.fromCols
 notation:64 "▬"r:81 => Matrix.row Unit r
 notation:64 "▮"c:81 => Matrix.col Unit c
 
+omit [DecidableEq α] in
+private lemma Matrix.IsTotallyUnimodular.duplicate_last_row {X₁ Y₁ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ}
+    (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) :
+    (A₁ ⊟ ▬x ⊟ ▬x).IsTotallyUnimodular := by
+  convert hAx.comp_rows (Sum.casesOn · id Sum.inr)
+  aesop
+
+private lemma Matrix.IsTotallyUnimodular.aux {X₁ Y₁ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ}
+    (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) :
+    (A₁ ⊟ ▬x ⊟ ▬(-x) ⊟ ▬0).IsTotallyUnimodular := by
+  rw [Matrix.fromRows_row0_isTotallyUnimodular_iff]
+  intro k f g hf hg
+  have almost := hAx.duplicate_last_row k f g hf hg
+  if last_row : ∃ i : Fin k, f i = ◪() then
+    apply in_singTypeCastRange_of_neg_one_mul_self
+    convert almost
+    obtain ⟨i, hi⟩ := last_row
+    have flipped : (A₁ ⊟ ▬x ⊟ ▬(-x)) = (A₁ ⊟ ▬x ⊟ ▬x).updateRow ◪() (-x)
+    · aesop
+    have bubbled : ((A₁ ⊟ ▬x ⊟ ▬x).updateRow (◪()) (-x)).submatrix f g = ((A₁ ⊟ ▬x ⊟ ▬x).submatrix f g).updateRow i ((-x) ∘ g)
+    · ext r
+      if hr : r = i then
+        simp [hr, hi]
+      else
+        have hfr : f r ≠ ◪() := (hr <| hf <| ·.trans hi.symm)
+        simp [hr, hfr]
+    rw [flipped, bubbled, ←((A₁ ⊟ ▬x ⊟ ▬x).submatrix f g).det_updateRow_smul i (-1) ((-x) ∘ g)]
+    convert_to (((A₁ ⊟ ▬x ⊟ ▬x).submatrix f g).updateRow i (x ∘ g)).det = ((A₁ ⊟ ▬x ⊟ ▬x).submatrix f g).det
+    · apply congr_arg
+      apply congr_arg
+      ext
+      simp
+    congr
+    ext r
+    if hr : r = i then
+      simp [hr, hi]
+    else
+      have hfr : f r ≠ ◪() := (hr <| hf <| ·.trans hi.symm)
+      simp [hr, hfr]
+  else
+    convert almost using 2
+    ext i
+    cases hfi : f i <;> simp_all
+
 private lemma lemma6₁_aux {X₁ Y₁ X₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {y : X₂ → ℚ}
     (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hy : ∀ x : X₂, y x ∈ SignType.cast.range) :
-    (A₁ ⊟ (fun i j => y i * x j)).IsTotallyUnimodular := by
-  rw [Matrix.isTotallyUnimodular_iff]
-  intro k f g
-  if h0 : ∃ i : Fin k, ∃ x : X₂, f i = ◪x ∧ y x = 0 then
-    convert zero_in_singTypeCastRange
-    obtain ⟨i, x, hi, hx⟩ := h0
-    apply Matrix.det_eq_zero_of_row_eq_zero i
-    intro
-    rw [Matrix.submatrix_apply, hi, Matrix.fromRows_apply_inr, mul_eq_zero]
-    left
-    exact hx
-  else if h11 : ∃ i i' : Fin k, ∃ x x' : X₂, i ≠ i' ∧ (f i = ◪x ∧ y x = 1) ∧ (f i' = ◪x' ∧ y x' = 1) then
-    convert zero_in_singTypeCastRange
-    obtain ⟨i, i', x, x', hii, ⟨hi, hx⟩, ⟨hi', hx'⟩⟩ := h11
-    apply Matrix.det_zero_of_row_eq hii
-    ext
-    simp [*]
-  else if h99 : ∃ i i' : Fin k, ∃ x x' : X₂, i ≠ i' ∧ (f i = ◪x ∧ y x = -1) ∧ (f i' = ◪x' ∧ y x' = -1) then
-    convert zero_in_singTypeCastRange
-    obtain ⟨i, i', x, x', hii, ⟨hi, hx⟩, ⟨hi', hx'⟩⟩ := h99
-    apply Matrix.det_zero_of_row_eq hii
-    ext
-    simp [*]
-  else if h19 : ∃ i i' : Fin k, ∃ x x' : X₂, i ≠ i' ∧ (f i = ◪x ∧ y x = 1) ∧ (f i' = ◪x' ∧ y x' = -1) then
-    convert zero_in_singTypeCastRange
-    obtain ⟨i, i', x, x', hii, ⟨hi, hx⟩, ⟨hi', hx'⟩⟩ := h19
-    sorry
-  else
-    sorry
+    (A₁ ⊟ (y · * x ·)).IsTotallyUnimodular := by
+  convert hAx.aux.comp_rows (fun i : X₁.Elem ⊕ X₂.Elem => i.casesOn (Sum.inl ∘ Sum.inl ∘ Sum.inl) (fun i₂ =>
+    if h1 : y i₂ = 1 then
+      ◩◩◪()
+    else if h9 : y i₂ = -1 then
+      ◩◪()
+    else if h0 : y i₂ = 0 then
+      ◪()
+    else False.elim (by
+      obtain ⟨s, hs⟩ := hy i₂
+      cases s <;> simp_all)))
+  ext i
+  cases i with
+  | inl i₁ =>
+    simp
+  | inr i₂ =>
+    obtain ⟨s, hs⟩ := hy i₂
+    if h1 : y i₂ = 1 then
+      simp_all
+    else if h9 : y i₂ = -1 then
+      simp_all
+    else if h0 : y i₂ = 0 then
+      simp_all
+    else
+      exfalso
+      obtain ⟨s, hs⟩ := hy i₂
+      cases s <;> simp_all
+
+private lemma lemma6₂_aux' {Y₁ X₂ Y₂ : Set α} {A₂ : Matrix X₂ Y₂ ℚ} {x : Y₁ → ℚ} {y : X₂ → ℚ}
+    (hAy : (A₂ ◫ ▮y).IsTotallyUnimodular) (hx : ∀ y : Y₁, x y ∈ SignType.cast.range) :
+    (A₂ ◫ (y · * x ·)).IsTotallyUnimodular := by
+  have hAy' := hAy.transpose
+  rw [Matrix.transpose_fromCols, Matrix.transpose_col] at hAy'
+  have result := (lemma6₁_aux hAy' hx).transpose
+  rw [Matrix.transpose_fromRows, Matrix.transpose_transpose] at result
+  simp_rw [mul_comm]
+  exact result
 
 private lemma lemma6₂_aux {Y₁ X₂ Y₂ : Set α} {A₂ : Matrix X₂ Y₂ ℚ} {x : Y₁ → ℚ} {y : X₂ → ℚ}
     (hAy : (▮y ◫ A₂).IsTotallyUnimodular) (hx : ∀ y : Y₁, x y ∈ SignType.cast.range) :
-    ((fun i j => y i * x j) ◫ A₂).IsTotallyUnimodular := by
-  sorry
+    ((y · * x ·) ◫ A₂).IsTotallyUnimodular := by
+  have hAy' : (A₂ ◫ ▮y).IsTotallyUnimodular
+  · convert hAy.comp_cols Sum.swap
+    aesop
+  convert (lemma6₂_aux' hAy' hx).comp_cols Sum.swap
+  aesop
 
 lemma lemma6₁ {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
     (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular) :
-    (A₁ ⊟ (fun i j => y i * x j)).IsTotallyUnimodular :=
+    (A₁ ⊟ (y · * x ·)).IsTotallyUnimodular :=
   lemma6₁_aux hAx (hAy.apply · ◩())
 
 lemma lemma6₂ {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
     (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular) :
-    ((fun i j => y i * x j) ◫ A₂).IsTotallyUnimodular :=
+    ((y · * x ·) ◫ A₂).IsTotallyUnimodular :=
   lemma6₂_aux hAy (hAx.apply ◪())
 
 lemma lemma8 {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ} {k : ℕ}
