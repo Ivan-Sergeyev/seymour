@@ -71,6 +71,7 @@ The guideline below is written primarily to assist you in reading the code.
 - Prop variables (both in arguments and local variables) are always denoted by multiple letters, possibly with other stuff after them like lower index or apostrophe.
   - Prefix `h` means "the statement is anything about the following variables"
   - Not starting with `h` means that the actual statement (or its substantial part) is spelled out, not only the variables that appear in it
+  - We sometimes use the digit `9` to refer to the number `-1` in the names of Prop variables (only there; write `neg_one` in names of constants)
 - Examples:
 
   `intro a b a_lt_b hab`
