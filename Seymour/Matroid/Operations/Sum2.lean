@@ -59,14 +59,13 @@ infixl:63 " ◫ " => Matrix.fromCols
 notation:64 "▬"r:81 => Matrix.row Unit r
 notation:64 "▮"c:81 => Matrix.col Unit c
 
-omit [DecidableEq α] in
-private lemma Matrix.IsTotallyUnimodular.duplicate_last_row {X₁ Y₁ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ}
+lemma Matrix.IsTotallyUnimodular.duplicate_last_row {X Y : Type} {A₁ : Matrix X Y ℚ} {x : Y → ℚ}
     (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) :
     (A₁ ⊟ ▬x ⊟ ▬x).IsTotallyUnimodular := by
   convert hAx.comp_rows (Sum.casesOn · id Sum.inr)
   aesop
 
-private lemma Matrix.IsTotallyUnimodular.aux {X₁ Y₁ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ}
+private lemma Matrix.IsTotallyUnimodular.aux190 {X₁ Y₁ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ}
     (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) :
     (A₁ ⊟ ▬x ⊟ ▬(-x) ⊟ ▬0).IsTotallyUnimodular := by
   rw [Matrix.fromRows_row0_isTotallyUnimodular_iff]
@@ -106,7 +105,7 @@ private lemma Matrix.IsTotallyUnimodular.aux {X₁ Y₁ : Set α} {A₁ : Matrix
 private lemma lemma6₁_aux {X₁ Y₁ X₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {y : X₂ → ℚ}
     (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hy : ∀ x : X₂, y x ∈ SignType.cast.range) :
     (A₁ ⊟ (y · * x ·)).IsTotallyUnimodular := by
-  convert hAx.aux.comp_rows (fun i : X₁.Elem ⊕ X₂.Elem => i.casesOn (Sum.inl ∘ Sum.inl ∘ Sum.inl) (fun i₂ =>
+  convert hAx.aux190.comp_rows (fun i : X₁.Elem ⊕ X₂.Elem => i.casesOn (Sum.inl ∘ Sum.inl ∘ Sum.inl) (fun i₂ =>
     if h1 : y i₂ = 1 then
       ◩◩◪()
     else if h9 : y i₂ = -1 then
