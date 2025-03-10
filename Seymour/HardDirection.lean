@@ -4,11 +4,22 @@ import Seymour.Matroid.Operations.Sum3
 import Seymour.Matroid.Notions.Graphicness
 
 
-variable {α : Type} [DecidableEq α]
+/-- Matroid R10. -/
+def matroidR10 : StandardRepr (Fin 10) Z2 where
+  X := (·.val < 5)
+  Y := (·.val ≥ 5)
+  hXY := by
+    rw [Set.disjoint_left]
+    intro _ hX hY
+    rw [Set.mem_def] at hX hY
+    omega
+  B := !![1, 0, 0, 1, 1; 1, 1, 0, 0, 1; 0, 1, 1, 0, 1; 0, 0, 1, 1, 1; 1, 1, 1, 1, 1].submatrix
+    (fun i => ⟨i.val, i.property⟩)
+    (fun j => ⟨j.val - 5, by omega⟩)
+  decmemX := (·.val.decLt 5)
+  decmemY := Fin.decLe 5
 
-/-- TODO define R10. -/
-def matroidR10 : StandardRepr α Z2 :=
-  sorry
+variable {α : Type} [DecidableEq α]
 
 /-- Given matroid can be constructed from graphic matroids & cographics matroids & R10 using 1-sums & 2-sums & 3-sums. -/
 inductive Matroid.IsGood : Matroid α → Prop

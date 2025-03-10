@@ -65,14 +65,14 @@ private lemma Matrix.IsTotallyUnimodular.intCast_det_eq_auxZ2_det [Fintype α] {
   congr
   ext i j
   simp [Matrix.auxZ2]
-  if zer : A i j = 0 then
-    rewrite [zer]
+  if h0 : A i j = 0 then
+    rewrite [h0]
     rfl
-  else if pos1 : A i j = 1 then
-    rewrite [pos1]
+  else if h1 : A i j = 1 then
+    rewrite [h1]
     rfl
-  else if neg1 : A i j = -1 then
-    rewrite [neg1]
+  else if h9 : A i j = -1 then
+    rewrite [h9]
     rfl
   else
     exfalso

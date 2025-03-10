@@ -56,29 +56,29 @@ lemma Matrix.IsTotallyUnimodular.map_ratFloor {X Y : Type} {A : Matrix X Y ℚ} 
   rw [Matrix.submatrix_map]
   have hAfg := (hA.submatrix f g).det_eq_map_ratFloor_det
   rw [Matrix.isTotallyUnimodular_iff] at hA
-  if zer : ((A.submatrix f g).map Rat.floor).det = 0 then
-    rewrite [zer]
+  if h0 : ((A.submatrix f g).map Rat.floor).det = 0 then
+    rewrite [h0]
     exact ⟨0, rfl⟩
-  else if pos1 : ((A.submatrix f g).map Rat.floor).det = 1 then
-    rewrite [pos1]
+  else if h1 : ((A.submatrix f g).map Rat.floor).det = 1 then
+    rewrite [h1]
     exact ⟨1, rfl⟩
-  else if neg1 : ((A.submatrix f g).map Rat.floor).det = -1 then
-    rewrite [neg1]
+  else if h9 : ((A.submatrix f g).map Rat.floor).det = -1 then
+    rewrite [h9]
     exact ⟨-1, rfl⟩
   else
     exfalso
     obtain ⟨s, hs⟩ := hAfg ▸ hA k f g
     cases s with
     | zero =>
-      apply zer
+      apply h0
       convert hs.symm
       simp
     | pos =>
-      apply pos1
+      apply h1
       convert hs.symm
       simp
     | neg =>
-      apply neg1
+      apply h9
       rw [SignType.neg_eq_neg_one, SignType.coe_neg, SignType.coe_one, neg_eq_iff_eq_neg, ←Int.cast_neg] at hs
       symm at hs
       rw [Int.cast_eq_one] at hs
