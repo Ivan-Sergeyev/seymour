@@ -86,14 +86,14 @@ private lemma Matrix.IsTotallyUnimodular.ratCast_det_eq_discretize_det [Fintype 
   congr
   ext i j
   simp only [Matrix.discretize, Matrix.auxZ2]
-  if zer : A i j = 0 then
-    simp [zer]
+  if h0 : A i j = 0 then
+    simp [h0]
     rfl
-  else if pos : A i j = 1 then
-    simp [pos]
+  else if h1 : A i j = 1 then
+    simp [h1]
     exact Int.one_ne_zero
-  else if neg : A i j = -1 then
-    simp [neg]
+  else if h9 : A i j = -1 then
+    simp [h9]
     exact Int.neg_one_ne_zero
   else
     exfalso
@@ -106,8 +106,7 @@ private lemma Matrix.IsTotallyUnimodular.det_eq_zero_iff_discretize [Fintype α]
   rw [←hA.ratCast_det_eq_discretize_det]
   apply zero_iff_ratCast_zero_of_in_singTypeCastRange
   rw [Matrix.isTotallyUnimodular_iff_fintype] at hA
-  specialize hA α id id
-  exact hA
+  exact hA α id id
 
 private lemma Matrix.IsTotallyUnimodular.det_ne_zero_iff_discretize [Fintype α] {A : Matrix α α ℚ}
     (hA : A.IsTotallyUnimodular) :
@@ -174,8 +173,8 @@ private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatr
     else if h1 : A i j = 1 then
       rewrite [h1]
       rfl
-    else if h1 : A i j = -1 then
-      rewrite [h1]
+    else if h9 : A i j = -1 then
+      rewrite [h9]
       rfl
     else
       exfalso
