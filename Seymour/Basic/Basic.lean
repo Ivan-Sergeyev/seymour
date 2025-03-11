@@ -70,7 +70,7 @@ lemma exists_minimal_nat_of_exists {P : ℕ → Prop} (hP : ∃ n : ℕ, P n) : 
 
 variable {α : Type}
 
-@[simp]
+@[simp, pp_dot]
 abbrev Function.range {ι : Type} (f : ι → α) : Set α := Set.range f
 
 lemma Sum.swap_inj {β : Type} : (@Sum.swap α β).Injective := by
@@ -135,6 +135,7 @@ lemma HasSubset.Subset.elem_range (hXY : X ⊆ Y) : hXY.elem.range = { a : Y.Ele
   aesop
 
 /-- Convert `(X ∪ Y).Elem` to `X.Elem ⊕ Y.Elem`. -/
+@[pp_dot]
 def Subtype.toSum [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) : X.Elem ⊕ Y.Elem :=
   if hiX : i.val ∈ X then ◩⟨i, hiX⟩ else
   if hiY : i.val ∈ Y then ◪⟨i, hiY⟩ else
