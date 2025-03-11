@@ -33,5 +33,5 @@ inductive Matroid.IsGood : Matroid α → Prop
 | is3sum {M M₁ M₂ : Matroid α} (hM : M.Is3sumOf M₁ M₂) : M.IsGood
 
 /-- THE HOLY GRAIL. -/
-theorem oldSeymour {M : Matroid α} (hM : M.IsRegular) : M.IsGood := by
+theorem theSeymourDecomposition {M : Matroid α} (hM : M.IsRegular) : M.IsGood := by
   sorry
