@@ -261,7 +261,7 @@ lemma sum_elem_matrix_row_of_nmem [AddCommMonoidWithOne R] {x : α} {S : Set α}
   intro y _
   exact Matrix.one_apply_ne' (ne_of_mem_of_not_mem y.property hxS)
 
-set_option maxHeartbeats 400000 in
+set_option maxHeartbeats 600000 in
 private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁ B₂ : Matrix X Y Z2}
     {hX : ∀ a, Decidable (a ∈ X)} {hY : ∀ a, Decidable (a ∈ Y)} [Fintype X]
     (hSS : (StandardRepr.mk X Y hXY B₁ hX hY).toMatroid = (StandardRepr.mk X Y hXY B₂ hX hY).toMatroid) :
@@ -399,7 +399,35 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
       use Set.insert_subset hyXY hDXY
       -- if the coefficient in front of `y` is `0` then all coefficients must be `0`
       -- if the coefficient in front of `y` is `1` then the sum will always have `1` on `d` position
-      sorry
+      rw [linearIndepOn_iff]
+      intro l hl hlB
+      if hly : l (hYXY.elem y) = 0 then
+        ext i
+        if hiX : i.val ∈ X then
+          have hlBi := congr_fun hlB ⟨i.val, hiX⟩
+          sorry
+        else if hiY : i.val ∈ Y then
+          sorry
+        else
+          exfalso
+          exact i.property.casesOn hiX hiY
+      else
+        exfalso
+        have hlBd := congr_fun hlB d
+        rw [Finsupp.linearCombination_apply] at hlBd
+        have hlBd' : l.sum (fun i a => a • Matrix.fromRows 1 B₂ᵀ i.toSum d) = 0
+        · simpa [Finsupp.sum] using hlBd
+        have untransposed : l.sum (fun i a => a • B₂.prependId d i.toSum) = 0
+        · rwa [←Matrix.transpose_transpose B₂.prependId, Matrix.prependId_transpose]
+        have hyl : hYXY.elem y ∈ l.support
+        · rwa [Finsupp.mem_support_iff]
+        have hy1 : l (hYXY.elem y) • B₂.prependId d (hYXY.elem y).toSum = 1
+        · rw [Fin2_eq_1_of_ne_0 hly, one_smul]
+          simpa [hXY.not_mem_of_mem_right y.property] using Fin2_eq_1_of_ne_0 hd₂
+        have h0 : ∀ a ∈ l.support, a.val ≠ y.val → l a • B₂.prependId d a.toSum = 0
+        · sorry
+        dsimp only [Finsupp.sum] at untransposed
+        sorry
     exact (hSS' ▸ hM₁) hM₂
 
 /-- If two standard representations of the same binary matroid have the same base, they are identical. -/
