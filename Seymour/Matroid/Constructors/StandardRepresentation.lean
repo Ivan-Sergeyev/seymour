@@ -250,10 +250,6 @@ lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype
     have heX : e ∉ S.X.toFinset := (Set.not_mem_of_mem_diff he <| Set.mem_toFinset.→ ·)
     simp [heX]
 
--- lemma sum_elem_exchange_set {A B : Set α} [Fintype A] [Fintype B] [CommRing R] (hAB : A = B) (f : α → R) :
---     ∑ i : A.Elem, f i.val = ∑ i : B.Elem, f i.val := by
---   sorry
-
 lemma sum_elem_matrix_row_of_mem [AddCommMonoidWithOne R] {x : α} {S : Set α} [Fintype S] (hxS : x ∈ S) :
     ∑ i : S.Elem, (1 : Matrix α α R) x i.val = 1 := by
   convert sum_elem_of_single_nonzero hxS (fun _ => Matrix.one_apply_ne')
@@ -265,6 +261,7 @@ lemma sum_elem_matrix_row_of_nmem [AddCommMonoidWithOne R] {x : α} {S : Set α}
   intro y _
   exact Matrix.one_apply_ne' (ne_of_mem_of_not_mem y.property hxS)
 
+set_option maxHeartbeats 400000 in
 private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁ B₂ : Matrix X Y Z2}
     {hX : ∀ a, Decidable (a ∈ X)} {hY : ∀ a, Decidable (a ∈ Y)} [Fintype X]
     (hSS : (StandardRepr.mk X Y hXY B₁ hX hY).toMatroid = (StandardRepr.mk X Y hXY B₂ hX hY).toMatroid) :
@@ -298,7 +295,50 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
     rw [Set.not_subset_iff_exists_mem_not_mem] at hD
     -- otherwise `y ᕃ D₂` is dependent in `M₂` but indep in `M₁`
     have hM₂ : ¬ (StandardRepr.mk X Y hXY B₂ hX hY).toMatroid.Indep (y.val ᕃ D₂)
-    · sorry -- see below
+    · rw [StandardRepr.toMatroid_indep_iff_elem', not_exists]
+      intro hD₂
+      erw [not_linearIndependent_iff]
+      refine ⟨Finset.univ, 1, ?_, ⟨hYXY.elem y, by simp_all⟩, Finset.mem_univ _, Ne.symm (zero_ne_one' Z2)⟩
+      -- there are exactly two `1`s in rows from `D₂` and all `0`s otherwise
+      ext x
+      simp only at x hD₂
+      simp only [D₁, D₂, Matrix.transpose_apply, Pi.one_apply, Function.comp_apply, one_smul, Finset.sum_apply]
+      show ∑ i : hD₂.elem.range.Elem, B₂.prependId x i.val.toSum = 0 -- in `Z2`
+      suffices separated : B₂ x y + ∑ i : D₂.Elem, (1 : Matrix X X Z2) x i.val = 0
+      · rw [Finset.sum_set_coe (f := (fun i : (X ∪ Y).Elem => B₂.prependId x i.toSum)),
+          Set.toFinset_range,
+          show Finset.univ.image hD₂.elem = hYXY.elem y ᕃ Finset.map ⟨hXXY.elem, hXXY.elem_injective⟩ { x : X | B₂ᵀ y x ≠ 0 } by
+            aesop,
+          Finset.sum_insert (by
+            simp only [Finset.mem_filter, Finset.mem_univ, Finset.mem_map, exists_and_right, not_exists, not_not]
+            intro a ⟨_, contradictory⟩
+            have hay : a.val = y.val
+            · simpa using contradictory
+            have impossible : y.val ∈ X ∩ Y := ⟨hay ▸ a.property, y.property⟩
+            rw [hXY.inter_eq] at impossible
+            exact impossible)]
+        convert separated
+        · convert_to B₂.prependId x ◪y = B₂ x y
+          · congr
+            simpa [Subtype.toSum] using hXY.not_mem_of_mem_right y.property
+          simp
+        · simp [D₂]
+          show
+            ∑ i ∈ Finset.univ.filter (fun x : X => B₂ x y ≠ 0), (1 : Matrix X X Z2) x i =
+            ∑ i : { x : X // B₂ x y ≠ 0 }, (1 : Matrix X X Z2) x i
+          apply Finset.sum_subtype
+          simp
+      if hx : x ∈ D₂ then
+        convert_to 1 + 1 = (0 : Z2) using 2
+        · apply Fin2_eq_1_of_ne_0
+          simpa [D₂] using hx
+        · exact sum_elem_matrix_row_of_mem hx
+        decide
+      else
+        convert_to 0 + 0 = (0 : Z2) using 2
+        · simpa [D₂] using hx
+        · exact sum_elem_matrix_row_of_nmem hx
+        decide
     have hM₁ : (StandardRepr.mk X Y hXY B₁ hX hY).toMatroid.Indep (y.val ᕃ D₂)
     · sorry -- see below
     exact hM₂ (hSS' ▸ hM₁)
@@ -317,12 +357,29 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
       simp only [D₁, D₂, Matrix.transpose_apply, Pi.one_apply, Function.comp_apply, one_smul, Finset.sum_apply]
       show ∑ i : hD₁.elem.range.Elem, B₁.prependId x i.val.toSum = 0 -- in `Z2`
       suffices separated : B₁ x y + ∑ i : D₁.Elem, (1 : Matrix X X Z2) x i.val = 0
-      · --have : hD₁.elem.range = { y.val } ∪ Subtype.val '' D₁
-        --· aesop
-        --have : y.val ᕃ Subtype.val '' D₁ = { y.val } ∪ Subtype.val '' D₁ := rfl
-        rw [Finset.sum_set_coe (f := (fun i : (X ∪ Y).Elem => B₁.prependId x i.toSum)), Set.toFinset_range,
-          Finset.sum_image (by simp)]
-        sorry
+      · rw [Finset.sum_set_coe (f := (fun i : (X ∪ Y).Elem => B₁.prependId x i.toSum)),
+          Set.toFinset_range,
+          show Finset.univ.image hD₁.elem = hYXY.elem y ᕃ Finset.map ⟨hXXY.elem, hXXY.elem_injective⟩ { x : X | B₁ᵀ y x ≠ 0 } by
+            aesop,
+          Finset.sum_insert (by
+            simp only [Finset.mem_filter, Finset.mem_univ, Finset.mem_map, exists_and_right, not_exists, not_not]
+            intro a ⟨_, contradictory⟩
+            have hay : a.val = y.val
+            · simpa using contradictory
+            have impossible : y.val ∈ X ∩ Y := ⟨hay ▸ a.property, y.property⟩
+            rw [hXY.inter_eq] at impossible
+            exact impossible)]
+        convert separated
+        · convert_to B₁.prependId x ◪y = B₁ x y
+          · congr
+            simpa [Subtype.toSum] using hXY.not_mem_of_mem_right y.property
+          simp
+        · simp [D₁]
+          show
+            ∑ i ∈ Finset.univ.filter (fun x : X => B₁ x y ≠ 0), (1 : Matrix X X Z2) x i =
+            ∑ i : { x : X // B₁ x y ≠ 0 }, (1 : Matrix X X Z2) x i
+          apply Finset.sum_subtype
+          simp
       if hx : x ∈ D₁ then
         convert_to 1 + 1 = (0 : Z2) using 2
         · apply Fin2_eq_1_of_ne_0
