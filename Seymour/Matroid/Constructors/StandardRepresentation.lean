@@ -425,7 +425,18 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
         · rw [Fin2_eq_1_of_ne_0 hly, one_smul]
           simpa [hXY.not_mem_of_mem_right y.property] using Fin2_eq_1_of_ne_0 hd₂
         have h0 : ∀ a ∈ l.support, a.val ≠ y.val → l a • B₂.prependId d a.toSum = 0
-        · sorry
+        · intro a ha hay
+          if haX : a.val ∈ X then
+            convert_to l a • B₂.prependId d ◩⟨a.val, haX⟩ = 0
+            · simp [Subtype.toSum, haX]
+            sorry
+          else if haY : a.val ∈ Y then
+            convert_to l a • B₂.prependId d ◪⟨a.val, haY⟩ = 0
+            · simp [Subtype.toSum, haX, haY]
+            sorry
+          else
+            exfalso
+            exact a.property.casesOn haX haY
         dsimp only [Finsupp.sum] at untransposed
         sorry
     exact (hSS' ▸ hM₁) hM₂
