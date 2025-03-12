@@ -9,7 +9,7 @@ Here we decompose a function `f : α → β₁ ⊕ β₂` into a function and tw
 variable {α β₁ β₂ : Type}
 
 /-- Given `f : α → β₁ ⊕ β₂` decompose `α` into two preïmages. -/
-@[simp low, pp_dot]
+@[simp low]
 def Function.decomposeSum (f : α → β₁ ⊕ β₂) :
     α ≃ { x₁ : α × β₁ // f x₁.fst = ◩x₁.snd } ⊕ { x₂ : α × β₂ // f x₂.fst = ◪x₂.snd } where
   toFun a :=
@@ -27,6 +27,11 @@ def Function.decomposeSum (f : α → β₁ ⊕ β₂) :
     cases x with
     | inl => aesop
     | inr => aesop
+
+@[app_unexpander Function.decomposeSum]
+def Function.decomposeSum_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $x) => `($(x).$(Lean.mkIdent `decomposeSum))
+  | _ => throw ()
 
 @[simp ←]
 lemma Function.eq_comp_decomposeSum (f : α → β₁ ⊕ β₂) :

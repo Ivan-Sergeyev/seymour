@@ -70,8 +70,13 @@ lemma exists_minimal_nat_of_exists {P : ℕ → Prop} (hP : ∃ n : ℕ, P n) : 
 
 variable {α : Type}
 
-@[simp, pp_dot]
+@[simp]
 abbrev Function.range {ι : Type} (f : ι → α) : Set α := Set.range f
+
+@[app_unexpander Function.range]
+def Function.range_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $x) => `($(x).$(Lean.mkIdent `range))
+  | _ => throw ()
 
 lemma Sum.swap_inj {β : Type} : (@Sum.swap α β).Injective := by
   intro
@@ -135,11 +140,15 @@ lemma HasSubset.Subset.elem_range (hXY : X ⊆ Y) : hXY.elem.range = { a : Y.Ele
   aesop
 
 /-- Convert `(X ∪ Y).Elem` to `X.Elem ⊕ Y.Elem`. -/
-@[pp_dot]
 def Subtype.toSum [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) : X.Elem ⊕ Y.Elem :=
   if hiX : i.val ∈ X then ◩⟨i, hiX⟩ else
   if hiY : i.val ∈ Y then ◪⟨i, hiY⟩ else
   (i.property.elim hiX hiY).elim
+
+@[app_unexpander Subtype.toSum]
+def Subtype.toSum_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $x) => `($(x).$(Lean.mkIdent `toSum))
+  | _ => throw ()
 
 @[simp]
 lemma toSum_left [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] {i : (X ∪ Y).Elem} (hi : i.val ∈ X) :
