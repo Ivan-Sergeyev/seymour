@@ -396,21 +396,37 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
       simp
       have hDXY : Subtype.val '' D₁ ⊆ X ∪ Y := (Subtype.coe_image_subset X D₁).trans hXXY
       have hyXY : y.val ∈ X ∪ Y := hYXY y.property
+      have hyDXY : y.val ᕃ Subtype.val '' D₁ ⊆ X ∪ Y := Set.insert_subset hyXY hDXY
       use Set.insert_subset hyXY hDXY
       -- if the coefficient in front of `y` is `0` then all coefficients must be `0`
       -- if the coefficient in front of `y` is `1` then the sum will always have `1` on `d` position
       rw [linearIndepOn_iff]
       intro l hl hlB
       if hly : l (hYXY.elem y) = 0 then
+        -- here the support lies only in the identity matrix
         ext i
-        if hiX : i.val ∈ X then
-          have hlBi := congr_fun hlB ⟨i.val, hiX⟩
-          sorry
-        else if hiY : i.val ∈ Y then
-          sorry
+        have hl' : l.support.toSet ⊆ hyDXY.elem.range
+        · rwa [Finsupp.mem_supported] at hl
+        have hl'' : ∀ e ∈ l.support, e.val ∈ ↑y ᕃ Subtype.val '' D₁ :=
+          fun e he => (hyDXY.elem_range ▸ hl') he
+        if hil : i ∈ l.support then
+          if hiX : i.val ∈ X then
+            have hlBi := congr_fun hlB ⟨i.val, hiX⟩
+            rw [Finsupp.linearCombination_apply, Pi.zero_apply, Finsupp.sum, Finset.sum_apply] at hlBi
+            simp_rw [Pi.smul_apply, Function.comp_apply] at hlBi
+            sorry
+          else if hiY : i.val ∈ Y then
+            have hiy : i = hYXY.elem y
+            · cases hl'' i hil with
+              | inl hiy => exact SetCoe.ext hiy
+              | inr hiD => simp_all
+            rw [hiy]
+            exact hly
+          else
+            exfalso
+            exact i.property.casesOn hiX hiY
         else
-          exfalso
-          exact i.property.casesOn hiX hiY
+          exact l.not_mem_support_iff.→ hil
       else
         exfalso
         have hlBd := congr_fun hlB d
@@ -431,8 +447,7 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
             · simp [Subtype.toSum, haX]
             sorry
           else if haY : a.val ∈ Y then
-            convert_to l a • B₂.prependId d ◪⟨a.val, haY⟩ = 0
-            · simp [Subtype.toSum, haX, haY]
+            exfalso
             sorry
           else
             exfalso
