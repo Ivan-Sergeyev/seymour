@@ -475,17 +475,15 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
           else
             exfalso
             exact a.property.casesOn haX haY
-        rw [
-          Finsupp.sum,
-          l.support.sum_of_single_nonzero  (fun a => l a • B₂.prependId d a.toSum) (hYXY.elem y) hyl (by
-            intro i hil hiy
-            apply h0 i hil
-            intro contr
-            apply hiy
-            exact SetCoe.ext contr),
-          hy1
-        ] at untransposed
-        exact one_ne_zero untransposed
+        apply @one_ne_zero Z2
+        rwa [Finsupp.sum,
+          l.support.sum_of_single_nonzero (fun a : (X ∪ Y).Elem => l a • B₂.prependId d a.toSum) (hYXY.elem y) hyl,
+          hy1] at untransposed
+        intro i hil hiy
+        apply h0 i hil
+        intro contr
+        apply hiy
+        exact SetCoe.ext contr
     exact (hSS' ▸ hM₁) hM₂
 
 /-- If two standard representations of the same binary matroid have the same base, they are identical. -/
