@@ -167,7 +167,7 @@ In the comments bellow, we will use the following shorthands:
 variable [LinearOrderedCommRing R] [Fintype Z] [DecidableEq Z] [DecidableEq X₁] [DecidableEq X₂]
 
 /-- `Matrix.fromBlocks_isTotallyUnimodular` square case. -/
-private lemma Matrix.fromBlocks_submatrix_det_in_singTypeCastRange_of_isTotallyUnimodular_of_card_eq
+private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_isTotallyUnimodular_of_card_eq
     {A₁ : Matrix X₁ Y₁ R} (hA₁ : A₁.IsTotallyUnimodular)
     {A₂ : Matrix X₂ Y₂ R} (hA₂ : A₂.IsTotallyUnimodular)
     {f : Z → X₁ ⊕ X₂} {g : Z → Y₁ ⊕ Y₂}
@@ -224,23 +224,23 @@ private lemma Matrix.fromBlocks_submatrix_det_in_singTypeCastRange_of_isTotallyU
     split <;> split <;> simp
   rw [hAfg,
   -- absolute value of determinant was preserved by previous mappings,
-    in_singTypeCastRange_iff_abs, Matrix.abs_det_submatrix_equiv_equiv,
+    in_signTypeCastRange_iff_abs, Matrix.abs_det_submatrix_equiv_equiv,
   -- we now express it as a product of determinants of submatrices in blocks
-    Matrix.det_fromBlocks_zero₁₂, ←in_singTypeCastRange_iff_abs]
+    Matrix.det_fromBlocks_zero₁₂, ←in_signTypeCastRange_iff_abs]
   -- determinants of submatrices in blocks are in `SignType.cast.range` by TUness of `A₁` and `A₂`
-  apply in_singTypeCastRange_mul_in_singTypeCastRange
+  apply in_signTypeCastRange_mul_in_signTypeCastRange
   · apply hA₁
   · apply hA₂
 
 /-- `Matrix.fromBlocks_isTotallyUnimodular` non-square case. -/
-private lemma Matrix.fromBlocks_submatrix_det_in_singTypeCastRange_of_card_lt
+private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_card_lt
     (A₁ : Matrix X₁ Y₁ R) (A₂ : Matrix X₂ Y₂ R) {f : Z → X₁ ⊕ X₂} {g : Z → Y₁ ⊕ Y₂}
     (hfg :
       #{ x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } <
       #{ y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd }) :
     ((fromBlocks A₁ 0 0 A₂).submatrix f g).det ∈ SignType.cast.range := by
   -- we will show that the submatrix is singular
-  convert zero_in_singTypeCastRange
+  convert zero_in_signTypeCastRange
   rw [Matrix.fromBlocks_submatrix]
   -- we need a new indexing type [`▫X₁ ⊕ ` a part of `▫X₂`] of the same cardinality as `▫Y₁` for the "top half"
   -- then the bottom left blocks will be all `0`s, hence we can multiply the two determinants, and the top left block will
@@ -347,14 +347,14 @@ lemma Matrix.fromBlocks_isTotallyUnimodular {A₁ : Matrix X₁ Y₁ R} {A₂ : 
       #{ x₁ : Fin k × X₁ // f x₁.fst = ◩x₁.snd } = #{ y₁ : Fin k × Y₁ // g y₁.fst = ◩y₁.snd } ∧
       #{ x₂ : Fin k × X₂ // f x₂.fst = ◪x₂.snd } = #{ y₂ : Fin k × Y₂ // g y₂.fst = ◪y₂.snd }
     then
-      Matrix.fromBlocks_submatrix_det_in_singTypeCastRange_of_isTotallyUnimodular_of_card_eq hA₁ hA₂ hxy.1 hxy.2
+      Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_isTotallyUnimodular_of_card_eq hA₁ hA₂ hxy.1 hxy.2
     else if hxy₁ :
       #{ x₁ : Fin k × X₁ // f x₁.fst = ◩x₁.snd } < #{ y₁ : Fin k × Y₁ // g y₁.fst = ◩y₁.snd }
     then
-      Matrix.fromBlocks_submatrix_det_in_singTypeCastRange_of_card_lt A₁ A₂ hxy₁
+      Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_card_lt A₁ A₂ hxy₁
     else by
       rw [←Matrix.det_transpose, Matrix.transpose_submatrix, Matrix.fromBlocks_transpose]
-      apply Matrix.fromBlocks_submatrix_det_in_singTypeCastRange_of_card_lt
+      apply Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_card_lt
       have := decomposeSum_card_eq f
       have := decomposeSum_card_eq g
       omega

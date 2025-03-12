@@ -104,7 +104,7 @@ private lemma Matrix.IsTotallyUnimodular.det_eq_zero_iff_discretize [Fintype α]
     (hA : A.IsTotallyUnimodular) :
     A.det = (0 : ℚ) ↔ A.discretize.det = (0 : Z2) := by
   rw [←hA.ratCast_det_eq_discretize_det]
-  apply zero_iff_ratCast_zero_of_in_singTypeCastRange
+  apply zero_iff_ratCast_zero_of_in_signTypeCastRange
   rw [Matrix.isTotallyUnimodular_iff_fintype] at hA
   exact hA α id id
 

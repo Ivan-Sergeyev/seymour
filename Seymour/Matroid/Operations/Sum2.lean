@@ -72,7 +72,7 @@ private lemma Matrix.IsTotallyUnimodular.aux190 {X₁ Y₁ : Set α} {A₁ : Mat
   intro k f g hf hg
   have almost := hAx.duplicate_last_row k f g hf hg
   if last_row : ∃ i : Fin k, f i = ◪() then
-    apply in_singTypeCastRange_of_neg_one_mul_self
+    apply in_signTypeCastRange_of_neg_one_mul_self
     convert almost
     obtain ⟨i, hi⟩ := last_row
     have flipped : (A₁ ⊟ ▬x ⊟ ▬(-x)) = (A₁ ⊟ ▬x ⊟ ▬x).updateRow ◪() (-x)

@@ -31,7 +31,7 @@ lemma Matrix.submatrix_det_zero_of_not_injective {Z : Type} [Fintype Z] [Decidab
   | inl hf => exact A.submatrix_det_zero_of_not_injective_fst hf
   | inr hg => exact A.submatrix_det_zero_of_not_injective_snd hg
 
-lemma Matrix.submatrix_det_in_singTypeCastRange_of_not_injective {Z : Type} [Fintype Z] [DecidableEq Z] {f : Z → X} {g : Z → Y}
+lemma Matrix.submatrix_det_in_signTypeCastRange_of_not_injective {Z : Type} [Fintype Z] [DecidableEq Z] {f : Z → X} {g : Z → Y}
     (A : Matrix X Y R) (hfg : ¬(f.Injective ∧ g.Injective)) :
     (A.submatrix f g).det ∈ SignType.cast.range :=
   ⟨SignType.zero, (A.submatrix_det_zero_of_not_injective hfg).symm⟩
@@ -47,7 +47,7 @@ lemma Matrix.minimumViolationSizeIs_iff (A : Matrix X Y R) (k : ℕ) :
       obtain ⟨hf, hg⟩ := hfg
       exact hA n f g hn hf hg
     else
-      exact A.submatrix_det_in_singTypeCastRange_of_not_injective hfg
+      exact A.submatrix_det_in_signTypeCastRange_of_not_injective hfg
   · intro hA n f g hn hf hg
     exact hA n hn f g
 
@@ -72,7 +72,7 @@ lemma Matrix.minimumViolationSizeIs_iff'' (A : Matrix X Y R) (k : ℕ) :
       exact ⟨f, g, hf, hg, hA⟩
     else
       exfalso
-      exact hA (A.submatrix_det_in_singTypeCastRange_of_not_injective hfg)
+      exact hA (A.submatrix_det_in_signTypeCastRange_of_not_injective hfg)
 
 private lemma Matrix.isTotallyUnimodular_of_none_minimumViolationSizeIs_aux (A : Matrix X Y R) (n : ℕ) :
     (∀ m ≤ n, ¬(A.MinimumViolationSizeIs m)) →

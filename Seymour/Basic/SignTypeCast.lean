@@ -1,43 +1,43 @@
 import Seymour.Basic.Basic
 
 
-lemma zero_iff_ratCast_zero_of_in_singTypeCastRange {a : ℚ} (ha : a ∈ SignType.cast.range) :
+lemma zero_iff_ratCast_zero_of_in_signTypeCastRange {a : ℚ} (ha : a ∈ SignType.cast.range) :
     a = 0 ↔ (a.cast : Z2) = 0 := by
   constructor <;> intro h0
   · rw [h0, Rat.cast_zero]
   · obtain ⟨s, hs⟩ := ha
     cases s <;> aesop
 
-lemma ratCast_eq_intCast_ratFloor_of_in_singTypeCastRange {a : ℚ} (ha : a ∈ SignType.cast.range) :
+lemma ratCast_eq_intCast_ratFloor_of_in_signTypeCastRange {a : ℚ} (ha : a ∈ SignType.cast.range) :
     (a.cast : Z2) = (a.floor.cast : Z2) := by
   obtain ⟨s, hs⟩ := ha
   cases s <;> aesop
 
 variable {R : Type}
 
-lemma zero_in_singTypeCastRange [Ring R] : (0 : R) ∈ SignType.cast.range :=
+lemma zero_in_signTypeCastRange [Ring R] : (0 : R) ∈ SignType.cast.range :=
   ⟨0, rfl⟩
 
-lemma in_singTypeCastRange_mul_in_singTypeCastRange [Ring R] {a b : R}
+lemma in_signTypeCastRange_mul_in_signTypeCastRange [Ring R] {a b : R}
     (ha : a ∈ SignType.cast.range) (hb : b ∈ SignType.cast.range) :
     a * b ∈ SignType.cast.range := by
   obtain ⟨a', rfl⟩ := ha
   obtain ⟨b', rfl⟩ := hb
   exact ⟨_, SignType.coe_mul a' b'⟩
 
-lemma neg_one_mul_in_singTypeCastRange [Ring R] {a : R}
+lemma neg_one_mul_in_signTypeCastRange [Ring R] {a : R}
     (ha : a ∈ SignType.cast.range) :
     (-1) * a ∈ SignType.cast.range :=
-  in_singTypeCastRange_mul_in_singTypeCastRange ⟨-1, rfl⟩ ha
+  in_signTypeCastRange_mul_in_signTypeCastRange ⟨-1, rfl⟩ ha
 
-lemma in_singTypeCastRange_of_neg_one_mul_self [Ring R] {a : R}
+lemma in_signTypeCastRange_of_neg_one_mul_self [Ring R] {a : R}
     (ha : (-1) * a ∈ SignType.cast.range) :
     a ∈ SignType.cast.range := by
   rw [←neg_neg a, neg_eq_neg_one_mul]
-  apply neg_one_mul_in_singTypeCastRange
+  apply neg_one_mul_in_signTypeCastRange
   rwa [neg_eq_neg_one_mul]
 
-lemma in_singTypeCastRange_iff_abs [LinearOrderedCommRing R] (a : R) :
+lemma in_signTypeCastRange_iff_abs [LinearOrderedCommRing R] (a : R) :
     a ∈ SignType.cast.range ↔ |a| ∈ SignType.cast.range := by
   constructor
   · rintro ⟨s, rfl⟩
@@ -66,7 +66,7 @@ lemma in_singTypeCastRange_iff_abs [LinearOrderedCommRing R] (a : R) :
       have h0 := (abs_nonneg a).trans_eq hs
       norm_num at h0
 
-lemma inv_eq_self_of_in_singTypeCastRange [Field R] {a : R} (ha : a ∈ SignType.cast.range) :
+lemma inv_eq_self_of_in_signTypeCastRange [Field R] {a : R} (ha : a ∈ SignType.cast.range) :
     1 / a = a := by
   obtain ⟨s, rfl⟩ := ha
   cases s <;> simp
