@@ -261,7 +261,7 @@ lemma sum_elem_matrix_row_of_nmem [AddCommMonoidWithOne R] {x : α} {S : Set α}
   intro y _
   exact Matrix.one_apply_ne' (ne_of_mem_of_not_mem y.property hxS)
 
-set_option maxHeartbeats 600000 in
+set_option maxHeartbeats 900000 in
 private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁ B₂ : Matrix X Y Z2}
     {hX : ∀ a, Decidable (a ∈ X)} {hY : ∀ a, Decidable (a ∈ Y)} [Fintype X]
     (hSS : (StandardRepr.mk X Y hXY B₁ hX hY).toMatroid = (StandardRepr.mk X Y hXY B₂ hX hY).toMatroid) :
@@ -407,14 +407,28 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
         ext i
         have hl' : l.support.toSet ⊆ hyDXY.elem.range
         · rwa [Finsupp.mem_supported] at hl
-        have hl'' : ∀ e ∈ l.support, e.val ∈ ↑y ᕃ Subtype.val '' D₁ :=
+        have hl'' : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' D₁ :=
           fun e he => (hyDXY.elem_range ▸ hl') he
         if hil : i ∈ l.support then
           if hiX : i.val ∈ X then
             have hlBi := congr_fun hlB ⟨i.val, hiX⟩
             rw [Finsupp.linearCombination_apply, Pi.zero_apply, Finsupp.sum, Finset.sum_apply] at hlBi
             simp_rw [Pi.smul_apply, Function.comp_apply] at hlBi
-            sorry
+            have : Fintype (X ↓∩ l.support.toSet).Elem
+            · exact Set.Finite.fintype Subtype.finite
+            have hlBi' : ∑ x ∈ (X ↓∩ l.support.toSet).toFinset, l (hXXY.elem x) • B₂ᵀ.uppendId (hXXY.elem x).toSum ⟨i, hiX⟩ = 0
+            · sorry -- split `hlBi` into two sums, first of which is over the `{y}` singleton, using `hly` show that only the second sum counts
+            have hlBi'' : ∑ x ∈ (X ↓∩ Subtype.val '' l.support.toSet).toFinset, l (hXXY.elem x) • (1 : Matrix X X Z2) x ⟨i, hiX⟩ = 0
+            · simpa using hlBi'
+            rwa [
+              finset_sum_of_single_nonzero
+                (X ↓∩ Subtype.val '' l.support.toSet).toFinset
+                (fun a : X.Elem => l (hXXY.elem a) • (1 : Matrix X X Z2) a ⟨i, hiX⟩)
+                ⟨i, hiX⟩ (by aesop) (by aesop),
+              Matrix.one_apply_eq,
+              smul_eq_mul,
+              mul_one
+            ] at hlBi''
           else if hiY : i.val ∈ Y then
             have hiy : i = hYXY.elem y
             · cases hl'' i hil with

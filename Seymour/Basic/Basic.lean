@@ -99,18 +99,24 @@ lemma finset_of_cardinality_between {β : Type} [Fintype α] [Fintype β] {n : �
       exact Finset.eq_empty_of_forall_not_mem hs'
     omega
 
-lemma sum_of_single_nonzero {ι : Type} [Fintype ι] [AddCommMonoid α] (f : ι → α) (a : ι) (hf : ∀ i : ι, i ≠ a → f i = 0) :
-    Finset.univ.sum f = f a := by
-  rw [←Finset.sum_subset (Finset.subset_univ {a})]
+lemma finset_sum_of_single_nonzero {ι : Type} (s : Finset ι) [AddCommMonoid α] (f : ι → α) (a : ι) (ha : a ∈ s)
+    (hf : ∀ i ∈ s, i ≠ a → f i = 0) :
+    s.sum f = f a := by
+  rw [←Finset.sum_subset (s.singleton_subset_iff.← ha)]
   · simp
-  intro x _ hx
-  apply hf
-  simpa using hx
+  intro x hxs hxa
+  apply hf x hxs
+  rwa [Finset.not_mem_singleton] at hxa
+
+lemma fintype_sum_of_single_nonzero {ι : Type} [Fintype ι] [AddCommMonoid α] (f : ι → α) (a : ι)
+    (hf : ∀ i : ι, i ≠ a → f i = 0) :
+    Finset.univ.sum f = f a :=
+  finset_sum_of_single_nonzero Finset.univ f a (Finset.mem_univ a) (by simpa using hf)
 
 lemma sum_elem_of_single_nonzero {ι : Type} [AddCommMonoid α] {f : ι → α} {S : Set ι} [Fintype S] {a : ι} (haS : a ∈ S)
     (hf : ∀ i : ι, i ≠ a → f i = 0) :
     ∑ i : S.Elem, f i = f a := by
-  apply sum_of_single_nonzero (fun s : S.Elem => f s.val) ⟨a, haS⟩
+  apply fintype_sum_of_single_nonzero (fun s : S.Elem => f s.val) ⟨a, haS⟩
   intro i hi
   apply hf
   intro contr
@@ -121,7 +127,7 @@ lemma sum_elem_of_single_nonzero {ι : Type} [AddCommMonoid α] {f : ι → α} 
 lemma sum_over_fin_succ_of_only_zeroth_nonzero {n : ℕ} [AddCommMonoid α] {f : Fin n.succ → α}
     (hf : ∀ i : Fin n.succ, i ≠ 0 → f i = 0) :
     Finset.univ.sum f = f 0 := by
-  apply sum_of_single_nonzero
+  apply fintype_sum_of_single_nonzero
   exact hf
 
 variable {X Y : Set α}
