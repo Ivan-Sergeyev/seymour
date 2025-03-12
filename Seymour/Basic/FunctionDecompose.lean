@@ -13,10 +13,9 @@ variable {α β₁ β₂ : Type}
 def Function.decomposeSum (f : α → β₁ ⊕ β₂) :
     α ≃ { x₁ : α × β₁ // f x₁.fst = ◩x₁.snd } ⊕ { x₂ : α × β₂ // f x₂.fst = ◪x₂.snd } where
   toFun a :=
-    (match hfa : f a with
+    match hfa : f a with
       | .inl b₁ => ◩⟨⟨a, b₁⟩, hfa⟩
       | .inr b₂ => ◪⟨⟨a, b₂⟩, hfa⟩
-    )
   invFun x :=
     x.casesOn (·.val.fst) (·.val.fst)
   left_inv a := by
