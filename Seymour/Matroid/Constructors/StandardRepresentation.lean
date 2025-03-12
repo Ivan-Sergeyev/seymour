@@ -421,8 +421,7 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
             have hlBi'' : ∑ x ∈ (X ↓∩ Subtype.val '' l.support.toSet).toFinset, l (hXXY.elem x) • (1 : Matrix X X Z2) x ⟨i, hiX⟩ = 0
             · simpa using hlBi'
             rwa [
-              finset_sum_of_single_nonzero
-                (X ↓∩ Subtype.val '' l.support.toSet).toFinset
+              (X ↓∩ Subtype.val '' l.support.toSet).toFinset.sum_of_single_nonzero
                 (fun a : X.Elem => l (hXXY.elem a) • (1 : Matrix X X Z2) a ⟨i, hiX⟩)
                 ⟨i, hiX⟩ (by aesop) (by aesop),
               Matrix.one_apply_eq,
@@ -478,7 +477,7 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
             exact a.property.casesOn haX haY
         rw [
           Finsupp.sum,
-          finset_sum_of_single_nonzero l.support (fun a => l a • B₂.prependId d a.toSum) (hYXY.elem y) hyl (by
+          l.support.sum_of_single_nonzero  (fun a => l a • B₂.prependId d a.toSum) (hYXY.elem y) hyl (by
             intro i hil hiy
             apply h0 i hil
             intro contr
