@@ -402,13 +402,13 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
       -- if the coefficient in front of `y` is `1` then the sum will always have `1` on `d` position
       rw [linearIndepOn_iff]
       intro l hl hlB
+      have hl' : l.support.toSet ⊆ hyDXY.elem.range
+      · rwa [Finsupp.mem_supported] at hl
+      have hl'' : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' D₁ :=
+        fun e he => (hyDXY.elem_range ▸ hl') he
       if hly : l (hYXY.elem y) = 0 then
         -- here the support lies only in the identity matrix
         ext i
-        have hl' : l.support.toSet ⊆ hyDXY.elem.range
-        · rwa [Finsupp.mem_supported] at hl
-        have hl'' : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' D₁ :=
-          fun e he => (hyDXY.elem_range ▸ hl') he
         if hil : i ∈ l.support then
           if hiX : i.val ∈ X then
             have hlBi := congr_fun hlB ⟨i.val, hiX⟩
@@ -456,18 +456,37 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
           simpa [hXY.not_mem_of_mem_right y.property] using Fin2_eq_1_of_ne_0 hd₂
         have h0 : ∀ a ∈ l.support, a.val ≠ y.val → l a • B₂.prependId d a.toSum = 0
         · intro a ha hay
+          have hal := hl'' a ha
           if haX : a.val ∈ X then
             convert_to l a • B₂.prependId d ◩⟨a.val, haX⟩ = 0
             · simp [Subtype.toSum, haX]
-            sorry
+            simp_rw [Matrix.fromCols_apply_inl]
+            rw [smul_eq_mul, mul_eq_zero]
+            right
+            apply Matrix.one_apply_ne
+            intro had
+            rw [had] at hd₁
+            apply hd₁
+            aesop
           else if haY : a.val ∈ Y then
             exfalso
-            sorry
+            cases hal with
+            | inl hay' => exact hay hay'
+            | inr haD₁ => simp_all
           else
             exfalso
             exact a.property.casesOn haX haY
-        dsimp only [Finsupp.sum] at untransposed
-        sorry
+        rw [
+          Finsupp.sum,
+          finset_sum_of_single_nonzero l.support (fun a => l a • B₂.prependId d a.toSum) (hYXY.elem y) hyl (by
+            intro i hil hiy
+            apply h0 i hil
+            intro contr
+            apply hiy
+            exact SetCoe.ext contr),
+          hy1
+        ] at untransposed
+        exact one_ne_zero untransposed
     exact (hSS' ▸ hM₁) hM₂
 
 /-- If two standard representations of the same binary matroid have the same base, they are identical. -/
