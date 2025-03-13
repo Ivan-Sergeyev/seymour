@@ -124,6 +124,18 @@ lemma sum_elem_of_single_nonzero {ι : Type} [AddCommMonoid α] {f : ι → α} 
   ext
   exact contr
 
+lemma sum_insert_elem {ι : Type} [DecidableEq ι] [AddCommMonoid α] {s : Set ι} [Fintype s] {a : ι} (ha : a ∉ s) (f : ι → α) :
+    ∑ i : (a ᕃ s).Elem, f i = f a + ∑ i : s.Elem, f i := by
+  simp_all [Finset.sum_set_coe]
+
+lemma finset_toSet_sum {ι : Type} [AddCommMonoid α] {S : Finset ι} {s : Set ι} [Fintype s] (hSs : S.toSet = s) (f : ι → α) :
+    ∑ i : S.toSet, f i = ∑ i : s, f i := by
+  apply Finset.sum_bij (fun a _ => ⟨a.val, hSs ▸ a.coe_prop⟩)
+  · simp
+  · simp
+  · aesop
+  · simp
+
 lemma sum_over_fin_succ_of_only_zeroth_nonzero {n : ℕ} [AddCommMonoid α] {f : Fin n.succ → α}
     (hf : ∀ i : Fin n.succ, i ≠ 0 → f i = 0) :
     Finset.univ.sum f = f 0 := by

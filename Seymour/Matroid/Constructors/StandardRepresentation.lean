@@ -250,30 +250,6 @@ lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype
     have heX : e ∉ S.X.toFinset := (Set.not_mem_of_mem_diff he <| Set.mem_toFinset.→ ·)
     simp [heX]
 
-lemma sum_elem_matrix_row_of_mem [AddCommMonoidWithOne R] {x : α} {S : Set α} [Fintype S] (hxS : x ∈ S) :
-    ∑ i : S.Elem, (1 : Matrix α α R) x i.val = 1 := by
-  convert sum_elem_of_single_nonzero hxS (fun _ => Matrix.one_apply_ne')
-  exact (Matrix.one_apply_eq x).symm
-
-lemma sum_elem_matrix_row_of_nmem [AddCommMonoidWithOne R] {x : α} {S : Set α} [Fintype S] (hxS : x ∉ S) :
-    ∑ i : S.Elem, (1 : Matrix α α R) x i.val = 0 := by
-  apply Finset.sum_eq_zero
-  intro y _
-  exact Matrix.one_apply_ne' (ne_of_mem_of_not_mem y.property hxS)
-
-lemma nameme [AddCommMonoid R] {s : Set α} [Fintype s] {a : α} (ha : a ∉ s) (f : α → R) :
-    ∑ i : (a ᕃ s).Elem, f i = f a + ∑ i : s.Elem, f i := by
-  simp_all [Finset.sum_set_coe]
-
-omit [DecidableEq α] in
-lemma nameme' [AddCommMonoid R] {S : Finset α} {s : Set α} [Fintype s] (hSs : S.toSet = s) (f : α → R) :
-    ∑ i : S.toSet, f i = ∑ i : s, f i := by
-  apply Finset.sum_bij (fun a _ => ⟨a.val, hSs ▸ Subtype.coe_prop a⟩)
-  · simp
-  · simp
-  · aesop
-  · simp
-
 set_option maxHeartbeats 400000 in
 private lemma B_eq_B_of_same_matroid_same_X_aux {X Y : Set α} {B : Matrix Y X Z2}
     {hX : ∀ a, Decidable (a ∈ X)} {hY : ∀ a, Decidable (a ∈ Y)} (hXXY : X ⊆ X ∪ Y) (hYXY : Y ⊆ X ∪ Y) -- redundant but keep
@@ -300,7 +276,7 @@ private lemma B_eq_B_of_same_matroid_same_X_aux {X Y : Set α} {B : Matrix Y X Z
   · conv => lhs; rw [hlXXY]
     ext
     aesop
-  rw [←Finset.sum_finset_coe, nameme' hlX (fun a : (X ∪ Y).Elem => l a • B.uppendId a.toSum ⟨i, hiX⟩)] at hlBi
+  rw [←Finset.sum_finset_coe, finset_toSet_sum hlX (fun a : (X ∪ Y).Elem => l a • B.uppendId a.toSum ⟨i, hiX⟩)] at hlBi
   convert hlBi
   apply Finset.sum_bij (fun a ha => ⟨hXXY.elem a, by simpa using ha⟩)
   · simp
