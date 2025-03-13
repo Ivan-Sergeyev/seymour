@@ -108,7 +108,7 @@ noncomputable instance [Fintype Z] {f : Z → X₁ ⊕ X₂} : Fintype { x₁ : 
   apply Fintype.ofInjective (·.val.fst)
   intro ⟨⟨u, u₁⟩, hu⟩ ⟨⟨v, v₁⟩, hv⟩ huv
   dsimp only at hu hv huv
-  rw [Subtype.mk_eq_mk, Prod.mk.inj_iff]
+  rw [Subtype.mk_eq_mk, Prod.mk_inj]
   refine ⟨huv, ?_⟩
   rw [←Sum.inl.injEq, ←hu, ←hv, huv]
 
@@ -116,7 +116,7 @@ noncomputable instance [Fintype Z] {f : Z → X₁ ⊕ X₂} : Fintype { x₂ : 
   apply Fintype.ofInjective (·.val.fst)
   intro ⟨⟨u, u₁⟩, hu⟩ ⟨⟨v, v₁⟩, hv⟩ huv
   dsimp only at hu hv huv
-  rw [Subtype.mk_eq_mk, Prod.mk.inj_iff]
+  rw [Subtype.mk_eq_mk, Prod.mk_inj]
   refine ⟨huv, ?_⟩
   rw [←Sum.inr.injEq, ←hu, ←hv, huv]
 
