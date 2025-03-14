@@ -117,32 +117,33 @@ theorem VectorMatroid.indepCols_aug (M : VectorMatroid α R) (I J : Set α)
   let hMM := M.indepCols_eq_indepColsOld
   hMM ▸ M.indepColsOld_aug I J (hMM ▸ hMI) (hMM ▸ hMI') (hMM ▸ hMJ)
 
+lemma linearIndepOn_sUnion_of_directedOn {X Y : Set α} {A : Matrix Y X R} {s : Set (Set α)} (hs : DirectedOn (· ⊆ ·) s)
+    (hA : ∀ a ∈ s, LinearIndepOn R A (Y ↓∩ a)) :
+    LinearIndepOn R A (Y ↓∩ (⋃₀ s)) := by
+  let s' : Set (Set Y.Elem) := (fun t : s => Y ↓∩ t).range
+  have hss' : Y ↓∩ ⋃₀ s = s'.sUnion := by aesop
+  rw [hss']
+  apply linearIndepOn_sUnion_of_directed
+  · intro x' hx' y' hy'
+    obtain ⟨x, hxs, hxM⟩ : ∃ x ∈ s, x' = Y ↓∩ x := by aesop
+    obtain ⟨y, hys, hyM⟩ : ∃ y ∈ s, y' = Y ↓∩ y := by aesop
+    obtain ⟨z, _, hz⟩ := hs x hxs y hys
+    exact ⟨Y ↓∩ z, by aesop, hxM ▸ Set.preimage_mono hz.left, hyM ▸ Set.preimage_mono hz.right⟩
+  · aesop
+
 /-- Every set of columns contains a maximal independent subset of columns. -/
 theorem VectorMatroid.indepCols_maximal (M : VectorMatroid α R) (I : Set α) :
-    Matroid.ExistsMaximalSubsetProperty M.IndepCols I := by
-  intros J hMJ hJI
-  let S := { K : Set α | M.IndepCols K ∧ K ⊆ I }
-  have linearIndepOn_sUnion_of_directed_in_M {s : Set (Set α)} (hs : DirectedOn (· ⊆ ·) s)
-      (hM : ∀ a ∈ s, LinearIndepOn R M.Aᵀ (M.Y ↓∩ a)) :
-      LinearIndepOn R M.Aᵀ (M.Y ↓∩ (⋃₀ s))
-  · let s' : Set (Set M.Y.Elem) := (fun t : s => M.Y ↓∩ t).range
-    have hss' : M.Y ↓∩ ⋃₀ s = Set.sUnion s' := by aesop
-    rw [hss']
-    have hs' : DirectedOn (· ⊆ ·) s' := by
-      intros x' hx' y' hy'
-      obtain ⟨x, hxs, hxM⟩ : ∃ x ∈ s, x' = M.Y ↓∩ x := by aesop
-      obtain ⟨y, hys, hyM⟩ : ∃ y ∈ s, y' = M.Y ↓∩ y := by aesop
-      obtain ⟨z, _, hz⟩ := hs x hxs y hys
-      exact ⟨M.Y ↓∩ z, by aesop, hxM ▸ Set.preimage_mono hz.left, hyM ▸ Set.preimage_mono hz.right⟩
-    apply linearIndepOn_sUnion_of_directed hs'
-    intros
-    aesop
-  exact zorn_subset_nonempty S (fun c hcS chain_c _ =>
-    ⟨⋃₀ c,
-      ⟨⟨Set.sUnion_subset (fun _ hxc => (hcS hxc).left.left), linearIndepOn_sUnion_of_directed_in_M chain_c.directedOn
-        (fun _ hxc => (hcS hxc).left.right)⟩, Set.sUnion_subset (fun _ hxc => (hcS hxc).right)⟩,
-      fun _ => Set.subset_sUnion_of_mem⟩)
-    J ⟨hMJ, hJI⟩
+    Matroid.ExistsMaximalSubsetProperty M.IndepCols I :=
+  fun J hMJ hJI =>
+    zorn_subset_nonempty
+      { K : Set α | M.IndepCols K ∧ K ⊆ I }
+      (fun c hcS chain_c _ =>
+        ⟨⋃₀ c,
+        ⟨⟨Set.sUnion_subset (fun _ hxc => (hcS hxc).left.left),
+          linearIndepOn_sUnion_of_directedOn chain_c.directedOn (fun _ hxc => (hcS hxc).left.right)⟩,
+          Set.sUnion_subset (fun _ hxc => (hcS hxc).right)⟩,
+        fun _ => Set.subset_sUnion_of_mem⟩)
+      J ⟨hMJ, hJI⟩
 
 /-- `VectorMatroid` expressed as `IndepMatroid`. -/
 private def VectorMatroid.toIndepMatroid (M : VectorMatroid α R) : IndepMatroid α where
