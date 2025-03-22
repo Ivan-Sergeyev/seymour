@@ -71,15 +71,18 @@ theorem VectorMatroid.indepCols_subset (M : VectorMatroid α R) (I J : Set α) (
     M.IndepCols I :=
   M.indepCols_eq_indepColsOld ▸ M.indepColsOld_subset I J (M.indepCols_eq_indepColsOld ▸ hMJ) hIJ
 
+set_option maxHeartbeats 0
+
 /-- A non-maximal independent set of columns can be augmented with another independent column. -/
-private theorem VectorMatroid.indepColsOld_aug (M : VectorMatroid α R) (I J : Set α)
-    (hMI : M.IndepColsOld I) (hMI' : ¬Maximal M.IndepColsOld I) (hMJ : Maximal M.IndepColsOld J) :
-    ∃ x ∈ J \ I, M.IndepColsOld (x ᕃ I) := by
+theorem VectorMatroid.indepCols_aug (M : VectorMatroid α R) (I J : Set α)
+    (hMI : M.IndepCols I) (hMI' : ¬Maximal M.IndepCols I) (hMJ : Maximal M.IndepCols J) :
+    ∃ x ∈ J \ I, M.IndepCols (x ᕃ I) := by
   by_contra! non_aug
   rw [Maximal] at hMI'
   push_neg at hMI'
   obtain ⟨hI, I_indep⟩ := hMI
   obtain ⟨⟨hJ, J_indep⟩, hJ'⟩ := hMJ
+  obtain ⟨K, ⟨hMK, IK, nKI⟩⟩ := hMI' ⟨hI, I_indep⟩
   let I' : Set M.Y := { x : M.Y.Elem | x.val ∈ I }
   let J' : Set M.Y := { x : M.Y.Elem | x.val ∈ J }
   let Iᵥ : Set (M.X → R) := M.Aᵀ '' I'
@@ -93,29 +96,82 @@ private theorem VectorMatroid.indepColsOld_aug (M : VectorMatroid α R) (I J : S
     · have x_in_J : ↑x ∈ J := hxJ
       have x_ni_I : ↑x ∉ I := by aesop
       have x_in_JwoI : ↑x ∈ J \ I := Set.mem_diff_of_mem x_in_J x_ni_I
-      have hMxI : ¬M.IndepColsOld (↑x ᕃ I) := non_aug ↑x x_in_JwoI
-      sorry
+      have hMxI : ¬M.IndepCols (↑x ᕃ I) := non_aug ↑x x_in_JwoI
+      rw [IndepCols] at hMxI
+      push_neg at hMxI
+      have hnMxI : ¬LinearIndepOn R M.Aᵀ (M.Y ↓∩ (↑x ᕃ I)) := hMxI (Set.insert_subset (hJ hxJ) hI)
+      have YxI : M.Y ↓∩ (↑x ᕃ I) = x ᕃ I' := by aesop
+      rw [YxI] at hnMxI
+      have hI_indep : LinearIndepOn R M.Aᵀ I' := I_indep
+      by_contra! hv_ni_I
+      have hv_ni_Iv : v ∉ Submodule.span R Iᵥ := hv_ni_I
+      have hx_ni_I : x ∉ I' := x_ni_I
+      have hMx_ni_Is : M.Aᵀ x ∉ Submodule.span R (M.Aᵀ '' I') := by aesop
+      have hxI_indep : LinearIndepOn R M.Aᵀ (x ᕃ I') := by
+        sorry
+        -- exact (linearIndepOn_insert hx_ni_I).mpr ⟨hI_indep, hMx_ni_Is⟩
+      contradiction
   have Iᵥ_ss_Jₛ : Iᵥ ⊆ Jₛ
   · intro v ⟨x, hxI, hxv⟩
-    have hMxJ : M.IndepColsOld (↑x ᕃ J)
-    · have hxJ : (↑x ᕃ J) ⊆ M.Y := Set.insert_subset (hI hxI) hJ
-      have hvJ : (M.A.submatrix id hxJ.elem)ᵀ '' Set.univ = v ᕃ Jᵥ
-      · sorry
+    by_contra! hv_ni_Jₛ
+    have hMx_ni_J' : M.Aᵀ x ∉ Submodule.span R (M.Aᵀ '' J') := Eq.mpr_not (congrArg (Membership.mem (Submodule.span R Jᵥ)) hxv) hv_ni_Jₛ
+    have hx_ni_J' : x ∉ J' := by
+      by_contra! hx_in_J'
+      have hMx_in_MJ' : M.Aᵀ x ∈ (M.Aᵀ '' J') := Set.mem_image_of_mem M.Aᵀ hx_in_J'
+      have hv_in_MJ' : v ∈ (M.Aᵀ '' J') := Set.mem_of_eq_of_mem (id (Eq.symm hxv)) hMx_in_MJ'
+      have _ : v ∈ ↑Jₛ := Submodule.mem_span.← fun p a => a hv_in_MJ'
+      contradiction
+    have hJ'_indep : LinearIndepOn R M.Aᵀ J' := J_indep
+    have hxJ'_indep : LinearIndepOn R M.Aᵀ (x ᕃ J') := by
       sorry
-    have v_in_Jᵥ : v ∈ Jᵥ := by aesop
-    exact Set.mem_of_mem_of_subset v_in_Jᵥ Submodule.subset_span
-  have Jₛ_le_Iₛ : Jₛ ≤ Iₛ := Submodule.span_le.← Jᵥ_ss_Iₛ
-  have Iₛ_le_Jₛ : Iₛ ≤ Jₛ := Submodule.span_le.← Iᵥ_ss_Jₛ
+      -- exact (linearIndepOn_insert hx_ni_J').mpr ⟨hJ'_indep, hMx_ni_J'⟩
+    have hMxJ_indep : M.IndepCols (↑x ᕃ J) := by
+      rw [IndepCols]
+      constructor
+      · exact Set.insert_subset (hI hxI) hJ
+      · have hxJ' : M.Y ↓∩ (↑x ᕃ J) = x ᕃ J' := by aesop
+        rw [hxJ']
+        exact hxJ'_indep
+    apply hJ' at hMxJ_indep
+    have hxJ_in_J : ↑x ᕃ J ≤ J := by aesop
+    have _ : x ∈ J' := hxJ_in_J (Set.mem_insert (↑x) J)
+    contradiction
   have Iₛ_eq_Jₛ : Iₛ = Jₛ := Submodule.span_eq_span Iᵥ_ss_Jₛ Jᵥ_ss_Iₛ
-  clear Jᵥ_ss_Iₛ Iᵥ_ss_Jₛ Jₛ_le_Iₛ Iₛ_le_Jₛ
-  sorry
-
-/-- A non-maximal independent set of columns can be augmented with another independent column. -/
-theorem VectorMatroid.indepCols_aug (M : VectorMatroid α R) (I J : Set α)
-    (hMI : M.IndepCols I) (hMI' : ¬Maximal M.IndepCols I) (hMJ : Maximal M.IndepCols J) :
-    ∃ x ∈ J \ I, M.IndepCols (x ᕃ I) :=
-  let hMM := M.indepCols_eq_indepColsOld
-  hMM ▸ M.indepColsOld_aug I J (hMM ▸ hMI) (hMM ▸ hMI') (hMM ▸ hMJ)
+  obtain ⟨k, ⟨k_in_K, k_ni_I⟩⟩ := Set.not_subset.→ nKI
+  have kI_in_K : (k ᕃ I) ⊆ K := Set.insert_subset k_in_K IK
+  have MkI_indep : M.IndepCols (k ᕃ I) := M.indepCols_subset (k ᕃ I) K hMK kI_in_K
+  have kI_in_MY : k ᕃ I ⊆ M.Y := MkI_indep.left
+  have k_in_MY : k ∈ M.Y := kI_in_MY (Set.mem_insert k I)
+  let k' : ↑M.Y := ⟨k, k_in_MY⟩
+  by_cases hk'_in_J' : k' ∈ J'
+  · have hk_in_JI : k ∈ J \ I := Set.mem_diff_of_mem hk'_in_J' k_ni_I
+    exact non_aug k hk_in_JI MkI_indep
+  . have hkI' : M.Y ↓∩ (k ᕃ I) = ↑k' ᕃ I' := by aesop
+    have k'_ni_I' : k' ∉ I' := k_ni_I
+    rw [IndepCols, hkI'] at MkI_indep
+    obtain ⟨_, MkI_indep⟩ := MkI_indep
+    have hMk'_ni_I'_span : M.Aᵀ k' ∉ Submodule.span R (M.Aᵀ '' I') := by
+      sorry
+      -- exact ((linearIndepOn_insert k'_ni_I').mp MkI_indep).right
+    have hMk'_ni_J'_span : M.Aᵀ k' ∉ Submodule.span R (M.Aᵀ '' J') := by
+      have I'_span_eq_J'_span : Submodule.span R (M.Aᵀ '' I') = Submodule.span R (M.Aᵀ '' J') := Iₛ_eq_Jₛ
+      rw [← I'_span_eq_J'_span]
+      exact hMk'_ni_I'_span
+    have J'_indep : LinearIndepOn R M.Aᵀ J' := J_indep
+    have hkJ'_indep : LinearIndepOn R M.Aᵀ (k' ᕃ J') := by
+      sorry
+      -- exact (linearIndepOn_insert hk'_in_J').mpr ⟨J'_indep, hMk'_ni_J'_span⟩
+    have hMI_kJ : M.IndepCols (k ᕃ J) := by
+      rw [IndepCols]
+      constructor
+      · exact Set.insert_subset k_in_MY hJ
+      · have hkJ' : M.Y ↓∩ (k ᕃ J) = k' ᕃ J' := by aesop
+        rw [hkJ']
+        exact hkJ'_indep
+    apply hJ' at hMI_kJ
+    have hkJ_in_J : k ᕃ J ≤ J := by aesop
+    have hk_in_J : k ∈ J := hkJ_in_J (Set.mem_insert k J)
+    contradiction
 
 lemma linearIndepOn_sUnion_of_directedOn {X Y : Set α} {A : Matrix Y X R} {s : Set (Set α)} (hs : DirectedOn (· ⊆ ·) s)
     (hA : ∀ a ∈ s, LinearIndepOn R A (Y ↓∩ a)) :
