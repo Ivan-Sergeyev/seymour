@@ -86,8 +86,7 @@ private lemma Matrix.IsTotallyUnimodular.aux190 {X₁ Y₁ : Set α} {A₁ : Mat
         simp [hr, hfr]
     rw [flipped, bubbled, ←((A₁ ⊟ ▬x ⊟ ▬x).submatrix f g).det_updateRow_smul i (-1) ((-x) ∘ g)]
     convert_to (((A₁ ⊟ ▬x ⊟ ▬x).submatrix f g).updateRow i (x ∘ g)).det = ((A₁ ⊟ ▬x ⊟ ▬x).submatrix f g).det
-    · apply congr_arg
-      apply congr_arg
+    · congr!
       ext
       simp
     congr
@@ -221,7 +220,11 @@ lemma matrix2sumComposition_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ : Set α}
   rw [Matrix.isTotallyUnimodular_iff_none_minimumViolationSizeIs]
   intro k
   cases k with
-  | zero => sorry -- 0x0 should be trivial
+  | zero =>
+    simp_rw [Matrix.minimumViolationSizeIs_iff, Matrix.det_fin_zero]
+    push_neg
+    intros
+    decide
   | succ m =>
     cases m with
     | zero => sorry -- 1x1 should be trivial
