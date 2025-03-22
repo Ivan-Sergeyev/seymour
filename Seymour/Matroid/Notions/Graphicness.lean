@@ -28,7 +28,8 @@ lemma Matrix.IsGraphic.isTotallyUnimodular_of_represents {X Y : Set α} {A : Mat
 /-- Graphic matroid is regular. -/
 lemma Matroid.IsGraphic.isRegular {M : Matroid α} (hM : M.IsGraphic) :
     M.IsRegular := by
-  sorry
+  peel hM with X Y A hM
+  exact ⟨Matrix.IsGraphic.isTotallyUnimodular_of_represents hM.1 hM.2, hM.2⟩
 
 /-- Cographic matroid is regular. -/
 lemma Matroid.IsCographic.isRegular {M : Matroid α} (hM : M.IsCographic) :
