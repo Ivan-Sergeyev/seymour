@@ -30,33 +30,13 @@ lemma nonempty_inter_not_ssubset_empty_inter {A B E : Set α} (hA : (A ∩ E).No
 
 lemma ssubset_self_union_other_elem {a : α} {X : Set α} (ha : a ∉ X) :
     X ⊂ X ∪ {a} := by
-  constructor
-  · exact Set.subset_union_left
-  · by_contra hX
-    rw [Set.union_subset_iff] at hX
-    obtain ⟨_, haa⟩ := hX
-    tauto
+  refine ⟨Set.subset_union_left, ?_⟩
+  rw [Set.union_subset_iff]
+  tauto
 
 lemma singleton_union_ssubset_union_iff {a : α} {A B : Set α} (haA : a ∉ A) (haB : a ∉ B) :
     A ∪ {a} ⊂ B ∪ {a} ↔ A ⊂ B := by
-  constructor
-  · intro hAB
-    obtain ⟨hABl, hABr⟩ := hAB
-    constructor
-    · intro x hx
-      apply ne_of_mem_of_not_mem hx at haA
-      cases hABl (Set.mem_union_left {a} hx) <;> tauto
-    · by_contra hBA
-      apply Set.union_subset_union_left {a} at hBA
-      tauto
-  · intro hAB
-    obtain ⟨hABl, hABr⟩ := hAB
-    constructor
-    · exact Set.union_subset_union_left {a} hABl
-    · by_contra hBA
-      rw [Set.union_singleton, Set.union_singleton] at hBA
-      apply (Set.insert_subset_insert_iff haB).→ at hBA
-      tauto
+  constructor <;> intro ⟨hABl, hABr⟩ <;> constructor <;> simp_all
 
 lemma ssub_parts_ssub {A B E₁ E₂ : Set α}
     (hA : A ⊆ E₁ ∪ E₂) (hB : B ⊆ E₁ ∪ E₂) (hAB₁ : A ∩ E₁ ⊂ B ∩ E₁) (hAB₂ : A ∩ E₂ ⊂ B ∩ E₂) :
