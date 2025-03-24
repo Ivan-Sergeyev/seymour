@@ -79,20 +79,20 @@ lemma singleton_inter_subset_right {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) 
   exact singleton_inter_in_right ha
 
 /-- Being a subset is preserved under subtracting sets. -/
-lemma diff_subset_parent {X₁ X₂ E : Set α} (hX₁E : X₁ ⊆ E) :
+lemma diff_subset_parent {X₁ X₂ E : Set α} (hXE : X₁ ⊆ E) :
     X₁ \ X₂ ⊆ E :=
-  Set.diff_subset_iff.← (Set.subset_union_of_subset_right hX₁E X₂)
+  Set.diff_subset_iff.← (Set.subset_union_of_subset_right hXE X₂)
 
 /-- Being a subset is preserved under taking intersections. -/
-lemma inter_subset_parent_left {X₁ X₂ E : Set α} (hX₁E : X₁ ⊆ E) :
+lemma inter_subset_parent_left {X₁ X₂ E : Set α} (hXE : X₁ ⊆ E) :
     X₁ ∩ X₂ ⊆ E :=
-  (Set.inter_subset_inter_left X₂ hX₁E).trans Set.inter_subset_left
+  (Set.inter_subset_inter_left X₂ hXE).trans Set.inter_subset_left
 
 /-- Being a subset is preserved under taking intersections. -/
-lemma inter_subset_parent_right {X₁ X₂ E : Set α} (hX₂E : X₂ ⊆ E) :
+lemma inter_subset_parent_right {X₁ X₂ E : Set α} (hXE : X₂ ⊆ E) :
     X₁ ∩ X₂ ⊆ E := by
   rw [Set.inter_comm]
-  exact inter_subset_parent_left hX₂E
+  exact inter_subset_parent_left hXE
 
 /-- Intersection of two sets is subset of their union. -/
 lemma inter_subset_union {X₁ X₂ : Set α} :
