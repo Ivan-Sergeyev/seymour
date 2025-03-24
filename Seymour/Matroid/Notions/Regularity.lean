@@ -113,20 +113,27 @@ private lemma Matrix.IsTotallyUnimodular.det_ne_zero_iff_discretize [Fintype α]
     A.det ≠ (0 : ℚ) ↔ A.discretize.det ≠ (0 : Z2) :=
   hA.det_eq_zero_iff_discretize.ne
 
+private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linearIndependent {X Y : Set α} [Fintype X]
+    {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) {I : Type} [Fintype I] [DecidableEq I] (e : I → Y) :
+    LinearIndependent ℚ (A.transpose.submatrix e id) ↔
+    LinearIndependent (ZMod 2) ((Matrix.discretize A).transpose.submatrix e id) := by
+  constructor <;> intro hAI <;> rw [Matrix.linearIndependent_iff_exists_submatrix_det] at hAI ⊢ <;>
+      obtain ⟨f, hAf⟩ := hAI <;> use f <;> rw [Matrix.submatrix_submatrix, Function.comp_id, Function.id_comp] at hAf ⊢ <;>
+      have result := (hA.transpose.submatrix e f).det_ne_zero_iff_discretize
+  · exact result.→ hAf
+  · exact result.← hAf
+
 private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_discretize_toMatroid {X Y : Set α} {A : Matrix X Y ℚ}
     (hA : A.IsTotallyUnimodular) :
     (VectorMatroid.mk X Y A).toMatroid = (VectorMatroid.mk X Y A.discretize).toMatroid := by
   ext I hI
   · simp
+  have : Fintype X := sorry -- TODO do we need to assume it?
   simp only [VectorMatroid.toMatroid_indep, VectorMatroid.indepCols_iff_submatrix']
-  -- TODO assumptions?
-  have : Fintype X := sorry
-  have : Fintype I := sorry
-  constructor <;> intro ⟨hIY, hAI⟩ <;> use hIY <;> rw [Matrix.linearIndependent_iff_exists_submatrix_det] at hAI ⊢ <;>
-      obtain ⟨f, hAf⟩ := hAI <;> use f <;> rw [Matrix.submatrix_submatrix, Function.comp_id, Function.id_comp] at hAf ⊢ <;>
-      have result := (hA.transpose.submatrix hIY.elem f).det_ne_zero_iff_discretize
-  · exact result.→ hAf
-  · exact result.← hAf
+  constructor <;> intro ⟨hIY, hAI⟩ <;> use hIY <;>
+      rw [linearIndependent_iff_finset_linearIndependent] at * <;> intro s <;> specialize hAI s
+  · exact (hA.linearIndependent_iff_discretize_linearIndependent (hIY.elem ∘ Subtype.val)).→ hAI
+  · exact (hA.linearIndependent_iff_discretize_linearIndependent (hIY.elem ∘ Subtype.val)).← hAI
 
 private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_of_discretize {X Y : Set α} {A : Matrix X Y ℚ} {U : Matrix X Y Z2}
     (hA : A.IsTotallyUnimodular) (hAU : A.discretize = U) :
