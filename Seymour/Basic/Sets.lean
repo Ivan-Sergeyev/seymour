@@ -36,7 +36,7 @@ lemma ssubset_self_union_other_elem {a : α} {X : Set α} (ha : a ∉ X) :
 
 lemma singleton_union_ssubset_union_iff {a : α} {A B : Set α} (haA : a ∉ A) (haB : a ∉ B) :
     A ∪ {a} ⊂ B ∪ {a} ↔ A ⊂ B := by
-  constructor <;> intro ⟨hABl, hABr⟩ <;> constructor <;> simp_all
+  constructor <;> intro ⟨hAB, hBA⟩ <;> constructor <;> simp_all
 
 lemma ssub_parts_ssub {A B E₁ E₂ : Set α}
     (hA : A ⊆ E₁ ∪ E₂) (hB : B ⊆ E₁ ∪ E₂) (hAB₁ : A ∩ E₁ ⊂ B ∩ E₁) (hAB₂ : A ∩ E₂ ⊂ B ∩ E₂) :
