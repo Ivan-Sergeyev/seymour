@@ -1,5 +1,4 @@
 import Seymour.Matrix.Pivoting
-import Seymour.Matrix.TotalUnimodularityViolation
 import Seymour.Matroid.Notions.Regularity
 
 
@@ -160,81 +159,11 @@ lemma lemma6₂ {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x 
     ((y · * x ·) ◫ A₂).IsTotallyUnimodular :=
   lemma6₂_aux hAy (hAx.apply ◪())
 
-lemma lemma8 {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ} {k : ℕ}
-    (hk : 2 ≤ k) (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular)
-    (hAxAy : (matrix2sumComposition A₁ x A₂ y).MinimumViolationSizeIs k.succ) :
-    ∃ A₁' : Matrix X₁ Y₁ ℚ, ∃ x' : Y₁ → ℚ, ∃ A₂' : Matrix X₂ Y₂ ℚ, ∃ y' : X₂ → ℚ,
-      (A₁' ⊟ ▬x').IsTotallyUnimodular ∧
-      (▮y' ◫ A₂').IsTotallyUnimodular ∧
-      (matrix2sumComposition A₁' x' A₂' y').MinimumViolationSizeIs k := by
-  obtain ⟨hA, hA'⟩ := hAxAy
-  push_neg at hA'
-  obtain ⟨f, g, hf, hg, hAfg⟩ := hA'
-  -- first paragraph
-  obtain ⟨i₁, x₁, hix₁⟩ : ∃ i₁ : Fin k.succ, ∃ x₁ : X₁, f i₁ = ◩x₁
-  · have := lemma6₂ hAx hAy
-    sorry -- because `D ◫ A₂` is TU
-  obtain ⟨i₂, x₂, hix₂⟩ : ∃ i₂ : Fin k.succ, ∃ x₂ : X₂, f i₂ = ◪x₂
-  · sorry -- because `A₁ ◫ 0` is TU
-  obtain ⟨j₁, y₁, hjy₁⟩ : ∃ j₁ : Fin k.succ, ∃ y₁ : Y₁, g j₁ = ◩y₁
-  · sorry -- because `0 ⊟ A₂` is TU
-  obtain ⟨j₂, y₂, hjy₂⟩ : ∃ j₂ : Fin k.succ, ∃ y₂ : Y₂, g j₂ = ◪y₂
-  · have := lemma6₁ hAx hAy
-    sorry -- because `A₁ ⊟ D` is TU
-  -- second paragraph
-  obtain ⟨j₀, y₀, hyj₀⟩ : ∃ j₀ : Fin k.succ, ∃ y₀ : Y₁, g j₀ = ◩y₀ ∧ A₁ x₁ y₀ ≠ 0
-  · sorry -- because the `x₁` row cannot be all `0`s
-  -- third paragraph
-  let B' := (matrix2sumComposition A₁ x A₂ y).shortTableauPivot ◩x₁ ◩y₀
-  have hB' : B' = matrix2sumComposition B'.toBlocks₁₁ x B'.toBlocks₂₂ y -- TODO modify `x` and `y` to make it hold
-  · sorry
-  use B'.toBlocks₁₁, x, B'.toBlocks₂₂, y -- TODO the same modified `x` and `y` here
-  -- first bullet
-  have B'_toCols₁_TU : B'.toCols₁.IsTotallyUnimodular
-  · sorry -- follows from `hAx` using `Matrix.IsTotallyUnimodular.shortTableauPivot`
-  -- second bullet
-  have eq_A₂ : B'.toBlocks₂₂ = A₂
-  · sorry
-  -- TODO thirt bullet
-  -- fourth bullet
-  have B'_toRows₂_TU : B'.toRows₂.IsTotallyUnimodular
-  · rw [hB', eq_A₂]
-    show ((fun i j => y i * x j) ◫ A₂).IsTotallyUnimodular
-    -- TODO utilize `hAy` here
-    sorry
-  -- TODO fifth bullet
-  -- TODO sixth bullet
-  -- conclusion
-  constructor
-  · sorry -- follows from `B'_toCols₁_TU`
-  constructor
-  · sorry -- follows from `B'_toRows₂_TU`
-  constructor
-  · sorry -- missing in the write-up
-  · sorry -- the sixth bullet will go here
-
 lemma matrix2sumComposition_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
     (hA₁ : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hA₂ : (▮y ◫ A₂).IsTotallyUnimodular) :
     (matrix2sumComposition A₁ x A₂ y).IsTotallyUnimodular := by
-  rw [Matrix.isTotallyUnimodular_iff_none_minimumViolationSizeIs]
-  intro k
-  cases k with
-  | zero =>
-    simp_rw [Matrix.minimumViolationSizeIs_iff, Matrix.det_fin_zero]
-    push_neg
-    intros
-    decide
-  | succ m =>
-    cases m with
-    | zero => sorry -- 1x1 should be trivial
-    | succ n =>
-      induction n generalizing A₁ A₂ x y with
-      | zero => sorry -- 2x2 requires a bit of work
-      | succ k ih =>
-        intro contr
-        obtain ⟨_, _, _, _, hA₁', hA₂', result⟩ := lemma8 (Nat.le_add_left 2 k) hA₁ hA₂ contr
-        exact ih hA₁' hA₂' result
+  sorry -- TODO start again following Section 3
 
 lemma standardRepr2sumComposition_B {S₁ S₂ : StandardRepr α Z2} {a : α} (ha : S₁.X ∩ S₂.Y = {a}) (hXY : S₂.X ⫗ S₁.Y) :
     ∃ haX₁ : a ∈ S₁.X, ∃ haY₂ : a ∈ S₂.Y,
