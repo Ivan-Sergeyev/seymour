@@ -1,7 +1,7 @@
 import Seymour.Matroid.Constructors.StandardRepresentation
 
 
-variable {α R : Type} [DecidableEq α] [Ring R]
+variable {α R : Type} [DecidableEq α] [DivisionRing R]
 
 /-- The dual of standard representation (transpose the matrix and flip its signs). -/
 def StandardRepr.dual (S : StandardRepr α R) : StandardRepr α R where

@@ -32,25 +32,25 @@ def StandardRepr.toVectorMatroid [Zero R] [One R] (S : StandardRepr α R) : Vect
 
 /-- Converting standard representation to full representation does not change the set of row indices. -/
 @[simp]
-lemma StandardRepr.toVectorMatroid_X [Semiring R] (S : StandardRepr α R) :
+lemma StandardRepr.toVectorMatroid_X [Zero R] [One R] (S : StandardRepr α R) :
     S.toVectorMatroid.X = S.X :=
   rfl
 
 /-- Ground set of a vector matroid is union of row and column index sets of its standard matrix representation. -/
 @[simp]
-lemma StandardRepr.toVectorMatroid_Y [Semiring R] (S : StandardRepr α R) :
+lemma StandardRepr.toVectorMatroid_Y [Zero R] [One R] (S : StandardRepr α R) :
     S.toVectorMatroid.Y = S.X ∪ S.Y :=
   rfl
 
 /-- If a vector matroid has a standard representation matrix `B`, its full representation matrix is `[1 | B]`. -/
 @[simp]
-lemma StandardRepr.toVectorMatroid_A [Semiring R] (S : StandardRepr α R) :
+lemma StandardRepr.toVectorMatroid_A [Zero R] [One R] (S : StandardRepr α R) :
     S.toVectorMatroid.A = (S.B.prependId · ∘ Subtype.toSum) :=
   rfl
 
 /-- Ground set of a vector matroid is union of row and column index sets of its standard matrix representation. -/
 @[simp]
-lemma StandardRepr.toVectorMatroid_E [Semiring R] (S : StandardRepr α R) :
+lemma StandardRepr.toVectorMatroid_E [DivisionRing R] (S : StandardRepr α R) :
     S.toVectorMatroid.toMatroid.E = S.X ∪ S.Y :=
   rfl
 
@@ -60,75 +60,75 @@ instance {S : StandardRepr α R} [Zero R] [One R] [hSX : Finite S.X] : Finite S.
 instance {S : StandardRepr α R} [Zero R] [One R] [Finite S.X] [Finite S.Y] : Finite S.toVectorMatroid.Y :=
   Finite.Set.finite_union S.X S.Y
 
-lemma StandardRepr.toVectorMatroid_indep_iff [Semiring R] (S : StandardRepr α R) (I : Set α) :
+lemma StandardRepr.toVectorMatroid_indep_iff [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
     I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R (S.B.prependId · ∘ Subtype.toSum)ᵀ ((S.X ∪ S.Y) ↓∩ I) := by
   rfl
 
 @[simp]
-lemma StandardRepr.toVectorMatroid_indep_iff' [Semiring R] (S : StandardRepr α R) (I : Set α) :
+lemma StandardRepr.toVectorMatroid_indep_iff' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
     I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) ((S.X ∪ S.Y) ↓∩ I) := by
   rfl
 
-lemma StandardRepr.toVectorMatroid_indep_iff'' [Semiring R] (S : StandardRepr α R) (I : Set α) :
+lemma StandardRepr.toVectorMatroid_indep_iff'' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
     I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R (S.Bᵀ.uppendId ∘ Subtype.toSum) ((S.X ∪ S.Y) ↓∩ I) := by
   simp
 
-lemma StandardRepr.toVectorMatroid_indep_iff_elem [Semiring R] (S : StandardRepr α R) (I : Set α) :
+lemma StandardRepr.toVectorMatroid_indep_iff_elem [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependId · ∘ Subtype.toSum)ᵀ hI.elem.range := by
   rw [StandardRepr.toVectorMatroid_indep_iff]
   unfold HasSubset.Subset.elem
   aesop
 
-lemma StandardRepr.toVectorMatroid_indep_iff_elem' [Semiring R] (S : StandardRepr α R) (I : Set α) :
+lemma StandardRepr.toVectorMatroid_indep_iff_elem' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) hI.elem.range :=
   S.toVectorMatroid_indep_iff_elem I
 
-lemma StandardRepr.toVectorMatroid_indep_iff_elem'' [Semiring R] (S : StandardRepr α R) (I : Set α) :
+lemma StandardRepr.toVectorMatroid_indep_iff_elem'' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.Bᵀ.uppendId ∘ Subtype.toSum) hI.elem.range := by
   simpa using S.toVectorMatroid_indep_iff_elem' I
 
-lemma StandardRepr.toVectorMatroid_indep_iff_submatrix [Semiring R] (S : StandardRepr α R) (I : Set α) :
+lemma StandardRepr.toVectorMatroid_indep_iff_submatrix [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (S.B.prependId.submatrix id (Subtype.toSum ∘ hI.elem))ᵀ := by
   simp only [StandardRepr.toVectorMatroid, VectorMatroid.toMatroid_indep, VectorMatroid.indepCols_iff_submatrix]
   rfl
 
-lemma StandardRepr.toVectorMatroid_indep_iff_submatrix' [Semiring R] (S : StandardRepr α R) (I : Set α) :
+lemma StandardRepr.toVectorMatroid_indep_iff_submatrix' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (S.B.prependIdᵀ.submatrix (Subtype.toSum ∘ hI.elem) id) :=
   StandardRepr.toVectorMatroid_indep_iff_submatrix S I
 
-lemma StandardRepr.toVectorMatroid_indep_iff_submatrix'' [Semiring R] (S : StandardRepr α R) (I : Set α) :
+lemma StandardRepr.toVectorMatroid_indep_iff_submatrix'' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (S.Bᵀ.uppendId.submatrix (Subtype.toSum ∘ hI.elem) id) := by
   simpa using S.toVectorMatroid_indep_iff_submatrix' I
 
 /-- Every vector matroid has a standard representation. -/
-lemma VectorMatroid.exists_standardRepr [Semiring R] (M : VectorMatroid α R) :
+lemma VectorMatroid.exists_standardRepr [DivisionRing R] (M : VectorMatroid α R) :
     ∃ S : StandardRepr α R, S.toVectorMatroid = M := by
   sorry
 
 /-- Every vector matroid has a standard representation whose rows are a given base. -/
-lemma VectorMatroid.exists_standardRepr_isBase [Semiring R] {B : Set α}
+lemma VectorMatroid.exists_standardRepr_isBase [DivisionRing R] {B : Set α}
     (M : VectorMatroid α R) (hMB : M.toMatroid.IsBase B) :
     ∃ S : StandardRepr α R, M.X = B ∧ S.toVectorMatroid = M := by
   have hBY := hMB.subset_ground
   sorry
 
 /-- Construct a matroid from a standard representation. -/
-def StandardRepr.toMatroid [Semiring R] (S : StandardRepr α R) : Matroid α :=
+def StandardRepr.toMatroid [DivisionRing R] (S : StandardRepr α R) : Matroid α :=
   S.toVectorMatroid.toMatroid
 
 attribute [local ext] StandardRepr
 
 /-- Kinda extensionality on `StandardRepr` but `@[ext]` cannot be here. -/
-lemma standardRepr_eq_standardRepr_of_B_eq_B [Semiring R] {S₁ S₂ : StandardRepr α R}
+lemma standardRepr_eq_standardRepr_of_B_eq_B [DivisionRing R] {S₁ S₂ : StandardRepr α R}
     (hX : S₁.X = S₂.X) (hY : S₁.Y = S₂.Y) (hB : S₁.B = hX ▸ hY ▸ S₂.B) :
     S₁ = S₂ := by
   ext1
@@ -164,63 +164,63 @@ lemma standardRepr_eq_standardRepr_of_B_eq_B [Semiring R] {S₁ S₂ : StandardR
 
 /-- Ground set of a vector matroid is union of row and column index sets of its standard matrix representation. -/
 @[simp high]
-lemma StandardRepr.toMatroid_E [Semiring R] (S : StandardRepr α R) :
+lemma StandardRepr.toMatroid_E [DivisionRing R] (S : StandardRepr α R) :
     S.toMatroid.E = S.X ∪ S.Y :=
   rfl
 
-lemma StandardRepr.toMatroid_indep_iff [Semiring R] (S : StandardRepr α R) (I : Set α) :
+lemma StandardRepr.toMatroid_indep_iff [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
     I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R (S.B.prependId · ∘ Subtype.toSum)ᵀ ((S.X ∪ S.Y) ↓∩ I) :=
   S.toVectorMatroid_indep_iff I
 
-lemma StandardRepr.toMatroid_indep_iff' [Semiring R] (S : StandardRepr α R) (I : Set α) :
+lemma StandardRepr.toMatroid_indep_iff' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
     I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) ((S.X ∪ S.Y) ↓∩ I) :=
   S.toVectorMatroid_indep_iff' I
 
-lemma StandardRepr.toMatroid_indep_iff'' [Semiring R] (S : StandardRepr α R) (I : Set α) :
+lemma StandardRepr.toMatroid_indep_iff'' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
     I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R (S.Bᵀ.uppendId ∘ Subtype.toSum) ((S.X ∪ S.Y) ↓∩ I) :=
   S.toVectorMatroid_indep_iff'' I
 
-lemma StandardRepr.toMatroid_indep_iff_elem [Semiring R] (S : StandardRepr α R) (I : Set α) :
+lemma StandardRepr.toMatroid_indep_iff_elem [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependId · ∘ Subtype.toSum)ᵀ hI.elem.range :=
   S.toVectorMatroid_indep_iff_elem I
 
 @[simp high]
-lemma StandardRepr.toMatroid_indep_iff_elem' [Semiring R] (S : StandardRepr α R) (I : Set α) :
+lemma StandardRepr.toMatroid_indep_iff_elem' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) hI.elem.range :=
   S.toVectorMatroid_indep_iff_elem' I
 
-lemma StandardRepr.toMatroid_indep_iff_elem'' [Semiring R] (S : StandardRepr α R) (I : Set α) :
+lemma StandardRepr.toMatroid_indep_iff_elem'' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.Bᵀ.uppendId ∘ Subtype.toSum) hI.elem.range :=
   S.toVectorMatroid_indep_iff_elem'' I
 
-lemma StandardRepr.toMatroid_indep_iff_submatrix [Semiring R] (S : StandardRepr α R) (I : Set α) :
+lemma StandardRepr.toMatroid_indep_iff_submatrix [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (S.B.prependId.submatrix id (Subtype.toSum ∘ hI.elem))ᵀ :=
   S.toVectorMatroid_indep_iff_submatrix I
 
-lemma StandardRepr.toMatroid_indep_iff_submatrix' [Semiring R] (S : StandardRepr α R) (I : Set α) :
+lemma StandardRepr.toMatroid_indep_iff_submatrix' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (S.B.prependIdᵀ.submatrix (Subtype.toSum ∘ hI.elem) id) :=
   S.toVectorMatroid_indep_iff_submatrix' I
 
-lemma StandardRepr.toMatroid_indep_iff_submatrix'' [Semiring R] (S : StandardRepr α R) (I : Set α) :
+lemma StandardRepr.toMatroid_indep_iff_submatrix'' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (S.Bᵀ.uppendId.submatrix (Subtype.toSum ∘ hI.elem) id) :=
   S.toVectorMatroid_indep_iff_submatrix'' I
 
 @[simp]
-lemma StandardRepr.toMatroid_indep [Semiring R] (S : StandardRepr α R) :
+lemma StandardRepr.toMatroid_indep [DivisionRing R] (S : StandardRepr α R) :
     S.toMatroid.Indep = (∃ hI : · ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) hI.elem.range) := by
   ext I
   exact S.toVectorMatroid_indep_iff_elem' I
 
-lemma StandardRepr.toMatroid_indep' [Semiring R] (S : StandardRepr α R) :
+lemma StandardRepr.toMatroid_indep' [DivisionRing R] (S : StandardRepr α R) :
     S.toMatroid.Indep = (∃ hI : · ⊆ S.X ∪ S.Y, LinearIndepOn R (S.Bᵀ.uppendId ∘ Subtype.toSum) hI.elem.range) := by
   simp
 
