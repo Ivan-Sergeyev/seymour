@@ -176,5 +176,5 @@ The guideline below is written primarily to assist you in reading the code.
 
 ### TODO
 
-- We want to write `_subset_` not `_sub_` when referring to the `⊆` relation.
-- We want to write `_ssubset_` not `_ss_` when referring to the `⊂` relation.
+- We want to write `_subset_` not `_sub_` when referring to the `⊆` relation in the name of constants.
+- We want to write `_ssubset_` not `_ss_` when referring to the `⊂` relation in the name of constants.
