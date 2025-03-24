@@ -109,9 +109,9 @@
 \end{lemma}
 
 \begin{proof}
-    Note that $D$ can be viewed as a matrix consisting of $0$ rows and copies of the rows $x$ and $-x$. Since $B_{1} = \left[A_{1} / x\right]$ is TU and since adding copies of a row multiplied by ${0, \pm 1}$ does not affect TUness, we conclude that $\left[A_{1} / D\right]$ is TU.
+    Note that $D$ can be viewed as a matrix consisting of $0$ rows and copies of the rows $x$ and $-x$. Since $B_{1} = \left[A_{1} / x\right]$ is TU and since adding copies of a row multiplied by $\{0, \pm 1\}$ does not affect TUness, we conclude that $\left[A_{1} / D\right]$ is TU.
 
-    Similarly, $D$ can be viewed as a matrix consisting of $0$ columns and copies of the columns $y$ and $-y$. Since $B_{2} = \left[y \mid A_{2}\right]$ is TU and since adding copies of a column multiplied by ${0, \pm 1}$ does not affect TUness, we conclude that $\left[D \mid A_{2}\right]$ is TU.
+    Similarly, $D$ can be viewed as a matrix consisting of $0$ columns and copies of the columns $y$ and $-y$. Since $B_{2} = \left[y \mid A_{2}\right]$ is TU and since adding copies of a column multiplied by $\{0, \pm 1\}$ does not affect TUness, we conclude that $\left[D \mid A_{2}\right]$ is TU.
 \end{proof}
 
 \begin{lemma}\label{lem:two_sum_reg_mvm_12}
@@ -144,7 +144,7 @@
         \item $\tilde{A}_{2} = A_{2}$, i.e., $A_{2}$ remains unchanged. This holds because of the $0$ block in $B$.
         \item $\tilde{D}$ consists of copies of a column of $D$ scaled by factors in $\{0, \pm 1\}$. This can be verified by performing a case distinction and simple calculation.
         \item $\left[\tilde{D} \mid \tilde{A}_{2}\right]$ is TU, since this matrix consists of $A_{2}$ and copies of $y$ scaled by factors $\{0, \pm 1\}$.
-        \item $\tilde{D}$ can be represented as an outer product of a column vector $\tilde{y}$ and a row vector $\tilde{x}$, and we can define $\tilde{B}_{1} = \left[\tilde{A}_{1} / \tilde{x}\right]$ and $\tilde{B}_{2} = \left[\tilde{y} \mid \tilde{A}_{2}\right]$ similar to $B_{1}$ and $B_{2}$, respectively. Note that $\tilde{B}_{1}$ and $\tilde{B}_{2}$ have the same size as $B_{1}$ and $B_{2}$, respectively, are both TU, and satisfy $\tilde{B} = \tilde{B}_{1} \oplus_{2, \tilde{x}, tilde{y}} \tilde{B}_{2}$.
+        \item $\tilde{D}$ can be represented as an outer product of a column vector $\tilde{y}$ and a row vector $\tilde{x}$, and we can define $\tilde{B}_{1} = \left[\tilde{A}_{1} / \tilde{x}\right]$ and $\tilde{B}_{2} = \left[\tilde{y} \mid \tilde{A}_{2}\right]$ similar to $B_{1}$ and $B_{2}$, respectively. Note that $\tilde{B}_{1}$ and $\tilde{B}_{2}$ have the same size as $B_{1}$ and $B_{2}$, respectively, are both TU, and satisfy $\tilde{B} = \tilde{B}_{1} \oplus_{2, \tilde{x}, \tilde{y}} \tilde{B}_{2}$.
         \item $\tilde{B}$ contains a minimal violation matrix of size $k - 1$. This holds by Lemma~\ref{lem:mvm_pivot_smaller_mvm}.
     \end{itemize}
     To sum up, after pivoting we obtain a matrix $\tilde{B}$ that represents a $2$-sum of TU matrices $\tilde{B}_{1}$ and $\tilde{B}_{2}$ and contains a minimal TU violating matrix of size $k - 1$. Thus, all the desired properties are satisfied.
@@ -247,8 +247,8 @@ The goal of this section is to streamline the proof of regularity of $2$-sum. To
         \item $\tilde{A}_{2} = A_{2}$, i.e., $A_{2}$ remains unchanged. This holds because of the $0$ block in $B$.
         \item $\tilde{D}$ consists of copies of $y$ scaled by factors in $\{0, \pm 1\}$. This can be verified via a case distinction and a simple calculation.
         \item $\left[\tilde{D} \mid \tilde{A}_{2}\right]$ is TU, since this matrix consists of $A_{2}$ and copies of $y$ scaled by factors $\{0, \pm 1\}$.
-        \item $\tilde{D}$ can be represented as an outer product of a column vector $\tilde{y}$ and a row vector $\tilde{x}$, and we can define $\tilde{B}_{1} = \left[\tilde{A}_{1} / \tilde{x}\right]$ and $\tilde{B}_{2} = \left[\tilde{y} \mid \tilde{A}_{2}\right]$ similar to $B_{1}$ and $B_{2}$, respectively. Note that $\tilde{B}_{1}$ and $\tilde{B}_{2}$ have the same size as $B_{1}$ and $B_{2}$, respectively, are both TU, and satisfy $\tilde{B} = \tilde{B}_{1} \oplus_{2, \tilde{x}, tilde{y}} \tilde{B}_{2}$.
-        \item $\tilde{B}$ contains a square submatrix $\tilde{V}$ of size $k - 1$ with $\det \tilde{V} \notin {0, \pm 1}$. Indeed, by Corollary~\ref{cor:pivot_smaller_det} from Lemma~\ref{lem:pivot_smaller_det}, pivoting in $V$ on the element $B_{rc}$ results in a matrix containing a $(k - 1) \times (k - 1)$ submatrix $V''$ with $\det V'' \in \{0, \pm 1\}$. Since $V$ is a submatrix of $B$, the submatrix $V''$ corresponds to a submatrix $\tilde{V}$ of $\tilde{B}$ with the same property.
+        \item $\tilde{D}$ can be represented as an outer product of a column vector $\tilde{y}$ and a row vector $\tilde{x}$, and we can define $\tilde{B}_{1} = \left[\tilde{A}_{1} / \tilde{x}\right]$ and $\tilde{B}_{2} = \left[\tilde{y} \mid \tilde{A}_{2}\right]$ similar to $B_{1}$ and $B_{2}$, respectively. Note that $\tilde{B}_{1}$ and $\tilde{B}_{2}$ have the same size as $B_{1}$ and $B_{2}$, respectively, are both TU, and satisfy $\tilde{B} = \tilde{B}_{1} \oplus_{2, \tilde{x}, \tilde{y}} \tilde{B}_{2}$.
+        \item $\tilde{B}$ contains a square submatrix $\tilde{V}$ of size $k - 1$ with $\det \tilde{V} \notin \{0, \pm 1\}$. Indeed, by Corollary~\ref{cor:pivot_smaller_det} from Lemma~\ref{lem:pivot_smaller_det}, pivoting in $V$ on the element $B_{rc}$ results in a matrix containing a $(k - 1) \times (k - 1)$ submatrix $V''$ with $\det V'' \in \{0, \pm 1\}$. Since $V$ is a submatrix of $B$, the submatrix $V''$ corresponds to a submatrix $\tilde{V}$ of $\tilde{B}$ with the same property.
     \end{itemize}
     To sum up, after pivoting we obtain a matrix $\tilde{B}$ that represents a $2$-sum of TU matrices $\tilde{B}_{1}$ and $\tilde{B}_{2}$ and contains a square submatrix of size $k - 1$ with determinant not in $\{0, \pm 1\}$. This is a contradiction with $(k - 1)$-TUness of $\tilde{B}$, which proves the lemma.
 \end{proof}
