@@ -29,6 +29,14 @@ abbrev StandardRepr.HasTuSigning {α : Type} [DecidableEq α] (S : StandardRepr 
 private def Matrix.discretize {X Y : Type} (A : Matrix X Y ℚ) (n : ℕ := 2) : Matrix X Y (ZMod n) :=
   Matrix.of (if A · · = 0 then 0 else 1)
 
+@[app_unexpander Matrix.discretize]
+def Matrix.discretize_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $x) => `($(x).$(Lean.mkIdent `discretize))
+  | _ => throw ()
+
+private lemma Matrix.discretize_transpose {X Y : Type} (A : Matrix X Y ℚ) : A.discretize.transpose = A.transpose.discretize :=
+  rfl
+
 private lemma Matrix.IsTotallyUnimodular.discretize {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular)
     {n : ℕ} (hn : 1 < n) :
     A.IsTuSigningOf (A.discretize n) := by
@@ -55,6 +63,11 @@ private lemma Matrix.IsTotallyUnimodular.discretize {X Y : Type} {A : Matrix X Y
 
 private def Matrix.auxZ2 {X Y : Type} (A : Matrix X Y ℤ) : Matrix X Y Z2 :=
   Matrix.of (if A · · = 0 then 0 else 1)
+
+@[app_unexpander Matrix.auxZ2]
+def Matrix.auxZ2_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $x) => `($(x).$(Lean.mkIdent `auxZ2))
+  | _ => throw ()
 
 variable {α : Type} [DecidableEq α]
 
@@ -113,16 +126,16 @@ private lemma Matrix.IsTotallyUnimodular.det_ne_zero_iff_discretize [Fintype α]
     A.det ≠ (0 : ℚ) ↔ A.discretize.det ≠ (0 : Z2) :=
   hA.det_eq_zero_iff_discretize.ne
 
-private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linearIndependent {X Y : Set α} [Fintype X]
-    {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) {I : Type} [Fintype I] [DecidableEq I] (g : I → Y) :
-    LinearIndependent ℚ (A.transpose.submatrix g id) ↔
-    LinearIndependent Z2 (A.discretize.transpose.submatrix g id) := by
+private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linearIndependent {X Y : Set α} [Fintype Y]
+    {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) {I : Type} [Fintype I] [DecidableEq I] (f : I → X) :
+    LinearIndependent ℚ (A.submatrix f id) ↔
+    LinearIndependent Z2 (A.discretize.submatrix f id) := by
   constructor <;>
-      intro hAI <;> rw [Matrix.linearIndependent_iff_exists_submatrix_det] at hAI ⊢ <;> obtain ⟨f, hAf⟩ := hAI <;> use f <;>
-      rw [Matrix.submatrix_submatrix, Function.comp_id, Function.id_comp] at hAf ⊢ <;>
-      have result := (hA.transpose.submatrix g f).det_ne_zero_iff_discretize
-  · exact result.→ hAf
-  · exact result.← hAf
+      intro hAI <;> rw [Matrix.linearIndependent_iff_exists_submatrix_det] at hAI ⊢ <;> obtain ⟨g, hAg⟩ := hAI <;> use g <;>
+      rw [Matrix.submatrix_submatrix, Function.comp_id, Function.id_comp] at hAg ⊢ <;>
+      have result := (hA.submatrix f g).det_ne_zero_iff_discretize
+  · exact result.→ hAg
+  · exact result.← hAg
 
 private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_discretize_toMatroid {X Y : Set α} {A : Matrix X Y ℚ}
     (hA : A.IsTotallyUnimodular) :
@@ -131,9 +144,10 @@ private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_discretize_toMatroid {X Y 
   · simp
   have : Fintype X := sorry -- TODO do we need to assume it?
   simp only [VectorMatroid.toMatroid_indep, VectorMatroid.indepCols_iff_submatrix']
+  rw [Matrix.discretize_transpose]
   constructor <;> intro ⟨hIY, hAI⟩ <;> use hIY <;>
       rw [linearIndependent_iff_finset_linearIndependent] at hAI ⊢ <;> intro s <;> specialize hAI s <;>
-      have result := (hA.linearIndependent_iff_discretize_linearIndependent (hIY.elem ∘ @Subtype.val I (· ∈ s)))
+      have result := (hA.transpose.linearIndependent_iff_discretize_linearIndependent (hIY.elem ∘ @Subtype.val I (· ∈ s)))
   · exact result.→ hAI
   · exact result.← hAI
 
