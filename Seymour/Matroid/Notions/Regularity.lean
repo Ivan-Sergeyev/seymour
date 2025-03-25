@@ -131,7 +131,6 @@ private lemma Matrix.IsTotallyUnimodular.det_ne_zero_iff_discretize [Fintype α]
     A.det ≠ (0 : ℚ) ↔ A.discretize.det ≠ (0 : Z2) :=
   hA.det_eq_zero_iff_discretize.ne
 
--- TODO can `[Fintype Y]` be eliminated?
 private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linearIndependent {Y : Set α} [Fintype Y]
     {I : Type} [Fintype I] [DecidableEq I] {A : Matrix I Y ℚ} (hA : A.IsTotallyUnimodular) :
     LinearIndependent ℚ A ↔ LinearIndependent Z2 A.discretize := by
@@ -140,17 +139,84 @@ private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linear
   · exact A.discretize_submatrix id g ▸ ((hA.submatrix id g).det_ne_zero_iff_discretize.→ hAg)
   · exact (hA.submatrix id g).det_ne_zero_iff_discretize.← (A.discretize_submatrix id g ▸ hAg)
 
+private def Matrix.allColValues {X Y R : Type} (A : Matrix X Y R) : Set (X → R) := { (A · y) | y : Y }
+
+@[app_unexpander Matrix.allColValues]
+def Matrix.allColValues_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $x) => `($(x).$(Lean.mkIdent `allColValues))
+  | _ => throw ()
+
+private lemma Matrix.allColValues_finite {X Y R : Type} [Fintype X] (A : Matrix X Y R) : Finite A.allColValues := by
+  sorry
+
+private def Matrix.uniqueCols {X Y R : Type} (A : Matrix X Y R) : Matrix X A.allColValues R :=
+  Matrix.of (fun i : X => fun j : A.allColValues => j.val i)
+
+@[app_unexpander Matrix.uniqueCols]
+def Matrix.uniqueCols_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $x) => `($(x).$(Lean.mkIdent `uniqueCols))
+  | _ => throw ()
+
+private lemma Matrix.discretize_allColValues {X Y : Type} (A : Matrix X Y ℚ) :
+    A.discretize.allColValues = A.uniqueCols.discretize.allColValues := by
+  unfold Matrix.allColValues Matrix.uniqueCols Matrix.discretize
+  aesop
+
+private lemma Matrix.discretize_uniqueCols {X Y : Type} (A : Matrix X Y ℚ) :
+    A.discretize.uniqueCols = A.discretize_allColValues ▸ A.uniqueCols.discretize.uniqueCols := by
+  unfold Matrix.allColValues Matrix.uniqueCols Matrix.discretize
+  ext i j
+  simp only [Matrix.of_apply]
+  have := j.property.choose_spec
+  sorry
+
+private lemma Matrix.linearIndependent_iff_uniqueCols_linearIndependent {X Y R : Type} [Ring R] (A : Matrix X Y R) :
+    LinearIndependent R A ↔ LinearIndependent R A.uniqueCols := by
+  rw [←not_iff_not]
+  rw [not_linearIndependent_iff, not_linearIndependent_iff]
+  constructor
+  · intro ⟨s, c, hscA, hsc⟩
+    refine ⟨s, c, ?_, hsc⟩
+    ext j
+    convert congr_fun hscA j.property.choose
+    convert_to (∑ i ∈ s, c i • A.uniqueCols i j) = (∑ i ∈ s, c i • A i j.property.choose)
+    · apply Finset.sum_apply
+    · apply Finset.sum_apply
+    congr
+    ext i
+    congr
+    exact (congr_fun j.property.choose_spec i).symm
+  · intro ⟨s, c, hscA, hsc⟩
+    refine ⟨s, c, ?_, hsc⟩
+    ext j
+    convert congr_fun hscA ⟨(A · j), j, rfl⟩
+    rw [Finset.sum_apply, Finset.sum_apply]
+    rfl
+
+private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linearIndependent_ {Y : Set α}
+    {I : Type} [Fintype I] [DecidableEq I] {A : Matrix I Y ℚ} (hA : A.IsTotallyUnimodular) :
+    LinearIndependent ℚ A ↔ LinearIndependent Z2 A.discretize := by
+  constructor
+  · intro lin_indep
+    have temp : A.uniqueCols.IsTotallyUnimodular := sorry
+    have := Set.Finite.fintype A.allColValues_finite
+    rw [A.linearIndependent_iff_uniqueCols_linearIndependent, temp.linearIndependent_iff_discretize_linearIndependent, A.uniqueCols.discretize.linearIndependent_iff_uniqueCols_linearIndependent] at lin_indep
+    rw [A.discretize.linearIndependent_iff_uniqueCols_linearIndependent, Matrix.discretize_uniqueCols]
+    sorry
+  · intro lin_indep
+    rw [Matrix.linearIndependent_iff_uniqueCols_linearIndependent] at lin_indep
+    sorry
+
 private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_discretize_toMatroid {X Y : Set α} {A : Matrix X Y ℚ}
     (hA : A.IsTotallyUnimodular) :
     (VectorMatroid.mk X Y A).toMatroid = (VectorMatroid.mk X Y A.discretize).toMatroid := by
   ext I hI
   · simp
-  have : Fintype X := sorry -- TODO do we need to assume it?
   simp only [VectorMatroid.toMatroid_indep, VectorMatroid.indepCols_iff_submatrix']
   rw [Matrix.discretize_transpose]
   constructor <;> intro ⟨hIY, hAI⟩ <;> use hIY <;>
       rw [linearIndependent_iff_finset_linearIndependent] at hAI ⊢ <;> intro s <;> specialize hAI s <;> have result :=
-        (hA.transpose.submatrix (hIY.elem ∘ @Subtype.val I (· ∈ s)) id).linearIndependent_iff_discretize_linearIndependent
+        (hA.transpose.submatrix (hIY.elem ∘ @Subtype.val I (· ∈ s)) id).linearIndependent_iff_discretize_linearIndependent_
   · exact result.→ hAI
   · exact result.← hAI
 
