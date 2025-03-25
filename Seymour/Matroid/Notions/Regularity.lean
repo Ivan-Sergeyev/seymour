@@ -177,11 +177,10 @@ private def Matrix.uniqueColSubmatrix {X Y R : Type} (A : Matrix X Y R) (Y' : Se
   A.submatrix id (·.val) -- will inline, probably simplifies and shortens proofs, remove later
 
 private lemma Matrix.linearIndependent_if_LinearIndependent_subset_cols {X Y R : Type} [Ring R]
-    (A : Matrix X Y R) (Y' : Set Y) :
-    LinearIndependent R (A.submatrix id (fun y' : Y' => y'.val)) → LinearIndependent R A := by
-  intro lin_indep
+    (A : Matrix X Y R) {Y' : Set Y} (hA : LinearIndependent R (A.submatrix id (fun y' : Y' => y'.val))) :
+    LinearIndependent R A := by
   by_contra lin_dep
-  absurd lin_indep
+  absurd hA
   rw [not_linearIndependent_iff] at lin_dep ⊢
   obtain ⟨s, c, hscA, hsc⟩ := lin_dep
   refine ⟨s, c, ?_, hsc⟩
@@ -195,14 +194,15 @@ private lemma Matrix.linearIndependent_if_LinearIndependent_subset_cols {X Y R :
 private lemma Matrix.linearIndependent_iff_uniqueColSubnatrix_linearIndependent {X Y R : Type} [Ring R] {Y' : Set Y}
     (A : Matrix X Y R) (hY' : A.uniqueColIndices Y') :
     LinearIndependent R A ↔ LinearIndependent R (A.uniqueColSubmatrix Y') := by
-  rw [←not_iff_not, not_linearIndependent_iff, not_linearIndependent_iff]
-  constructor <;> intro ⟨s, c, hscA, hsc⟩ <;> refine ⟨s, c, ?_, hsc⟩ <;> ext j
-  · convert congr_fun hscA j
-    convert_to (∑ i ∈ s, c i • (A.uniqueColSubmatrix Y') i j) = (∑ i ∈ s, c i • A i j)
-    · apply Finset.sum_apply
-    · apply Finset.sum_apply
-    rfl
-  · obtain ⟨y', hy'⟩ := hY' j
+  constructor
+  · intro lin_indep
+    by_contra lin_dep
+    absurd lin_indep
+    rw [not_linearIndependent_iff] at lin_dep ⊢
+    obtain ⟨s, c, hscA, hsc⟩ := lin_dep
+    refine ⟨s, c, ?_, hsc⟩
+    ext j
+    obtain ⟨y', hy'⟩ := hY' j
     convert congr_fun hscA y'
     convert_to (∑ i ∈ s, c i • A i j) = (∑ i ∈ s, c i • A.uniqueColSubmatrix Y' i  y')
     · apply Finset.sum_apply
@@ -212,6 +212,7 @@ private lemma Matrix.linearIndependent_iff_uniqueColSubnatrix_linearIndependent 
     congr!
     rw [congr_fun hy' i]
     simp [Matrix.uniqueColSubmatrix]
+  · exact A.linearIndependent_if_LinearIndependent_subset_cols
 
 private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linearIndependent {Y : Set α}
     {I : Type} [Fintype I] [DecidableEq I] {A : Matrix I Y ℚ} (hA : A.IsTotallyUnimodular) :
@@ -223,7 +224,7 @@ private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linear
     unfold Matrix.uniqueColSubmatrix at lin_indep
     have := Set.Finite.fintype hY'
     rw [(hA.submatrix id (fun y : Y' => y.val)).linearIndependent_iff_discretize_linearIndependent_aux] at lin_indep
-    exact A.discretize.linearIndependent_if_LinearIndependent_subset_cols Y' lin_indep
+    exact A.discretize.linearIndependent_if_LinearIndependent_subset_cols lin_indep
   · intro lin_indep
     obtain ⟨Y', hY', hAY'⟩ := A.discretize.exists_uniqueColIndices Finset.univ (Finset.mem_univ <| A.discretize 2 · ·)
     rw [A.discretize.linearIndependent_iff_uniqueColSubnatrix_linearIndependent hAY'] at lin_indep
@@ -231,7 +232,7 @@ private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linear
     rw [Matrix.discretize_submatrix] at lin_indep
     have := Set.Finite.fintype hY'
     rw [←(hA.submatrix id (fun y : Y' => y.val)).linearIndependent_iff_discretize_linearIndependent_aux] at lin_indep
-    exact A.linearIndependent_if_LinearIndependent_subset_cols Y' lin_indep
+    exact A.linearIndependent_if_LinearIndependent_subset_cols lin_indep
 
 private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_discretize_toMatroid {X Y : Set α} {A : Matrix X Y ℚ}
     (hA : A.IsTotallyUnimodular) :
