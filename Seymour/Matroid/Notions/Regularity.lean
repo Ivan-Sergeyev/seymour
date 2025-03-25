@@ -131,7 +131,7 @@ private lemma Matrix.IsTotallyUnimodular.det_ne_zero_iff_discretize [Fintype α]
     A.det ≠ (0 : ℚ) ↔ A.discretize.det ≠ (0 : Z2) :=
   hA.det_eq_zero_iff_discretize.ne
 
-private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linearIndependent {Y : Set α} [Fintype Y]
+private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linearIndependent_aux {Y : Set α} [Fintype Y]
     {I : Type} [Fintype I] [DecidableEq I] {A : Matrix I Y ℚ} (hA : A.IsTotallyUnimodular) :
     LinearIndependent ℚ A ↔ LinearIndependent Z2 A.discretize := by
   constructor <;>
@@ -195,7 +195,6 @@ private lemma Matrix.linearIndependent_if_LinearIndependent_subset_cols {X Y R :
 private lemma Matrix.linearIndependent_iff_uniqueColSubnatrix_linearIndependent {X Y R : Type} [Ring R] {Y' : Set Y}
     (A : Matrix X Y R) (hY' : A.uniqueColIndices Y') :
     LinearIndependent R A ↔ LinearIndependent R (A.uniqueColSubmatrix Y') := by
-  unfold uniqueColIndices at hY'
   rw [←not_iff_not, not_linearIndependent_iff, not_linearIndependent_iff]
   constructor <;> intro ⟨s, c, hscA, hsc⟩ <;> refine ⟨s, c, ?_, hsc⟩ <;> ext j
   · convert congr_fun hscA j
@@ -205,7 +204,7 @@ private lemma Matrix.linearIndependent_iff_uniqueColSubnatrix_linearIndependent 
     rfl
   · obtain ⟨y', hy'⟩ := hY' j
     convert congr_fun hscA y'
-    convert_to (∑ i ∈ s, c i • A i j) = (∑ i ∈ s, c i • Matrix.uniqueColSubmatrix A Y' i  y')
+    convert_to (∑ i ∈ s, c i • A i j) = (∑ i ∈ s, c i • A.uniqueColSubmatrix Y' i  y')
     · apply Finset.sum_apply
     · apply Finset.sum_apply
     congr
@@ -214,24 +213,24 @@ private lemma Matrix.linearIndependent_iff_uniqueColSubnatrix_linearIndependent 
     rw [congr_fun hy' i]
     simp [Matrix.uniqueColSubmatrix]
 
-private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linearIndependent_of_only_rows_finite {Y : Set α}
+private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linearIndependent {Y : Set α}
     {I : Type} [Fintype I] [DecidableEq I] {A : Matrix I Y ℚ} (hA : A.IsTotallyUnimodular) :
     LinearIndependent ℚ A ↔ LinearIndependent Z2 A.discretize := by
   constructor
   · intro lin_indep
     obtain ⟨Y', hY', hAY'⟩ := A.exists_uniqueColIndices {-1, 0, 1} (by have ⟨s, hs⟩ := hA.apply · · ; cases s <;> aesop)
     rw [A.linearIndependent_iff_uniqueColSubnatrix_linearIndependent hAY'] at lin_indep
-    unfold uniqueColSubmatrix at lin_indep
+    unfold Matrix.uniqueColSubmatrix at lin_indep
     have := Set.Finite.fintype hY'
-    rw [(hA.submatrix id (fun y : Y' => y.val)).linearIndependent_iff_discretize_linearIndependent] at lin_indep
+    rw [(hA.submatrix id (fun y : Y' => y.val)).linearIndependent_iff_discretize_linearIndependent_aux] at lin_indep
     exact A.discretize.linearIndependent_if_LinearIndependent_subset_cols Y' lin_indep
   · intro lin_indep
     obtain ⟨Y', hY', hAY'⟩ := A.discretize.exists_uniqueColIndices Finset.univ (Finset.mem_univ <| A.discretize 2 · ·)
     rw [A.discretize.linearIndependent_iff_uniqueColSubnatrix_linearIndependent hAY'] at lin_indep
-    unfold uniqueColSubmatrix at lin_indep
+    unfold Matrix.uniqueColSubmatrix at lin_indep
     rw [Matrix.discretize_submatrix] at lin_indep
     have := Set.Finite.fintype hY'
-    rw [←(hA.submatrix id (fun y : Y' => y.val)).linearIndependent_iff_discretize_linearIndependent] at lin_indep
+    rw [←(hA.submatrix id (fun y : Y' => y.val)).linearIndependent_iff_discretize_linearIndependent_aux] at lin_indep
     exact A.linearIndependent_if_LinearIndependent_subset_cols Y' lin_indep
 
 private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_discretize_toMatroid {X Y : Set α} {A : Matrix X Y ℚ}
@@ -243,8 +242,8 @@ private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_discretize_toMatroid {X Y 
   rw [Matrix.discretize_transpose]
   constructor <;> intro ⟨hIY, hAI⟩ <;> use hIY <;>
       rw [linearIndependent_iff_finset_linearIndependent] at hAI ⊢ <;> intro s <;> specialize hAI s <;>
-      have result := (hA.transpose.submatrix (hIY.elem ∘ @Subtype.val I (· ∈ s)) id
-          ).linearIndependent_iff_discretize_linearIndependent_of_only_rows_finite
+      have result :=
+        (hA.transpose.submatrix (hIY.elem ∘ @Subtype.val I (· ∈ s)) id).linearIndependent_iff_discretize_linearIndependent
   · exact result.→ hAI
   · exact result.← hAI
 
