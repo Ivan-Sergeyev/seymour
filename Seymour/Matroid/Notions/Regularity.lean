@@ -147,7 +147,8 @@ def Matrix.uniqueColIndices_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $x) => `($(x).$(Lean.mkIdent `uniqueColIndices))
   | _ => throw ()
 
-lemma Matrix.exists_uniqueColIndices {X Y R : Type} [Fintype X] (A : Matrix X Y R) (V : Finset R) (hA : ∀ i j, A i j ∈ V) :
+lemma Matrix.exists_finite_uniqueColIndices {X Y R : Type} [Fintype X] [DecidableEq Y] (A : Matrix X Y R) (V : Finset R)
+    (hA : ∀ i j, A i j ∈ V) :
     ∃ Y' : Set Y, Finite Y' ∧ A.uniqueColIndices Y' := by
   -- use j.property.choose_spec for every j in { (A · y) | y : Y }
   let C : Set (X → R) := { (A · y) | y : Y }
@@ -160,12 +161,19 @@ lemma Matrix.exists_uniqueColIndices {X Y R : Type} [Fintype X] (A : Matrix X Y 
       intro x _
       use (fun j => ⟨x j, by aesop⟩)
       exact ite_some_none_eq_some.→ rfl
-    have e : Y' ≃ C := ⟨fun i => ⟨(A · i), by use i⟩, fun i => by use i.property.choose; aesop, fun i => by have := i.property; sorry, by sorry⟩
-    --have e' : Y' ↪ C := ⟨fun i => ⟨(A · i), by use i⟩, fun i₁ i₂ hii => by simp at hii; have hi₁ := i₁.property; have hi₂ := i₂.property; sorry⟩
-    --have : Y'.encard ≤ C.encard := e'.encard_le
+    let e : Y' ↪ C := ⟨fun i => ⟨(A · i), by use i⟩, fun i₁ i₂ hii => by
+      aesopnt
+      show Classical.choose (Exists.intro w_2 (Eq.refl fun x => A x w_2))
+         = Classical.choose (Exists.intro w_3 (Eq.refl fun x => A x w_3))
+      have lhs_spec := Classical.choose_spec (Exists.intro w_2 (Eq.refl (A · w_2)) : ∃ x, (A · x) = (A · w_2))
+      have rhs_spec := Classical.choose_spec (Exists.intro w_3 (Eq.refl (A · w_3)) : ∃ x, (A · x) = (A · w_3))
+      aesop
+      ⟩
+    have hYC : Y'.encard ≤ C.encard := e.encard_le
     have S_finite : S.Finite := Subtype.finite
     have S'_finite : S'.Finite := S_finite.image (fun v => fun i => (v i).val)
-    exact (Equiv.finite_iff (e.symm)).→ (S'_finite.subset hCS')
+    have C_Finite := S'_finite.subset hCS'
+    exact C_Finite.finite_of_encard_le hYC
   · intro i
     have hi : (A · i) ∈ C := by use i
     use ⟨hi.choose, by aesop⟩
@@ -219,14 +227,14 @@ private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linear
     LinearIndependent ℚ A ↔ LinearIndependent Z2 A.discretize := by
   constructor
   · intro lin_indep
-    obtain ⟨Y', hY', hAY'⟩ := A.exists_uniqueColIndices {-1, 0, 1} (by have ⟨s, hs⟩ := hA.apply · · ; cases s <;> aesop)
+    obtain ⟨Y', hY', hAY'⟩ := A.exists_finite_uniqueColIndices {-1, 0, 1} (by have ⟨s, hs⟩ := hA.apply · · ; cases s <;> aesop)
     rw [A.linearIndependent_iff_uniqueColSubnatrix_linearIndependent hAY'] at lin_indep
     unfold Matrix.uniqueColSubmatrix at lin_indep
     have := Set.Finite.fintype hY'
     rw [(hA.submatrix id (fun y : Y' => y.val)).linearIndependent_iff_discretize_linearIndependent_aux] at lin_indep
     exact A.discretize.linearIndependent_if_LinearIndependent_subset_cols lin_indep
   · intro lin_indep
-    obtain ⟨Y', hY', hAY'⟩ := A.discretize.exists_uniqueColIndices Finset.univ (Finset.mem_univ <| A.discretize 2 · ·)
+    obtain ⟨Y', hY', hAY'⟩ := A.discretize.exists_finite_uniqueColIndices Finset.univ (Finset.mem_univ <| A.discretize 2 · ·)
     rw [A.discretize.linearIndependent_iff_uniqueColSubnatrix_linearIndependent hAY'] at lin_indep
     unfold Matrix.uniqueColSubmatrix at lin_indep
     rw [Matrix.discretize_submatrix] at lin_indep

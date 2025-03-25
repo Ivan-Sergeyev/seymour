@@ -210,3 +210,7 @@ lemma toUnion_toSum [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (h
     i.toUnion.toSum = i := by
   rw [Set.disjoint_right] at hXY
   cases i <;> simp [hXY]
+
+
+/-- Nonterminal `aesop` (strongly discouraged to use). -/
+macro "aesopnt" : tactic => `(tactic| aesop (config := {warnOnNonterminal := false}))
