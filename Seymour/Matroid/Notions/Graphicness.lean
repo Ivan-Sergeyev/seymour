@@ -1,63 +1,78 @@
 import Seymour.Matroid.Notions.Regularity
 
 
-/-- Matroid is graphic iff it is represented by an incidence matrix of a graph. -/
-def Matrix.IsGraphic {m n : Type} (A : Matrix m n ℚ) : Prop :=
-  ∀ y : n, ∃ x₁ x₂ : m, A x₁ y = 1 ∧ A x₂ y = -1 ∧ ∀ x : m, x ≠ x₁ → x ≠ x₂ → A x y = 0
--- oriented incidence matrix of some graph, i.e.:
--- * one row for each vertex, and one column for each edge
--- * in each column, either: 1x `+1`, 1x `-1`, and `0` elsewhere
--- todo: unit and zero columns representing loops
+/-- Column of a node-edge incidence matrix is either all 0,
+    or has exactly one +1 entry, exactly one -1 entry, and all other elements 0. -/
+def IsIncidenceMatrixColumn {m : Type} [DecidableEq m] (v : m → ℚ) : Prop :=
+  (v = 0) ∨ (∃ x₁ x₂ : m, x₁ ≠ x₂ ∧ v x₁ = 1 ∧ v x₂ = -1 ∧ (∀ i, i ≠ x₁ → i ≠ x₂ → v i = 0))
 
-variable {α : Type}
+-- under additional assumption that m is nonempty, IsIncidenceMatrixColumn v is equivalent to:
+-- ∃ x₁ x₂ : m, v = Function.update (0 : m → ℚ) x₁ 1 + Function.update (0 : m → ℚ) x₂ (-1)
 
-/-- Matroid is graphic iff it is represented by an incidence matrix of a graph. -/
+/-- Matrix is called graphic iff it is a node-edge incidence matrix of a (directed) graph. -/
+def Matrix.IsGraphic {m n : Type} [DecidableEq m] (A : Matrix m n ℚ) : Prop :=
+  ∀ y : n, IsIncidenceMatrixColumn (A · y)
+
+/-- Every element of a column of a node-edge incidence matrix is 1, 0, or -1 -/
+lemma IsIncidenceMatrixColumn.isSign {m : Type} [DecidableEq m] {v : m → ℚ} (hv : IsIncidenceMatrixColumn v) :
+    ∀ i : m, v i ∈ Set.range SignType.cast := by
+  intro i
+  cases hv with
+  | inl hv =>
+      use .zero
+      simp [hv]
+  | inr hv =>
+      obtain ⟨x₁, x₂, hx₁x₂, hvx₁, hvx₂, hvnx₁x₂⟩ := hv
+      specialize hvnx₁x₂ i
+      by_cases hix₁ : i = x₁
+      · rw [hix₁, hvx₁]
+        use .pos
+        rfl
+      by_cases hix₂ : i = x₂
+      · rw [hix₂, hvx₂]
+        use .neg
+        rfl
+      rw [hvnx₁x₂ hix₁ hix₂]
+      use .zero
+      rfl
+
+/-- Every element of a graphic matrix is 1, 0, or -1 -/
+lemma Matrix.IsGraphic.isSign {m n : Type} [DecidableEq m] {A : Matrix m n ℚ} (hA : A.IsGraphic) (x : m) (y : n) :
+    A x y ∈ Set.range SignType.cast :=
+  (hA y).isSign x
+
+/-- Column of a node-edge incidence matrix has either zero or two non-zero entries. -/
+-- future refactor: it's proably easier to unfold the defintion in-place to get this result
+lemma IsIncidenceMatrixColumn.zero_or_two_nonzeros {m : Type} [DecidableEq m] {v : m → ℚ} (hv : IsIncidenceMatrixColumn v) :
+    (v = 0) ∨ (∃ x₁ x₂ : m, x₁ ≠ x₂ ∧ ∀ i, i ≠ x₁ → i ≠ x₂ → v i = 0) := by
+  cases hv with
+  | inl hv =>
+      left
+      exact hv
+  | inr hv =>
+      right
+      obtain ⟨x₁, x₂, hx₁x₂, -, -, hvnx₁x₂⟩ := hv
+      exact ⟨x₁, x₂, hx₁x₂, hvnx₁x₂⟩
+
+/-- Column of a node-edge incidence matrix has either zero or two non-zero entries. -/
+lemma Matrix.IsGraphic.col_zero_or_two_nonzeros {m n : Type} [DecidableEq m] {A : Matrix m n ℚ} (hA : A.IsGraphic) (y : n) :
+    ((A · y) = 0) ∨ (∃ x₁ x₂ : m, x₁ ≠ x₂ ∧ ∀ i, i ≠ x₁ → i ≠ x₂ → (A · y) i = 0) :=
+  (hA y).zero_or_two_nonzeros
+
+
+variable {α : Type} [DecidableEq α]
+
+/-- Matroid is graphic iff it can be represented by a graphic matrix. -/
 def Matroid.IsGraphic (M : Matroid α) : Prop :=
   ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsGraphic ∧ (VectorMatroid.mk X Y A).toMatroid = M
 
-/-- Matroid is cographic iff its dual is represented by an incidence matrix of a graph. -/
+/-- Matroid is cographic iff its dual is graphic. -/
 def Matroid.IsCographic (M : Matroid α) : Prop :=
   M✶.IsGraphic
 
-/-- Any element of a graphic matroid is 1, 0, or -1 -/
-theorem Matrix.IsGraphic.isSign {m n : Type} {A : Matrix m n ℚ} (hA : A.IsGraphic) (x : m) (y : n) :
-    A x y ∈ Set.range SignType.cast := by
-  rw [IsGraphic] at hA
-  rw [Set.mem_range]
-  by_cases h₁ : x = (hA y).choose
-  · rw [h₁, (hA y).choose_spec.choose_spec.1]
-    use .pos
-    simp
-  by_cases h₂ : x = (hA y).choose_spec.choose
-  · rw [h₂, (hA y).choose_spec.choose_spec.2.1]
-    use .neg
-    simp
-  rw [(hA y).choose_spec.choose_spec.2.2 x h₁ h₂]
-  use .zero
-  simp
-
-theorem Matrix.IsGraphic.twoCol_neZero {m n : Type} {A : Matrix m n ℚ} (hA : A.IsGraphic) (y : n) :
-    ∃ k l, (∀ i, (i ≠ k ∧ i ≠ l) ↔ A i y = 0) := by
-  rw [IsGraphic] at hA
-  have := hA y
-  refine ⟨(hA y).choose, (hA y).choose_spec.choose, fun i ↦ ⟨?_, ?_⟩⟩ <;> intro h
-  · exact (hA y).choose_spec.choose_spec.2.2 i h.1 h.2
-  · by_contra hi
-    rw [← or_iff_not_and_not] at hi
-    cases hi with
-    | inl hi =>
-      have := (hA y).choose_spec.choose_spec.1
-      rw [← hi, h] at this
-      contradiction
-    | inr hi =>
-      have := (hA y).choose_spec.choose_spec.2.1
-      rw [← hi, h] at this
-      contradiction
-
 -- We follow the proof from https://math.stackexchange.com/a/4801275/1184658
-/-- Graphic matroid can be represented only by a TU matrix. -/
-lemma Matrix.IsGraphic.isTotallyUnimodular_of_represents {X Y : Set α} {A : Matrix X Y ℚ} {M : Matroid α}
-    (hA : A.IsGraphic) (hAM : (VectorMatroid.mk X Y A).toMatroid = M) :
+/-- Node-edge incidence matrix is totally unimodular. -/
+lemma Matrix.IsGraphic.isTotallyUnimodular {X Y : Set α} {A : Matrix X Y ℚ} (hA : A.IsGraphic) :
     A.IsTotallyUnimodular := by
   rw [IsGraphic] at hA
   intro k
@@ -94,16 +109,16 @@ lemma Matrix.IsGraphic.isTotallyUnimodular_of_represents {X Y : Set α} {A : Mat
         absurd this
         sorry -- follows by linearly dependent rows
       push_neg at h₂
-      have := Matrix.IsGraphic.twoCol_neZero hA
+      have := Matrix.IsGraphic.col_zero_or_two_nonzeros hA
       sorry -- follows by contradiction
 
 /-- Graphic matroid is regular. -/
-lemma Matroid.IsGraphic.isRegular {M : Matroid α} (hM : M.IsGraphic) :
+theorem Matroid.IsGraphic.isRegular {M : Matroid α} (hM : M.IsGraphic) :
     M.IsRegular := by
-  peel hM with X Y A hM
-  exact ⟨hM.left.isTotallyUnimodular_of_represents hM.right, hM.right⟩
+  obtain ⟨X, Y, A, hA, hMA⟩ := hM
+  exact ⟨X, Y, A, hA.isTotallyUnimodular, hMA⟩
 
 /-- Cographic matroid is regular. -/
-lemma Matroid.IsCographic.isRegular {M : Matroid α} (hM : M.IsCographic) :
+theorem Matroid.IsCographic.isRegular {M : Matroid α} (hM : M.IsCographic) :
     M.IsRegular :=
   sorry
