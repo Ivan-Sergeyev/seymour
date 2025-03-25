@@ -34,7 +34,12 @@ def Matrix.discretize_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $x) => `($(x).$(Lean.mkIdent `discretize))
   | _ => throw ()
 
-private lemma Matrix.discretize_transpose {X Y : Type} (A : Matrix X Y ℚ) : A.discretize.transpose = A.transpose.discretize :=
+private lemma Matrix.discretize_transpose {X Y : Type} (A : Matrix X Y ℚ) :
+    A.discretize.transpose = A.transpose.discretize :=
+  rfl
+
+private lemma Matrix.discretize_submatrix {X X' Y Y' : Type} (A : Matrix X Y ℚ) (f : X' → X) (g : Y' → Y) :
+    A.discretize.submatrix f g = (A.submatrix f g).discretize :=
   rfl
 
 private lemma Matrix.IsTotallyUnimodular.discretize {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular)
@@ -126,16 +131,14 @@ private lemma Matrix.IsTotallyUnimodular.det_ne_zero_iff_discretize [Fintype α]
     A.det ≠ (0 : ℚ) ↔ A.discretize.det ≠ (0 : Z2) :=
   hA.det_eq_zero_iff_discretize.ne
 
-private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linearIndependent {X Y : Set α} [Fintype Y]
-    {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) {I : Type} [Fintype I] [DecidableEq I] (f : I → X) :
-    LinearIndependent ℚ (A.submatrix f id) ↔
-    LinearIndependent Z2 (A.discretize.submatrix f id) := by
+-- TODO can `[Fintype Y]` be eliminated?
+private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linearIndependent {Y : Set α} [Fintype Y]
+    {I : Type} [Fintype I] [DecidableEq I] {A : Matrix I Y ℚ} (hA : A.IsTotallyUnimodular) :
+    LinearIndependent ℚ A ↔ LinearIndependent Z2 A.discretize := by
   constructor <;>
-      intro hAI <;> rw [Matrix.linearIndependent_iff_exists_submatrix_det] at hAI ⊢ <;> obtain ⟨g, hAg⟩ := hAI <;> use g <;>
-      rw [Matrix.submatrix_submatrix, Function.comp_id, Function.id_comp] at hAg ⊢ <;>
-      have result := (hA.submatrix f g).det_ne_zero_iff_discretize
-  · exact result.→ hAg
-  · exact result.← hAg
+      intro hAI <;> rw [Matrix.linearIndependent_iff_exists_submatrix_det] at hAI ⊢ <;> obtain ⟨g, hAg⟩ := hAI <;> use g
+  · exact A.discretize_submatrix id g ▸ ((hA.submatrix id g).det_ne_zero_iff_discretize.→ hAg)
+  · exact (hA.submatrix id g).det_ne_zero_iff_discretize.← (A.discretize_submatrix id g ▸ hAg)
 
 private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_discretize_toMatroid {X Y : Set α} {A : Matrix X Y ℚ}
     (hA : A.IsTotallyUnimodular) :
@@ -146,8 +149,8 @@ private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_discretize_toMatroid {X Y 
   simp only [VectorMatroid.toMatroid_indep, VectorMatroid.indepCols_iff_submatrix']
   rw [Matrix.discretize_transpose]
   constructor <;> intro ⟨hIY, hAI⟩ <;> use hIY <;>
-      rw [linearIndependent_iff_finset_linearIndependent] at hAI ⊢ <;> intro s <;> specialize hAI s <;>
-      have result := (hA.transpose.linearIndependent_iff_discretize_linearIndependent (hIY.elem ∘ @Subtype.val I (· ∈ s)))
+      rw [linearIndependent_iff_finset_linearIndependent] at hAI ⊢ <;> intro s <;> specialize hAI s <;> have result :=
+        (hA.transpose.submatrix (hIY.elem ∘ @Subtype.val I (· ∈ s)) id).linearIndependent_iff_discretize_linearIndependent
   · exact result.→ hAI
   · exact result.← hAI
 
