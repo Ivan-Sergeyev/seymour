@@ -169,7 +169,7 @@ lemma Matrix.IsGraphic.isTotallyUnimodular {X Y : Set α} {A : Matrix X Y ℚ} (
         rw [Matrix.det_succ_column (A.submatrix f g) y₁]
         simp_rw [submatrix_apply]
         -- TODO: this `have` is horrifically repetitive and ugly. there a weird hack here
-        -- (e.g. the extra 0 added to allow the future simp call to not delve into infinite recursion)
+        -- (the extra 0 added to allow the future simp call to not delve into infinite recursion)
         -- i would have liked to use `conv` here
         have : ∀ (x : Fin (k + 1 + 1)),
           (-1 : ℚ) ^ ((x : ℕ) + (y₁ : ℕ)) * A (f x) (g y₁) *
