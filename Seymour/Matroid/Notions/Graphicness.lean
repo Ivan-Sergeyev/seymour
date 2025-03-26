@@ -168,7 +168,7 @@ lemma Matrix.IsGraphic.isTotallyUnimodular {X Y : Set α} {A : Matrix X Y ℚ} (
       · have ⟨y₁, x₁, hnAg⟩ := submatrix_one_if_not_graphic hA f g hf hAfg
         rw [Matrix.det_succ_column (A.submatrix f g) y₁]
         simp_rw [submatrix_apply]
-        -- TODO: this `have` is horrifically repetitive and ugly. there's a lot of weird magic here
+        -- TODO: this `have` is horrifically repetitive and ugly. there a weird hack here
         -- (e.g. the extra 0 added to allow the future simp call to not delve into infinite recursion)
         -- i would have liked to use `conv` here
         have : ∀ (x : Fin (k + 1 + 1)),
@@ -198,5 +198,7 @@ theorem Matroid.IsGraphic.isRegular {M : Matroid α} (hM : M.IsGraphic) :
 
 /-- Cographic matroid is regular. -/
 theorem Matroid.IsCographic.isRegular {M : Matroid α} (hM : M.IsCographic) :
-    M.IsRegular :=
+    M.IsRegular := by
+  obtain ⟨X, Y, A, hA, hMA⟩ := hM
+  rw [IsRegular]
   sorry
