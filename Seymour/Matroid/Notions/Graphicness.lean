@@ -1,4 +1,3 @@
-
 import Seymour.Matroid.Notions.Regularity
 
 open Function
@@ -89,7 +88,7 @@ lemma Matrix.IsGraphic.cols_sum_zero {m n : Type} [Fintype n] [Fintype m] [Decid
 one non-zero entry -/
 lemma Matrix.IsGraphic.submatrix_one_if_not_graphic {l m o n : Type} [DecidableEq l] [DecidableEq m]
       {A : Matrix m n ℚ} (hA : A.IsGraphic)
-      (f : l → m) (g : o → n) (hf : Injective f) (hg : Injective g)
+      (f : l → m) (g : o → n) (hf : Injective f)
       (h : ¬(A.submatrix f g).IsGraphic) :
     ∃ y x, ((A.submatrix f g x y = 1 ∨ A.submatrix f g x y = -1)) ∧
       (∀ i : l, i ≠ x → (A.submatrix f g) i y = 0) := by
@@ -166,7 +165,7 @@ lemma Matrix.IsGraphic.isTotallyUnimodular {X Y : Set α} {A : Matrix X Y ℚ} (
           have hl1 := hl (fun g => 1)
           simp_rw [one_smul, one_ne_zero, forall_const] at hl1
           exact hl1 (Matrix.IsGraphic.cols_sum_zero hAfg)
-      · have ⟨y₁, x₁, hnAg⟩ := submatrix_one_if_not_graphic hA f g hf hg hAfg
+      · have ⟨y₁, x₁, hnAg⟩ := submatrix_one_if_not_graphic hA f g hf hAfg
         rw [Matrix.det_succ_column (A.submatrix f g) y₁]
         simp_rw [submatrix_apply, ne_eq] at hnAg
         simp_rw [Nat.succ_eq_add_one, submatrix_apply]
