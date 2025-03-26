@@ -228,6 +228,18 @@ private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linear
     rw [←(hA.submatrix id (fun y : Y' => y.val)).linearIndependent_iff_discretize_linearIndependent_aux] at lin_indep
     exact A.linearIndependent_if_LinearIndependent_subset_cols lin_indep
 
+private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linearIndependent_inf_inf {Y : Set α}
+    {X : Type} [DecidableEq X] {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
+    LinearIndependent ℚ A ↔ LinearIndependent Z2 A.discretize := by
+  constructor
+    <;> intro hAI
+    <;> rw [linearIndependent_iff_finset_linearIndependent] at hAI ⊢
+    <;> intro s
+    <;> specialize hAI s
+    <;> have result := (hA.submatrix (@Subtype.val X (· ∈ s)) id).linearIndependent_iff_discretize_linearIndependent
+  · exact result.→ hAI
+  · exact result.← hAI
+
 private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_discretize_toMatroid {X Y : Set α} {A : Matrix X Y ℚ}
     (hA : A.IsTotallyUnimodular) :
     (VectorMatroid.mk X Y A).toMatroid = (VectorMatroid.mk X Y A.discretize).toMatroid := by
@@ -235,6 +247,7 @@ private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_discretize_toMatroid {X Y 
   · simp
   simp only [VectorMatroid.toMatroid_indep, VectorMatroid.indepCols_iff_submatrix']
   rw [Matrix.discretize_transpose]
+  -- todo: refer to _inf_inf version
   constructor <;> intro ⟨hIY, hAI⟩ <;> use hIY <;>
       rw [linearIndependent_iff_finset_linearIndependent] at hAI ⊢ <;> intro s <;> specialize hAI s <;>
       have result :=
@@ -245,7 +258,7 @@ private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_discretize_toMatroid {X Y 
 private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_of_discretize {X Y : Set α} {A : Matrix X Y ℚ} {U : Matrix X Y Z2}
     (hA : A.IsTotallyUnimodular) (hAU : A.discretize = U) :
     (VectorMatroid.mk X Y A).toMatroid = (VectorMatroid.mk X Y U).toMatroid :=
-  hAU ▸ hA.toMatroid_eq_discretize_toMatroid
+  hAU ▸ hA.toMatroid_eq_discretize_toMatroid -- todo: do substitution in-place?
 
 /-- Every regular matroid is binary. -/
 lemma Matroid.IsRegular.isBinary {M : Matroid α} (hM : M.IsRegular) :
@@ -254,7 +267,7 @@ lemma Matroid.IsRegular.isBinary {M : Matroid α} (hM : M.IsRegular) :
   exact ⟨⟨X, Y, A.discretize⟩, hA.toMatroid_eq_discretize_toMatroid.symm⟩
 
 /-- Every regular matroid has a standard binary representation. -/
-lemma Matroid.IsRegular.isBinaryStandardRepr {M : Matroid α} (hM : M.IsRegular) :
+lemma Matroid.IsRegular.hasBinaryStandardRepr {M : Matroid α} (hM : M.IsRegular) :
     ∃ S : StandardRepr α Z2, S.toMatroid = M := by
   obtain ⟨V, hV⟩ := hM.isBinary
   obtain ⟨S, hS⟩ := V.exists_standardRepr
