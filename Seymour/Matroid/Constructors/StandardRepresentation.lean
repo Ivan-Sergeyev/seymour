@@ -74,7 +74,8 @@ lemma StandardRepr.toVectorMatroid_indep_iff' [DivisionRing R] (S : StandardRepr
 lemma StandardRepr.toVectorMatroid_indep_iff'' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
     I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R (S.Bᵀ.uppendId ∘ Subtype.toSum) ((S.X ∪ S.Y) ↓∩ I) := by
-  simp
+  simp_rw [←Matrix.prependId_transpose] -- TODO reëxamine simp-normal form!
+  rfl
 
 lemma StandardRepr.toVectorMatroid_indep_iff_elem [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔

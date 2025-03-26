@@ -211,6 +211,19 @@ def VectorMatroid.toMatroid [DivisionRing R] (M : VectorMatroid α R) : Matroid 
 lemma VectorMatroid.toMatroid_E [DivisionRing R] (M : VectorMatroid α R) : M.toMatroid.E = M.Y :=
   rfl
 
-@[simp]
+@[simp low]
 lemma VectorMatroid.toMatroid_indep [DivisionRing R] (M : VectorMatroid α R) : M.toMatroid.Indep = M.IndepCols :=
   rfl
+
+@[simp]
+lemma VectorMatroid.toMatroid_indep_iff_elem [DivisionRing R] (M : VectorMatroid α R) (I : Set α) :
+    M.toMatroid.Indep I ↔ ∃ hI : I ⊆ M.Y, LinearIndepOn R M.Aᵀ hI.elem.range :=
+  M.indepCols_iff_elem I
+
+lemma VectorMatroid.toMatroid_indep_iff_submatrix [DivisionRing R] (M : VectorMatroid α R) (I : Set α) :
+    M.toMatroid.Indep I ↔ ∃ hI : I ⊆ M.Y, LinearIndependent R (M.A.submatrix id hI.elem)ᵀ :=
+  M.indepCols_iff_submatrix I
+
+lemma VectorMatroid.toMatroid_indep_iff_submatrix' [DivisionRing R] (M : VectorMatroid α R) (I : Set α) :
+    M.toMatroid.Indep I ↔ ∃ hI : I ⊆ M.Y, LinearIndependent R (M.Aᵀ.submatrix hI.elem id) :=
+  M.indepCols_iff_submatrix' I
