@@ -3,20 +3,21 @@ import Seymour.Matrix.TotalUnimodularity
 import Seymour.Matroid.Constructors.StandardRepresentation
 
 
--- ## Primary definition (LI over ℚ while TU over ℚ)
+-- ## Primary definition of regularity (LI & TU over ℚ)
 
-/-- The main definition of regularity: `M` is regular iff it is constructed from a `VectorMatroid` with a rational TU matrix. -/
+/-- Matroid is regular iff it can be constructed from a `VectorMatroid` with a rational TU matrix. -/
 def Matroid.IsRegular {α : Type} (M : Matroid α) : Prop :=
   ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsTotallyUnimodular ∧ (VectorMatroid.mk X Y A).toMatroid = M
 
--- ## Secondary definition (LI over Z2 while TU over ℚ)
+-- ## Secondary definition of regularity (LI over Z2 while TU over ℚ)
 
-/-- Matrix `A` is a TU signing of `U` iff `A` is TU and its entries are the same as in `U` up to signs.
+/-- Rational matrix `A` is a TU signing of `U` (matrix of the same size but different type) iff `A` is TU and its entries are
+    the same as entries in `U` on respective positions up to signs.
     Do not ask `U.IsTotallyUnimodular` ... see `Matrix.overZ2_isTotallyUnimodular` for example! -/
 def Matrix.IsTuSigningOf {X Y : Type} (A : Matrix X Y ℚ) {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
   A.IsTotallyUnimodular ∧ ∀ i j, |A i j| = (U i j).val
 
-/-- Matrix `U` has a TU signing if there is a TU matrix whose entries are the same as in `U` up to signs. -/
+/-- Matrix `U` has a TU signing iff there is a rational TU matrix whose entries are the same as those in `U` up to signs. -/
 def Matrix.HasTuSigning {X Y : Type} {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
   ∃ A : Matrix X Y ℚ, A.IsTuSigningOf U
 
