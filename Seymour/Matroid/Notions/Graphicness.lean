@@ -1,4 +1,4 @@
-import Seymour.Matroid.Notions.Regularity
+import Seymour.Matroid.Operations.Dual
 
 open Function
 
@@ -198,5 +198,6 @@ theorem Matroid.IsGraphic.isRegular {M : Matroid α} (hM : M.IsGraphic) :
 
 /-- Cographic matroid is regular. -/
 theorem Matroid.IsCographic.isRegular {M : Matroid α} (hM : M.IsCographic) :
-    M.IsRegular :=
-  sorry
+    M.IsRegular := by
+  unfold Matroid.IsCographic at hM
+  exact hM.isRegular.of_dual

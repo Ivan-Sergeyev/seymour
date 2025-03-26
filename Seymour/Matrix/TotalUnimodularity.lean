@@ -39,6 +39,14 @@ example : ¬ (!![2] : Matrix _ _ (ZMod 4)).IsTotallyUnimodular := by
   use 1, id, id
   decide
 
+lemma Matrix.IsTotallyUnimodular.neg {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
+    (-A).IsTotallyUnimodular := by
+  rw [Matrix.isTotallyUnimodular_iff] at hA ⊢
+  peel hA
+  rw [Matrix.submatrix_neg, Pi.neg_apply, Pi.neg_apply, Matrix.det_neg]
+  apply neg_one_pow_mul_in_signTypeCastRange
+  assumption
+
 lemma Matrix.IsTotallyUnimodular.det_eq_map_ratFloor_det {X : Type} [DecidableEq X] [Fintype X] {A : Matrix X X ℚ}
     (hA : A.IsTotallyUnimodular) :
     A.det = (A.map Rat.floor).det := by

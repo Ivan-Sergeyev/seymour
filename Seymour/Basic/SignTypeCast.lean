@@ -70,3 +70,12 @@ lemma inv_eq_self_of_in_signTypeCastRange [Field R] {a : R} (ha : a ∈ SignType
     1 / a = a := by
   obtain ⟨s, rfl⟩ := ha
   cases s <;> simp
+
+lemma neg_one_pow_mul_in_signTypeCastRange [Ring R] {a : R} (ha : a ∈ SignType.cast.range) (k : ℕ) :
+    (-1) ^ k * a ∈ SignType.cast.range := by
+  if hk : Even k then
+    rwa [hk.neg_one_pow, one_mul]
+  else
+    rw [Nat.not_even_iff_odd] at hk
+    rw [hk.neg_one_pow]
+    exact neg_one_mul_in_signTypeCastRange ha
