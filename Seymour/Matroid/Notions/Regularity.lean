@@ -148,7 +148,7 @@ private def Matrix.allColIndices_unexpand : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 private lemma Matrix.exists_finite_allColIndices {X Y R : Type} [Fintype X] [DecidableEq Y] (A : Matrix X Y R) (V : Finset R)
-    (hA : ∀ i j, A i j ∈ V) :
+    (hAV : ∀ i j, A i j ∈ V) :
     ∃ Y' : Set Y, Finite Y' ∧ A.allColIndices Y' := by
   let C : Set (X → R) := { (A · y) | y : Y }
   let Y' : Set Y := { Classical.choose hc | (c : X → R) (hc : c ∈ C) }
@@ -160,14 +160,14 @@ private lemma Matrix.exists_finite_allColIndices {X Y R : Type} [Fintype X] [Dec
       intro x _
       use (fun j => ⟨x j, by aesop⟩)
       exact ite_some_none_eq_some.→ rfl
-    let e : Y' ↪ C := ⟨fun i => ⟨(A · i), by use i⟩, fun ⟨_, w, ⟨w₂, h₃⟩, h⟩ ⟨_, _, ⟨w₃, h₁⟩, h₂⟩ hii => by
+    let e : Y' ↪ C := ⟨fun i => ⟨(A · i), by use i⟩, fun ⟨_, w₁, ⟨y₁, hy₁⟩, _⟩ ⟨_, w₂, ⟨y₂, hy₂⟩, _⟩ hzz => by
       simp_all only [Subtype.mk.injEq, C, Y']
-      subst h h₃ h₂ h₁
-      have lhs_spec := Classical.choose_spec (Exists.intro w₂ (Eq.refl (A · w₂)) : ∃ x, (A · x) = (A · w₂))
-      have rhs_spec := Classical.choose_spec (Exists.intro w₃ (Eq.refl (A · w₃)) : ∃ x, (A · x) = (A · w₃))
-      simp_all⟩
+      subst hy₁ hy₂
+      have hack_y₁ := Classical.choose_spec (⟨y₁, rfl⟩ : ∃ y : Y, (A · y) = (A · y₁))
+      have hack_y₂ := Classical.choose_spec (⟨y₂, rfl⟩ : ∃ y : Y, (A · y) = (A · y₂))
+      simp_all only⟩
     have S_finite : S.Finite := Subtype.finite
-    have S'_finite : S'.Finite := S_finite.image (fun v => fun i => (v i).val)
+    have S'_finite : S'.Finite := S_finite.image (fun i : X => · i |>.val)
     exact (S'_finite.subset hCS').finite_of_encard_le e.encard_le
   · intro i
     have hi : (A · i) ∈ C := by use i
