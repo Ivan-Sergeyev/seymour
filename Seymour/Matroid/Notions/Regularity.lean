@@ -160,13 +160,12 @@ private lemma Matrix.exists_finite_allColIndices {X Y R : Type} [Fintype X] [Dec
       intro x _
       use (fun j => ⟨x j, by aesop⟩)
       exact ite_some_none_eq_some.→ rfl
-    let e : Y' ↪ C := ⟨fun i => ⟨(A · i), by use i⟩, fun i₁ i₂ hii => by
-      aesopnt
-      show Classical.choose (Exists.intro w_2 (Eq.refl fun x => A x w_2))
-         = Classical.choose (Exists.intro w_3 (Eq.refl fun x => A x w_3))
-      have lhs_spec := Classical.choose_spec (Exists.intro w_2 (Eq.refl (A · w_2)) : ∃ x, (A · x) = (A · w_2))
-      have rhs_spec := Classical.choose_spec (Exists.intro w_3 (Eq.refl (A · w_3)) : ∃ x, (A · x) = (A · w_3))
-      aesop⟩
+    let e : Y' ↪ C := ⟨fun i => ⟨(A · i), by use i⟩, fun ⟨_, w, ⟨w₂, h₃⟩, h⟩ ⟨_, _, ⟨w₃, h₁⟩, h₂⟩ hii => by
+      simp_all only [Subtype.mk.injEq, C, Y']
+      subst h h₃ h₂ h₁
+      have lhs_spec := Classical.choose_spec (Exists.intro w₂ (Eq.refl (A · w₂)) : ∃ x, (A · x) = (A · w₂))
+      have rhs_spec := Classical.choose_spec (Exists.intro w₃ (Eq.refl (A · w₃)) : ∃ x, (A · x) = (A · w₃))
+      simp_all⟩
     have S_finite : S.Finite := Subtype.finite
     have S'_finite : S'.Finite := S_finite.image (fun v => fun i => (v i).val)
     exact (S'_finite.subset hCS').finite_of_encard_le e.encard_le
