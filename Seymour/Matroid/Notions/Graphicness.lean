@@ -167,8 +167,7 @@ lemma Matrix.IsGraphic.isTotallyUnimodular {X Y : Set α} {A : Matrix X Y ℚ} (
           exact hl1 (Matrix.IsGraphic.cols_sum_zero hAfg)
       · have ⟨y₁, x₁, hnAg⟩ := submatrix_one_if_not_graphic hA f g hf hAfg
         rw [Matrix.det_succ_column (A.submatrix f g) y₁]
-        simp_rw [submatrix_apply, ne_eq] at hnAg
-        simp_rw [Nat.succ_eq_add_one, submatrix_apply]
+        simp_rw [submatrix_apply]
         -- TODO: this `have` is horrifically repetitive and ugly. there's a lot of weird magic here
         -- (e.g. the extra 0 added to allow the future simp call to not delve into infinite recursion)
         -- i would have liked to use `conv` here
@@ -188,7 +187,7 @@ lemma Matrix.IsGraphic.isTotallyUnimodular {X Y : Set α} {A : Matrix X Y ℚ} (
           simp only [SignType.pos_eq_one, SignType.coe_one]
         · exact Matrix.IsGraphic.elem_in_signTypeCastRange hA (f x₁) (g y₁)
         · simp only [range, submatrix_submatrix]
-          refine ih (f ∘ x₁.succAbove) (g ∘ y₁.succAbove) (Injective.comp hf ?_) (Injective.comp hg ?_)
+          refine ih _ _ (hf.comp ?_) (hg.comp ?_)
           all_goals exact Fin.succAbove_right_injective
 
 /-- Graphic matroid is regular. -/
@@ -200,4 +199,5 @@ theorem Matroid.IsGraphic.isRegular {M : Matroid α} (hM : M.IsGraphic) :
 /-- Cographic matroid is regular. -/
 theorem Matroid.IsCographic.isRegular {M : Matroid α} (hM : M.IsCographic) :
     M.IsRegular :=
+
   sorry
