@@ -1,4 +1,4 @@
-import Seymour.Matroid.Operations.Dual
+import Seymour.Matroid.Operations.Duality
 
 open Function
 
