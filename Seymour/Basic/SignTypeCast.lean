@@ -15,8 +15,17 @@ lemma ratCast_eq_intCast_ratFloor_of_in_signTypeCastRange {a : ℚ} (ha : a ∈ 
 
 variable {R : Type}
 
+@[simp high]
 lemma zero_in_signTypeCastRange [Ring R] : (0 : R) ∈ SignType.cast.range :=
   ⟨0, rfl⟩
+
+@[simp high]
+lemma neg_one_in_signTypeCastRange [Ring R] : (-1 : R) ∈ SignType.cast.range :=
+  ⟨-1, rfl⟩
+
+@[simp high]
+lemma one_in_signTypeCastRange [Ring R] : (1 : R) ∈ SignType.cast.range :=
+  ⟨1, rfl⟩
 
 lemma in_signTypeCastRange_mul_in_signTypeCastRange [Ring R] {a b : R}
     (ha : a ∈ SignType.cast.range) (hb : b ∈ SignType.cast.range) :
@@ -71,11 +80,15 @@ lemma inv_eq_self_of_in_signTypeCastRange [Field R] {a : R} (ha : a ∈ SignType
   obtain ⟨s, rfl⟩ := ha
   cases s <;> simp
 
-lemma neg_one_pow_mul_in_signTypeCastRange [Ring R] {a : R} (ha : a ∈ SignType.cast.range) (k : ℕ) :
-    (-1) ^ k * a ∈ SignType.cast.range := by
+lemma neg_one_pow_in_signTypeCastRange [Ring R] (k : ℕ) :
+    (-1 : R) ^ k ∈ SignType.cast.range := by
   if hk : Even k then
-    rwa [hk.neg_one_pow, one_mul]
+    rw [hk.neg_one_pow]
+    simp
   else
     rw [Nat.not_even_iff_odd] at hk
-    rw [hk.neg_one_pow]
-    exact neg_one_mul_in_signTypeCastRange ha
+    simp [hk.neg_one_pow]
+
+lemma neg_one_pow_mul_in_signTypeCastRange [Ring R] {a : R} (ha : a ∈ SignType.cast.range) (k : ℕ) :
+    (-1) ^ k * a ∈ SignType.cast.range := by
+  exact in_signTypeCastRange_mul_in_signTypeCastRange (neg_one_pow_in_signTypeCastRange k) ha
