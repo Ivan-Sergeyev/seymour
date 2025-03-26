@@ -35,19 +35,14 @@ lemma IsIncidenceMatrixColumn.elem_in_signTypeCastRange {m : Type} [DecidableEq 
     ∀ i : m, v i ∈ SignType.cast.range := by
   intro i
   cases hv with
-  | inl hv =>
-    use SignType.zero
-    simp [hv]
+  | inl hv => simp [hv]
   | inr hv =>
     obtain ⟨x₁, x₂, hxx, hvx₁, hvx₂, hvnxx⟩ := hv
     by_cases hix₁ : i = x₁
-    · rw [hix₁, hvx₁]
-      exact ⟨SignType.pos, rfl⟩
+    · simp [hix₁, hvx₁]
     by_cases hix₂ : i = x₂
-    · rw [hix₂, hvx₂]
-      exact ⟨SignType.neg, rfl⟩
-    rw [hvnxx i hix₁ hix₂]
-    exact ⟨SignType.zero, rfl⟩
+    · simp [hix₂, hvx₂]
+    simp [hvnxx i hix₁ hix₂]
 
 /-- The sum of a column of an incidence matrix is 0. -/
 lemma IsIncidenceMatrixColumn.sum_zero {m : Type} [Fintype m] [DecidableEq m] {v : m → ℚ} (hv : IsIncidenceMatrixColumn v) :
@@ -139,56 +134,42 @@ def Matroid.IsCographic (M : Matroid α) : Prop :=
 lemma Matrix.IsGraphic.isTotallyUnimodular {X Y : Set α} {A : Matrix X Y ℚ} (hA : A.IsGraphic) :
     A.IsTotallyUnimodular := by
   intro k
-  cases k with
-  | zero =>
-    simp_rw [Matrix.submatrix_empty, Matrix.det_fin_zero, Set.mem_range]
-    intros
-    exact ⟨SignType.pos, by simp⟩
-  | succ k => induction k with
-    | zero =>
-      simp only [Nat.reduceAdd, Matrix.det_unique, Fin.default_eq_zero, Fin.isValue, Matrix.submatrix_apply, Set.mem_range]
-      intro f g _ _
-      exact hA.elem_in_signTypeCastRange (f 0) (g 0)
-    | succ k ih =>
-      intro f g hf hg
-      by_cases hAfg : (A.submatrix f g).IsGraphic
-      · by_cases hAfg' : ∃ j, (∀ i, (A.submatrix f g) i j = 0)
-        · rw [Matrix.det_eq_zero_of_column_eq_zero hAfg'.choose hAfg'.choose_spec]
-          exact ⟨SignType.zero, rfl⟩
-        · use SignType.zero
-          simp only [SignType.zero_eq_zero, SignType.coe_zero]
-          symm
-          -- we enter contradiction since there is no eq (instead of ne) for linearIndependent_cols_of_det_ne_zero
-          by_contra hA0
-          have hl := Matrix.linearIndependent_rows_of_det_ne_zero hA0
-          rw [Fintype.linearIndependent_iff] at hl
-          have hl1 := hl (fun g => 1)
-          simp_rw [one_smul, one_ne_zero, forall_const] at hl1
-          exact hl1 (Matrix.IsGraphic.cols_sum_zero hAfg)
-      · have ⟨y₁, x₁, hnAg⟩ := submatrix_one_if_not_graphic hA f g hf hAfg
-        rw [Matrix.det_succ_column (A.submatrix f g) y₁]
-        simp_rw [submatrix_apply]
-        -- TODO: this `have` is horrifically repetitive and ugly. there a weird hack here
-        -- (the extra 0 added to allow the future simp call to not delve into infinite recursion)
-        -- i would have liked to use `conv` here
-        have : ∀ (x : Fin (k + 1 + 1)),
-          (-1 : ℚ) ^ ((x : ℕ) + (y₁ : ℕ)) * A (f x) (g y₁) *
-            ((A.submatrix f g).submatrix x.succAbove y₁.succAbove).det =
-            if x = x₁ then (-1 : ℚ) ^ ((x : ℕ) + (y₁ : ℕ) + 0) * A (f x) (g y₁) *
-            ((A.submatrix f g).submatrix x.succAbove y₁.succAbove).det else 0 := by
-          intro x
-          simp_all only [Set.mem_range, submatrix_submatrix, add_zero, Even.add_self, Even.neg_pow,
-            one_pow, one_mul]
-          by_cases h : x = x₁ <;> simp_all
-        simp_rw [this, Fintype.sum_ite_eq' x₁]
-        repeat apply in_signTypeCastRange_mul_in_signTypeCastRange
-        · rw [in_signTypeCastRange_iff_abs, abs_neg_one_pow, range, Set.mem_range]
-          use .pos
-          simp only [SignType.pos_eq_one, SignType.coe_one]
-        · exact Matrix.IsGraphic.elem_in_signTypeCastRange hA (f x₁) (g y₁)
-        · simp only [range, submatrix_submatrix]
-          refine ih _ _ (hf.comp ?_) (hg.comp ?_)
-          all_goals exact Fin.succAbove_right_injective
+  induction k with
+  | zero => simp
+  | succ k ih =>
+    intro f g hf hg
+    by_cases hAfg : (A.submatrix f g).IsGraphic
+    · by_cases hAfg' : ∃ j, (∀ i, (A.submatrix f g) i j = 0)
+      · simp [Matrix.det_eq_zero_of_column_eq_zero hAfg'.choose hAfg'.choose_spec]
+      · use SignType.zero
+        simp only [SignType.zero_eq_zero, SignType.coe_zero]
+        symm
+        -- we enter contradiction since there is no eq (instead of ne) for linearIndependent_cols_of_det_ne_zero
+        by_contra hA0
+        have hl := Matrix.linearIndependent_rows_of_det_ne_zero hA0
+        rw [Fintype.linearIndependent_iff] at hl
+        have hl1 := hl (fun g => 1)
+        simp_rw [one_smul, one_ne_zero, forall_const] at hl1
+        exact hl1 (Matrix.IsGraphic.cols_sum_zero hAfg)
+    · have ⟨y₁, x₁, hnAg⟩ := submatrix_one_if_not_graphic hA f g hf hAfg
+      rw [Matrix.det_succ_column (A.submatrix f g) y₁]
+      simp_rw [submatrix_apply]
+      -- TODO: this `have` is horrifically repetitive and ugly. there a weird hack here
+      -- (the extra 0 added to allow the future simp call to not delve into infinite recursion)
+      -- i would have liked to use `conv` here
+      have : ∀ (x : Fin (k + 1)),
+        (-1 : ℚ) ^ ((x : ℕ) + (y₁ : ℕ)) * A (f x) (g y₁) *
+          ((A.submatrix f g).submatrix x.succAbove y₁.succAbove).det =
+          if x = x₁ then (-1 : ℚ) ^ ((x : ℕ) + (y₁ : ℕ) + 0) * A (f x) (g y₁) *
+          ((A.submatrix f g).submatrix x.succAbove y₁.succAbove).det else 0 := fun x ↦ by
+        by_cases h : x = x₁ <;> simp_all
+      simp_rw [this, Fintype.sum_ite_eq' x₁]
+      repeat apply in_signTypeCastRange_mul_in_signTypeCastRange
+      · exact neg_one_pow_in_signTypeCastRange _
+      · exact Matrix.IsGraphic.elem_in_signTypeCastRange hA (f x₁) (g y₁)
+      · simp_rw [range, submatrix_submatrix]
+        refine ih _ _ (hf.comp ?_) (hg.comp ?_)
+        all_goals exact Fin.succAbove_right_injective
 
 /-- Graphic matroid is regular. -/
 theorem Matroid.IsGraphic.isRegular {M : Matroid α} (hM : M.IsGraphic) :
