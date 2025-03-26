@@ -198,7 +198,5 @@ theorem Matroid.IsGraphic.isRegular {M : Matroid α} (hM : M.IsGraphic) :
 
 /-- Cographic matroid is regular. -/
 theorem Matroid.IsCographic.isRegular {M : Matroid α} (hM : M.IsCographic) :
-    M.IsRegular := by
-  obtain ⟨X, Y, A, hA, hMA⟩ := hM
-  rw [IsRegular]
+    M.IsRegular :=
   sorry
