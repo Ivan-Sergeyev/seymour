@@ -113,7 +113,7 @@ lemma StandardRepr.toVectorMatroid_indep_iff_submatrix'' [DivisionRing R] (S : S
 /-- Every vector matroid has a standard representation whose rows are a given base. -/
 lemma VectorMatroid.exists_standardRepr_isBase [DivisionRing R] {B : Set α}
     (M : VectorMatroid α R) (hMB : M.toMatroid.IsBase B) :
-    ∃ S : StandardRepr α R, M.X = B ∧ S.toVectorMatroid = M := by
+    ∃ S : StandardRepr α R, S.X = B ∧ S.toVectorMatroid = M := by
   have hBY := hMB.subset_ground
   sorry
 
