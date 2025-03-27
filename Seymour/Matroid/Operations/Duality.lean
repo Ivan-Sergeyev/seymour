@@ -19,17 +19,17 @@ postfix:max "✶" => StandardRepr.dual
 lemma StandardRepr.dual_dual (S : StandardRepr α R) : S✶✶ = S := by
   simp [StandardRepr.dual]
 
+lemma StandardRepr.dual_indices_union_eq (S : StandardRepr α R) : S✶.X ∪ S✶.Y = S.X ∪ S.Y :=
+  Set.union_comm .. ▸ rfl
+
 lemma StandardRepr.dual_ground (S : StandardRepr α R) : S✶.toMatroid.E = S.toMatroid.E := by
-  aesop
+  exact S.dual_indices_union_eq
 
-lemma StandardRepr.dual_indices_union_eq (S : StandardRepr α R) : S✶.X ∪ S✶.Y = S.X ∪ S.Y := by
-  aesop
-
-lemma StandardRepr.dual_isBase_iff {S : StandardRepr α R} {B : Set α} (hB : B ⊆ S✶.toMatroid.E) :
-    S✶.toMatroid.IsBase B ↔ S.toMatroid✶.IsBase B := by
-  rw [dual_ground] at hB
+lemma StandardRepr.dual_isBase_iff {S : StandardRepr α R} {G : Set α} (hG : G ⊆ S✶.toMatroid.E) :
+    S✶.toMatroid.IsBase G ↔ S.toMatroid✶.IsBase G := by
+  rw [StandardRepr.dual_ground] at hG
   rw [Matroid.dual_isBase_iff']
-  simp only [hB, and_true]
+  simp only [hG, and_true]
   sorry -- Theorem 2.2.8 in Oxley
 
 /-- The dual of standard representation gives a dual matroid. -/
@@ -38,12 +38,11 @@ lemma StandardRepr.dual_toMatroid (S : StandardRepr α R) :
   rw [← Matroid.dual_inj, Matroid.dual_dual, Matroid.ext_iff_isBase]
   constructor
   · rw [Matroid.dual_ground, StandardRepr.dual_ground]
-  · intro B hB
-    rw [Matroid.dual_ground] at hB
-    simp_rw [Matroid.dual_isBase_iff hB, @StandardRepr.dual_isBase_iff _ _ _ _ S (S✶.toMatroid.E \ B) (by tauto_set)]
-    rw [dual_ground] at hB ⊢
-    rw [Matroid.dual_isBase_iff (by tauto_set)]
-    simp_rw [Set.diff_diff_cancel_left hB]
+  · intro G hG
+    rw [Matroid.dual_ground] at hG
+    simp_rw [Matroid.dual_isBase_iff hG, @S.dual_isBase_iff _ _ _ _ (S✶.toMatroid.E \ G) (by tauto_set)]
+    rw [StandardRepr.dual_ground] at hG ⊢
+    rw [Matroid.dual_isBase_iff (by tauto_set), Set.diff_diff_cancel_left hG]
 
 /-- Every vector matroid's dual has a standard representation. -/
 lemma VectorMatroid.dual_exists_standardRepr (M : VectorMatroid α R) :
@@ -55,7 +54,7 @@ lemma Matroid.IsRegular.dual {M : Matroid α} (hM : M.IsRegular) : M✶.IsRegula
   obtain ⟨S, rfl⟩ := hM.hasBinaryStandardRepr
   have : Finite S.X := sorry
   have : Finite S✶.X := sorry
-  rw [←StandardRepr.dual_toMatroid]
+  rw [←S.dual_toMatroid]
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hM ⊢
   obtain ⟨A, hA, hAS⟩ := hM
   simp only [StandardRepr.dual]

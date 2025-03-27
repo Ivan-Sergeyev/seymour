@@ -111,7 +111,7 @@ theorem VectorMatroid.indepCols_aug [DivisionRing R] (M : VectorMatroid α R) (I
       have : v ∉ Submodule.span R Iᵥ := v_ni_Iₛ
       have hx_ni_I : x ∉ I' := x_ni_I
       have Mx_ni_span_I : M.Aᵀ x ∉ Submodule.span R (M.Aᵀ '' I') := by aesop
-      have xI_indep : LinearIndepOn R M.Aᵀ (x ᕃ I') := (linearIndepOn_insert hx_ni_I).mpr ⟨I'_indep, Mx_ni_span_I⟩
+      have xI_indep : LinearIndepOn R M.Aᵀ (x ᕃ I') := (linearIndepOn_insert hx_ni_I).← ⟨I'_indep, Mx_ni_span_I⟩
       exact hnMxI xI_indep
   have Iᵥ_ss_Jₛ : Iᵥ ⊆ Jₛ
   · intro v ⟨x, hxI, hxv⟩
@@ -123,7 +123,7 @@ theorem VectorMatroid.indepCols_aug [DivisionRing R] (M : VectorMatroid α R) (I
       have v_in_MJ' : v ∈ (M.Aᵀ '' J') := Set.mem_of_eq_of_mem hxv.symm Mx_in_MJ'
       exact v_ni_Jₛ (Submodule.mem_span.← (fun p a => a v_in_MJ'))
     have J'_indep : LinearIndepOn R M.Aᵀ J' := J_indep
-    have xJ'_indep : LinearIndepOn R M.Aᵀ (x ᕃ J') := (linearIndepOn_insert x_ni_J').mpr ⟨J'_indep, Mx_ni_span_J'⟩
+    have xJ'_indep : LinearIndepOn R M.Aᵀ (x ᕃ J') := (linearIndepOn_insert x_ni_J').← ⟨J'_indep, Mx_ni_span_J'⟩
     have M_indep_xJ : M.IndepCols (↑x ᕃ J)
     · rw [VectorMatroid.IndepCols]
       constructor
@@ -147,13 +147,13 @@ theorem VectorMatroid.indepCols_aug [DivisionRing R] (M : VectorMatroid α R) (I
     have k'_ni_I' : k' ∉ I' := k_ni_I
     rw [VectorMatroid.IndepCols, hkI'] at M_indep_kI
     obtain ⟨_, M_indep_kI⟩ := M_indep_kI
-    have Mk'_ni_span_I' : M.Aᵀ k' ∉ Submodule.span R (M.Aᵀ '' I') := ((linearIndepOn_insert k'_ni_I').mp M_indep_kI).right
+    have Mk'_ni_span_I' : M.Aᵀ k' ∉ Submodule.span R (M.Aᵀ '' I') := ((linearIndepOn_insert k'_ni_I').→ M_indep_kI).right
     have Mk'_ni_span_J' : M.Aᵀ k' ∉ Submodule.span R (M.Aᵀ '' J')
     · have span_I'_eq_span_J' : Submodule.span R (M.Aᵀ '' I') = Submodule.span R (M.Aᵀ '' J') := Iₛ_eq_Jₛ
       rw [←span_I'_eq_span_J']
       exact Mk'_ni_span_I'
     have J'_indep : LinearIndepOn R M.Aᵀ J' := J_indep
-    have kJ'_indep : LinearIndepOn R M.Aᵀ (k' ᕃ J') := (linearIndepOn_insert hkJ').mpr ⟨J'_indep, Mk'_ni_span_J'⟩
+    have kJ'_indep : LinearIndepOn R M.Aᵀ (k' ᕃ J') := (linearIndepOn_insert hkJ').← ⟨J'_indep, Mk'_ni_span_J'⟩
     have hMkJ : M.IndepCols (k ᕃ J)
     · rw [VectorMatroid.IndepCols]
       constructor

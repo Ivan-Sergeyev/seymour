@@ -134,7 +134,7 @@ private lemma lemma6₂_aux' {Y₁ X₂ Y₂ : Set α} {A₂ : Matrix X₂ Y₂ 
     (hAy : (A₂ ◫ ▮y).IsTotallyUnimodular) (hx : ∀ y : Y₁, x y ∈ SignType.cast.range) :
     (A₂ ◫ (y · * x ·)).IsTotallyUnimodular := by
   have hAy' := hAy.transpose
-  rw [Matrix.transpose_fromCols, Matrix.transpose_col] at hAy'
+  rw [Matrix.transpose_fromCols, Matrix.transpose_replicateCol] at hAy'
   have result := (lemma6₁_aux hAy' hx).transpose
   rw [Matrix.transpose_fromRows, Matrix.transpose_transpose] at result
   simp_rw [mul_comm]

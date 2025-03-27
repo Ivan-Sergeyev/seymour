@@ -77,34 +77,34 @@ variable {T₁ T₂ S₁ S₂ : Set α} {β : Type}
   [∀ a, Decidable (a ∈ S₂)]
 
 /-- Convert a block matrix to a matrix over set unions. -/
-def Matrix.toMatrixUnionUnion (C : Matrix (T₁.Elem ⊕ T₂.Elem) (S₁.Elem ⊕ S₂.Elem) β) :
+def Matrix.toMatrixUnionUnion (A : Matrix (T₁.Elem ⊕ T₂.Elem) (S₁.Elem ⊕ S₂.Elem) β) :
     Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem β :=
-  ((C ∘ Subtype.toSum) · ∘ Subtype.toSum)
+  ((A ∘ Subtype.toSum) · ∘ Subtype.toSum)
 
 /-- Convert a matrix over set unions to a block matrix. -/
-def Matrix.toMatrixSumSum (C : Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem β) :
+def Matrix.toMatrixSumSum (A : Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem β) :
     Matrix (T₁.Elem ⊕ T₂.Elem) (S₁.Elem ⊕ S₂.Elem) β :=
-  ((C ∘ Sum.toUnion) · ∘ Sum.toUnion)
+  ((A ∘ Sum.toUnion) · ∘ Sum.toUnion)
 
 /-- Converting a block matrix to a matrix over set unions and back to a block matrix gives the original matrix, assuming that
     both said unions are disjoint. -/
 @[simp]
-lemma toMatrixUnionUnion_toMatrixSumSum (hT : T₁ ⫗ T₂) (hS : S₁ ⫗ S₂) (C : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) β) :
-    C.toMatrixUnionUnion.toMatrixSumSum = C := by
+lemma toMatrixUnionUnion_toMatrixSumSum (hT : T₁ ⫗ T₂) (hS : S₁ ⫗ S₂) (A : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) β) :
+    A.toMatrixUnionUnion.toMatrixSumSum = A := by
   ext
   simp [Matrix.toMatrixUnionUnion, Matrix.toMatrixSumSum, *]
 
 /-- Converting a matrix over set unions to a block matrix and back to a matrix over set unions gives the original matrix. -/
 @[simp]
-lemma toMatrixSumSum_toMatrixUnionUnion (C : Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem β) :
-    C.toMatrixSumSum.toMatrixUnionUnion = C := by
+lemma toMatrixSumSum_toMatrixUnionUnion (A : Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem β) :
+    A.toMatrixSumSum.toMatrixUnionUnion = A := by
   ext
   simp [Matrix.toMatrixUnionUnion, Matrix.toMatrixSumSum]
 
 /-- A totally unimodular block matrix stays totally unimodular after converting to a matrix over set unions. -/
-lemma Matrix.IsTotallyUnimodular.toMatrixUnionUnion [CommRing β] {C : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) β}
-    (hC : C.IsTotallyUnimodular) :
-    C.toMatrixUnionUnion.IsTotallyUnimodular := by
-  rw [Matrix.isTotallyUnimodular_iff] at hC ⊢
+lemma Matrix.IsTotallyUnimodular.toMatrixUnionUnion [CommRing β] {A : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) β}
+    (hA : A.IsTotallyUnimodular) :
+    A.toMatrixUnionUnion.IsTotallyUnimodular := by
+  rw [Matrix.isTotallyUnimodular_iff] at hA ⊢
   intros
-  apply hC
+  apply hA

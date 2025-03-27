@@ -159,6 +159,26 @@ The guideline below is written primarily to assist you in reading the code.
       exact l.sum_lt_sum f g all_le exists_lt
     ```
 
+##### Default single-capital-letter names
+
+- `A` ... matrix
+- `B` ... standard representation matrix
+- `C` ... circuit
+- `D` ... dependent set
+- `E` ... ground set
+- `F` ... field
+- `G` ... base
+- `I` ... independent set
+- `J` ... independent set
+- `M` ... matroid
+- `P` ... proposition
+- `Q` ... proposition
+- `R` ... (semi)ring
+- `S` ... standard representation
+- `V` ... vector matroid
+- `X` ... set of row indices
+- `Y` ... set of col indices
+
 ### Other
 
 - We currently prefer `Type` over universe-polymorphic types. Generalization to `Type*` will probably be done at the end of the project.

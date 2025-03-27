@@ -15,7 +15,7 @@ def Matrix.IsGraphic {m n : Type} [DecidableEq m] (A : Matrix m n ℚ) : Prop :=
   ∀ y : n, IsIncidenceMatrixColumn (A · y)
 
 /-- The column function can be defined as an if statement with membership. We write it in this form
-to satisfy Fintype.sum_ite_mem. -/
+to satisfy `Fintype.sum_ite_mem`. -/
 lemma IsIncidenceMatrixColumn.eq_if_mem {m : Type} [DecidableEq m] {v : m → ℚ} (hv : IsIncidenceMatrixColumn v) :
     (v = 0) ∨ (∃ x₁ x₂ : m, x₁ ≠ x₂ ∧ v = (fun x ↦ if x ∈ [x₁, x₂].toFinset then (if x = x₁ then 1 else -1) else 0)) := by
   refine Or.imp_right (fun hv ↦ ?_) hv
@@ -44,7 +44,7 @@ lemma IsIncidenceMatrixColumn.elem_in_signTypeCastRange {m : Type} [DecidableEq 
     · simp [hix₂, hvx₂]
     simp [hvnxx i hix₁ hix₂]
 
-/-- The sum of a column of an incidence matrix is 0. -/
+/-- The sum of a column of an incidence matrix is `0`. -/
 lemma IsIncidenceMatrixColumn.sum_zero {m : Type} [Fintype m] [DecidableEq m] {v : m → ℚ} (hv : IsIncidenceMatrixColumn v) :
     ∑ i : m, v i = 0 := by
   cases IsIncidenceMatrixColumn.eq_if_mem hv with
@@ -55,7 +55,7 @@ lemma IsIncidenceMatrixColumn.sum_zero {m : Type} [Fintype m] [DecidableEq m] {v
       Finset.sum_insert (by simpa using h.choose_spec.choose_spec.1), Finset.sum_singleton]
     simp_rw [ne_eq, ite_true, h.choose_spec.choose_spec.1.symm, ite_false, add_neg_cancel]
 
-/-- Every element of a graphic matrix is 1, 0, or -1 -/
+/-- Every element of a graphic matrix is `1`, `0`, or `-1`. -/
 lemma Matrix.IsGraphic.elem_in_signTypeCastRange {m n : Type} [DecidableEq m] {A : Matrix m n ℚ}
     (hA : A.IsGraphic) (x : m) (y : n) :
     A x y ∈ SignType.cast.range :=
@@ -72,14 +72,14 @@ lemma Matrix.IsGraphic.col_zero_or_two_nonzeros {m n : Type} [DecidableEq m] {A 
     ((A · y) = 0) ∨ (∃ x₁ x₂ : m, x₁ ≠ x₂ ∧ ∀ i, i ≠ x₁ → i ≠ x₂ → (A · y) i = 0) :=
   (hA y).zero_or_two_nonzeros
 
-/-- The sum of the columns in a graphic matrix is 0 -/
+/-- The sum of the columns in a graphic matrix is `0`. -/
 lemma Matrix.IsGraphic.cols_sum_zero {m n : Type} [Fintype n] [Fintype m] [DecidableEq m] {A : Matrix m n ℚ} (hA : A.IsGraphic) :
     ∑ x, A x = 0 := by
   ext x
   rw [Pi.zero_apply, Fintype.sum_apply]
   exact IsIncidenceMatrixColumn.sum_zero <| hA x
 
-/-- A nongraphic submatrix S of a graphic matrix is only nongraphic iff there exists a column in S that only has
+/-- A nongraphic submatrix of a graphic matrix is only nongraphic iff there exists a column in it that only has
 one non-zero entry -/
 lemma Matrix.IsGraphic.submatrix_one_if_not_graphic {l m o n : Type} [DecidableEq l] [DecidableEq m]
       {A : Matrix m n ℚ} (hA : A.IsGraphic)
@@ -104,12 +104,12 @@ lemma Matrix.IsGraphic.submatrix_one_if_not_graphic {l m o n : Type} [DecidableE
         simp_rw [ne_eq] at hxx
         simp_rw [hx]
         refine ⟨by simp_all [hxx.2.1, hxx.2.2.1], fun i hi ↦ ?_⟩
-      · refine hxx.2.2.2 (f i) ((Function.Injective.ne_iff' hf hx).mpr hi) ?_
+      · refine hxx.2.2.2 (f i) ((Function.Injective.ne_iff' hf hx).← hi) ?_
         by_contra!
         subst hx this
         obtain ⟨ei, hyei⟩ := hy.2 x i (by symm; exact hi) hxx.2.1 hxx.2.2.1
         exact absurd (hxx.2.2.2 (f ei) (hf.ne hyei.1) (hf.ne hyei.2.1)) hyei.2.2
-      · refine hxx.2.2.2 (f i) ?_ ((Function.Injective.ne_iff' hf hx).mpr hi)
+      · refine hxx.2.2.2 (f i) ?_ ((Function.Injective.ne_iff' hf hx).← hi)
         by_contra!
         subst hx this
         obtain ⟨ei, hyei⟩ := hy.2 i x hi hxx.2.1 hxx.2.2.1

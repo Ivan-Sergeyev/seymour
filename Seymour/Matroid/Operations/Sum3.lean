@@ -11,8 +11,8 @@ noncomputable abbrev matrix3sumComposition {β : Type} [CommRing β] {X₁ Y₁ 
   -- Unfortunately `Ring.inverse` is `noncomputable` and upgrading `β` to `Field` does not help.
   let D₁₂ : Matrix X₂ Y₁ β := D₂ * D⁻¹ * D₁
   Matrix.fromBlocks
-    (Matrix.fromRows A₁ (Matrix.row Unit (Sum.elim z₁ ![1, 1]))) 0
-    (Matrix.fromBlocks D₁ D D₁₂ D₂) (Matrix.fromCols (Matrix.col Unit (Sum.elim ![1, 1] z₂)) A₂)
+    (Matrix.fromRows A₁ (Matrix.replicateRow Unit (Sum.elim z₁ ![1, 1]))) 0
+    (Matrix.fromBlocks D₁ D D₁₂ D₂) (Matrix.fromCols (Matrix.replicateCol Unit (Sum.elim ![1, 1] z₂)) A₂)
 
 /-- `StandardRepr`-level 3-sum of two matroids.
     The second part checks legitimacy (invertibility of a certain 2x2 submatrix and
