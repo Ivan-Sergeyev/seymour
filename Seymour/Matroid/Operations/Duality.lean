@@ -60,9 +60,7 @@ lemma Matroid.IsRegular.dual {M : Matroid α} (hM : M.IsRegular) : M✶.IsRegula
   obtain ⟨A, hA, hAS⟩ := hM
   simp only [StandardRepr.dual]
   refine ⟨-Aᵀ, hA.transpose.neg, fun i : S.Y => fun j : S.X => ?_⟩
-  convert hAS j i using 1
-  · simp
-  · simp [ZMod.neg_eq_self_mod_two] -- unnecessary after Mathlib merges #23353
+  convert hAS j i using 1 <;> simp
 
 lemma Matroid.IsRegular.of_dual {M : Matroid α} (hM : M✶.IsRegular) : M.IsRegular :=
   M.dual_dual ▸ hM.dual

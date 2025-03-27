@@ -55,8 +55,8 @@ instance Matroid.Is2sumOf.finS {M M₁ M₂ : Matroid α} (hM : M.Is2sumOf M₁ 
 
 infixl:63 " ⊟ " => Matrix.fromRows
 infixl:63 " ◫ " => Matrix.fromCols
-notation:64 "▬"r:81 => Matrix.row Unit r
-notation:64 "▮"c:81 => Matrix.col Unit c
+notation:64 "▬"r:81 => Matrix.replicateRow Unit r
+notation:64 "▮"c:81 => Matrix.replicateCol Unit c
 
 lemma Matrix.IsTotallyUnimodular.duplicate_last_row {X Y : Type} {A₁ : Matrix X Y ℚ} {x : Y → ℚ}
     (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) :
@@ -67,7 +67,7 @@ lemma Matrix.IsTotallyUnimodular.duplicate_last_row {X Y : Type} {A₁ : Matrix 
 private lemma Matrix.IsTotallyUnimodular.aux190 {X₁ Y₁ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ}
     (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) :
     (A₁ ⊟ ▬x ⊟ ▬(-x) ⊟ ▬0).IsTotallyUnimodular := by
-  rw [Matrix.fromRows_row0_isTotallyUnimodular_iff]
+  rw [Matrix.fromRows_replicateRow0_isTotallyUnimodular_iff]
   intro k f g hf hg
   have almost := hAx.duplicate_last_row k f g hf hg
   if last_row : ∃ i : Fin k, f i = ◪() then
