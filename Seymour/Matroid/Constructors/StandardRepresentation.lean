@@ -116,10 +116,10 @@ lemma VectorMatroid.exists_standardRepr [DivisionRing R] (M : VectorMatroid α R
   sorry
 
 /-- Every vector matroid has a standard representation whose rows are a given base. -/
-lemma VectorMatroid.exists_standardRepr_isBase [DivisionRing R] {B : Set α}
-    (M : VectorMatroid α R) (hMB : M.toMatroid.IsBase B) :
-    ∃ S : StandardRepr α R, M.X = B ∧ S.toVectorMatroid = M := by
-  have hBY := hMB.subset_ground
+lemma VectorMatroid.exists_standardRepr_isBase [DivisionRing R] {G : Set α}
+    (M : VectorMatroid α R) (hMG : M.toMatroid.IsBase G) :
+    ∃ S : StandardRepr α R, S.X = G ∧ S.toVectorMatroid = M := by
+  have hGE := hMG.subset_ground
   sorry
 
 /-- Construct a matroid from a standard representation. -/
