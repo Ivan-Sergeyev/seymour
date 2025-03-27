@@ -28,9 +28,19 @@ inductive Matroid.IsGood : Matroid α → Prop
 | cographic {M : Matroid α} (hM : M.IsCographic) : M.IsGood
 | isomorphicR10 {M : Matroid α} {e : α ≃ Fin 10} (hM : M.mapEquiv e = matroidR10.toMatroid) : M.IsGood
 -- fork constructors
-| is1sum {M M₁ M₂ : Matroid α} (hM : M.Is1sumOf M₁ M₂) : M.IsGood
-| is2sum {M M₁ M₂ : Matroid α} (hM : M.Is2sumOf M₁ M₂) : M.IsGood
-| is3sum {M M₁ M₂ : Matroid α} (hM : M.Is3sumOf M₁ M₂) : M.IsGood
+| is1sum {M M₁ M₂ : Matroid α} (hM : M.Is1sumOf M₁ M₂) (hM₁ : M₁.IsGood) (hM₂ : M₂.IsGood) : M.IsGood
+| is2sum {M M₁ M₂ : Matroid α} (hM : M.Is2sumOf M₁ M₂) (hM₁ : M₁.IsGood) (hM₂ : M₂.IsGood) : M.IsGood
+| is3sum {M M₁ M₂ : Matroid α} (hM : M.Is3sumOf M₁ M₂) (hM₁ : M₁.IsGood) (hM₂ : M₂.IsGood) : M.IsGood
+
+/-- The easy direction as a single theorem. -/
+theorem theSeymourComposition {M : Matroid α} (hM : M.IsGood) : M.IsRegular := by
+  induction hM with
+  | graphic hM => exact hM.isRegular
+  | cographic hM => exact hM.isRegular
+  | isomorphicR10 hM => sorry
+  | is1sum hM hM₁ hM₂ ihM₁ ihM₂ => exact hM.isRegular ihM₁ ihM₂
+  | is2sum hM hM₁ hM₂ ihM₁ ihM₂ => exact hM.isRegular ihM₁ ihM₂
+  | is3sum hM hM₁ hM₂ ihM₁ ihM₂ => exact hM.isRegular ihM₁ ihM₂
 
 /-- THE HOLY GRAIL. -/
 theorem theSeymourDecomposition {M : Matroid α} (hM : M.IsRegular) : M.IsGood := by

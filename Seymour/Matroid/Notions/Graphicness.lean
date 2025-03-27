@@ -1,6 +1,5 @@
 import Seymour.Matroid.Operations.Duality
 
-open Function
 
 /-- Column of a node-edge incidence matrix is either all `0`,
     or has exactly one `+1` entry, exactly one `-1` entry, and all other elements `0`. -/
@@ -83,11 +82,11 @@ lemma Matrix.IsGraphic.cols_sum_zero {m n : Type} [Fintype n] [Fintype m] [Decid
 one non-zero entry -/
 lemma Matrix.IsGraphic.submatrix_one_if_not_graphic {l m o n : Type} [DecidableEq l] [DecidableEq m]
       {A : Matrix m n ℚ} (hA : A.IsGraphic)
-      (f : l → m) (g : o → n) (hf : Injective f)
+      (f : l → m) (g : o → n) (hf : f.Injective)
       (h : ¬(A.submatrix f g).IsGraphic) :
     ∃ y x, ((A.submatrix f g x y = 1 ∨ A.submatrix f g x y = -1)) ∧
       (∀ i : l, i ≠ x → (A.submatrix f g) i y = 0) := by
-  simp_rw [IsGraphic, IsIncidenceMatrixColumn, submatrix_apply, ne_eq] at h
+  simp_rw [Matrix.IsGraphic, IsIncidenceMatrixColumn, Matrix.submatrix_apply, ne_eq] at h
   push_neg at h
   obtain ⟨y, hy⟩ := h
   use y
@@ -97,7 +96,7 @@ lemma Matrix.IsGraphic.submatrix_one_if_not_graphic {l m o n : Type} [DecidableE
     ext x
     simp_all [h (f x)]
   · by_cases hxq : x₁ ∈ Set.range f ∨ x₂ ∈ Set.range f
-    · simp_rw [submatrix_apply, ne_eq]
+    · simp_rw [Matrix.submatrix_apply, ne_eq]
       rcases hxq with (⟨x, hx⟩ | ⟨x, hx⟩)
       all_goals
         use x
@@ -119,6 +118,7 @@ lemma Matrix.IsGraphic.submatrix_one_if_not_graphic {l m o n : Type} [DecidableE
       ext i
       have := hxx.2.2.2 (f i) (by simp_all) (by simp_all)
       simp_all
+
 variable {α : Type} [DecidableEq α]
 
 /-- Matroid is graphic iff it can be represented by a graphic matrix. -/
@@ -148,12 +148,12 @@ lemma Matrix.IsGraphic.isTotallyUnimodular {X Y : Set α} {A : Matrix X Y ℚ} (
         by_contra hA0
         have hl := Matrix.linearIndependent_rows_of_det_ne_zero hA0
         rw [Fintype.linearIndependent_iff] at hl
-        have hl1 := hl (fun g => 1)
+        have hl1 := hl (fun _ => 1)
         simp_rw [one_smul, one_ne_zero, forall_const] at hl1
         exact hl1 (Matrix.IsGraphic.cols_sum_zero hAfg)
-    · have ⟨y₁, x₁, hnAg⟩ := submatrix_one_if_not_graphic hA f g hf hAfg
+    · have ⟨y₁, x₁, hnAg⟩ := hA.submatrix_one_if_not_graphic f g hf hAfg
       rw [Matrix.det_succ_column (A.submatrix f g) y₁]
-      simp_rw [submatrix_apply]
+      simp_rw [Matrix.submatrix_apply]
       -- TODO: this `have` is horrifically repetitive and ugly. there a weird hack here
       -- (the extra 0 added to allow the future simp call to not delve into infinite recursion)
       -- i would have liked to use `conv` here
@@ -167,9 +167,8 @@ lemma Matrix.IsGraphic.isTotallyUnimodular {X Y : Set α} {A : Matrix X Y ℚ} (
       repeat apply in_signTypeCastRange_mul_in_signTypeCastRange
       · exact neg_one_pow_in_signTypeCastRange _
       · exact Matrix.IsGraphic.elem_in_signTypeCastRange hA (f x₁) (g y₁)
-      · simp_rw [range, submatrix_submatrix]
-        refine ih _ _ (hf.comp ?_) (hg.comp ?_)
-        all_goals exact Fin.succAbove_right_injective
+      · simp_rw [Matrix.submatrix_submatrix]
+        exact ih _ _ (hf.comp Fin.succAbove_right_injective) (hg.comp Fin.succAbove_right_injective)
 
 /-- Graphic matroid is regular. -/
 theorem Matroid.IsGraphic.isRegular {M : Matroid α} (hM : M.IsGraphic) :
