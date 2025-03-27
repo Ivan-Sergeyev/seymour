@@ -19,11 +19,9 @@ postfix:max "✶" => StandardRepr.dual
 lemma StandardRepr.dual_dual (S : StandardRepr α R) : S✶✶ = S := by
   simp [StandardRepr.dual]
 
-@[simp]
 lemma StandardRepr.dual_ground (S : StandardRepr α R) : S✶.toMatroid.E = S.toMatroid.E := by
   aesop
 
-@[simp]
 lemma StandardRepr.dual_indices_union_eq (S : StandardRepr α R) : S✶.X ∪ S✶.Y = S.X ∪ S.Y := by
   aesop
 
