@@ -110,17 +110,18 @@ lemma StandardRepr.toVectorMatroid_indep_iff_submatrix'' [DivisionRing R] (S : S
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (S.Bᵀ.uppendId.submatrix (Subtype.toSum ∘ hI.elem) id) := by
   simpa using S.toVectorMatroid_indep_iff_submatrix' I
 
-/-- Every vector matroid has a standard representation. -/
-lemma VectorMatroid.exists_standardRepr [DivisionRing R] (M : VectorMatroid α R) :
-    ∃ S : StandardRepr α R, S.toVectorMatroid = M := by
-  sorry
-
 /-- Every vector matroid has a standard representation whose rows are a given base. -/
 lemma VectorMatroid.exists_standardRepr_isBase [DivisionRing R] {B : Set α}
     (M : VectorMatroid α R) (hMB : M.toMatroid.IsBase B) :
     ∃ S : StandardRepr α R, M.X = B ∧ S.toVectorMatroid = M := by
   have hBY := hMB.subset_ground
   sorry
+
+/-- Every vector matroid has a standard representation. -/
+lemma VectorMatroid.exists_standardRepr [DivisionRing R] (M : VectorMatroid α R) :
+    ∃ S : StandardRepr α R, S.toVectorMatroid = M := by
+  peel VectorMatroid.exists_standardRepr_isBase M M.toMatroid.exists_isBase.choose_spec with hS
+  exact hS.2
 
 /-- Construct a matroid from a standard representation. -/
 def StandardRepr.toMatroid [DivisionRing R] (S : StandardRepr α R) : Matroid α :=
