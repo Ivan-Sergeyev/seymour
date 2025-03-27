@@ -103,7 +103,7 @@ lemma StandardRepr.toVectorMatroid_indep_iff_submatrix [DivisionRing R] (S : Sta
 lemma StandardRepr.toVectorMatroid_indep_iff_submatrix' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (S.B.prependIdᵀ.submatrix (Subtype.toSum ∘ hI.elem) id) :=
-  StandardRepr.toVectorMatroid_indep_iff_submatrix S I
+  S.toVectorMatroid_indep_iff_submatrix I
 
 lemma StandardRepr.toVectorMatroid_indep_iff_submatrix'' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
