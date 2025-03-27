@@ -19,10 +19,31 @@ postfix:max "✶" => StandardRepr.dual
 lemma StandardRepr.dual_dual (S : StandardRepr α R) : S✶✶ = S := by
   simp [StandardRepr.dual]
 
+lemma StandardRepr.dual_ground (S : StandardRepr α R) : S✶.toMatroid.E = S.toMatroid.E := by
+  aesop
+
+lemma StandardRepr.dual_indices_union_eq (S : StandardRepr α R) : S✶.X ∪ S✶.Y = S.X ∪ S.Y := by
+  aesop
+
+lemma StandardRepr.dual_isBase_iff {S : StandardRepr α R} {B : Set α} (hB : B ⊆ S✶.toMatroid.E) :
+    S✶.toMatroid.IsBase B ↔ S.toMatroid✶.IsBase B := by
+  rw [dual_ground] at hB
+  rw [Matroid.dual_isBase_iff']
+  simp only [hB, and_true]
+  sorry -- Theorem 2.2.8 in Oxley
+
 /-- The dual of standard representation gives a dual matroid. -/
 lemma StandardRepr.dual_toMatroid (S : StandardRepr α R) :
-    S✶.toMatroid = S.toMatroid✶ :=
-  sorry -- Theorem 2.2.8 in Oxley
+    S✶.toMatroid = S.toMatroid✶ := by
+  rw [← Matroid.dual_inj, Matroid.dual_dual, Matroid.ext_iff_isBase]
+  constructor
+  · rw [Matroid.dual_ground, StandardRepr.dual_ground]
+  · intro B hB
+    rw [Matroid.dual_ground] at hB
+    simp_rw [Matroid.dual_isBase_iff hB, @StandardRepr.dual_isBase_iff _ _ _ _ S (S✶.toMatroid.E \ B) (by tauto_set)]
+    rw [dual_ground] at hB ⊢
+    rw [Matroid.dual_isBase_iff (by tauto_set)]
+    simp_rw [Set.diff_diff_cancel_left hB]
 
 /-- Every vector matroid's dual has a standard representation. -/
 lemma VectorMatroid.dual_exists_standardRepr (M : VectorMatroid α R) :
