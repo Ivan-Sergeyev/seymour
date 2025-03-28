@@ -2,22 +2,7 @@ import Seymour.Matroid.Operations.Sum1
 import Seymour.Matroid.Operations.Sum2
 import Seymour.Matroid.Operations.Sum3
 import Seymour.Matroid.Notions.Graphicness
-
-
-/-- Matroid R10. -/
-def matroidR10 : StandardRepr (Fin 10) Z2 where
-  X := (·.val < 5)
-  Y := (·.val ≥ 5)
-  hXY := by
-    rw [Set.disjoint_left]
-    intro _ hX hY
-    rw [Set.mem_def] at hX hY
-    omega
-  B := !![1, 0, 0, 1, 1; 1, 1, 0, 0, 1; 0, 1, 1, 0, 1; 0, 0, 1, 1, 1; 1, 1, 1, 1, 1].submatrix
-    (fun i => ⟨i.val, i.property⟩)
-    (fun j => ⟨j.val - 5, by omega⟩)
-  decmemX := (·.val.decLt 5)
-  decmemY := Fin.decLe 5
+import Seymour.Matroid.Special.R10
 
 variable {α : Type} [DecidableEq α]
 

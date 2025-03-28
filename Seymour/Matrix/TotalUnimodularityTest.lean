@@ -48,13 +48,29 @@ theorem Matrix.testTotallyUnimodular_eq_isTotallyUnimodular {m n : ℕ} (A : Mat
 instance {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Decidable A.IsTotallyUnimodular :=
   decidable_of_iff _ A.testTotallyUnimodular_eq_isTotallyUnimodular
 
+def Matrix.square_set_submatrix {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ)
+      (r : Finset (Fin m)) (c : Finset (Fin n)) (h : #r = #c) :=
+  @Matrix.submatrix (Fin (#r)) _ _ (Fin (#r)) ℚ A ((r.sort (· ≤ ·))[·]) (fun p ↦ (c.sort (· ≤ ·))[p]'(by
+      rw [Finset.length_sort, show c.card = r.card by simp_all only [Fintype.card_coe]]
+      calc
+        p.val < #{ x // x ∈ r } := Fin.isLt p
+        _ = r.card := by simp_all only [Fintype.card_coe]
+      ))
 
 /-- Faster algorithm for testing total unimodularity but without formal guarantees. -/
-def Matrix.testTotallyUnimodularFaster {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Bool :=
-  (∀ k : ℕ, k < min m n → ∀ x : Fin k → Fin m, ∀ y : Fin k → Fin n, (A.submatrix x y).det ∈ SignType.cast.range) ∧ (
-    if hmn : m = n
-      then (A.submatrix id (finCongr hmn)).det ∈ SignType.cast.range
-    else if m < n
-      then (∀ y : Fin m → Fin n, (A.submatrix id y).det ∈ SignType.cast.range)
-      else (∀ x : Fin n → Fin m, (A.submatrix x id).det ∈ SignType.cast.range)
-  )
+def Matrix.testTotallyUnimodularFastest {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Bool :=
+  ∀ (r : Finset (Fin m)) (c : Finset (Fin n)) (h : #r = #c),
+    (A.square_set_submatrix r c h).det ∈ SignType.cast.range
+
+lemma Matrix.isTotallyUnimodular_of_testTotallyUnimodularFastest {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) :
+    A.testTotallyUnimodularFastest → A.IsTotallyUnimodular := by
+  rw [testTotallyUnimodularFastest]
+  intro a k f g hf hg
+  simp_all only [Fintype.card_coe, Function.range, Fin.getElem_fin, Set.mem_range,
+    decide_eq_true_eq]
+  have hfg : f.range.toFinset.card = g.range.toFinset.card := (by
+    simp_rw [Function.range, Set.toFinset_card, Set.card_range_of_injective hf, Set.card_range_of_injective hg])
+  have := a f.range.toFinset g.range.toFinset hfg
+  peel this with s hs
+  rw [hs]
+  sorry
