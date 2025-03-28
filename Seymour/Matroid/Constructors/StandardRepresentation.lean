@@ -256,7 +256,7 @@ private lemma B_eq_B_of_same_matroid_same_X_aux {X Y : Set α} {B : Matrix Y X Z
     {hX : ∀ a, Decidable (a ∈ X)} {hY : ∀ a, Decidable (a ∈ Y)} (hXXY : X ⊆ X ∪ Y) (hYXY : Y ⊆ X ∪ Y) -- redundant but keep
     {D : Set X} {y : Y}
     {l : (X ∪ Y).Elem →₀ Z2} (hl : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' D) (hly : l (hYXY.elem y) = 0)
-    [Fintype (X ↓∩ l.support.toSet).Elem]
+    [Fintype (X ↓∩ l.support.toSet)]
     {i : (X ∪ Y).Elem} (hiX : i.val ∈ X) (hlBi : ∑ a ∈ l.support, l a • B.uppendId a.toSum ⟨i, hiX⟩ = 0) :
     ∑ a ∈ (X ↓∩ Subtype.val '' l.support.toSet).toFinset, l (hXXY.elem a) • B.uppendId (hXXY.elem a).toSum ⟨i, hiX⟩ = 0 := by
   have hlXXY : l.support.toSet ⊆ hXXY.elem.range
