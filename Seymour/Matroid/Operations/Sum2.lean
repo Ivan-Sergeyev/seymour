@@ -170,23 +170,27 @@ private def Matrix.IsPreTU_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $x) => `($(x).$(Lean.mkIdent `IsPreTU))
   | _ => throw ()
 
+private lemma Matrix.not_isPreTU {X Y R : Type} [CommRing R] {A : Matrix X Y R} {k : ℕ} (hAk : ¬A.IsPreTU k) :
+    ∃ f : Fin k → X, ∃ g : Fin k → Y, (A.submatrix f g).det ∉ SignType.cast.range := by
+  simpa [Matrix.IsPreTU] using hAk
+
 private lemma Matrix.isTotallyUnimodular_iff_forall_IsPreTU {X Y R : Type} [CommRing R] (A : Matrix X Y R) :
     A.IsTotallyUnimodular ↔ ∀ k, A.IsPreTU k :=
   A.isTotallyUnimodular_iff
 
 private lemma lemma11₁ {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
-    (hxA₁ : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hyA₂ : (▮y ◫ A₂).IsTotallyUnimodular) :
+    (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular) :
     (matrix2sumComposition A₁ x A₂ y).IsPreTU 1 := by
   intro f g
   rw [Matrix.det_unique, Fin.default_eq_zero, Matrix.submatrix_apply]
-  have hA₁ : A₁.IsTotallyUnimodular := hxA₁.comp_rows Sum.inl
-  have hA₂ : A₂.IsTotallyUnimodular := hyA₂.comp_cols Sum.inr
+  have hA₁ : A₁.IsTotallyUnimodular := hAx.comp_rows Sum.inl
+  have hA₂ : A₂.IsTotallyUnimodular := hAy.comp_cols Sum.inr
   cases f 0 with
   | inl i₁ => cases g 0 with
     | inl j₁ => exact hA₁.apply i₁ j₁
     | inr j₂ => exact zero_in_signTypeCastRange
   | inr i₂ => cases g 0 with
-    | inl j₁ => exact in_signTypeCastRange_mul_in_signTypeCastRange (hyA₂.apply i₂ ◩()) (hxA₁.apply ◪() j₁)
+    | inl j₁ => exact in_signTypeCastRange_mul_in_signTypeCastRange (hAy.apply i₂ ◩()) (hAx.apply ◪() j₁)
     | inr j₂ => exact hA₂.apply i₂ j₂
 
 private lemma lemma11₂ {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
@@ -194,18 +198,37 @@ private lemma lemma11₂ {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matr
     (matrix2sumComposition A₁ x A₂ y).IsPreTU 2 := by
   sorry
 
-private lemma lemma12 {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
-    (hA₁ : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hA₂ : (▮y ◫ A₂).IsTotallyUnimodular)
+private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
+    {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
+    (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular)
     {k : ℕ} (hkAxAy : (matrix2sumComposition A₁ x A₂ y).IsPreTU k) :
     (matrix2sumComposition A₁ x A₂ y).IsPreTU k.succ := by
   cases k with
-  | zero => exact lemma11₁ hA₁ hA₂
+  | zero => exact lemma11₁ hAx hAy
   | succ n => cases n with
-    | zero => exact lemma11₂ hA₁ hA₂
+    | zero => exact lemma11₂ hAx hAy
     | succ k =>
+      have hA₁ : A₁.IsTotallyUnimodular := hAx.comp_rows Sum.inl
+      have hA₂ : A₂.IsTotallyUnimodular := hAy.comp_cols Sum.inr
+      by_contra contr
+      obtain ⟨f, g, hAfg⟩ := Matrix.not_isPreTU contr
+      obtain ⟨i₁, x₁, hix₁⟩ : ∃ i₁ : Fin k.succ, ∃ x₁ : X₁, f i₁ = ◩x₁
+      · have := lemma6₂ hAx hAy -- `D ◫ A₂` is TU
+        sorry
+      obtain ⟨i₂, x₂, hix₂⟩ : ∃ i₂ : Fin k.succ, ∃ x₂ : X₂, f i₂ = ◪x₂
+      · have := hA₁.fromCols_zero (Y' := Y₂) -- `A₁ ◫ 0` is TU
+        sorry
+      obtain ⟨j₁, y₁, hjy₁⟩ : ∃ j₁ : Fin k.succ, ∃ y₁ : Y₁, g j₁ = ◩y₁
+      · have := hA₂.zero_fromRows (X' := X₁) -- `0 ⊟ A₂` is TU
+        sorry
+      obtain ⟨j₂, y₂, hjy₂⟩ : ∃ j₂ : Fin k.succ, ∃ y₂ : Y₂, g j₂ = ◪y₂
+      · have := lemma6₁ hAx hAy -- `A₁ ⊟ D` is TU
+        sorry
+      obtain ⟨j₀, y₀, hyj₀⟩ : ∃ j₀ : Fin k.succ, ∃ y₀ : Y₁, g j₀ = ◩y₀ ∧ A₁ x₁ y₀ ≠ 0
+      · sorry -- because the `x₁` row cannot be all `0`s
       sorry
 
-lemma matrix2sumComposition_isTotallyUnimodular {α : Type} {X₁ Y₁ X₂ Y₂ : Set α}
+lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
     (hA₁ : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hA₂ : (▮y ◫ A₂).IsTotallyUnimodular) :
     (matrix2sumComposition A₁ x A₂ y).IsTotallyUnimodular := by

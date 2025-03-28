@@ -47,6 +47,54 @@ lemma Matrix.IsTotallyUnimodular.neg {X Y : Type} {A : Matrix X Y ℚ} (hA : A.I
   apply neg_one_pow_mul_in_signTypeCastRange
   assumption
 
+lemma Matrix.IsTotallyUnimodular.fromRows_zero {X Y X' R : Type} [CommRing R] {A : Matrix X Y R} (hA : A.IsTotallyUnimodular) :
+    (@Matrix.fromRows R X X' Y A 0).IsTotallyUnimodular :=
+  A.fromRows_replicateRow0_isTotallyUnimodular_iff.← hA
+
+lemma Matrix.IsTotallyUnimodular.fromCols_zero {X Y Y' R : Type} [CommRing R] {A : Matrix X Y R} (hA : A.IsTotallyUnimodular) :
+    (@Matrix.fromCols R X Y Y' A 0).IsTotallyUnimodular :=
+  A.fromCols_replicateCol0_isTotallyUnimodular_iff.← hA
+
+lemma Matrix.replicateRow0_fromRows_isTotallyUnimodular_iff {X Y X' R : Type} [CommRing R] (A : Matrix X Y R) :
+    (Matrix.fromRows (Matrix.replicateRow X' 0) A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
+  constructor
+  · intro hA
+    have hA' : (Matrix.fromRows A (Matrix.replicateRow X' 0)).IsTotallyUnimodular
+    · convert hA.submatrix Sum.swap id
+      ext i j
+      cases i <;> simp
+    rwa [A.fromRows_replicateRow0_isTotallyUnimodular_iff] at hA'
+  · intro hA
+    rw [←A.fromRows_replicateRow0_isTotallyUnimodular_iff] at hA
+    convert hA.submatrix Sum.swap id
+    ext i j
+    cases i <;> simp
+
+lemma Matrix.replicateCol0_fromCols_isTotallyUnimodular_iff {X Y Y' R : Type} [CommRing R] (A : Matrix X Y R) :
+    (Matrix.fromCols (Matrix.replicateCol Y' 0) A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
+  constructor
+  · intro hA
+    have hA' : (Matrix.fromCols A (Matrix.replicateCol Y' 0)).IsTotallyUnimodular
+    · convert hA.submatrix id Sum.swap
+      ext i j
+      cases j <;> simp
+    rwa [A.fromCols_replicateCol0_isTotallyUnimodular_iff] at hA'
+  · intro hA
+    rw [←A.fromCols_replicateCol0_isTotallyUnimodular_iff] at hA
+    convert hA.submatrix id Sum.swap
+    ext i j
+    cases j <;> simp
+
+lemma Matrix.IsTotallyUnimodular.zero_fromRows {X Y X' R : Type} [CommRing R]
+    {A : Matrix X Y R} (hA : A.IsTotallyUnimodular) :
+    (@Matrix.fromRows R X' X Y 0 A).IsTotallyUnimodular :=
+  A.replicateRow0_fromRows_isTotallyUnimodular_iff.← hA
+
+lemma Matrix.IsTotallyUnimodular.zero_fromCols {X Y Y' R : Type} [CommRing R]
+    {A : Matrix X Y R} (hA : A.IsTotallyUnimodular) :
+    (@Matrix.fromCols R X Y' Y 0 A).IsTotallyUnimodular :=
+  A.replicateCol0_fromCols_isTotallyUnimodular_iff.← hA
+
 lemma Matrix.IsTotallyUnimodular.det_eq_map_ratFloor_det {X : Type} [DecidableEq X] [Fintype X] {A : Matrix X X ℚ}
     (hA : A.IsTotallyUnimodular) :
     A.det = (A.map Rat.floor).det := by
