@@ -75,7 +75,14 @@ private def Matrix.auxZ2_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $x) => `($(x).$(Lean.mkIdent `auxZ2))
   | _ => throw ()
 
-variable {α : Type} [DecidableEq α]
+variable {α β : Type}
+
+/-- Matroids are regular up to map equivalence -/
+@[simp]
+lemma Matroid.IsRegular.mapEquiv {M : Matroid α} {f : α ≃ β} : (M.mapEquiv f).IsRegular ↔ M.IsRegular :=
+  sorry
+
+variable [DecidableEq α]
 
 private lemma Matrix.IsTotallyUnimodular.intCast_det_eq_auxZ2_det [Fintype α] {A : Matrix α α ℤ}
     (hA : A.IsTotallyUnimodular) :

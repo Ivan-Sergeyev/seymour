@@ -22,7 +22,9 @@ theorem Matroid.IsGood.isRegular {M : Matroid α} (hM : M.IsGood) : M.IsRegular 
   induction hM with
   | graphic hM => exact hM.isRegular
   | cographic hM => exact hM.isRegular
-  | isomorphicR10 hM => sorry
+  | @isomorphicR10 M e hM =>
+    have : (M.mapEquiv e).IsRegular := by simp_all [matroidR10.isRegular]
+    exact Matroid.IsRegular.mapEquiv.→ this
   | is1sum hM _ _ ih₁ ih₂ => exact hM.isRegular ih₁ ih₂
   | is2sum hM _ _ ih₁ ih₂ => exact hM.isRegular ih₁ ih₂
   | is3sum hM _ _ ih₁ ih₂ => exact hM.isRegular ih₁ ih₂
