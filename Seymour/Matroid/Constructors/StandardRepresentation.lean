@@ -252,13 +252,12 @@ lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype
     have heX : e ∉ S.X.toFinset := (Set.not_mem_of_mem_diff he <| Set.mem_toFinset.→ ·)
     simp [heX]
 
-set_option maxHeartbeats 400000 in
 private lemma B_eq_B_of_same_matroid_same_X_aux {X Y : Set α} {B : Matrix Y X Z2}
     {hX : ∀ a, Decidable (a ∈ X)} {hY : ∀ a, Decidable (a ∈ Y)} (hXXY : X ⊆ X ∪ Y) (hYXY : Y ⊆ X ∪ Y) -- redundant but keep
-    {D : Set X} {y : Y} (hyDXY : ↑y ᕃ Subtype.val '' D ⊆ X ∪ Y)
+    {D : Set X} {y : Y}
     {l : (X ∪ Y).Elem →₀ Z2} (hl : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' D) (hly : l (hYXY.elem y) = 0)
     [Fintype (X ↓∩ l.support.toSet).Elem]
-    {i : (X ∪ Y).Elem} (hil : i ∈ l.support) (hiX : i.val ∈ X) (hlBi : ∑ a ∈ l.support, l a • B.uppendId a.toSum ⟨i, hiX⟩ = 0) :
+    {i : (X ∪ Y).Elem} (hiX : i.val ∈ X) (hlBi : ∑ a ∈ l.support, l a • B.uppendId a.toSum ⟨i, hiX⟩ = 0) :
     ∑ a ∈ (X ↓∩ Subtype.val '' l.support.toSet).toFinset, l (hXXY.elem a) • B.uppendId (hXXY.elem a).toSum ⟨i, hiX⟩ = 0 := by
   have hlXXY : l.support.toSet ⊆ hXXY.elem.range
   · intro a ha
@@ -267,26 +266,29 @@ private lemma B_eq_B_of_same_matroid_same_X_aux {X Y : Set α} {B : Matrix Y X Z
     cases hl with
     | inl hay =>
       exfalso
-      have hay' : a = hYXY.elem y := SetCoe.ext hay
-      rw [←hay'] at hly
+      rw [show hYXY.elem y = a by exact (SetCoe.ext hay).symm] at hly
       exact Finsupp.not_mem_support_iff.← hly ha
-    | inr =>
+    | inr h =>
       rw [HasSubset.Subset.elem_range]
-      aesop
+      simp_rw [Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right, Set.mem_setOf_eq] at h ⊢
+      exact h.choose
   rw [←Set.left_eq_inter] at hlXXY
   have hlX : l.support.toSet = hXXY.elem '' (X ↓∩ l.support.toSet)
-  · conv => lhs; rw [hlXXY]
-    ext
-    aesop
-  rw [←Finset.sum_finset_coe, finset_toSet_sum hlX (fun a : (X ∪ Y).Elem => l a • B.uppendId a.toSum ⟨i, hiX⟩)] at hlBi
+  · conv_lhs => rw [hlXXY]
+    ext ⟨x, hx⟩
+    constructor <;> simp_all
+  rw [←Finset.sum_finset_coe, finset_toSet_sum hlX (fun a => l a • B.uppendId a.toSum ⟨i, hiX⟩)] at hlBi
   convert hlBi
   apply Finset.sum_bij (fun a ha => ⟨hXXY.elem a, by simpa using ha⟩)
   · simp
   · intro _ _ _ _ collision
-    apply SetCoe.ext
+    ext
     simpa using collision
-  · simp
-  · intro _ _
+  · simp only [Finset.mem_univ, HasSubset.Subset.elem, Set.mem_toFinset, Set.mem_preimage,
+    Set.mem_image, Finset.mem_coe, Finsupp.mem_support_iff, ne_eq, Subtype.exists, Set.mem_union,
+    exists_and_right, exists_eq_right, Subtype.coe_prop, true_or, exists_true_left, forall_const,
+    Subtype.forall, Subtype.mk.injEq, exists_prop, imp_self, implies_true] -- inlined to reduce heartbeats
+  · intros
     rfl
 
 set_option maxHeartbeats 1200000 in
@@ -394,7 +396,7 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
             have : Fintype (X ↓∩ l.support.toSet).Elem
             · exact Set.Finite.fintype Subtype.finite
             have hlBi' : ∑ x ∈ (X ↓∩ Subtype.val '' l.support.toSet).toFinset, l (hXXY.elem x) • (1 : Matrix X X Z2) x ⟨i, hiX⟩ = 0
-            · simpa using B_eq_B_of_same_matroid_same_X_aux hXXY hYXY hyDXY hl'' hly hil hiX hlBi
+            · simpa using B_eq_B_of_same_matroid_same_X_aux hXXY hYXY hl'' hly hiX hlBi
             rwa [
               (X ↓∩ Subtype.val '' l.support.toSet).toFinset.sum_of_single_nonzero
                 (fun a : X.Elem => l (hXXY.elem a) • (1 : Matrix X X Z2) a ⟨i, hiX⟩)
