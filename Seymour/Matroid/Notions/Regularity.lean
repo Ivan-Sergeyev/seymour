@@ -75,11 +75,11 @@ private def Matrix.auxZ2_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $x) => `($(x).$(Lean.mkIdent `auxZ2))
   | _ => throw ()
 
-variable {α β : Type}
+variable {α : Type}
 
 /-- Matroids are regular up to map equivalence -/
 @[simp]
-lemma Matroid.IsRegular.mapEquiv {M : Matroid α} {f : α ≃ β} : (M.mapEquiv f).IsRegular ↔ M.IsRegular :=
+lemma Matroid.isRegular_mapEquiv_iff {β : Type} (M : Matroid α) (f : α ≃ β) : (M.mapEquiv f).IsRegular ↔ M.IsRegular :=
   sorry
 
 variable [DecidableEq α]
