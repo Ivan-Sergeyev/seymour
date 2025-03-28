@@ -2,10 +2,8 @@ import Seymour.Matrix.Pivoting
 import Seymour.Matroid.Notions.Regularity
 
 
-variable {α : Type} [DecidableEq α]
-
 /-- `Matrix`-level 2-sum for matroids defined by their standard representation matrices; does not check legitimacy. -/
-abbrev matrix2sumComposition {β : Type} [Semiring β] {X₁ Y₁ X₂ Y₂ : Set α}
+abbrev matrix2sumComposition {α β : Type} [Semiring β] {X₁ Y₁ X₂ Y₂ : Set α}
     (A₁ : Matrix X₁ Y₁ β) (x : Y₁ → β) (A₂ : Matrix X₂ Y₂ β) (y : X₂ → β) :
     Matrix (X₁ ⊕ X₂) (Y₁ ⊕ Y₂) β :=
   Matrix.fromBlocks A₁ 0 (fun i j => y i * x j) A₂
@@ -13,7 +11,8 @@ abbrev matrix2sumComposition {β : Type} [Semiring β] {X₁ Y₁ X₂ Y₂ : Se
 /-- `StandardRepr`-level 2-sum of two matroids.
     The second part checks legitimacy: the ground sets of `M₁` and `M₂` are disjoint except for the element `a ∈ M₁.X ∩ M₂.Y`,
     and the bottom-most row of `M₁` and the left-most column of `M₂` are each nonzero vectors. -/
-def standardRepr2sumComposition {a : α} {S₁ S₂ : StandardRepr α Z2} (ha : S₁.X ∩ S₂.Y = {a}) (hXY : S₂.X ⫗ S₁.Y) :
+def standardRepr2sumComposition {α : Type} [DecidableEq α] {a : α} {S₁ S₂ : StandardRepr α Z2}
+    (ha : S₁.X ∩ S₂.Y = {a}) (hXY : S₂.X ⫗ S₁.Y) :
     StandardRepr α Z2 × Prop :=
   let A₁ : Matrix (S₁.X \ {a}).Elem S₁.Y.Elem Z2 := S₁.B ∘ Set.diff_subset.elem -- the top submatrix of `B₁`
   let A₂ : Matrix S₂.X.Elem (S₂.Y \ {a}).Elem Z2 := (S₂.B · ∘ Set.diff_subset.elem) -- the right submatrix of `B₂`
@@ -34,7 +33,7 @@ def standardRepr2sumComposition {a : α} {S₁ S₂ : StandardRepr α Z2} (ha : 
   ⟩
 
 /-- Binary matroid `M` is a result of 2-summing `M₁` and `M₂` in some way. -/
-structure Matroid.Is2sumOf (M : Matroid α) (M₁ M₂ : Matroid α) where
+structure Matroid.Is2sumOf {α : Type} [DecidableEq α] (M : Matroid α) (M₁ M₂ : Matroid α) where
   S : StandardRepr α Z2
   S₁ : StandardRepr α Z2
   S₂ : StandardRepr α Z2
@@ -49,7 +48,7 @@ structure Matroid.Is2sumOf (M : Matroid α) (M₁ M₂ : Matroid α) where
   IsSum : (standardRepr2sumComposition ha hXY).fst = S
   IsValid : (standardRepr2sumComposition ha hXY).snd
 
-instance Matroid.Is2sumOf.finS {M M₁ M₂ : Matroid α} (hM : M.Is2sumOf M₁ M₂) : Finite hM.S.X := by
+instance Matroid.Is2sumOf.finS {α : Type} [DecidableEq α] {M M₁ M₂ : Matroid α} (hM : M.Is2sumOf M₁ M₂) : Finite hM.S.X := by
   obtain ⟨_, _, _, _, _, _, _, _, _, _, _, rfl, _⟩ := hM
   apply Finite.Set.finite_union
 
@@ -64,7 +63,7 @@ lemma Matrix.IsTotallyUnimodular.duplicate_last_row {X Y : Type} {A₁ : Matrix 
   convert hAx.comp_rows (Sum.casesOn · id Sum.inr)
   aesop
 
-private lemma Matrix.IsTotallyUnimodular.aux190 {X₁ Y₁ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ}
+private lemma Matrix.IsTotallyUnimodular.aux190 {α : Type} [DecidableEq α] {X₁ Y₁ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ}
     (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) :
     (A₁ ⊟ ▬x ⊟ ▬(-x) ⊟ ▬0).IsTotallyUnimodular := by
   rw [Matrix.fromRows_replicateRow0_isTotallyUnimodular_iff]
@@ -100,7 +99,7 @@ private lemma Matrix.IsTotallyUnimodular.aux190 {X₁ Y₁ : Set α} {A₁ : Mat
     ext i
     cases hfi : f i <;> simp_all
 
-private lemma lemma6₁_aux {X₁ Y₁ X₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {y : X₂ → ℚ}
+private lemma lemma6₁_aux {α : Type} [DecidableEq α] {X₁ Y₁ X₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {y : X₂ → ℚ}
     (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hy : ∀ x : X₂, y x ∈ SignType.cast.range) :
     (A₁ ⊟ (y · * x ·)).IsTotallyUnimodular := by
   convert hAx.aux190.comp_rows (fun i : X₁.Elem ⊕ X₂.Elem => i.casesOn (Sum.inl ∘ Sum.inl ∘ Sum.inl) (fun i₂ =>
@@ -130,7 +129,7 @@ private lemma lemma6₁_aux {X₁ Y₁ X₂ : Set α} {A₁ : Matrix X₁ Y₁ �
       obtain ⟨s, hs⟩ := hy i₂
       cases s <;> simp_all
 
-private lemma lemma6₂_aux' {Y₁ X₂ Y₂ : Set α} {A₂ : Matrix X₂ Y₂ ℚ} {x : Y₁ → ℚ} {y : X₂ → ℚ}
+private lemma lemma6₂_aux' {α : Type} [DecidableEq α] {Y₁ X₂ Y₂ : Set α} {A₂ : Matrix X₂ Y₂ ℚ} {x : Y₁ → ℚ} {y : X₂ → ℚ}
     (hAy : (A₂ ◫ ▮y).IsTotallyUnimodular) (hx : ∀ y : Y₁, x y ∈ SignType.cast.range) :
     (A₂ ◫ (y · * x ·)).IsTotallyUnimodular := by
   have hAy' := hAy.transpose
@@ -140,7 +139,7 @@ private lemma lemma6₂_aux' {Y₁ X₂ Y₂ : Set α} {A₂ : Matrix X₂ Y₂ 
   simp_rw [mul_comm]
   exact result
 
-private lemma lemma6₂_aux {Y₁ X₂ Y₂ : Set α} {A₂ : Matrix X₂ Y₂ ℚ} {x : Y₁ → ℚ} {y : X₂ → ℚ}
+private lemma lemma6₂_aux {α : Type} [DecidableEq α] {Y₁ X₂ Y₂ : Set α} {A₂ : Matrix X₂ Y₂ ℚ} {x : Y₁ → ℚ} {y : X₂ → ℚ}
     (hAy : (▮y ◫ A₂).IsTotallyUnimodular) (hx : ∀ y : Y₁, x y ∈ SignType.cast.range) :
     ((y · * x ·) ◫ A₂).IsTotallyUnimodular := by
   have hAy' : (A₂ ◫ ▮y).IsTotallyUnimodular
@@ -149,12 +148,14 @@ private lemma lemma6₂_aux {Y₁ X₂ Y₂ : Set α} {A₂ : Matrix X₂ Y₂ �
   convert (lemma6₂_aux' hAy' hx).comp_cols Sum.swap
   aesop
 
-lemma lemma6₁ {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
+lemma lemma6₁ {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
+    {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
     (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular) :
     (A₁ ⊟ (y · * x ·)).IsTotallyUnimodular :=
   lemma6₁_aux hAx (hAy.apply · ◩())
 
-lemma lemma6₂ {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
+lemma lemma6₂ {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
+    {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
     (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular) :
     ((y · * x ·) ◫ A₂).IsTotallyUnimodular :=
   lemma6₂_aux hAy (hAx.apply ◪())
@@ -173,8 +174,7 @@ private lemma Matrix.isTotallyUnimodular_iff_forall_IsPreTU {X Y R : Type} [Comm
     A.IsTotallyUnimodular ↔ ∀ k, A.IsPreTU k :=
   A.isTotallyUnimodular_iff
 
-omit [DecidableEq α] in
-private lemma lemma11₁ {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
+private lemma lemma11₁ {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
     (hxA₁ : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hyA₂ : (▮y ◫ A₂).IsTotallyUnimodular) :
     (matrix2sumComposition A₁ x A₂ y).IsPreTU 1 := by
   intro f g
@@ -189,12 +189,12 @@ private lemma lemma11₁ {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁
     | inl j₁ => exact in_signTypeCastRange_mul_in_signTypeCastRange (hyA₂.apply i₂ ◩()) (hxA₁.apply ◪() j₁)
     | inr j₂ => exact hA₂.apply i₂ j₂
 
-private lemma lemma11₂ {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
+private lemma lemma11₂ {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
     (hA₁ : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hA₂ : (▮y ◫ A₂).IsTotallyUnimodular) :
     (matrix2sumComposition A₁ x A₂ y).IsPreTU 2 := by
   sorry
 
-private lemma lemma12 {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
+private lemma lemma12 {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
     (hA₁ : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hA₂ : (▮y ◫ A₂).IsTotallyUnimodular)
     {k : ℕ} (hkAxAy : (matrix2sumComposition A₁ x A₂ y).IsPreTU k) :
     (matrix2sumComposition A₁ x A₂ y).IsPreTU k.succ := by
@@ -205,7 +205,7 @@ private lemma lemma12 {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ �
     | succ k =>
       sorry
 
-lemma matrix2sumComposition_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ : Set α}
+lemma matrix2sumComposition_isTotallyUnimodular {α : Type} {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
     (hA₁ : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hA₂ : (▮y ◫ A₂).IsTotallyUnimodular) :
     (matrix2sumComposition A₁ x A₂ y).IsTotallyUnimodular := by
@@ -215,7 +215,8 @@ lemma matrix2sumComposition_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ : Set α}
   | zero => simp [Matrix.IsPreTU]
   | succ _ ih => exact lemma12 hA₁ hA₂ ih
 
-lemma standardRepr2sumComposition_B {S₁ S₂ : StandardRepr α Z2} {a : α} (ha : S₁.X ∩ S₂.Y = {a}) (hXY : S₂.X ⫗ S₁.Y) :
+lemma standardRepr2sumComposition_B {α : Type} [DecidableEq α] {S₁ S₂ : StandardRepr α Z2} {a : α}
+    (ha : S₁.X ∩ S₂.Y = {a}) (hXY : S₂.X ⫗ S₁.Y) :
     ∃ haX₁ : a ∈ S₁.X, ∃ haY₂ : a ∈ S₂.Y,
       (standardRepr2sumComposition ha hXY).fst.B =
       (matrix2sumComposition
@@ -227,8 +228,8 @@ lemma standardRepr2sumComposition_B {S₁ S₂ : StandardRepr α Z2} {a : α} (h
   have haXY : a ∈ S₁.X ∩ S₂.Y := ha ▸ rfl
   ⟨Set.mem_of_mem_inter_left haXY, Set.mem_of_mem_inter_right haXY, rfl⟩
 
-lemma standardRepr2sumComposition_hasTuSigning {S₁ S₂ : StandardRepr α Z2} {a : α} (ha : S₁.X ∩ S₂.Y = {a}) (hXY : S₂.X ⫗ S₁.Y)
-    (hS₁ : S₁.HasTuSigning) (hS₂ : S₂.HasTuSigning) :
+lemma standardRepr2sumComposition_hasTuSigning {α : Type} [DecidableEq α] {S₁ S₂ : StandardRepr α Z2} {a : α}
+    (ha : S₁.X ∩ S₂.Y = {a}) (hXY : S₂.X ⫗ S₁.Y) (hS₁ : S₁.HasTuSigning) (hS₂ : S₂.HasTuSigning) :
     (standardRepr2sumComposition ha hXY).fst.HasTuSigning := by
   obtain ⟨B₁, hB₁, hBB₁⟩ := hS₁
   obtain ⟨B₂, hB₂, hBB₂⟩ := hS₂
@@ -285,7 +286,7 @@ lemma standardRepr2sumComposition_hasTuSigning {S₁ S₂ : StandardRepr α Z2} 
 
 /-- Any 2-sum of regular matroids is a regular matroid.
     This is the middle of the three parts of the easy direction of the Seymour's theorem. -/
-theorem Matroid.Is2sumOf.isRegular {M M₁ M₂ : Matroid α}
+theorem Matroid.Is2sumOf.isRegular {α : Type} [DecidableEq α] {M M₁ M₂ : Matroid α}
     (hM : M.Is2sumOf M₁ M₂) (hM₁ : M₁.IsRegular) (hM₂ : M₂.IsRegular) :
     M.IsRegular := by
   have := hM.finS
