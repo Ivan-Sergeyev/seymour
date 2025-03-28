@@ -41,7 +41,7 @@ def matroidR10 : StandardRepr (Fin 10) Z2 where
 @[simp] theorem matroidR10_Y_eq : matroidR10.Y = { x | 5 ≤ x.val } := rfl
 @[simp] theorem matroidR10_B_eq : matroidR10.B = matroidR10_B_Z2_coe := rfl
 
-theorem matroidR10.IsRegular : matroidR10.toMatroid.IsRegular := by
+theorem matroidR10.isRegular : matroidR10.toMatroid.IsRegular := by
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning]
   use matroidR10_B_ℚ_coe
   simp_rw [Matrix.IsTuSigningOf]
