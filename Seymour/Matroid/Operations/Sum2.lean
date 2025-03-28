@@ -159,11 +159,61 @@ lemma lemma6₂ {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x 
     ((y · * x ·) ◫ A₂).IsTotallyUnimodular :=
   lemma6₂_aux hAy (hAx.apply ◪())
 
+/-- Matrix `A` satisfies TUness for submatrices up to `k`×`k` size, i.e.,
+    the determinant of every `k`×`k` submatrix of `A` (not necessarily injective) is `1`, `0`, or `-1`. -/
+private def Matrix.IsPreTU {X Y R : Type} [CommRing R] (A : Matrix X Y R) (k : ℕ) : Prop :=
+  ∀ f : Fin k → X, ∀ g : Fin k → Y, (A.submatrix f g).det ∈ SignType.cast.range
+
+@[app_unexpander Matrix.IsPreTU]
+private def Matrix.IsPreTU_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $x) => `($(x).$(Lean.mkIdent `IsPreTU))
+  | _ => throw ()
+
+private lemma Matrix.isTotallyUnimodular_iff_forall_IsPreTU {X Y R : Type} [CommRing R] (A : Matrix X Y R) :
+    A.IsTotallyUnimodular ↔ ∀ k, A.IsPreTU k :=
+  A.isTotallyUnimodular_iff
+
+omit [DecidableEq α] in
+private lemma lemma11₁ {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
+    (hxA₁ : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hyA₂ : (▮y ◫ A₂).IsTotallyUnimodular) :
+    (matrix2sumComposition A₁ x A₂ y).IsPreTU 1 := by
+  intro f g
+  rw [Matrix.det_unique, Fin.default_eq_zero, Matrix.submatrix_apply]
+  have hA₁ : A₁.IsTotallyUnimodular := hxA₁.comp_rows Sum.inl
+  have hA₂ : A₂.IsTotallyUnimodular := hyA₂.comp_cols Sum.inr
+  cases f 0 with
+  | inl i₁ => cases g 0 with
+    | inl j₁ => exact hA₁.apply i₁ j₁
+    | inr j₂ => exact zero_in_signTypeCastRange
+  | inr i₂ => cases g 0 with
+    | inl j₁ => exact in_signTypeCastRange_mul_in_signTypeCastRange (hyA₂.apply i₂ ◩()) (hxA₁.apply ◪() j₁)
+    | inr j₂ => exact hA₂.apply i₂ j₂
+
+private lemma lemma11₂ {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
+    (hA₁ : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hA₂ : (▮y ◫ A₂).IsTotallyUnimodular) :
+    (matrix2sumComposition A₁ x A₂ y).IsPreTU 2 := by
+  sorry
+
+private lemma lemma12 {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
+    (hA₁ : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hA₂ : (▮y ◫ A₂).IsTotallyUnimodular)
+    {k : ℕ} (hkAxAy : (matrix2sumComposition A₁ x A₂ y).IsPreTU k) :
+    (matrix2sumComposition A₁ x A₂ y).IsPreTU k.succ := by
+  cases k with
+  | zero => exact lemma11₁ hA₁ hA₂
+  | succ n => cases n with
+    | zero => exact lemma11₂ hA₁ hA₂
+    | succ k =>
+      sorry
+
 lemma matrix2sumComposition_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
     (hA₁ : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hA₂ : (▮y ◫ A₂).IsTotallyUnimodular) :
     (matrix2sumComposition A₁ x A₂ y).IsTotallyUnimodular := by
-  sorry -- TODO start again following Section 3
+  rw [Matrix.isTotallyUnimodular_iff_forall_IsPreTU]
+  intro k
+  induction k with
+  | zero => simp [Matrix.IsPreTU]
+  | succ _ ih => exact lemma12 hA₁ hA₂ ih
 
 lemma standardRepr2sumComposition_B {S₁ S₂ : StandardRepr α Z2} {a : α} (ha : S₁.X ∩ S₂.Y = {a}) (hXY : S₂.X ⫗ S₁.Y) :
     ∃ haX₁ : a ∈ S₁.X, ∃ haY₂ : a ∈ S₂.Y,

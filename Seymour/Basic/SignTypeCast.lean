@@ -20,12 +20,12 @@ lemma zero_in_signTypeCastRange [Ring R] : (0 : R) ∈ SignType.cast.range :=
   ⟨0, rfl⟩
 
 @[simp high]
-lemma neg_one_in_signTypeCastRange [Ring R] : (-1 : R) ∈ SignType.cast.range :=
-  ⟨-1, rfl⟩
-
-@[simp high]
 lemma one_in_signTypeCastRange [Ring R] : (1 : R) ∈ SignType.cast.range :=
   ⟨1, rfl⟩
+
+@[simp high]
+lemma neg_one_in_signTypeCastRange [Ring R] : (-1 : R) ∈ SignType.cast.range :=
+  ⟨-1, rfl⟩
 
 lemma in_signTypeCastRange_mul_in_signTypeCastRange [Ring R] {a b : R}
     (ha : a ∈ SignType.cast.range) (hb : b ∈ SignType.cast.range) :
