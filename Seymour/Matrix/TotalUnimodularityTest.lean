@@ -146,8 +146,8 @@ lemma Matrix.isTotallyUnimodular_of_testTotallyUnimodularFast {m n : ℕ} (A : M
   have hfg : f.range.toFinset.card = g.range.toFinset.card := (by
     simp_rw [Function.range, Set.toFinset_card, Set.card_range_of_injective hf, Set.card_range_of_injective hg])
   obtain ⟨e₁, e₂, hee⟩ := @Matrix.submatrix_eq_submatrix_reindex
-    (Fin m) (Fin n) (Fin (#{ x // x ∈ f.range.toFinset })) (Fin (#{ x // x ∈ f.range.toFinset })) (Fin k) (Fin k)
-    _ _ _ _ _ _  _ _ _ _ _ _ ℚ _
+    _ _ (Fin (#{ x // x ∈ f.range.toFinset })) (Fin (#{ x // x ∈ f.range.toFinset })) _ _
+    _ _ _ _ _ _  _ _ _ _ _ _ _ _
     (fun x => (f.range.toFinset.sort (· ≤ ·))[x]'(by
       rw [Finset.length_sort, ←Fintype.card_coe f.range.toFinset]
       exact Fin.isLt x
