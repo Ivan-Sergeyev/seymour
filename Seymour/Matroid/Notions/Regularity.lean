@@ -79,8 +79,16 @@ variable {α : Type}
 
 /-- Matroids are regular up to map equivalence -/
 @[simp]
-lemma Matroid.isRegular_mapEquiv_iff {β : Type} (M : Matroid α) (f : α ≃ β) : (M.mapEquiv f).IsRegular ↔ M.IsRegular :=
-  sorry
+lemma Matroid.isRegular_mapEquiv_iff {β : Type} (M : Matroid α) (f : α ≃ β) : (M.mapEquiv f).IsRegular ↔ M.IsRegular := by
+  constructor <;> intro ⟨X, Y, A, hA, hAM⟩
+  on_goal 1 => let f' := f.symm
+  on_goal 2 => let f' := f
+  all_goals
+    use f' '' X
+    use f' '' Y
+    use A.submatrix (f'.image X).symm (f'.image Y).symm
+    refine ⟨Matrix.IsTotallyUnimodular.submatrix _ _ hA, ?_⟩
+    sorry
 
 variable [DecidableEq α]
 
