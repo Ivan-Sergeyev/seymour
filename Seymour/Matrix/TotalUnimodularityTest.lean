@@ -89,17 +89,32 @@ lemma Set.range_eq_range_iff_exists_comp_equiv {α β γ : Type}
     let j := fun (a : α) =>
       have : ∃ (b : β), g b = f a := by
         simp_rw [range, Set.ext_iff] at hfg
-        have := (hfg (f a)).→ (by simp)
-        exact this
-      this.choose
-    have hji : j.Injective := by sorry
-    have hjs : j.Surjective := by sorry
-    use Equiv.ofBijective j ⟨hji, hjs⟩
-    simp only [Function.comp_def, funext_iff, Equiv.ofBijective_apply]
-    unfold j
-    intro x
-    simp only
-    sorry
+        exact (hfg (f a)).→ (by simp)
+      this
+    let rj := fun (b : β) =>
+      have : ∃ (a : α), f a = g b := by
+        simp_rw [range, Set.ext_iff] at hfg
+        exact (hfg (g b)).← (by simp)
+      this
+    use Equiv.ofBijective (fun a => (j a).choose) ⟨fun a₁ a₂ haa =>
+      by
+        simp only at haa
+        have ha₁ := (j a₁).choose_spec
+        rw [haa] at ha₁
+        have ha₂ := (j a₂).choose_spec
+        rw [ha₁] at ha₂
+        exact hf ha₂,
+      by
+        rw [Function.surjective_iff_hasRightInverse]
+        use (fun b => (rj b).choose)
+        intro b
+        have := (j ((fun b => (rj b).choose) b)).choose_spec
+        simp only [(rj b).choose_spec] at this ⊢
+        apply hg
+        exact this⟩
+    simp only [Function.comp_def, Equiv.ofBijective_apply]
+    ext x
+    exact (j x).choose_spec.symm
   · intro ⟨e, he⟩
     simp_rw [range]
     ext x
@@ -149,18 +164,25 @@ lemma Matrix.isTotallyUnimodular_of_testTotallyUnimodularFastest {m n : ℕ} (A 
         p.val < #{ x // x ∈ f.range.toFinset } := Fin.isLt p
         _ = _ := by simp_all only [Fintype.card_coe])) f g
     (by
+      intro a₁ a₂ haa
       sorry)
     (by
+      intro a₁ a₂ haa
       sorry)
     hf hg
     (by
       simp only [Function.range, Set.toFinset_range, Fin.getElem_fin, ←Finset.univ_filter_mem_range]
       ext x
-      sorry)
+      constructor <;> intro h <;> simp only [Set.mem_range, Finset.univ_filter_exists] at h ⊢
+      · sorry
+      · sorry
+      )
     (by
       simp only [Function.range, Set.toFinset_range, Fin.getElem_fin, ←Finset.univ_filter_mem_range]
       ext x
-      sorry)
+      constructor <;> intro h <;> simp only [Set.mem_range, Finset.univ_filter_exists] at h ⊢
+      · sorry
+      · sorry)
     A
   have := a f.range.toFinset g.range.toFinset hfg
   rw [square_set_submatrix, hee, in_signTypeCastRange_iff_abs (((reindex e₁ e₂) (A.submatrix f g))).det] at this
