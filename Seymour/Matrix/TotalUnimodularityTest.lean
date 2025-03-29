@@ -52,11 +52,8 @@ instance {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Decidable A.IsTotallyUni
 abbrev Matrix.square_set_submatrix {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ)
       (r : Finset (Fin m)) (c : Finset (Fin n)) (h : #r = #c) :=
   @Matrix.submatrix (Fin (#r)) _ _ (Fin (#r)) ℚ A ((r.sort (· ≤ ·))[·]) (fun p ↦ (c.sort (· ≤ ·))[p]'(by
-      rw [Finset.length_sort, show c.card = r.card by simp_all only [Fintype.card_coe]]
-      calc
-        p.val < #{ x // x ∈ r } := Fin.isLt p
-        _ = r.card := by simp_all only [Fintype.card_coe]
-      ))
+    rw [Finset.length_sort, show c.card = r.card by simp_all only [Fintype.card_coe], ←Fintype.card_coe r]
+    exact Fin.isLt p))
 
 /-- Faster algorithm for testing total unimodularity but without formal guarantees. -/
 def Matrix.testTotallyUnimodularFaster {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Bool :=
@@ -115,15 +112,25 @@ lemma Set.range_eq_range_iff_exists_comp_equiv {α β γ : Type}
     simp only [Function.comp_def, Equiv.ofBijective_apply]
     ext x
     exact (j x).choose_spec.symm
-  · intro ⟨e, he⟩
+  · rintro ⟨e, rfl⟩
     simp_rw [range]
     ext x
-    subst he
-    simp_all only [Function.Injective.of_comp_iff, Function.comp_apply, mem_setOf_eq]
-    constructor <;> intro ⟨w, h⟩ <;> subst h
-    · simp_all only [exists_apply_eq_apply]
+    simp_all only [Function.comp_apply, mem_setOf_eq]
+    constructor <;> rintro ⟨w, rfl⟩
+    · exact exists_apply_eq_apply g (e w)
     · use e.symm w
-      simp
+      rw [Equiv.apply_symm_apply]
+
+-- (fun x => (Finset.sort (fun x1 x2 => x1 ≤ x2) q)[x]).range
+lemma Set.range_of_list_get {α : Type} [DecidableEq α] {n : ℕ} {s : List α} (hn : n = s.length) :
+    (fun x : Fin n => s[x]).range = s.toFinset := by
+  ext x
+  simp_rw [Function.range, Fin.getElem_fin, List.coe_toFinset, mem_range, mem_setOf_eq]
+  constructor <;> intro h
+  · obtain ⟨w, rfl⟩ := h
+    simp_rw [List.getElem_mem]
+  · have ⟨i, hi, hii⟩ := List.getElem_of_mem h
+    use (Fin.mk i (by rw [hn]; exact hi))
 
 lemma Matrix.submatrix_eq_submatrix_reindex {r c n o p q : Type}
       [DecidableEq r] [Fintype r] [DecidableEq c] [Fintype c] [DecidableEq n] [Fintype n]
@@ -134,10 +141,9 @@ lemma Matrix.submatrix_eq_submatrix_reindex {r c n o p q : Type}
       (hnpr : nr.range = pr.range) (hoqc : oc.range = qc.range)
       (A : Matrix r c R) :
     ∃ e₁ e₂, (A.submatrix nr oc) = (A.submatrix pr qc).reindex e₁ e₂ := by
-  have ⟨e₁, he₁⟩ : ∃ (e : n ≃ p), nr = pr ∘ e := (Set.range_eq_range_iff_exists_comp_equiv hnr hpr).→ (by tauto_set)
-  have ⟨e₂, he₂⟩ : ∃ (e : o ≃ q), oc = qc ∘ e := (Set.range_eq_range_iff_exists_comp_equiv hoc hqc).→ (by tauto_set)
+  obtain ⟨e₁, rfl⟩ := (Set.range_eq_range_iff_exists_comp_equiv hnr hpr).→ hnpr
+  obtain ⟨e₂, rfl⟩ := (Set.range_eq_range_iff_exists_comp_equiv hoc hqc).→ hoqc
   refine ⟨e₁.symm, e₂.symm, ?_⟩
-  subst he₁ he₂
   simp
 
 lemma Matrix.isTotallyUnimodular_of_testTotallyUnimodularFastest {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) :
@@ -152,37 +158,35 @@ lemma Matrix.isTotallyUnimodular_of_testTotallyUnimodularFastest {m n : ℕ} (A 
   obtain ⟨e₁, e₂, hee⟩ := @Matrix.submatrix_eq_submatrix_reindex
     (Fin m) (Fin n) (Fin (#{ x // x ∈ f.range.toFinset })) (Fin (#{ x // x ∈ f.range.toFinset })) (Fin k) (Fin k)
     _ _ _ _ _ _  _ _ _ _ _ _ ℚ _
-    (fun x => (Finset.sort (fun x1 x2 => x1 ≤ x2) f.range.toFinset)[x]'(by
-      rw [Finset.length_sort]
-      calc
-        x.val < #{ x // x ∈ f.range.toFinset } := Fin.isLt x
-        _ = _ := by simp_all only [Fintype.card_coe]
-      ))
-    (fun p => (Finset.sort (fun x1 x2 => x1 ≤ x2) g.range.toFinset)[p]'(by
-      rw [Finset.length_sort, show g.range.toFinset.card = f.range.toFinset.card by simp_all only [Fintype.card_coe]]
-      calc
-        p.val < #{ x // x ∈ f.range.toFinset } := Fin.isLt p
-        _ = _ := by simp_all only [Fintype.card_coe])) f g
+    (fun x => (f.range.toFinset.sort (· ≤ ·))[x]'(by
+      rw [Finset.length_sort, ←Fintype.card_coe f.range.toFinset]
+      exact Fin.isLt x
+    ))
+    (fun p => (g.range.toFinset.sort (· ≤ ·))[p]'(by
+      rw [Finset.length_sort, show g.range.toFinset.card = f.range.toFinset.card by simp_all only [Fintype.card_coe],
+        ←Fintype.card_coe f.range.toFinset]
+      exact Fin.isLt p
+    ))
+    f g
     (by
       intro a₁ a₂ haa
-      sorry)
+      have := (List.nodup_iff_injective_get.→ <| Finset.sort_nodup (· ≤ ·) f.range.toFinset) haa
+      simp_rw [Fin.mk.injEq, Fin.val_inj] at this
+      exact this)
     (by
       intro a₁ a₂ haa
-      sorry)
+      have := (List.nodup_iff_injective_get.→ <| Finset.sort_nodup (· ≤ ·) g.range.toFinset) haa
+      simp_rw [Fin.mk.injEq, Fin.val_inj] at this
+      exact this)
     hf hg
     (by
-      simp only [Function.range, Set.toFinset_range, Fin.getElem_fin, ←Finset.univ_filter_mem_range]
-      ext x
-      constructor <;> intro h <;> simp only [Set.mem_range, Finset.univ_filter_exists] at h ⊢
-      · sorry
-      · sorry
-      )
+      rw [Set.range_of_list_get (by rw [Finset.length_sort, Fintype.card_coe])]
+      simp
+    )
     (by
-      simp only [Function.range, Set.toFinset_range, Fin.getElem_fin, ←Finset.univ_filter_mem_range]
-      ext x
-      constructor <;> intro h <;> simp only [Set.mem_range, Finset.univ_filter_exists] at h ⊢
-      · sorry
-      · sorry)
+      rw [Set.range_of_list_get (by rw [Finset.length_sort, Fintype.card_coe]; exact hfg)]
+      simp
+    )
     A
   have := a f.range.toFinset g.range.toFinset hfg
   rw [square_set_submatrix, hee, in_signTypeCastRange_iff_abs (((reindex e₁ e₂) (A.submatrix f g))).det] at this
