@@ -8,7 +8,7 @@ def matroidR10_B_ℚ : Matrix (Fin 5) (Fin 5) ℚ :=
   matroidR10_B_Z2.map (·.val)
 
 theorem matroidR10_B_ℚ_TU : matroidR10_B_ℚ.IsTotallyUnimodular :=
-  matroidR10_B_ℚ.isTotallyUnimodular_of_testTotallyUnimodularFastest (by decide +kernel)
+  matroidR10_B_ℚ.isTotallyUnimodular_of_testTotallyUnimodularFast (by decide +kernel)
 
 def matroidR10_B_Z2_coe : Matrix { x : Fin 10 | x.val < 5 } { x : Fin 10 | 5 ≤ x.val } Z2 :=
   matroidR10_B_Z2.submatrix
