@@ -111,7 +111,6 @@ lemma Set.range_eq_range_iff_exists_comp_equiv {α β γ : Type}
     · use e.symm w
       rw [Equiv.apply_symm_apply]
 
--- (fun x => (Finset.sort (fun x1 x2 => x1 ≤ x2) q)[x]).range
 lemma Set.range_of_list_get {α : Type} [DecidableEq α] {n : ℕ} {s : List α} (hn : n = s.length) :
     (fun x : Fin n => s[x]).range = s.toFinset := by
   ext x
