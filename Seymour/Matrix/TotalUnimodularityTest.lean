@@ -61,7 +61,8 @@ def Matrix.testTotallyUnimodularFastest {m n : ℕ} (A : Matrix (Fin m) (Fin n) 
     (A.square_set_submatrix r c h).det ∈ SignType.cast.range
 
 -- Lemmas that should all be upstreamed to mathlib
-lemma Matrix.det_reindex_self_self {m n : Type} [DecidableEq n] [Fintype n]
+-- https://github.com/leanprover-community/mathlib4/pull/23421/files
+lemma Matrix.abs_det_reindex_self_self {m n : Type} [DecidableEq n] [Fintype n]
       [DecidableEq m] [Fintype m]
       {R : Type} [LinearOrderedCommRing R] (e₁ e₂ : m ≃ n) (A : Matrix m m R) :
     |((reindex e₁ e₂) A).det| = |A.det| :=
@@ -180,5 +181,5 @@ lemma Matrix.isTotallyUnimodular_of_testTotallyUnimodularFast {m n : ℕ} (A : M
     A
   have := a f.range.toFinset g.range.toFinset hfg
   rw [square_set_submatrix, hee, in_signTypeCastRange_iff_abs (((reindex e₁ e₂) (A.submatrix f g))).det] at this
-  rw [←Matrix.det_reindex_self_self e₁ e₂ (A.submatrix f g)]
+  rw [←Matrix.abs_det_reindex_self_self e₁ e₂ (A.submatrix f g)]
   exact this
