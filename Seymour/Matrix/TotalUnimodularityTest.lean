@@ -56,7 +56,7 @@ abbrev Matrix.square_set_submatrix {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ)
     exact Fin.isLt p))
 
 /-- Faster algorithm for testing total unimodularity without permutation with pending formal guarantees. -/
-def Matrix.testTotallyUnimodularFastest {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Bool :=
+def Matrix.testTotallyUnimodularFast {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Bool :=
   ∀ (r : Finset (Fin m)) (c : Finset (Fin n)) (h : #r = #c),
     (A.square_set_submatrix r c h).det ∈ SignType.cast.range
 
@@ -138,8 +138,8 @@ lemma Matrix.submatrix_eq_submatrix_reindex {r c n o p q : Type}
 
 /-- A fast version of `Matrix.testTotallyUnimodular` which doesn't test every permutation. -/
 lemma Matrix.isTotallyUnimodular_of_testTotallyUnimodularFast {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) :
-    A.testTotallyUnimodularFastest → A.IsTotallyUnimodular := by
-  rw [testTotallyUnimodularFastest]
+    A.testTotallyUnimodularFast → A.IsTotallyUnimodular := by
+  rw [testTotallyUnimodularFast]
   intro a k f g hf hg
   simp_all only [Fintype.card_coe, Function.range, Fin.getElem_fin,
     decide_eq_true_eq]
