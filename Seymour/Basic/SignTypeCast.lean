@@ -5,8 +5,8 @@ lemma zero_iff_ratCast_zero_of_in_signTypeCastRange {a : ℚ} (ha : a ∈ SignTy
     a = 0 ↔ (a.cast : Z2) = 0 := by
   constructor <;> intro h0
   · rw [h0, Rat.cast_zero]
-  · obtain ⟨s, hs⟩ := ha
-    cases s <;> aesop
+  · obtain ⟨s, rfl⟩ := ha
+    cases s <;> simp_all
 
 lemma ratCast_eq_intCast_ratFloor_of_in_signTypeCastRange {a : ℚ} (ha : a ∈ SignType.cast.range) :
     (a.cast : Z2) = (a.floor.cast : Z2) := by
@@ -49,11 +49,7 @@ lemma in_signTypeCastRange_of_neg_one_mul_self [Ring R] {a : R}
 lemma in_signTypeCastRange_iff_abs [LinearOrderedCommRing R] (a : R) :
     a ∈ SignType.cast.range ↔ |a| ∈ SignType.cast.range := by
   constructor
-  · rintro ⟨s, rfl⟩
-    cases s with
-    | zero => use 0; simp
-    | pos => use 1; simp
-    | neg => use 1; simp
+  · rintro ⟨(h | h | h), rfl⟩ <;> simp
   · intro ⟨s, hs⟩
     symm at hs
     cases s with
@@ -90,5 +86,5 @@ lemma neg_one_pow_in_signTypeCastRange [Ring R] (k : ℕ) :
     simp [hk.neg_one_pow]
 
 lemma neg_one_pow_mul_in_signTypeCastRange [Ring R] {a : R} (ha : a ∈ SignType.cast.range) (k : ℕ) :
-    (-1) ^ k * a ∈ SignType.cast.range := by
-  exact in_signTypeCastRange_mul_in_signTypeCastRange (neg_one_pow_in_signTypeCastRange k) ha
+    (-1) ^ k * a ∈ SignType.cast.range :=
+  in_signTypeCastRange_mul_in_signTypeCastRange (neg_one_pow_in_signTypeCastRange k) ha
