@@ -48,7 +48,7 @@ theorem matroidR10.isRegular : matroidR10.toMatroid.IsRegular := by
   simp_rw [Matrix.IsTuSigningOf]
   refine ⟨?_, fun i j => ?_⟩
   · rw [matroidR10_B_ℚ_coe_eq_coe_matroidR10_B_ℚ]
-    sorry
+    exact Matrix.IsTotallyUnimodular.submatrix _ _ matroidR10_B_ℚ_TU
   · rw [matroidR10_B_ℚ_coe, matroidR10_B_eq]
     simp_rw [Set.coe_setOf, Matrix.map_apply, abs_eq_self]
     exact Nat.cast_nonneg _
