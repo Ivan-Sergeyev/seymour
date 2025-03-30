@@ -324,8 +324,7 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
     rw [Set.not_subset_iff_exists_mem_not_mem] at hD
     -- otherwise `y ᕃ Dₒ` is dependent in `Mₒ` but indep in `M`
     have hMₒ : ¬ (StandardRepr.mk X Y hXY Bₒ hX hY).toMatroid.Indep (y.val ᕃ Dₒ)
-    · have : Fintype X := sorry
-      rw [StandardRepr.toMatroid_indep_iff_elem', not_exists]
+    · rw [StandardRepr.toMatroid_indep_iff_elem', not_exists]
       intro hDₒ
       erw [not_linearIndependent_iff]
       refine ⟨Finset.univ, 1, ?_, ⟨hYXY.elem y, by simp_all⟩, Finset.mem_univ _, Ne.symm (zero_ne_one' Z2)⟩
@@ -342,7 +341,8 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
           Finset.sum_insert (by
             simp only [Finset.mem_filter, Finset.mem_univ, Finset.mem_map, exists_and_right, not_exists, not_not]
             intro a ⟨_, contradictory⟩
-            have hay : a.val = y.val := by simpa using contradictory
+            have hay : a.val = y.val
+            · simpa using contradictory
             have impossible : y.val ∈ X ∩ Y := ⟨hay ▸ a.property, y.property⟩
             rw [hXY.inter_eq] at impossible
             exact impossible)]
