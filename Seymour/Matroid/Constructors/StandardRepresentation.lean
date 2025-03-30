@@ -252,40 +252,39 @@ lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype
     have heX : e ∉ S.X.toFinset := (Set.not_mem_of_mem_diff he <| Set.mem_toFinset.→ ·)
     simp [heX]
 
-set_option maxHeartbeats 400000 in
 private lemma B_eq_B_of_same_matroid_same_X_aux {X Y : Set α} {B : Matrix Y X Z2}
     {hX : ∀ a, Decidable (a ∈ X)} {hY : ∀ a, Decidable (a ∈ Y)} (hXXY : X ⊆ X ∪ Y) (hYXY : Y ⊆ X ∪ Y) -- redundant but keep
     {D : Set X} {y : Y} (hyDXY : ↑y ᕃ Subtype.val '' D ⊆ X ∪ Y)
-    {l : (X ∪ Y).Elem →₀ Z2} (hl : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' D) (hly : l (hYXY.elem y) = 0)
-    [Fintype (X ↓∩ l.support.toSet).Elem]
+    {l : (X ∪ Y).Elem →₀ Z2} (hl : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' D) (hly : l (Set.inclusion hYXY y) = 0)
     {i : (X ∪ Y).Elem} (hil : i ∈ l.support) (hiX : i.val ∈ X) (hlBi : ∑ a ∈ l.support, l a • B.uppendId a.toSum ⟨i, hiX⟩ = 0) :
-    ∑ a ∈ (X ↓∩ Subtype.val '' l.support.toSet).toFinset, l (hXXY.elem a) • B.uppendId (hXXY.elem a).toSum ⟨i, hiX⟩ = 0 := by
-  have hlXXY : l.support.toSet ⊆ hXXY.elem.range
-  · intro a ha
-    specialize hl a ha
-    rw [Set.mem_insert_iff] at hl
-    cases hl with
-    | inl hay =>
-      exfalso
-      have hay' : a = hYXY.elem y := SetCoe.ext hay
-      rw [←hay'] at hly
-      exact Finsupp.not_mem_support_iff.← hly ha
-    | inr =>
-      rw [HasSubset.Subset.elem_range]
-      aesop
-  rw [←Set.left_eq_inter] at hlXXY
-  have hlX : l.support.toSet = hXXY.elem '' (X ↓∩ l.support.toSet)
-  · conv => lhs; rw [hlXXY]
-    ext
-    aesop
-  rw [←Finset.sum_finset_coe, finset_toSet_sum hlX (fun a : (X ∪ Y).Elem => l a • B.uppendId a.toSum ⟨i, hiX⟩)] at hlBi
+    ∑ a ∈ (l.support.image Subtype.val).subtype (· ∈ X),
+      l (hXXY.elem a) • B.uppendId (Set.inclusion hXXY a).toSum ⟨i, hiX⟩ = 0 := by
+  rw [←Finset.sum_finset_coe] at hlBi
   convert hlBi
   apply Finset.sum_bij (fun a ha => ⟨hXXY.elem a, by simpa using ha⟩)
   · simp
-  · intro _ _ _ _ collision
-    apply SetCoe.ext
-    simpa using collision
   · simp
+  · intro h p
+    simp only [Finset.coe_sort_coe, HasSubset.Subset.elem, Finset.mem_subtype, Finset.mem_image,
+      Finsupp.mem_support_iff, ne_eq, Subtype.exists, Set.mem_union, exists_and_right,
+      exists_eq_right, Subtype.coe_prop, true_or, exists_true_left]
+    use h
+    simp only [Subtype.coe_eta, exists_prop, and_true]
+    refine ⟨?_, (l.mem_support_toFun h).→ (by simp)⟩
+    have h₁ : ↑h.val ∈ Subtype.val '' D := by
+      rcases hl h (by simp) with (hp | hp)
+      · have : h.val = Set.inclusion hYXY y := by
+          suffices h.val.val = (Set.inclusion hYXY y).val by exact Subtype.coe_inj.→ this
+          rw [Set.coe_inclusion hYXY y]
+          exact hp
+        rw [← this] at hly
+        exact absurd hly (l.mem_support_iff.→ (by simp))
+      · exact hp
+    have h₂ : Subtype.val '' D ⊆ X := by
+      rw [Set.image, Set.setOf_subset]
+      rintro hx ⟨⟨_, ha⟩, ⟨_, rfl⟩⟩
+      exact ha
+    exact Set.mem_of_mem_of_subset h₁ h₂
   · intro _ _
     rfl
 
@@ -325,7 +324,8 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
     rw [Set.not_subset_iff_exists_mem_not_mem] at hD
     -- otherwise `y ᕃ Dₒ` is dependent in `Mₒ` but indep in `M`
     have hMₒ : ¬ (StandardRepr.mk X Y hXY Bₒ hX hY).toMatroid.Indep (y.val ᕃ Dₒ)
-    · rw [StandardRepr.toMatroid_indep_iff_elem', not_exists]
+    · have : Fintype X := sorry
+      rw [StandardRepr.toMatroid_indep_iff_elem', not_exists]
       intro hDₒ
       erw [not_linearIndependent_iff]
       refine ⟨Finset.univ, 1, ?_, ⟨hYXY.elem y, by simp_all⟩, Finset.mem_univ _, Ne.symm (zero_ne_one' Z2)⟩
@@ -342,8 +342,7 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
           Finset.sum_insert (by
             simp only [Finset.mem_filter, Finset.mem_univ, Finset.mem_map, exists_and_right, not_exists, not_not]
             intro a ⟨_, contradictory⟩
-            have hay : a.val = y.val
-            · simpa using contradictory
+            have hay : a.val = y.val := by simpa using contradictory
             have impossible : y.val ∈ X ∩ Y := ⟨hay ▸ a.property, y.property⟩
             rw [hXY.inter_eq] at impossible
             exact impossible)]
@@ -391,12 +390,10 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
             have hlBi := congr_fun hlB ⟨i.val, hiX⟩
             rw [Finsupp.linearCombination_apply, Pi.zero_apply, Finsupp.sum, Finset.sum_apply] at hlBi
             simp_rw [Pi.smul_apply, Function.comp_apply] at hlBi
-            have : Fintype (X ↓∩ l.support.toSet).Elem
-            · exact Set.Finite.fintype Subtype.finite
-            have hlBi' : ∑ x ∈ (X ↓∩ Subtype.val '' l.support.toSet).toFinset, l (hXXY.elem x) • (1 : Matrix X X Z2) x ⟨i, hiX⟩ = 0
+            have hlBi' : ∑ x ∈ (l.support.image Subtype.val).subtype (· ∈ X), l (hXXY.elem x) • (1 : Matrix X X Z2) x ⟨i, hiX⟩ = 0
             · simpa using B_eq_B_of_same_matroid_same_X_aux hXXY hYXY hyDXY hl'' hly hil hiX hlBi
             rwa [
-              (X ↓∩ Subtype.val '' l.support.toSet).toFinset.sum_of_single_nonzero
+              ((l.support.image Subtype.val).subtype (· ∈ X)).sum_of_single_nonzero
                 (fun a : X.Elem => l (hXXY.elem a) • (1 : Matrix X X Z2) a ⟨i, hiX⟩)
                 ⟨i, hiX⟩ (by simp_all) (fun _ _ _ ↦ by simp_all),
               Matrix.one_apply_eq,
