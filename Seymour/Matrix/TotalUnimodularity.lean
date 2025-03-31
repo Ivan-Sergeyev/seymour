@@ -39,61 +39,13 @@ example : ¬ (!![2] : Matrix _ _ (ZMod 4)).IsTotallyUnimodular := by
   use 1, id, id
   decide
 
-lemma Matrix.IsTotallyUnimodular.neg {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
+lemma Matrix.IsTotallyUnimodular.neg {X Y R : Type} [CommRing R] {A : Matrix X Y R} (hA : A.IsTotallyUnimodular) :
     (-A).IsTotallyUnimodular := by
   rw [Matrix.isTotallyUnimodular_iff] at hA ⊢
   peel hA
   rw [Matrix.submatrix_neg, Pi.neg_apply, Pi.neg_apply, Matrix.det_neg]
   apply neg_one_pow_mul_in_signTypeCastRange
   assumption
-
-lemma Matrix.IsTotallyUnimodular.fromRows_zero {X Y X' R : Type} [CommRing R] {A : Matrix X Y R} (hA : A.IsTotallyUnimodular) :
-    (@Matrix.fromRows R X X' Y A 0).IsTotallyUnimodular :=
-  A.fromRows_replicateRow0_isTotallyUnimodular_iff.← hA
-
-lemma Matrix.IsTotallyUnimodular.fromCols_zero {X Y Y' R : Type} [CommRing R] {A : Matrix X Y R} (hA : A.IsTotallyUnimodular) :
-    (@Matrix.fromCols R X Y Y' A 0).IsTotallyUnimodular :=
-  A.fromCols_replicateCol0_isTotallyUnimodular_iff.← hA
-
-lemma Matrix.replicateRow0_fromRows_isTotallyUnimodular_iff {X Y X' R : Type} [CommRing R] (A : Matrix X Y R) :
-    (Matrix.fromRows (Matrix.replicateRow X' 0) A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
-  constructor
-  · intro hA
-    have hA' : (Matrix.fromRows A (Matrix.replicateRow X' 0)).IsTotallyUnimodular
-    · convert hA.submatrix Sum.swap id
-      ext i j
-      cases i <;> simp
-    rwa [A.fromRows_replicateRow0_isTotallyUnimodular_iff] at hA'
-  · intro hA
-    rw [←A.fromRows_replicateRow0_isTotallyUnimodular_iff] at hA
-    convert hA.submatrix Sum.swap id
-    ext i j
-    cases i <;> simp
-
-lemma Matrix.replicateCol0_fromCols_isTotallyUnimodular_iff {X Y Y' R : Type} [CommRing R] (A : Matrix X Y R) :
-    (Matrix.fromCols (Matrix.replicateCol Y' 0) A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
-  constructor
-  · intro hA
-    have hA' : (Matrix.fromCols A (Matrix.replicateCol Y' 0)).IsTotallyUnimodular
-    · convert hA.submatrix id Sum.swap
-      ext i j
-      cases j <;> simp
-    rwa [A.fromCols_replicateCol0_isTotallyUnimodular_iff] at hA'
-  · intro hA
-    rw [←A.fromCols_replicateCol0_isTotallyUnimodular_iff] at hA
-    convert hA.submatrix id Sum.swap
-    ext i j
-    cases j <;> simp
-
-lemma Matrix.IsTotallyUnimodular.zero_fromRows {X Y X' R : Type} [CommRing R]
-    {A : Matrix X Y R} (hA : A.IsTotallyUnimodular) :
-    (@Matrix.fromRows R X' X Y 0 A).IsTotallyUnimodular :=
-  A.replicateRow0_fromRows_isTotallyUnimodular_iff.← hA
-
-lemma Matrix.IsTotallyUnimodular.zero_fromCols {X Y Y' R : Type} [CommRing R]
-    {A : Matrix X Y R} (hA : A.IsTotallyUnimodular) :
-    (@Matrix.fromCols R X Y' Y 0 A).IsTotallyUnimodular :=
-  A.replicateCol0_fromCols_isTotallyUnimodular_iff.← hA
 
 lemma Matrix.IsTotallyUnimodular.det_eq_map_ratFloor_det {X : Type} [DecidableEq X] [Fintype X] {A : Matrix X X ℚ}
     (hA : A.IsTotallyUnimodular) :
@@ -140,27 +92,65 @@ lemma Matrix.IsTotallyUnimodular.map_ratFloor {X Y : Type} {A : Matrix X Y ℚ} 
       rw [Int.cast_eq_one] at hs
       rwa [←neg_eq_iff_eq_neg]
 
-variable {Z : Type}
-
-lemma Matrix.IsTotallyUnimodular.comp_rows {X Y R : Type} [CommRing R] {A : Matrix X Y R}
-    (hA : A.IsTotallyUnimodular) (e : Z → X) :
+lemma Matrix.IsTotallyUnimodular.comp_rows {X Y X' R : Type} [CommRing R] {A : Matrix X Y R}
+    (hA : A.IsTotallyUnimodular) (e : X' → X) :
     Matrix.IsTotallyUnimodular (A ∘ e) := by
   rw [Matrix.isTotallyUnimodular_iff] at hA ⊢
   intro k f g
   exact hA k (e ∘ f) g
 
-lemma Matrix.IsTotallyUnimodular.comp_cols {X Y R : Type} [CommRing R] {A : Matrix X Y R}
-    (hA : A.IsTotallyUnimodular) (e : Z → Y) :
+lemma Matrix.IsTotallyUnimodular.comp_cols {X Y Y' R : Type} [CommRing R] {A : Matrix X Y R}
+    (hA : A.IsTotallyUnimodular) (e : Y' → Y) :
     Matrix.IsTotallyUnimodular (A · ∘ e) := by
   rw [Matrix.isTotallyUnimodular_iff] at hA ⊢
   intro k f g
   exact hA k f (e ∘ g)
 
+lemma Matrix.replicateRow0_fromRows_isTotallyUnimodular_iff {X Y X' R : Type} [CommRing R] (A : Matrix X Y R) :
+    (Matrix.fromRows (Matrix.replicateRow X' 0) A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
+  constructor
+  · intro hA
+    have hA' : (Matrix.fromRows A (Matrix.replicateRow X' 0)).IsTotallyUnimodular
+    · convert hA.comp_rows Sum.swap
+      ext i j
+      cases i <;> simp
+    rwa [A.fromRows_replicateRow0_isTotallyUnimodular_iff] at hA'
+  · intro hA
+    rw [←A.fromRows_replicateRow0_isTotallyUnimodular_iff] at hA
+    convert hA.submatrix Sum.swap id
+    ext i j
+    cases i <;> simp
+
+lemma Matrix.replicateCol0_fromCols_isTotallyUnimodular_iff {X Y Y' R : Type} [CommRing R] (A : Matrix X Y R) :
+    (Matrix.fromCols (Matrix.replicateCol Y' 0) A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
+  rw [← Matrix.transpose_isTotallyUnimodular_iff, Matrix.transpose_fromCols, Matrix.transpose_replicateCol,
+    Matrix.replicateRow0_fromRows_isTotallyUnimodular_iff, Matrix.transpose_isTotallyUnimodular_iff]
+
+lemma Matrix.IsTotallyUnimodular.fromRows_zero {X Y R : Type} (X' : Type) [CommRing R]
+    {A : Matrix X Y R} (hA : A.IsTotallyUnimodular) :
+    (@Matrix.fromRows R X X' Y A 0).IsTotallyUnimodular :=
+  A.fromRows_replicateRow0_isTotallyUnimodular_iff.← hA
+
+lemma Matrix.IsTotallyUnimodular.zero_fromRows {X Y R : Type} (X' : Type) [CommRing R]
+    {A : Matrix X Y R} (hA : A.IsTotallyUnimodular) :
+    (@Matrix.fromRows R X' X Y 0 A).IsTotallyUnimodular :=
+  A.replicateRow0_fromRows_isTotallyUnimodular_iff.← hA
+
+lemma Matrix.IsTotallyUnimodular.fromCols_zero {X Y R : Type} (Y' : Type) [CommRing R]
+    {A : Matrix X Y R} (hA : A.IsTotallyUnimodular) :
+    (@Matrix.fromCols R X Y Y' A 0).IsTotallyUnimodular :=
+  A.fromCols_replicateCol0_isTotallyUnimodular_iff.← hA
+
+lemma Matrix.IsTotallyUnimodular.zero_fromCols {X Y R : Type} (Y' : Type) [CommRing R]
+    {A : Matrix X Y R} (hA : A.IsTotallyUnimodular) :
+    (@Matrix.fromCols R X Y' Y 0 A).IsTotallyUnimodular :=
+  A.replicateCol0_fromCols_isTotallyUnimodular_iff.← hA
+
 -- The rest of the file deals with a block matrix made of two TU matrices and two `0` matrices.
 
 variable {X₁ X₂ : Type}
 
-noncomputable instance [Fintype Z] {f : Z → X₁ ⊕ X₂} : Fintype { x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } := by
+noncomputable instance {Z : Type} [Fintype Z] {f : Z → X₁ ⊕ X₂} : Fintype { x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } := by
   apply Fintype.ofInjective (·.val.fst)
   intro ⟨⟨u, u₁⟩, hu⟩ ⟨⟨v, v₁⟩, hv⟩ huv
   dsimp only at hu hv huv
@@ -168,7 +158,7 @@ noncomputable instance [Fintype Z] {f : Z → X₁ ⊕ X₂} : Fintype { x₁ : 
   refine ⟨huv, ?_⟩
   rw [←Sum.inl.injEq, ←hu, ←hv, huv]
 
-noncomputable instance [Fintype Z] {f : Z → X₁ ⊕ X₂} : Fintype { x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd } := by
+noncomputable instance {Z : Type} [Fintype Z] {f : Z → X₁ ⊕ X₂} : Fintype { x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd } := by
   apply Fintype.ofInjective (·.val.fst)
   intro ⟨⟨u, u₁⟩, hu⟩ ⟨⟨v, v₁⟩, hv⟩ huv
   dsimp only at hu hv huv
@@ -176,7 +166,7 @@ noncomputable instance [Fintype Z] {f : Z → X₁ ⊕ X₂} : Fintype { x₂ : 
   refine ⟨huv, ?_⟩
   rw [←Sum.inr.injEq, ←hu, ←hv, huv]
 
-lemma decomposeSum_card_eq [Fintype Z] (f : Z → X₁ ⊕ X₂) :
+lemma decomposeSum_card_eq {Z : Type} [Fintype Z] (f : Z → X₁ ⊕ X₂) :
     #{ x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } + #{ x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd } = #Z := by
   rw [←Fintype.card_sum]
   exact Fintype.card_congr f.decomposeSum.symm
@@ -184,7 +174,7 @@ lemma decomposeSum_card_eq [Fintype Z] (f : Z → X₁ ⊕ X₂) :
 variable {Y₁ Y₂ R : Type}
 
 /-- `Matrix.fromBlocks_isTotallyUnimodular` preprocessing. -/
-private lemma Matrix.fromBlocks_submatrix [Zero R] (A₁ : Matrix X₁ Y₁ R) (A₂ : Matrix X₂ Y₂ R)
+private lemma Matrix.fromBlocks_submatrix {Z : Type} [Zero R] (A₁ : Matrix X₁ Y₁ R) (A₂ : Matrix X₂ Y₂ R)
     (f : Z → X₁ ⊕ X₂) (g : Z → Y₁ ⊕ Y₂) :
     (fromBlocks A₁ 0 0 A₂).submatrix f g =
     (fromBlocks
@@ -220,13 +210,13 @@ In the comments bellow, we will use the following shorthands:
 ` | ` denotes `Equiv.sumCongr`
 `|S|` denotes `#S` for any `{S : Type} [Fintype S]`
 -/
-variable [LinearOrderedCommRing R] [Fintype Z] [DecidableEq Z] [DecidableEq X₁] [DecidableEq X₂]
+variable [LinearOrderedCommRing R] [DecidableEq X₁] [DecidableEq X₂]
 
 /-- `Matrix.fromBlocks_isTotallyUnimodular` square case. -/
 private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_isTotallyUnimodular_of_card_eq
     {A₁ : Matrix X₁ Y₁ R} (hA₁ : A₁.IsTotallyUnimodular)
     {A₂ : Matrix X₂ Y₂ R} (hA₂ : A₂.IsTotallyUnimodular)
-    {f : Z → X₁ ⊕ X₂} {g : Z → Y₁ ⊕ Y₂}
+    {Z : Type} [Fintype Z] [DecidableEq Z] {f : Z → X₁ ⊕ X₂} {g : Z → Y₁ ⊕ Y₂}
     (hfg₁ : #{ x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } = #{ y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd })
     (hfg₂ : #{ x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd } = #{ y₂ : Z × Y₂ // g y₂.fst = ◪y₂.snd }) :
     ((fromBlocks A₁ 0 0 A₂).submatrix f g).det ∈
@@ -290,7 +280,8 @@ private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_isTotallyU
 
 /-- `Matrix.fromBlocks_isTotallyUnimodular` non-square case. -/
 private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_card_lt
-    (A₁ : Matrix X₁ Y₁ R) (A₂ : Matrix X₂ Y₂ R) {f : Z → X₁ ⊕ X₂} {g : Z → Y₁ ⊕ Y₂}
+    {Z : Type} [Fintype Z] [DecidableEq Z] {f : Z → X₁ ⊕ X₂} {g : Z → Y₁ ⊕ Y₂}
+    (A₁ : Matrix X₁ Y₁ R) (A₂ : Matrix X₂ Y₂ R)
     (hfg :
       #{ x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } <
       #{ y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd }) :
@@ -391,11 +382,8 @@ private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_card_lt
   convert zero_mul _
   exact Matrix.det_eq_zero_of_row_eq_zero ◪(Classical.choice hX') (fun _ => rfl)
 
-omit Z
-variable [DecidableEq Y₁] [DecidableEq Y₂]
-
 /-- The block matrix that has two totally unimodular matrices along the diagonal and zeros elsewhere is totally unimodular. -/
-lemma Matrix.fromBlocks_isTotallyUnimodular {A₁ : Matrix X₁ Y₁ R} {A₂ : Matrix X₂ Y₂ R}
+lemma Matrix.fromBlocks_isTotallyUnimodular [DecidableEq Y₁] [DecidableEq Y₂] {A₁ : Matrix X₁ Y₁ R} {A₂ : Matrix X₂ Y₂ R}
     (hA₁ : A₁.IsTotallyUnimodular) (hA₂ : A₂.IsTotallyUnimodular) :
     (fromBlocks A₁ 0 0 A₂).IsTotallyUnimodular :=
   fun k f g _ _ =>
@@ -415,6 +403,8 @@ lemma Matrix.fromBlocks_isTotallyUnimodular {A₁ : Matrix X₁ Y₁ R} {A₂ : 
       have := decomposeSum_card_eq g
       omega
 
--- Alternative proof is here (the auxiliary definition is different but the main ideas are identical):
--- https://github.com/madvorak/matrix-tu-experimental/blob/082206a6cf744d3bc80513494781a05451da5717/MatrixTuExperimental.lean#L262
--- It will be probably upstreamed to Mathlib someday.
+/-
+Alternative proof is here (the auxiliary definition is different but the main ideas are identical):
+https://github.com/madvorak/matrix-tu-experimental/blob/082206a6cf744d3bc80513494781a05451da5717/MatrixTuExperimental.lean#L262
+It will be probably upstreamed to Mathlib someday.
+-/

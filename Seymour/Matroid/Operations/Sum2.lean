@@ -216,10 +216,10 @@ private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α
       · have := lemma6₂ hAx hAy -- `D ◫ A₂` is TU
         sorry
       obtain ⟨i₂, x₂, hix₂⟩ : ∃ i₂ : Fin k.succ, ∃ x₂ : X₂, f i₂ = ◪x₂
-      · have := hA₁.fromCols_zero (Y' := Y₂) -- `A₁ ◫ 0` is TU
+      · have := hA₁.fromCols_zero Y₂ -- `A₁ ◫ 0` is TU
         sorry
       obtain ⟨j₁, y₁, hjy₁⟩ : ∃ j₁ : Fin k.succ, ∃ y₁ : Y₁, g j₁ = ◩y₁
-      · have := hA₂.zero_fromRows (X' := X₁) -- `0 ⊟ A₂` is TU
+      · have := hA₂.zero_fromRows X₁ -- `0 ⊟ A₂` is TU
         sorry
       obtain ⟨j₂, y₂, hjy₂⟩ : ∃ j₂ : Fin k.succ, ∃ y₂ : Y₂, g j₂ = ◪y₂
       · have := lemma6₁ hAx hAy -- `A₁ ⊟ D` is TU
