@@ -428,7 +428,7 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
         · intro a ha hay
           have hal := hl'' a ha
           if haX : a.val ∈ X then
-            convert_to l a • B₁.prependId d ◩⟨a.val, haX⟩ = 0
+            convert_to l a • B.prependId d ◩⟨a.val, haX⟩ = 0
             · simp [Subtype.toSum, haX]
             simp_rw [Matrix.fromCols_apply_inl]
             rw [smul_eq_mul, mul_eq_zero]
