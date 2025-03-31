@@ -252,11 +252,10 @@ lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype
     have heX : e ∉ S.X.toFinset := (Set.not_mem_of_mem_diff he <| Set.mem_toFinset.→ ·)
     simp [heX]
 
-private lemma B_eq_B_of_same_matroid_same_X_aux {X Y : Set α} {B : Matrix Y X Z2}
+private lemma B_eq_B_of_same_matroid_same_X_aux {X Y : Set α} {B : Matrix Y X Z2} {D : Set X} {y : Y}
     {hX : ∀ a, Decidable (a ∈ X)} {hY : ∀ a, Decidable (a ∈ Y)} (hXXY : X ⊆ X ∪ Y) (hYXY : Y ⊆ X ∪ Y) -- redundant but keep
-    {D : Set X} {y : Y} (hyDXY : ↑y ᕃ Subtype.val '' D ⊆ X ∪ Y)
     {l : (X ∪ Y).Elem →₀ Z2} (hl : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' D) (hly : l (Set.inclusion hYXY y) = 0)
-    {i : (X ∪ Y).Elem} (hil : i ∈ l.support) (hiX : i.val ∈ X) (hlBi : ∑ a ∈ l.support, l a • B.uppendId a.toSum ⟨i, hiX⟩ = 0) :
+    {i : (X ∪ Y).Elem} (hiX : i.val ∈ X) (hlBi : ∑ a ∈ l.support, l a • B.uppendId a.toSum ⟨i, hiX⟩ = 0) :
     ∑ a ∈ (l.support.image Subtype.val).subtype (· ∈ X),
       l (hXXY.elem a) • B.uppendId (Set.inclusion hXXY a).toSum ⟨i, hiX⟩ = 0 := by
   rw [←Finset.sum_finset_coe] at hlBi
@@ -288,7 +287,7 @@ private lemma B_eq_B_of_same_matroid_same_X_aux {X Y : Set α} {B : Matrix Y X Z
   · intro _ _
     rfl
 
-set_option maxHeartbeats 1200000 in
+set_option maxHeartbeats 1000000 in
 private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁ B₂ : Matrix X Y Z2}
     {hX : ∀ a, Decidable (a ∈ X)} {hY : ∀ a, Decidable (a ∈ Y)} [Fintype X]
     (hSS : (StandardRepr.mk X Y hXY B₁ hX hY).toMatroid = (StandardRepr.mk X Y hXY B₂ hX hY).toMatroid) :
@@ -391,7 +390,7 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
             rw [Finsupp.linearCombination_apply, Pi.zero_apply, Finsupp.sum, Finset.sum_apply] at hlBi
             simp_rw [Pi.smul_apply, Function.comp_apply] at hlBi
             have hlBi' : ∑ x ∈ (l.support.image Subtype.val).subtype (· ∈ X), l (hXXY.elem x) • (1 : Matrix X X Z2) x ⟨i, hiX⟩ = 0
-            · simpa using B_eq_B_of_same_matroid_same_X_aux hXXY hYXY hyDXY hl'' hly hil hiX hlBi
+            · simpa using B_eq_B_of_same_matroid_same_X_aux hXXY hYXY hl'' hly hiX hlBi
             rwa [
               ((l.support.image Subtype.val).subtype (· ∈ X)).sum_of_single_nonzero
                 (fun a : X.Elem => l (hXXY.elem a) • (1 : Matrix X X Z2) a ⟨i, hiX⟩)
