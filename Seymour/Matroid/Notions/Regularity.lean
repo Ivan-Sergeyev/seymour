@@ -180,8 +180,7 @@ private lemma Matrix.exists_finite_allColsIn {X Y R : Type} [Fintype X] [Decidab
   · intro i
     have hi : (A · i) ∈ C := by use i
     use ⟨hi.choose, by aesop⟩
-    have := hi.choose_spec
-    gcongr
+    exact hi.choose_spec.symm
 
 private lemma Matrix.linearIndependent_if_LinearIndependent_subset_cols {X Y R : Type} [Ring R]
     (A : Matrix X Y R) {Y' : Set Y} (hA : LinearIndependent R (A.submatrix id (fun y' : Y' => y'.val))) :
