@@ -17,7 +17,7 @@ section Other
 lemma set_union_union_eq_rev (X Y Z : Set α) : X ∪ Y ∪ Z = Z ∪ Y ∪ X := by
   rw [Set.union_assoc, Set.union_comm, Set.union_comm Y Z]
 
-lemma setminus_inter_union_eq_union {X Y : Set α} : X \ (X ∩ Y) ∪ Y = X ∪ Y := by
+lemma wo_inter_union_eq_union {X Y : Set α} : X \ (X ∩ Y) ∪ Y = X ∪ Y := by
   tauto_set
 
 lemma nonempty_inter_not_ssubset_empty_inter {A B E : Set α} (hA : (A ∩ E).Nonempty) (hB : B ∩ E = ∅) :
@@ -67,7 +67,8 @@ lemma HasSubset.Subset.parts_eq {A E₁ E₂ : Set α} (hA : A ⊆ E₁ ∪ E₂
     (Set.inter_union_distrib_left A E₁ E₂)).antisymm
   (Set.union_subset Set.inter_subset_left Set.inter_subset_left)).symm
 
-lemma elem_notin_set_minus_singleton (a : α) (X : Set α) : a ∉ X \ {a} := Set.not_mem_diff_of_mem rfl
+lemma elem_ni_wo_singleton (a : α) (X : Set α) : a ∉ X \ {a} :=
+  Set.not_mem_diff_of_mem rfl
 
 lemma sub_union_diff_sub_union {A B C : Set α} (hA : A ⊆ B \ C) : A ⊆ B :=
   fun _ hA' => Set.diff_subset (hA hA')
@@ -142,11 +143,11 @@ lemma disjoint_of_singleton_inter_both_wo {X Y : Set α} {a : α} (hXY : X ∩ Y
     X \ {a} ⫗ Y \ {a} :=
   Disjoint.disjoint_sdiff_left (disjoint_of_singleton_inter_right_wo hXY)
 
-lemma nameme1 {X Y Z : Set α} (hXY : X ∩ Y = Z) {a : α} (ha : a ∈ X \ Z) :
+lemma ni_of_in_wo_of_inter_left {X Y Z : Set α} (hXY : X ∩ Y = Z) {a : α} (ha : a ∈ X \ Z) :
     a ∉ Y :=
   (disjoint_of_inter_left_wo hXY).ni_of_in ha
 
-lemma nameme2 {X Y Z : Set α} (hXY : X ∩ Y = Z) {a : α} (ha : a ∈ Y \ Z) :
+lemma ni_of_in_wo_of_inter_right {X Y Z : Set α} (hXY : X ∩ Y = Z) {a : α} (ha : a ∈ Y \ Z) :
     a ∉ X :=
   (disjoint_of_inter_right_wo hXY).symm.ni_of_in ha
 
