@@ -221,11 +221,11 @@ private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearInd
     (hA : A.IsTotallyUnimodular) :
     LinearIndependent ℚ A ↔ LinearIndependent Z2 A.support := by
   constructor
-    <;> intro lin_indep
-    <;> rw [Matrix.linearIndependent_iff_exists_submatrix_det] at lin_indep ⊢
-    <;> obtain ⟨g, hAg⟩ := lin_indep
-    <;> use g
-    <;> have result := (hA.submatrix id g).det_ne_zero_iff_support
+  <;> intro lin_indep
+  <;> rw [Matrix.linearIndependent_iff_exists_submatrix_det] at lin_indep ⊢
+  <;> obtain ⟨g, hAg⟩ := lin_indep
+  <;> use g
+  <;> have result := (hA.submatrix id g).det_ne_zero_iff_support
   · exact A.support_submatrix id g ▸ (result.→ hAg)
   · exact result.← (A.support_submatrix id g ▸ hAg)
 
@@ -234,7 +234,7 @@ private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearInd
     (hA : A.IsTotallyUnimodular) :
     LinearIndependent ℚ A ↔ LinearIndependent Z2 A.support := by
   constructor
-    <;> intro lin_indep
+  <;> intro lin_indep
   · obtain ⟨Y', hY', hAY'⟩ := A.exists_finite_allColsIn {-1, 0, 1} (by have ⟨s, hs⟩ := hA.apply · · ; cases s <;> aesop)
     rw [A.linearIndependent_iff_allColsSubmatrix_linearIndependent hAY'] at lin_indep
     have := Set.Finite.fintype hY'
@@ -252,11 +252,11 @@ private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearInd
     (hA : A.IsTotallyUnimodular) :
     LinearIndependent ℚ A ↔ LinearIndependent Z2 A.support := by
   constructor
-    <;> intro lin_indep
-    <;> rw [linearIndependent_iff_finset_linearIndependent] at lin_indep ⊢
-    <;> intro s
-    <;> specialize lin_indep s
-    <;> have result := (hA.submatrix (@Subtype.val X (· ∈ s)) id).linearIndependent_iff_support_linearIndependent_of_finite
+  <;> intro lin_indep
+  <;> rw [linearIndependent_iff_finset_linearIndependent] at lin_indep ⊢
+  <;> intro s
+  <;> specialize lin_indep s
+  <;> have result := (hA.submatrix (@Subtype.val X (· ∈ s)) id).linearIndependent_iff_support_linearIndependent_of_finite
   · exact result.→ lin_indep
   · exact result.← lin_indep
 

@@ -55,7 +55,8 @@ lemma standardRepr1sumComposition_eq_disjointSum {S₁ S₂ : StandardRepr α Z2
     tauto
   · simp only [StandardRepr.toMatroid_indep_iff, Matroid.disjointSum_indep_iff, StandardRepr.toMatroid_E,
       Set.inter_subset_right, exists_true_left]
-    constructor <;> intro linearlyI
+    constructor
+    <;> intro linearlyI
     · sorry
     · use hI
       sorry
