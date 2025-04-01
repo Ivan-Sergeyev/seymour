@@ -26,7 +26,7 @@ attribute [instance] StandardRepr.decmemY
 
 variable {α R : Type} [DecidableEq α]
 
-/-- Vector matroid constructed from the standard representation. -/
+/-- Convert standard representation of a vector matroid to a full representation. -/
 def StandardRepr.toVectorMatroid [Zero R] [One R] (S : StandardRepr α R) : VectorMatroid α R :=
   ⟨S.X, S.X ∪ S.Y, (S.B.prependId · ∘ Subtype.toSum)⟩
 
@@ -110,8 +110,7 @@ lemma StandardRepr.toVectorMatroid_indep_iff_submatrix'' [DivisionRing R] (S : S
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (S.Bᵀ.uppendId.submatrix (Subtype.toSum ∘ hI.elem) id) := by
   simpa using S.toVectorMatroid_indep_iff_submatrix' I
 
-attribute [local ext] StandardRepr
-
+attribute [local ext] StandardRepr in
 /-- Kinda extensionality on `StandardRepr` but `@[ext]` cannot be here. -/
 lemma standardRepr_eq_standardRepr_of_B_eq_B [DivisionRing R] {S₁ S₂ : StandardRepr α R}
     (hX : S₁.X = S₂.X) (hY : S₁.Y = S₂.Y) (hB : S₁.B = hX ▸ hY ▸ S₂.B) :

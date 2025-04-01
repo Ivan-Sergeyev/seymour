@@ -27,52 +27,52 @@ abbrev StandardRepr.HasTuSigning {α : Type} [DecidableEq α] (S : StandardRepr 
 
 -- ## Auxiliary stuff
 
-private def Matrix.discretize {X Y : Type} (A : Matrix X Y ℚ) (n : ℕ := 2) : Matrix X Y (ZMod n) :=
+private def Matrix.support {X Y : Type} (A : Matrix X Y ℚ) (n : ℕ := 2) : Matrix X Y (ZMod n) :=
   Matrix.of (if A · · = 0 then 0 else 1)
 
-@[app_unexpander Matrix.discretize]
-private def Matrix.discretize_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $x) => `($(x).$(Lean.mkIdent `discretize))
+@[app_unexpander Matrix.support]
+private def Matrix.support_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $x) => `($(x).$(Lean.mkIdent `support))
   | _ => throw ()
 
-private lemma Matrix.discretize_transpose {X Y : Type} (A : Matrix X Y ℚ) :
-    A.discretize.transpose = A.transpose.discretize :=
+private lemma Matrix.support_transpose {X Y : Type} (A : Matrix X Y ℚ) :
+    A.support.transpose = A.transpose.support :=
   rfl
 
-private lemma Matrix.discretize_submatrix {X X' Y Y' : Type} (A : Matrix X Y ℚ) (f : X' → X) (g : Y' → Y) :
-    A.discretize.submatrix f g = (A.submatrix f g).discretize :=
+private lemma Matrix.support_submatrix {X X' Y Y' : Type} (A : Matrix X Y ℚ) (f : X' → X) (g : Y' → Y) :
+    A.support.submatrix f g = (A.submatrix f g).support :=
   rfl
 
-private lemma Matrix.IsTotallyUnimodular.discretize {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular)
+private lemma Matrix.IsTotallyUnimodular.support {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular)
     {n : ℕ} (hn : 1 < n) :
-    A.IsTuSigningOf (A.discretize n) := by
+    A.IsTuSigningOf (A.support n) := by
   refine ⟨hA, fun i j => ?_⟩
   if hAij : A i j = 0 then
-    simp [Matrix.discretize, hAij]
+    simp [Matrix.support, hAij]
   else
     obtain ⟨s, hs⟩ := hA.apply i j
     cases s with
     | zero =>
-      simp_all [Matrix.discretize]
+      simp_all [Matrix.support]
     | pos =>
       rw [SignType.pos_eq_one, SignType.coe_one] at hs
       rw [←hs]
-      simp [Matrix.discretize, hAij]
+      simp [Matrix.support, hAij]
       rewrite [ZMod.val_one'' (· ▸ hn |>.false)]
       rfl
     | neg =>
       rw [SignType.neg_eq_neg_one, SignType.coe_neg, SignType.coe_one] at hs
       rw [←hs]
-      simp [Matrix.discretize, hAij]
+      simp [Matrix.support, hAij]
       rewrite [ZMod.val_one'' (· ▸ hn |>.false)]
       rfl
 
-private def Matrix.auxZ2 {X Y : Type} (A : Matrix X Y ℤ) : Matrix X Y Z2 :=
+private def Matrix.suppZ2 {X Y : Type} (A : Matrix X Y ℤ) : Matrix X Y Z2 :=
   Matrix.of (if A · · = 0 then 0 else 1)
 
-@[app_unexpander Matrix.auxZ2]
-private def Matrix.auxZ2_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $x) => `($(x).$(Lean.mkIdent `auxZ2))
+@[app_unexpander Matrix.suppZ2]
+private def Matrix.suppZ2_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $x) => `($(x).$(Lean.mkIdent `suppZ2))
   | _ => throw ()
 
 variable {α : Type}
@@ -92,13 +92,13 @@ lemma Matroid.isRegular_mapEquiv_iff {β : Type} (M : Matroid α) (f : α ≃ β
 
 variable [DecidableEq α]
 
-private lemma Matrix.IsTotallyUnimodular.intCast_det_eq_auxZ2_det [Fintype α] {A : Matrix α α ℤ}
+private lemma Matrix.IsTotallyUnimodular.intCast_det_eq_suppZ2_det [Fintype α] {A : Matrix α α ℤ}
     (hA : A.IsTotallyUnimodular) :
-    A.det.cast = A.auxZ2.det := by
+    A.det.cast = A.suppZ2.det := by
   rw [Matrix.det_int_coe]
   congr
   ext i j
-  simp [Matrix.auxZ2]
+  simp [Matrix.suppZ2]
   if h0 : A i j = 0 then
     rewrite [h0]
     rfl
@@ -113,13 +113,13 @@ private lemma Matrix.IsTotallyUnimodular.intCast_det_eq_auxZ2_det [Fintype α] {
     obtain ⟨s, hs⟩ := hA.apply i j
     cases s <;> simp_all
 
-private lemma Matrix.IsTotallyUnimodular.ratCast_det_eq_discretize_det [Fintype α] {A : Matrix α α ℚ}
+private lemma Matrix.IsTotallyUnimodular.ratCast_det_eq_support_det [Fintype α] {A : Matrix α α ℚ}
     (hA : A.IsTotallyUnimodular) :
-    A.det.cast = A.discretize.det := by
-  rw [hA.det_eq_map_ratFloor_det, Rat.cast_intCast, hA.map_ratFloor.intCast_det_eq_auxZ2_det]
+    A.det.cast = A.support.det := by
+  rw [hA.det_eq_map_ratFloor_det, Rat.cast_intCast, hA.map_ratFloor.intCast_det_eq_suppZ2_det]
   congr
   ext i j
-  simp only [Matrix.discretize, Matrix.auxZ2]
+  simp only [Matrix.support, Matrix.suppZ2]
   if h0 : A i j = 0 then
     simp [h0]
     rfl
@@ -134,18 +134,18 @@ private lemma Matrix.IsTotallyUnimodular.ratCast_det_eq_discretize_det [Fintype 
     obtain ⟨s, hs⟩ := hA.apply i j
     cases s <;> simp_all
 
-private lemma Matrix.IsTotallyUnimodular.det_eq_zero_iff_discretize [Fintype α] {A : Matrix α α ℚ}
+private lemma Matrix.IsTotallyUnimodular.det_eq_zero_iff_support [Fintype α] {A : Matrix α α ℚ}
     (hA : A.IsTotallyUnimodular) :
-    A.det = (0 : ℚ) ↔ A.discretize.det = (0 : Z2) := by
-  rw [←hA.ratCast_det_eq_discretize_det]
+    A.det = (0 : ℚ) ↔ A.support.det = (0 : Z2) := by
+  rw [←hA.ratCast_det_eq_support_det]
   apply zero_iff_ratCast_zero_of_in_signTypeCastRange
   rw [Matrix.isTotallyUnimodular_iff_fintype] at hA
   exact hA α id id
 
-private lemma Matrix.IsTotallyUnimodular.det_ne_zero_iff_discretize [Fintype α] {A : Matrix α α ℚ}
+private lemma Matrix.IsTotallyUnimodular.det_ne_zero_iff_support [Fintype α] {A : Matrix α α ℚ}
     (hA : A.IsTotallyUnimodular) :
-    A.det ≠ (0 : ℚ) ↔ A.discretize.det ≠ (0 : Z2) :=
-  hA.det_eq_zero_iff_discretize.ne
+    A.det ≠ (0 : ℚ) ↔ A.support.det ≠ (0 : Z2) :=
+  hA.det_eq_zero_iff_support.ne
 
 private def Matrix.AllColsIn {X Y R : Type} (A : Matrix X Y R) (Y' : Set Y) : Prop :=
   ∀ y : Y, ∃ y' : Y', (A · y) = (A · y')
@@ -216,70 +216,70 @@ private lemma Matrix.linearIndependent_iff_allColsSubmatrix_linearIndependent {X
     simp
   · exact A.linearIndependent_if_LinearIndependent_subset_cols
 
-private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linearIndependent_of_finite_of_finite
+private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent_of_finite_of_finite
     {X Y : Type} [DecidableEq X] [DecidableEq Y] [Fintype X] [Fintype Y] {A : Matrix X Y ℚ}
     (hA : A.IsTotallyUnimodular) :
-    LinearIndependent ℚ A ↔ LinearIndependent Z2 A.discretize := by
+    LinearIndependent ℚ A ↔ LinearIndependent Z2 A.support := by
   constructor
     <;> intro lin_indep
     <;> rw [Matrix.linearIndependent_iff_exists_submatrix_det] at lin_indep ⊢
     <;> obtain ⟨g, hAg⟩ := lin_indep
     <;> use g
-    <;> have result := (hA.submatrix id g).det_ne_zero_iff_discretize
-  · exact A.discretize_submatrix id g ▸ (result.→ hAg)
-  · exact result.← (A.discretize_submatrix id g ▸ hAg)
+    <;> have result := (hA.submatrix id g).det_ne_zero_iff_support
+  · exact A.support_submatrix id g ▸ (result.→ hAg)
+  · exact result.← (A.support_submatrix id g ▸ hAg)
 
-private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linearIndependent_of_finite
+private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent_of_finite
     {X Y : Type} [DecidableEq X] [DecidableEq Y] [Fintype X] {A : Matrix X Y ℚ}
     (hA : A.IsTotallyUnimodular) :
-    LinearIndependent ℚ A ↔ LinearIndependent Z2 A.discretize := by
+    LinearIndependent ℚ A ↔ LinearIndependent Z2 A.support := by
   constructor
     <;> intro lin_indep
   · obtain ⟨Y', hY', hAY'⟩ := A.exists_finite_allColsIn {-1, 0, 1} (by have ⟨s, hs⟩ := hA.apply · · ; cases s <;> aesop)
     rw [A.linearIndependent_iff_allColsSubmatrix_linearIndependent hAY'] at lin_indep
     have := Set.Finite.fintype hY'
-    rw [(hA.submatrix id Subtype.val).linearIndependent_iff_discretize_linearIndependent_of_finite_of_finite] at lin_indep
-    exact A.discretize.linearIndependent_if_LinearIndependent_subset_cols lin_indep
-  · obtain ⟨Y', hY', hAY'⟩ := A.discretize.exists_finite_allColsIn Finset.univ (Finset.mem_univ <| A.discretize 2 · ·)
-    rw [A.discretize.linearIndependent_iff_allColsSubmatrix_linearIndependent hAY'] at lin_indep
-    rw [Matrix.discretize_submatrix] at lin_indep
+    rw [(hA.submatrix id Subtype.val).linearIndependent_iff_support_linearIndependent_of_finite_of_finite] at lin_indep
+    exact A.support.linearIndependent_if_LinearIndependent_subset_cols lin_indep
+  · obtain ⟨Y', hY', hAY'⟩ := A.support.exists_finite_allColsIn Finset.univ (Finset.mem_univ <| A.support 2 · ·)
+    rw [A.support.linearIndependent_iff_allColsSubmatrix_linearIndependent hAY'] at lin_indep
+    rw [Matrix.support_submatrix] at lin_indep
     have := Set.Finite.fintype hY'
-    rw [←(hA.submatrix id Subtype.val).linearIndependent_iff_discretize_linearIndependent_of_finite_of_finite] at lin_indep
+    rw [←(hA.submatrix id Subtype.val).linearIndependent_iff_support_linearIndependent_of_finite_of_finite] at lin_indep
     exact A.linearIndependent_if_LinearIndependent_subset_cols lin_indep
 
-private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_discretize_linearIndependent
+private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent
     {X Y : Type} [DecidableEq X] [DecidableEq Y] {A : Matrix X Y ℚ}
     (hA : A.IsTotallyUnimodular) :
-    LinearIndependent ℚ A ↔ LinearIndependent Z2 A.discretize := by
+    LinearIndependent ℚ A ↔ LinearIndependent Z2 A.support := by
   constructor
     <;> intro lin_indep
     <;> rw [linearIndependent_iff_finset_linearIndependent] at lin_indep ⊢
     <;> intro s
     <;> specialize lin_indep s
-    <;> have result := (hA.submatrix (@Subtype.val X (· ∈ s)) id).linearIndependent_iff_discretize_linearIndependent_of_finite
+    <;> have result := (hA.submatrix (@Subtype.val X (· ∈ s)) id).linearIndependent_iff_support_linearIndependent_of_finite
   · exact result.→ lin_indep
   · exact result.← lin_indep
 
-private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_discretize_toMatroid {X Y : Set α} {A : Matrix X Y ℚ}
+private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_support_toMatroid {X Y : Set α} {A : Matrix X Y ℚ}
     (hA : A.IsTotallyUnimodular) :
-    (VectorMatroid.mk X Y A).toMatroid = (VectorMatroid.mk X Y A.discretize).toMatroid := by
+    (VectorMatroid.mk X Y A).toMatroid = (VectorMatroid.mk X Y A.support).toMatroid := by
   ext I hI
   · simp
-  simp_rw [VectorMatroid.toMatroid_indep_iff_submatrix', Matrix.discretize_transpose, Matrix.discretize_submatrix]
+  simp_rw [VectorMatroid.toMatroid_indep_iff_submatrix', Matrix.support_transpose, Matrix.support_submatrix]
   constructor <;> intro ⟨hIY, hAI⟩ <;> use hIY
-  · rwa [(hA.transpose.submatrix hIY.elem id).linearIndependent_iff_discretize_linearIndependent] at hAI
-  · rwa [(hA.transpose.submatrix hIY.elem id).linearIndependent_iff_discretize_linearIndependent]
+  · rwa [(hA.transpose.submatrix hIY.elem id).linearIndependent_iff_support_linearIndependent] at hAI
+  · rwa [(hA.transpose.submatrix hIY.elem id).linearIndependent_iff_support_linearIndependent]
 
-private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_of_discretize {X Y : Set α} {A : Matrix X Y ℚ} {U : Matrix X Y Z2}
-    (hA : A.IsTotallyUnimodular) (hAU : A.discretize = U) :
+private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_of_support {X Y : Set α} {A : Matrix X Y ℚ} {U : Matrix X Y Z2}
+    (hA : A.IsTotallyUnimodular) (hAU : A.support = U) :
     (VectorMatroid.mk X Y A).toMatroid = (VectorMatroid.mk X Y U).toMatroid :=
-  hAU ▸ hA.toMatroid_eq_discretize_toMatroid
+  hAU ▸ hA.toMatroid_eq_support_toMatroid
 
 /-- Every regular matroid is binary. -/
 lemma Matroid.IsRegular.isBinary {M : Matroid α} (hM : M.IsRegular) :
     ∃ V : VectorMatroid α Z2, V.toMatroid = M := by
   obtain ⟨X, Y, A, hA, rfl⟩ := hM
-  exact ⟨⟨X, Y, A.discretize⟩, hA.toMatroid_eq_discretize_toMatroid.symm⟩
+  exact ⟨⟨X, Y, A.support⟩, hA.toMatroid_eq_support_toMatroid.symm⟩
 
 /-- Every regular matroid has a standard binary representation. -/
 lemma Matroid.IsRegular.hasBinaryStandardRepr {M : Matroid α} (hM : M.IsRegular) :
@@ -307,12 +307,12 @@ private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatr
     V.toMatroid.IsRegular ↔ V.A.HasTuSigning := by
   constructor
   · intro ⟨X, Y, A, hA, hAV⟩
-    have hV : V.toMatroid = (VectorMatroid.mk X Y A.discretize).toMatroid
-    · rw [←hAV, hA.toMatroid_eq_discretize_toMatroid]
+    have hV : V.toMatroid = (VectorMatroid.mk X Y A.support).toMatroid
+    · rw [←hAV, hA.toMatroid_eq_support_toMatroid]
     rw [hasTuSigning_iff_hasTuSigning_of_toMatroid_eq_toMatroid hV]
     use A, hA
     intro i j
-    simp [Matrix.discretize]
+    simp [Matrix.support]
     if h0 : A i j = 0 then
       simp [h0]
     else if h1 : A i j = 1 then
@@ -327,10 +327,10 @@ private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatr
       cases s <;> simp_all
   · intro ⟨S, hS, hSV⟩
     use V.X, V.Y, S, hS
-    apply hS.toMatroid_eq_of_discretize
+    apply hS.toMatroid_eq_of_support
     ext i j
     specialize hSV i j
-    simp [Matrix.discretize]
+    simp [Matrix.support]
     if h0 : V.A i j = 0 then
       simp_all
     else

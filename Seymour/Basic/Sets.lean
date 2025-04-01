@@ -46,7 +46,7 @@ lemma singleton_union_ssubset_union_iff {a : α} {A B : Set α} (haA : a ∉ A) 
     A ∪ {a} ⊂ B ∪ {a} ↔ A ⊂ B := by
   constructor <;> intro ⟨hAB, hBA⟩ <;> constructor <;> simp_all
 
-lemma ssub_parts_ssub {A B E₁ E₂ : Set α}
+lemma ssubset_parts_ssubset {A B E₁ E₂ : Set α}
     (hA : A ⊆ E₁ ∪ E₂) (hB : B ⊆ E₁ ∪ E₂) (hAB₁ : A ∩ E₁ ⊂ B ∩ E₁) (hAB₂ : A ∩ E₂ ⊂ B ∩ E₂) :
     A ⊂ B := by
   constructor
@@ -70,7 +70,7 @@ lemma HasSubset.Subset.parts_eq {A E₁ E₂ : Set α} (hA : A ⊆ E₁ ∪ E₂
 lemma elem_ni_wo_singleton (a : α) (X : Set α) : a ∉ X \ {a} :=
   Set.not_mem_diff_of_mem rfl
 
-lemma sub_union_diff_sub_union {A B C : Set α} (hA : A ⊆ B \ C) : A ⊆ B :=
+lemma subset_of_subset_diff {A B C : Set α} (hA : A ⊆ B \ C) : A ⊆ B :=
   fun _ hA' => Set.diff_subset (hA hA')
 
 lemma singleton_inter_in_left {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : a ∈ X :=
@@ -93,22 +93,22 @@ lemma diff_subset_parent {X₁ X₂ E : Set α} (hXE : X₁ ⊆ E) :
   Set.diff_subset_iff.← (Set.subset_union_of_subset_right hXE X₂)
 
 /-- Being a subset is preserved under taking intersections. -/
-lemma inter_subset_parent_left {X₁ X₂ E : Set α} (hXE : X₁ ⊆ E) :
+lemma inter_subset_left {X₁ X₂ E : Set α} (hXE : X₁ ⊆ E) :
     X₁ ∩ X₂ ⊆ E :=
   (Set.inter_subset_inter_left X₂ hXE).trans Set.inter_subset_left
 
 /-- Being a subset is preserved under taking intersections. -/
-lemma inter_subset_parent_right {X₁ X₂ E : Set α} (hXE : X₂ ⊆ E) :
+lemma inter_subset_right {X₁ X₂ E : Set α} (hXE : X₂ ⊆ E) :
     X₁ ∩ X₂ ⊆ E := by
   rw [Set.inter_comm]
-  exact inter_subset_parent_left hXE
+  exact inter_subset_left hXE
 
 /-- Intersection of two sets is subset of their union. -/
 lemma inter_subset_union {X₁ X₂ : Set α} :
     X₁ ∩ X₂ ⊆ X₁ ∪ X₂ :=
-  inter_subset_parent_left Set.subset_union_left
+  inter_subset_left Set.subset_union_left
 
-lemma subset_diff_empty_eq {A B : Set α} (hAB : A ⊆ B) (hBA : B \ A = ∅) : A = B :=
+lemma eq_of_subset_of_diff_empty {A B : Set α} (hAB : A ⊆ B) (hBA : B \ A = ∅) : A = B :=
   A.union_empty ▸ hBA ▸ Set.union_diff_cancel hAB
 
 end Other
@@ -267,7 +267,7 @@ lemma empty_symmDiff_eq (X : Set α) : symmDiff ∅ X = X := by
   rw [symmDiff_eq_alt, Set.empty_union, Set.empty_inter, Set.diff_empty]
 
 lemma symmDiff_subset_ground_right {X Y E : Set α} (hE : symmDiff X Y ⊆ E) (hX : X ⊆ E) : Y ⊆ E := by
-  rw [symmDiff_eq_alt, Set.diff_subset_iff, Set.union_eq_self_of_subset_left (inter_subset_parent_left hX),
+  rw [symmDiff_eq_alt, Set.diff_subset_iff, Set.union_eq_self_of_subset_left (inter_subset_left hX),
     Set.union_subset_iff] at hE
   exact hE.right
 
