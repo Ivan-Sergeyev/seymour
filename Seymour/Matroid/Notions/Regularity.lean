@@ -285,6 +285,7 @@ lemma Matroid.IsRegular.isBinary {M : Matroid α} (hM : M.IsRegular) :
 lemma Matroid.IsRegular.hasBinaryStandardRepr {M : Matroid α} (hM : M.IsRegular) :
     ∃ S : StandardRepr α Z2, S.toMatroid = M := by
   obtain ⟨V, hV⟩ := hM.isBinary
+  have : Fintype V.X := sorry
   obtain ⟨S, hS⟩ := V.exists_standardRepr
   rw [←hS] at hV
   exact ⟨S, hV⟩
@@ -292,10 +293,12 @@ lemma Matroid.IsRegular.hasBinaryStandardRepr {M : Matroid α} (hM : M.IsRegular
 private lemma hasTuSigning_iff_hasTuSigning_of_toMatroid_eq_toMatroid {V W : VectorMatroid α Z2} [Finite V.X]
     (hVW : V.toMatroid = W.toMatroid) :
     V.A.HasTuSigning ↔ W.A.HasTuSigning := by
+  have : Fintype V.X := Set.Finite.fintype (by assumption)
   obtain ⟨S, rfl⟩ := V.exists_standardRepr
   have : Fintype S.X := Set.Finite.fintype (by assumption)
   have hS := S.toMatroid_isBase_X
   rw [show S.toMatroid = W.toMatroid from hVW] at hS
+  have : Fintype W.X := sorry
   obtain ⟨S', hS', rfl⟩ := W.exists_standardRepr_isBase hS
   rw [ext_standardRepr_of_same_matroid_same_X hVW hS'.symm]
 

@@ -2,10 +2,10 @@ import Seymour.Matroid.Notions.Regularity
 
 open scoped Matrix
 
-variable {α R : Type} [DecidableEq α] [DivisionRing R]
+variable {α R : Type} [DecidableEq α]
 
 /-- The dual of standard representation (transpose the matrix and flip its signs). -/
-def StandardRepr.dual (S : StandardRepr α R) : StandardRepr α R where
+def StandardRepr.dual [DivisionRing R] (S : StandardRepr α R) : StandardRepr α R where
   X := S.Y
   Y := S.X
   hXY := S.hXY.symm
@@ -16,17 +16,17 @@ def StandardRepr.dual (S : StandardRepr α R) : StandardRepr α R where
 postfix:max "✶" => StandardRepr.dual
 
 /-- The dual of dual is the original standard representation. -/
-lemma StandardRepr.dual_dual (S : StandardRepr α R) : S✶✶ = S := by
+lemma StandardRepr.dual_dual [DivisionRing R] (S : StandardRepr α R) : S✶✶ = S := by
   simp [StandardRepr.dual]
 
-lemma StandardRepr.dual_indices_union_eq (S : StandardRepr α R) : S✶.X ∪ S✶.Y = S.X ∪ S.Y :=
+lemma StandardRepr.dual_indices_union_eq [DivisionRing R] (S : StandardRepr α R) : S✶.X ∪ S✶.Y = S.X ∪ S.Y :=
   Set.union_comm S.Y S.X
 
 @[simp]
-lemma StandardRepr.dual_ground (S : StandardRepr α R) : S✶.toMatroid.E = S.toMatroid.E :=
+lemma StandardRepr.dual_ground [DivisionRing R] (S : StandardRepr α R) : S✶.toMatroid.E = S.toMatroid.E :=
   S.dual_indices_union_eq
 
-lemma StandardRepr.dual_isBase_iff {S : StandardRepr α R} {G : Set α} (hG : G ⊆ S✶.toMatroid.E) :
+lemma StandardRepr.dual_isBase_iff [DivisionRing R] {S : StandardRepr α R} {G : Set α} (hG : G ⊆ S✶.toMatroid.E) :
     S✶.toMatroid.IsBase G ↔ S.toMatroid✶.IsBase G := by
   rw [StandardRepr.dual_ground] at hG
   rw [Matroid.dual_isBase_iff']
@@ -34,7 +34,7 @@ lemma StandardRepr.dual_isBase_iff {S : StandardRepr α R} {G : Set α} (hG : G 
   sorry -- Theorem 2.2.8 in Oxley
 
 /-- The dual of standard representation gives a dual matroid. -/
-lemma StandardRepr.dual_toMatroid (S : StandardRepr α R) :
+lemma StandardRepr.dual_toMatroid [DivisionRing R] (S : StandardRepr α R) :
     S✶.toMatroid = S.toMatroid✶ := by
   rw [← Matroid.dual_inj, Matroid.dual_dual, Matroid.ext_iff_isBase]
   constructor
@@ -46,7 +46,7 @@ lemma StandardRepr.dual_toMatroid (S : StandardRepr α R) :
     rw [Matroid.dual_isBase_iff Set.diff_subset, Set.diff_diff_cancel_left hG]
 
 /-- Every vector matroid's dual has a standard representation. -/
-lemma VectorMatroid.dual_exists_standardRepr (M : VectorMatroid α R) :
+lemma VectorMatroid.dual_exists_standardRepr [Field R] (M : VectorMatroid α R) [Fintype M.X] :
     ∃ S' : StandardRepr α R, S'.toMatroid = M.toMatroid✶ :=
   have ⟨S, hS⟩ := M.exists_standardRepr
   ⟨S✶, hS ▸ S.dual_toMatroid⟩

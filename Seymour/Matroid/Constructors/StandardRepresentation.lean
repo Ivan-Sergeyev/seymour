@@ -110,23 +110,6 @@ lemma StandardRepr.toVectorMatroid_indep_iff_submatrix'' [DivisionRing R] (S : S
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (S.Bᵀ.uppendId.submatrix (Subtype.toSum ∘ hI.elem) id) := by
   simpa using S.toVectorMatroid_indep_iff_submatrix' I
 
-/-- Every vector matroid has a standard representation whose rows are a given base. -/
-lemma VectorMatroid.exists_standardRepr_isBase [DivisionRing R] {G : Set α}
-    (M : VectorMatroid α R) (hMG : M.toMatroid.IsBase G) :
-    ∃ S : StandardRepr α R, S.X = G ∧ S.toVectorMatroid = M := by
-  have hGE := hMG.subset_ground
-  sorry
-
-/-- Every vector matroid has a standard representation. -/
-lemma VectorMatroid.exists_standardRepr [DivisionRing R] (M : VectorMatroid α R) :
-    ∃ S : StandardRepr α R, S.toVectorMatroid = M := by
-  peel M.exists_standardRepr_isBase M.toMatroid.exists_isBase.choose_spec with hS
-  exact hS.right
-
-/-- Construct a matroid from a standard representation. -/
-def StandardRepr.toMatroid [DivisionRing R] (S : StandardRepr α R) : Matroid α :=
-  S.toVectorMatroid.toMatroid
-
 attribute [local ext] StandardRepr
 
 /-- Kinda extensionality on `StandardRepr` but `@[ext]` cannot be here. -/
@@ -163,6 +146,10 @@ lemma standardRepr_eq_standardRepr_of_B_eq_B [DivisionRing R] {S₁ S₂ : Stand
       · rw [heq_eq_eq] at haa
         rwa [haa, hY] at ha₁
       simp [ha₁, ha₂]
+
+/-- Construct a matroid from a standard representation. -/
+def StandardRepr.toMatroid [DivisionRing R] (S : StandardRepr α R) : Matroid α :=
+  S.toVectorMatroid.toMatroid
 
 /-- Ground set of a vector matroid is union of row and column index sets of its standard matrix representation. -/
 @[simp high]
@@ -225,6 +212,49 @@ lemma StandardRepr.toMatroid_indep [DivisionRing R] (S : StandardRepr α R) :
 lemma StandardRepr.toMatroid_indep' [DivisionRing R] (S : StandardRepr α R) :
     S.toMatroid.Indep = (∃ hI : · ⊆ S.X ∪ S.Y, LinearIndepOn R (S.Bᵀ.uppendId ∘ Subtype.toSum) hI.elem.range) := by
   simp
+
+private def VectorMatroid.mapEquiv [CommRing R] (M : VectorMatroid α R) [Fintype M.X] {X' : Set α}
+    (e : (M.X → R) ≃ₗ[R] (X' → R)) :
+    VectorMatroid α R where
+  X := X'
+  Y := M.Y
+  A := e.toMatrix' * M.A
+
+@[app_unexpander VectorMatroid.mapEquiv]
+private def VectorMatroid.mapEquiv_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $x) => `($(x).$(Lean.mkIdent `mapEquiv))
+  | _ => throw ()
+
+private lemma VectorMatroid.mapEquiv_toMatroid [Field R] (M : VectorMatroid α R) [Fintype M.X] {X' : Set α}
+    (e : (M.X → R) ≃ₗ[R] (X' → R)) :
+    (M.mapEquiv e).toMatroid = M.toMatroid := by
+  ext I hI
+  <;> simp [VectorMatroid.mapEquiv]
+  constructor
+  <;> intro ⟨hI', lin_indep⟩
+  <;> use hI'
+  · sorry
+  · sorry
+
+/-- Every vector matroid has a standard representation whose rows are a given base. -/
+lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
+    (M : VectorMatroid α R) [Fintype M.X] (hMG : M.toMatroid.IsBase G) :
+    ∃ S : StandardRepr α R, S.X = G ∧ S.toVectorMatroid = M := by
+  have hGE := hMG.subset_ground
+  let e : (M.X → R) ≃ₗ[R] (G → R)
+  · symm
+    apply Basis.equivFun
+    sorry
+  let V := M.mapEquiv e
+  have hMV := M.mapEquiv_toMatroid e
+  -- now cut off the identity part of the matrix
+  sorry
+
+/-- Every vector matroid has a standard representation. -/
+lemma VectorMatroid.exists_standardRepr [Field R] (M : VectorMatroid α R) [Fintype M.X] :
+    ∃ S : StandardRepr α R, S.toVectorMatroid = M := by
+  peel M.exists_standardRepr_isBase M.toMatroid.exists_isBase.choose_spec with hS
+  exact hS.right
 
 /-- The identity matrix has linearly independent rows. -/
 lemma Matrix.one_linearIndependent [Ring R] : LinearIndependent R (1 : Matrix α α R) := by
