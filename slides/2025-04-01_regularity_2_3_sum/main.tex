@@ -1,0 +1,460 @@
+\documentclass{article}
+
+\usepackage{amsmath} % Matrices, etc.
+\usepackage{amssymb} % \mathbb, etc.
+
+\usepackage{amsthm} % Theorem environments
+
+\usepackage{hyperref} % Clickable links
+
+\newtheorem{lemma}{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{remark}{Remark}
+
+\usepackage[margin=2.5cm]{geometry} % Page margins
+
+\usepackage{graphicx} % Inserting images
+\usepackage{nicematrix} % Typesetting advanced matrices % Manual: https://mirror.kumi.systems/ctan/macros/latex/contrib/nicematrix/nicematrix.pdf
+\usepackage{todonotes} % Todos
+
+% Header
+\title{Proof of Regularity of 2- and 3-Sum of Matroids}
+\author{Ivan Sergeev}
+\date{March--April 2025}
+
+\begin{document}
+
+\maketitle
+
+\section{Proof of Regularity of 2-Sum}
+
+\begin{lemma}\label{lem:pivot_smaller_det}
+    Let $A$ be a $k \times k$ matrix. Let $r, c \in \{1, \dots, k\}$ be a row and column index, respectively, such that $a_{rc} \neq 0$. Let $A'$ denote the matrix obtained from $A$ by performing a real pivot on $a_{rc}$. Then there exists a $(k - 1) \times (k - 1)$ submatrix $A''$ of $A'$ with $|\det A''| = \frac{|\det A|}{|a_{rc}|}$.
+\end{lemma}
+
+\begin{proof}
+    Let $A''$ be the submatrix of $A'$ given by row index set $R = \{1, \dots, k\} \setminus \{r\}$ and column index set $C = \{1, \dots, k\} \setminus \{c\}$. By the explicit formula for pivoting in $A$ on $a_{rc}$, the entries of $A''$ are given by $a_{ij}'' = a_{ij} - \frac{a_{ic} a_{rj}}{a_{rc}}$. Using the linearity of the determinant, we can express $\det A''$ as
+    \[
+        \det A'' = \det A' - \sum_{k \in C} \frac{a_{rk}}{a_{rc}} \det B_{k}''
+    \]
+    where $B_{k}''$ is a matrix obtained from $A''$ by replacing column $a_{\cdot k}''$ with the pivot column $a_{\cdot c}$ without the pivot element $a_{rc}$.
+
+    By the cofactor expansion in $A$ along row $r$, we have
+    \[
+        \det A = \sum_{k = 1}^{n} (-1)^{r + k} a_{rk} \det B_{r, k}
+    \]
+    where $B_{r, k}$ is obtained from $A$ by removing row $r$ and column $k$. By swapping the order of columns in $B_{r, k}$ to match the form of $B_{k}$, we get
+    \[
+        \det A = (-1)^{r + c} (a_{rc} \det A' - \sum_{k \in C} a_{rk} \det B_{k}'').
+    \]
+
+    By combining the above results, we get $|\det A''| = \frac{|\det A|}{|a_{rc}|}$.
+\end{proof}
+
+\begin{corollary}\label{cor:pivot_smaller_det}
+    Let $A$ be a $k \times k$ matrix with $\det A \notin \{0, \pm 1\}$. Let $r, c \in \{1, \dots, k\}$ be a row and column index, respectively, and suppose that $a_{rc} \in \{\pm 1\}$. Let $A'$ denote the matrix obtained from $A$ by performing a real pivot on $a_{rc}$. Then there exists a $(k - 1) \times (k - 1)$ submatrix $A''$ of $A'$ with $\det A'' \notin \{0, \pm 1\}$.
+\end{corollary}
+
+\begin{proof}
+    Since $a_{rc} \in \{\pm 1\}$, by Lemma~\ref{lem:pivot_smaller_det} there exists a $(k - 1) \times (k - 1)$ submatrix $A''$ with $|\det A| = |\det A''|$. Since $\det A \notin \{0, \pm 1\}$, we have $\det A'' \notin \{0, \pm 1\}$.
+\end{proof}
+
+\begin{definition}\label{def:two_sum}
+    Let $B_{1}, B_{2}$ be matrices with $\{0, \pm 1\}$ entries expressed as $B_{1} = \left[A_{1} / x\right]$ and $B_{2} = \left[y \mid A_{2}\right]$, where $x$ is a row vector, $y$ is a column vector, and $A_{1}, A_{2}$ are matrices of appropriate dimensions. Let $D$ be the outer product of $y$ and $x$. The $2$-sum of $B_{1}$ and $B_{2}$ is defined as
+    \[
+        B_{1} \oplus_{2, x, y} B_{2} = \begin{bmatrix}
+            A_{1} & 0 \\
+            D & A_{2} \\
+        \end{bmatrix}.
+    \]
+\end{definition}
+
+\begin{definition}
+    Given $k \in \mathbb{Z}_{\geq 1}$, we say that a matrix $A$ is $k$-TU if every square submatrix of $A$ of size $k$ has determinant in $\{0, \pm 1\}$.
+\end{definition}
+
+\begin{remark}
+    Note that a matrix is TU if and only if it is $k$-TU for every $k \in \mathbb{Z}_{\geq 1}$.
+\end{remark}
+
+\begin{lemma}\label{lem:two_sum_reg_det_12}
+    Let $B_{1}$ and $B_{2}$ be TU matrices and let $B = B_{1} \oplus_{2, x, y} B_{2}$. Then $B$ is $1$-TU and $2$-TU.
+\end{lemma}
+
+\begin{proof}
+    To see that $B$ is $1$-TU, note that $B$ is a $\{0, \pm 1\}$ matrix by construction.
+
+    To show that $B$ is $2$-TU, let $V$ be a $2 \times 2$ submatrix $V$ of $B$. If $V$ is a submatrix of $\left[A_{1} / D\right]$, $\left[D \mid A_{2}\right]$, $\left[A_{1} \mid 0\right]$, or $\left[0 / A_{2}\right]$, then $\det V \in \{0, \pm 1\}$, as all of those four matrices are TU. Otherwise $V$ shares exactly one row and one column index with both $A_{1}$ and $A_{2}$. Let $i$ be the row shared by $V$ and $A_{1}$ and $j$ be the column shared by $V$ and $A_{2}$. Note that $V_{ij} = 0$. Thus, $\det V$ equals the product of the entries on the diagonal not containing $V_{ij}$. Since both of those entries are in $\{0, \pm 1\}$, we have $\det V \in \{0, \pm 1\}$.
+\end{proof}
+
+\begin{lemma}\label{lem:two_sum_reg_det_induction}
+    Let $k \in \mathbb{Z}_{\geq 1}$. Suppose that for any TU matrices $B_{1}$ and $B_{2}$ their $2$-sum $B = B_{1} \oplus_{2, x, y} B_{2}$ is $\ell$-TU for every $\ell < k$. Then for any TU matrices $B_{1}$ and $B_{2}$ their $2$-sum $B = B_{1} \oplus_{2, x, y} B_{2}$ is also $k$-TU.
+\end{lemma}
+
+\begin{proof}
+    For the sake of deriving a contradiction, suppose there exist TU matrices $B_{1}$ and $B_{2}$ such that their $2$-sum $B = B_{1} \oplus_{2, x, y} B_{2}$ is not $k$-TU. Then $B$ contains a $k \times k$ submatrix $V$ with $\det V \notin \{0, \pm 1\}$.
+
+    Note that $V$ cannot be a submatrix of $\left[A_{1} / D\right]$, $\left[D \mid A_{2}\right]$, $\left[A_{1} \mid 0\right]$, or $\left[0 / A_{2}\right]$, as all of those four matrices are TU. Thus, $V$ shares at least one row and one column index with $A_{1}$ and $A_{2}$ each.
+
+    Consider the row of $V$ whose index appears in $A_{1}$. Note that it cannot consist of only $0$ entries, as otherwise $\det V = 0$. Thus there exists a $\pm 1$ entry shared by $V$ and $A_{1}$. Let $r$ and $c$ denote the row and column index of this entry, respectively.
+
+    Perform a rational pivot in $B$ on the element $B_{rc}$. For every object, its modified counterpart after pivoting is denoted by the same symbol with an added tilde; for example, $\tilde{B}$ denotes the entire matrix after the pivot. Note that after pivoting the following statements hold:
+    \begin{itemize}
+        \item $\left[\tilde{A}_{1} / \tilde{D}\right]$ is TU, since TUness is preserved by pivoting.
+        \item $\tilde{A}_{2} = A_{2}$, i.e., $A_{2}$ remains unchanged. This holds because of the $0$ block in $B$.
+        \item $\tilde{D}$ consists of copies of $y$ scaled by factors in $\{0, \pm 1\}$. This can be verified via a case distinction and a simple calculation.
+        \item $\left[\tilde{D} \mid \tilde{A}_{2}\right]$ is TU, since this matrix consists of $A_{2}$ and copies of $y$ scaled by factors $\{0, \pm 1\}$.
+        \item $\tilde{D}$ can be represented as an outer product of a column vector $\tilde{y}$ and a row vector $\tilde{x}$, and we can define $\tilde{B}_{1} = \left[\tilde{A}_{1} / \tilde{x}\right]$ and $\tilde{B}_{2} = \left[\tilde{y} \mid \tilde{A}_{2}\right]$ similar to $B_{1}$ and $B_{2}$, respectively. Note that $\tilde{B}_{1}$ and $\tilde{B}_{2}$ have the same size as $B_{1}$ and $B_{2}$, respectively, are both TU, and satisfy $\tilde{B} = \tilde{B}_{1} \oplus_{2, \tilde{x}, \tilde{y}} \tilde{B}_{2}$.
+        \item $\tilde{B}$ contains a square submatrix $\tilde{V}$ of size $k - 1$ with $\det \tilde{V} \notin \{0, \pm 1\}$. Indeed, by Corollary~\ref{cor:pivot_smaller_det} from Lemma~\ref{lem:pivot_smaller_det}, pivoting in $V$ on the element $B_{rc}$ results in a matrix containing a $(k - 1) \times (k - 1)$ submatrix $V''$ with $\det V'' \in \{0, \pm 1\}$. Since $V$ is a submatrix of $B$, the submatrix $V''$ corresponds to a submatrix $\tilde{V}$ of $\tilde{B}$ with the same property.
+    \end{itemize}
+    To sum up, after pivoting we obtain a matrix $\tilde{B}$ that represents a $2$-sum of TU matrices $\tilde{B}_{1}$ and $\tilde{B}_{2}$ and contains a square submatrix of size $k - 1$ with determinant not in $\{0, \pm 1\}$. This is a contradiction with $(k - 1)$-TUness of $\tilde{B}$, which proves the lemma.
+\end{proof}
+
+\begin{lemma}
+    Let $B_{1}$ and $B_{2}$ be TU matrices. Then $B_{1} \oplus_{2, x, y} B_{2}$ is also TU.
+\end{lemma}
+
+\begin{proof}
+    Proof by induction.
+
+    Proposition for any $k \in \mathbb{Z}_{\geq 1}$: For any TU matrices $B_{1}$ and $B_{2}$, their $2$-sum $B = B_{1} \oplus_{2, x, y} B_{2}$ is $\ell$-TU for every $\ell \leq k$.
+
+    Base: The Proposition holds for $k = 1$ and $k = 2$ by Lemma~\ref{lem:two_sum_reg_det_12}.
+
+    Step: If the Proposition holds for some $k$, then it also holds for $k + 1$ by Lemma~\ref{lem:two_sum_reg_det_induction}.
+
+    Conclusion: For any TU matrices $B_{1}$ and $B_{2}$, their $2$-sum $B_{1} \oplus_{2, x, y} B_{2}$ is $k$-TU for every $k \in \mathbb{Z}_{\geq 1}$. Thus, $B_{1} \oplus_{2, x, y} B_{2}$ is TU.
+\end{proof}
+
+
+\section{3-Sums}
+
+\subsection{Delta-Wye Exchange}
+
+Delta-Wye Exchange or $\Delta Y$-exchange is an operation of replacing a triangle with a 3-star or vice versa.
+
+\begin{definition}\label{def:triangle_star_exchange}
+    The triangle to 3-star exchange for matrices is defined as follows.
+    \begin{enumerate}
+        \item Let $B \in \mathbb{Z}_{2}^{X \times (Y \cup \{e, f, g\})}$ be a binary matrix of the form
+        \[
+            B = \begin{bmatrix}
+                \overline{B} & a & b & c \\
+            \end{bmatrix}
+            , \quad
+            \text{where $a + b + c = 0$ in $\mathbb{Z}_{2}$.}
+        \]
+        Then the triangle to star exchange on $B$ results in the binary matrix $B' \in \mathbb{Z}_{2}^{(X \cup \{y\}) \times (Y \cup \{x, z\})}$ where
+        \[
+            B' = \begin{bmatrix}
+                \overline{B} & a & b \\
+                0 & 1 & 1 \\
+            \end{bmatrix}.
+        \]
+        \item Let $B \in \mathbb{Z}_{2}^{(X \cup \{f\}) \times (Y \cup \{e, g\})}$ be a binary matrix of the form
+        \[
+            B = \begin{bmatrix}
+                \overline{B} & b & b \\
+                a & 1 & 0 \\
+            \end{bmatrix}.
+        \]
+        Then the triangle to star exchange on $B$ results in the binary matrix $B' \in \mathbb{Z}_{2}^{(X \cup \{z, y\}) \times (Y \cup \{x\})}$ where
+        \[
+            B' = \begin{bmatrix}
+                \overline{B} & b \\
+                a & 1 \\
+                a & 0 \\
+            \end{bmatrix}.
+        \]
+        \item Let $B \in \mathbb{Z}_{2}^{(X \cup \{e, f\}) \times (Y \cup \{g\})}$ be a binary matrix of the form
+        \[
+            B = \begin{bmatrix}
+                \overline{B} & 0 \\
+                a & 1 \\
+                b & 1 \\
+            \end{bmatrix}
+        \]
+        Then the triangle to star exchange on $B$ results in the binary matrix $B' \in \mathbb{Z}_{2}^{(X \cup \{x, y, z\}) \times Y}$ where
+        \[
+            B' = \begin{bmatrix}
+                \overline{B} \\
+                a \\
+                b \\
+                c \\
+            \end{bmatrix}
+            , \quad
+            \text{where $a + b + c = 0$ in $\mathbb{Z}_{2}$.}
+        \]
+    \end{enumerate}
+    The 3-star to triangle exchange is defined as the converse operation.
+\end{definition}
+
+\begin{remark}
+    Note that in the case distinction $\overline{B}, a, b, c$ refer to different matrices and vectors.
+\end{remark}
+
+\begin{definition}
+    Let $M$ be a binary matroid with the ground set $E$. Let $\{e, f, g\} \subseteq E$ be a triangle in $M$ not containing a cocycle and let $B$ be a standard binary representation matrix for $M$. The triangle to 3-star exchange on $M$ results in a binary matroid $M'$ with the ground set $E' = E \setminus \{e, f, g\} \cup \{x, y, z\}$ represented by the standard binary representation matrix $B'$ obtained by the triangle to star exchange on $B$.
+
+    Conversely, let $M'$ be a binary matroid with the ground set $E'$. Let $\{x, y, z\} \subseteq E'$ be a triad in $M$ not containing a cycle and let $B'$ be a standard binary representation matrix for $M'$. The 3-star to triangle exchange on $M'$ results in a binary matroid $M$ with the ground set $E = E' \setminus \{x, y, z\} \cup \{e, f, g\}$ represented by the standard binary representation matrix $B$ obtained by the triangle to star exchange on $B'$.
+\end{definition}
+
+\begin{remark}
+    Note that we may always choose $B$ of the form from case 3. In this case, the condition that the triangle $\{e, f, g\}$ does not contain a cocycle is equivalent to the requirement that the row vectors $a$ and $b$ of $B$ are non-zero and distinct. Hence, the row vectors $a$, $b$, and $c = a + b$ (in $\mathbb{Z}_{2}$) in $B'$ are distinct, and $\{x, y, z\}$ is indeed a triad in $M'$.
+\end{remark}
+
+\begin{lemma}
+    The triangle to triad exchange in $M$ is a triad to triangle exchange in $M^{*}$.
+\end{lemma}
+
+\begin{proof}
+    By construction, if $M$ has standard representation $S$, then $-S^{T}$ (and also $S^{T}$) is a standard representation of $M^{*}$. Plugging this into Definition~\ref{def:triangle_star_exchange} and reversing the operation shows the desired result.
+\end{proof}
+
+
+\subsection{3-Sum and Delta-Sum Constructions}
+
+\begin{definition}\label{def:three_sum}
+    Let $B_{1} \in \mathbb{Z}_{2}^{(X_{1} \cup \{x_{2}, x_{3}\}) \times (Y_{1} \cup \{y_{3}\})}, B_{2} \in \mathbb{Z}_{2}^{(\{x_{1}\} \cup X_{2}) \times (\{y_{1}, y_{2}\} \cup Y_{2})}$ be matrices of the form
+    \[
+        B_{1} =
+        \begin{NiceArray}{ccccc}[hvlines,right-margin=1em,left-margin=1em]
+            \Block[draw]{4-4}{A_{1}} & & & & \Block[draw]{4-1}{0} \\
+            \\
+            \\
+            & & \Block[draw]{1-1}{1} & \Block[draw]{1-1}{1} & \Block[draw]{1-1}{0} \\
+            \Block[draw]{2-2}{D_{1}} & & \Block[draw]{2-2}{\overline{D}} & & \Block[draw]{1-1}{1} \\
+             & & & & \Block[draw]{1-1}{1} \\
+        \end{NiceArray}
+        , \quad
+        B_{2} =
+        \begin{NiceArray}{cccccc}[hvlines,right-margin=1em,left-margin=1em]
+            \Block[draw]{1-1}{1} & \Block[draw]{1-1}{1} & \Block[draw]{1-1}{0} \Block[draw]{1-4}{0} & & & \\
+            \Block[draw]{2-2}{\overline{D}} & & \Block[draw]{1-1}{1} \Block[draw]{4-4}{A_{2}} \\
+             & & \Block[draw]{1-1}{1} \\
+            \Block[draw]{2-2}{D_{2}} \\
+            \\
+        \end{NiceArray},
+    \]
+    where $\overline{D}$ is a $2 \times 2$ matrix with $\mathbb{Z}_{2}$ rank $2$ (i.e., $\overline{D}$ is non-singular over $\mathbb{Z}_{2}$). Note that $x_{1} \in X_{1}$, $x_{2}, x_{3} \in X_{2}$, $y_{1}, y_{2} \in Y_{1}$, $y_{3} \in Y_{2}$, $A_{1} \in \mathbb{Z}_{2}^{X_{1} \times Y_{1}}$, $A_{2} \in \mathbb{Z}_{2}^{X_{2} \times Y_{2}}$, $\overline{D} \in \mathbb{Z}_{2}^{(x_{2}, x_{3}) \times (y_{1}, y_{2})}$, $D_{1} \in \mathbb{Z}_{2}^{\{x_{2}, x_{3}\} \times (Y_{1} \setminus \{y_{1}, y_{2}\})}$, $D_{2} \in \mathbb{Z}_{2}^{(X_{2} \setminus \{x_{2}, x_{3}\}) \times \{y_{1}, y_{2}\}}$. Then the $3$-sum of $B_{1}$ and $B_{2}$ is defined as
+    \[
+        B_{1} \oplus_{3} B_{2} =
+        \begin{NiceArray}{cccccccc}[hvlines,right-margin=1em,left-margin=1em]
+            \Block[draw]{4-4}{A_{1}} & & & & \Block[draw]{4-4}{0} & & & \\
+            \\
+            \\
+            & & \Block[draw]{1-1}{1} & \Block[draw]{1-1}{1} & \Block[draw]{1-1}{0} \\
+            \Block[draw]{2-2}{D_{1}} & & \Block[draw]{2-2}{\overline{D}} & & \Block[draw]{1-1}{1} \Block[draw]{4-4}{A_{2}} \\
+             & & & & \Block[draw]{1-1}{1} \\
+            \Block[draw]{2-2}{D_{12}} & & \Block[draw]{2-2}{D_{2}} \\
+            \\
+        \end{NiceArray},
+    \]
+    where $D_{12} = D_{2} \cdot (\overline{D})^{-1} \cdot D_{1}$ and the indexing is preserved.
+\end{definition}
+
+\begin{definition}\label{def:three_sum_additional_notation}
+    To simplify notation, let $D_{1, 12} = [D_{1} / D_{12}]$, $D_{0, 2} = [\overline{D} / D_{2}]$, $D_{1, 0} = [D_{1} \mid \overline{D}]$, $D_{12, 2} = [D_{12} \mid D_{2}]$. % Additionally, let $a = (D_{0, 2})_{y_{1}}$, $b = (D_{0, 2})_{y_{2}}$.
+\end{definition}
+
+\begin{definition}\label{def:three_sum_delta_wye_exch}
+    Let $B_{1}$, $B_{2}$ satisfy the conditions of Definition~\ref{def:three_sum}. Let $B_{2 \Delta} \in \mathbb{Z}_{2}^{X_{2} \times (\{z, y_{1}, y_{2}\} \cup Y_{2})}$ be the matrix obtained from $B_{2}$ via a triangle-star exchange from Definition~\ref{def:triangle_star_exchange}:
+    \[
+        B_{2 \Delta} =
+        \begin{NiceArray}{ccccccc}[hvlines,right-margin=1em,left-margin=1em]
+            \Block[draw]{4-1}{d} & \Block[draw]{2-2}{\overline{D}} & & \Block[draw]{1-1}{1} \Block[draw]{4-4}{A_{2}} & & & \\
+            & & & \Block[draw]{1-1}{1} \\
+            & \Block[draw]{2-2}{D_{2}} \\
+            \\
+        \end{NiceArray}
+    \]
+    where $d \in \mathbb{Z}_{2}^{Y_{2}}$ is such that $(D_{0, 2})_{\cdot y_{1}} + (D_{0, 2})_{\cdot y_{2}} + d = 0$.
+\end{definition}
+
+\begin{definition}\label{def:three_delta_sum}
+    Let $B_{1}$, $B_{2}$, and $B_{2 \Delta}$ be matrices from Definitions~\ref{def:three_sum} and~\ref{def:three_sum_delta_wye_exch}. Then the $\Delta$-sum of $B_{1}$ and $B_{2 \Delta}$ is $B_{1} \oplus_{\Delta} B_{2 \Delta} = B_{1} \oplus_{3} B_{2}$.
+\end{definition}
+
+
+\subsection{Regularity of 3-Sum}
+
+\begin{lemma}\label{lem:tu_resigning}
+    Suppose $A$ and $A'$ are TU signings of the same matrix $B \in \mathbb{Z}_{2}^{m \times n}$. Then there exist vectors $u \in \{\pm 1\}^{m}$ and $v \in \{\pm 1\}^{n}$ such that $a_{ij}' = u_{i} v_{j} a_{ij}$ for every $i \in [m]$, $j \in [n]$.
+    % Original formulation from Truemper: Let $A$ and $A'$ be two TU matrices with the same support matrix. Then $A'$ can be obtained from $A$ by a scaling of the rows and columns by $\{\pm 1\}$ factors.
+\end{lemma}
+
+\begin{proof}
+    \todo[inline]{adapt from Lemma 9.2.6 in Truemper}
+\end{proof}
+
+\begin{lemma}\label{lem:three_sum_b_2_nice_signing}
+    Let $B_{2}$ be a matrix from Definition~\ref{def:three_sum}. If $B_{2}$ is regular, then it has a TU signing $\tilde{B}_{2}$ where all entries in columns $y_{1}$ and $y_{2}$ are in $\{0, 1\}$.
+\end{lemma}
+
+\begin{proof}
+    Since $B_{2}$ is regular, it has a TU signing $B_{2}'$. Recall that multiplying rows and columns of a TU matrix by factors in $\{0, \pm 1\}$ preserves TUness.
+
+    If $B_{2}'(x_{1}, y_{1}) = -1$, multiply column $y_{1}$ by $-1$. Similarly, if $B_{2}'(x_{1}, y_{2}) = -1$, multiply column $y_{2}$ by $-1$. Thus, we may assume that $B_{2}'$ has $B_{2}'(x_{1}, y_{1}) = B_{2}'(x_{1}, y_{2}) = 1$.
+
+    Next, consider each row of $B_{2}'$. It can have one of the following forms.
+    \begin{itemize}
+        \item $[0 \mid 0]$, $[0 \mid 1]$, $[1 \mid 0]$, $[1 \mid 1]$. In this case, we do not need to modify the signing.
+        \item $[0 \mid -1]$, $[-1 \mid 0]$, $[-1 \mid -1]$. In this case, we can multiply this row by $-1$ to make all its non-negative.
+        \item $[1 \mid -1]$, $[-1 \mid 1]$. This case leads to a contradiction, as the matrix composed of this row and row $x_{1}$ has
+        \[
+            \det \begin{bmatrix}
+                1 & 1 \\
+                1 & -1 \\
+            \end{bmatrix} = -2
+            \quad \text{ or } \quad
+            \det \begin{bmatrix}
+                1 & 1 \\
+                -1 & 1 \\
+            \end{bmatrix} = 2,
+        \]
+        which is impossible as $B_{2}'$ is a TU signing.
+    \end{itemize}
+
+    Thus, we can multiply columns and rows of $B_{2}'$ to obtain a TU signing $\tilde{B}_{2}$ where all entries in columns $y_{1}$ and $y_{2}$ are in $\{0, 1\}$, as desired.
+\end{proof}
+
+\begin{lemma}\label{lem:three_sum_b_2_pivot}
+    Let $B_{2}$ be a matrix from Definition~\ref{def:three_sum} and let $\tilde{B}_{2}$ be a TU signing of $B_{2}$ from Lemma~\ref{lem:three_sum_b_2_nice_signing}. To simplify notation, let $\tilde{a} = (\tilde{D}_{0, 2})_{\cdot y_{1}}$ and $\tilde{b} = (\tilde{D}_{0, 2})_{\cdot y_{2}}$. Then pivoting in $\tilde{B}_{2}$ on $(x_{1}, y_{1})$ and $(x_{1}, y_{2})$ yields:
+    \[
+        \tilde{B_{2}} =
+        \begin{NiceArray}{cccccc}[hvlines,right-margin=1em,left-margin=1em]
+            \Block[draw]{1-1}{1} & \Block[draw]{1-1}{1} & \Block[draw]{1-4}{0} & & & \\
+            \Block[draw]{4-1}{\tilde{a}} & \Block[draw]{4-1}{\tilde{b}} & \Block[draw]{4-4}{\tilde{A}_{2}} \\
+            \\
+            \\
+            \\
+        \CodeAfter
+            \tikz \draw (1-1) circle (0.2);
+        \end{NiceArray}
+        \quad \to \quad
+        \begin{NiceArray}{cccccc}[hvlines,right-margin=1em,left-margin=1em]
+            \Block[draw]{1-1}{1} & \Block[draw]{1-1}{1} & \Block[draw]{1-4}{0} & & & \\
+            \Block[draw]{4-1}{-\tilde{a}} & \Block[draw]{4-1}{\tilde{b} - \tilde{a}} & \Block[draw]{4-4}{\tilde{A}_{2}} \\
+            \\
+            \\
+            \\
+        \end{NiceArray}
+    \]
+    \[
+        \tilde{B_{2}} =
+        \begin{NiceArray}{cccccc}[hvlines,right-margin=1em,left-margin=1em]
+            \Block[draw]{1-1}{1} & \Block[draw]{1-1}{1} & \Block[draw]{1-4}{0} & & & \\
+            \Block[draw]{4-1}{\tilde{a}} & \Block[draw]{4-1}{\tilde{b}} & \Block[draw]{4-4}{\tilde{A}_{2}} \\
+            \\
+            \\
+            \\
+        \CodeAfter
+            \tikz \draw (1-2) circle (0.2);
+        \end{NiceArray}
+        \quad \to \quad
+        \begin{NiceArray}{cccccc}[hvlines,right-margin=1em,left-margin=1em]
+            \Block[draw]{1-1}{1} & \Block[draw]{1-1}{1} & \Block[draw]{1-4}{0} & & & \\
+            \Block[draw]{4-1}{\tilde{a} - \tilde{b}} & \Block[draw]{4-1}{-\tilde{b}} & \Block[draw]{4-4}{\tilde{A}_{2}} \\
+            \\
+            \\
+            \\
+        \end{NiceArray}
+    \]
+\end{lemma}
+
+\begin{proof}
+    Recall that a real pivot in matrix $A$ on entry $a_{rc} \neq 0$ transforms the matrix as follows:
+    \[
+        \begin{NiceMatrix}[hvlines]
+            a_{rc} & a_{rj} \\
+            a_{ic} & a_{ij} \\
+        \end{NiceMatrix}
+        \quad \to \quad
+        \begin{NiceMatrix}[hvlines,cell-space-limits=2pt]
+            \frac{1}{a_{rc}} & \frac{a_{rj}}{a_{rc}} \\
+            -\frac{a_{ic}}{a_{rc}} & a_{ij} - \frac{a_{rj} a_{ic}}{a_{rc}} \\
+        \end{NiceMatrix}
+    \]
+    A direct calculation proves the claim.
+\end{proof}
+
+\begin{corollary}\label{cor:three_sum_b_2_pivot_extra}
+    Let $B_{2}$ be a matrix from Definition~\ref{def:three_sum} and let $\tilde{B}_{2}$ be a TU signing of $B_{2}$ from Lemma~\ref{lem:three_sum_b_2_nice_signing}. Then the following matrices are TU:
+    \[
+        \tilde{B}_{2}^{(a)} = \begin{NiceArray}{cccccc}[hvlines,right-margin=1em,left-margin=1em]
+            \Block{4-1}{\tilde{a} - \tilde{b}} & \Block{4-1}{\tilde{a}} & \Block{4-4}{\tilde{A}_{2}} & & & \\
+            \\
+            \\
+            \\
+        \end{NiceArray}, \quad
+        \tilde{B}_{2}^{(b)} = \begin{NiceArray}{cccccc}[hvlines,right-margin=1em,left-margin=1em]
+            \Block{4-1}{\tilde{a} - \tilde{b}} & \Block{4-1}{\tilde{b}} & \Block{4-4}{\tilde{A}_{2}} & & & \\
+            \\
+            \\
+            \\
+        \end{NiceArray}.
+    \]
+\end{corollary}
+
+\begin{proof}
+    Recall that pivoting, taking submatrices, and multiplying columns by ${\pm 1}$ factors preserves TUness. Combining these facts with Lemma~\ref{lem:three_sum_b_2_pivot} gives the corollary.
+\end{proof}
+
+\begin{lemma}\label{lem:three_sum_b_2_exch_regular_forward}
+    Let $B_{2}$ and $B_{2 \Delta}$ be matrices from Definitions~\ref{def:three_sum} and~\ref{def:three_sum_delta_wye_exch}. If $B_{2}$ is regular, then $B_{2 \Delta}$ is regular.
+\end{lemma}
+
+\begin{proof}
+    Let $\tilde{B}_{2}$ be a TU signing of $B_{2}$ from Lemma~\ref{lem:three_sum_b_2_nice_signing}. Let $\tilde{\overline{D}}$, $\tilde{D}_{2}$, and $\tilde{A}_{2}$ be the signings of $\overline{D}$, $D_{2}$, and $A_{2}$, respectively, etc. % (By Lemma~\ref{lem:three_sum_b_2_nice_signing}, $\tilde{\overline{D}} = D$ and $\tilde{D}_{2} = D_{2}$ for this signing.)
+    Let $\tilde{d} = (\tilde{D}_{0, 2})_{\cdot y_{1}} - (\tilde{D}_{0, 2})_{\cdot y_{2}}$ and $\tilde{B}_{2 \Delta} = [\tilde{d} \mid \tilde{D}_{0, 2} \mid \tilde{A}_{2}]$. Since $\tilde{D_{0, 2}} \in \{0, 1\}^{X_{2} \times \{y_{1}, y_{2}\}}$ by Lemma~\ref{lem:three_sum_b_2_nice_signing}, we have $\tilde{d} \in \{0, \pm 1\}^{X_{2}}$, so $\tilde{B}_{2 \Delta}$ is a signing of $B_{2 \Delta}$. Our goal is to prove that $\tilde{B}_{2 \Delta}$ is TU. To this end, let $V$ be a square submatrix of $\tilde{B}_{2 \Delta}$. We will show that $\det V \in \{0, \pm 1\}$.
+
+    Suppose that column $\tilde{d}$ (with index $z$) is not in $V$. Then $V$ is a submatrix of $[\tilde{D}_{0, 2} \mid \tilde{A}_{2}]$ and hence a submatrix of $\tilde{B}_{2}$. Since $\tilde{B}_{2}$ is TU, we have $\det V \in \{0, \pm 1\}$. Going forward we assume that column $\tilde{d}$ (with index $z$) is in $V$.
+
+    Suppose that columns $(\tilde{D}_{0, 2})_{\cdot y_{1}}$ and $(\tilde{D}_{0, 2})_{\cdot y_{2}}$ (with indices $y_{1}$ and $y_{2}$, respectively) are both in $V$. Then $V$ contains three linearly dependent columns: $\tilde{d}$, $(\tilde{D}_{0, 2})_{\cdot y_{1}}$, and $(\tilde{D}_{0, 2})_{\cdot y_{2}}$ (with indices $z$, $y_{1}$, and $y_{2}$, respectively). Thus, $\det V = 0$. Going forward we assume that at most one of the columns $(\tilde{D}_{0, 2})_{\cdot y_{1}}$ and $(\tilde{D}_{0, 2})_{\cdot y_{2}}$ is in $V$.
+
+    Suppose that column $(\tilde{D}_{0, 2})_{\cdot y_{1}}$ (with index $y_{1}$) is in $V$. Then $V$ is a submatrix of $\tilde{B}_{2}^{(b)}$ from Corollary~\ref{cor:three_sum_b_2_pivot_extra}, and thus $\det V \in \{0, \pm 1\}$. Otherwise, $V$ is a submatrix of $\tilde{B}_{2}^{(a)}$ from Corollary~\ref{cor:three_sum_b_2_pivot_extra}, and so $\det V \in \{0, \pm 1\}$.
+
+    Since our case distinction is exhaustive, we showed that every square submatrix $V$ of $\tilde{B}_{2 \Delta}$ has $\det V \in \{0, \pm 1\}$. Thus, $\tilde{B}_{2 \Delta}$ is TU, and so $B_{2 \Delta}$ is regular.
+\end{proof}
+
+\begin{lemma}\label{lem:three_sum_b_2_exch_regular_backward}
+    Let $B_{2}$ and $B_{2 \Delta}$ be matrices from Definitions~\ref{def:three_sum} and~\ref{def:three_sum_delta_wye_exch}. If $B_{2 \Delta}$ is regular, then $B_{2}$ is regular. % In other words, the converse of Lemma~\ref{lem:three_sum_b_2_exch_regular_forward} holds.
+\end{lemma}
+
+\begin{proof}
+    Since $B_{2 \Delta}$ is regular, $B_{2 \Delta}^{*}$ is also regular. Since $B_{2 \Delta}$ is obtained from $B_{2}$ via a $\Delta Y$-exchange, $B_{2}^{*}$ can be obtained from $B_{2 \Delta}^{*}$ via the same operation. Therefore, $B_{2}^{*}$ is regular by Lemma~\ref{lem:three_sum_b_2_exch_regular_forward}. Thus, $B_{2}$ is regular.
+\end{proof}
+
+\begin{corollary}
+    $B_{2}$ from Definition~\ref{def:three_sum} is regular if and only if $B_{2 \Delta}$ from Definition~\ref{def:three_sum_delta_wye_exch} is regular.
+\end{corollary}
+
+\begin{proof}
+    Combine the results of Lemmas~\ref{lem:three_sum_b_2_exch_regular_forward} and~\ref{lem:three_sum_b_2_exch_regular_backward}.
+\end{proof}
+
+\begin{lemma}\label{lem:three_sum_columns_of_d_D}
+    Assume the notation of Definitions~\ref{def:three_sum} and~\ref{def:three_sum_delta_wye_exch}. Then the columns of  $[d \mid D]$ are in $[d \mid D_{0, 2} \mid 0]$.
+\end{lemma}
+
+\begin{proof}
+    Columns of $[d \mid D_{0, 2}]$ trivially satisfy the claim, so it only remains to show that columns of $D_{1, 12}$ are in $[d \mid D_{0, 2} \mid 0]$. Note that $D_{1, 12} = D_{0, 2} \cdot ((\overline{D})^{-1} \cdot D_{1})$, i.e., every column of $D_{1, 12}$ can be expressed as a linear combination of the columns of $D_{0, 2}$ (over $\mathbb{Z}_{2}$). In particular, every column of $D_{1, 12}$ is either zero, one of the columns of $D_{0, 2}$, or their sum. By construction, $(D_{0, 2})_{\cdot y_{1}} + (D_{0, 2})_{\cdot y_{2}} = d$. Thus, the desired result holds.
+\end{proof}
+
+\begin{corollary}\label{cor:three_sum_columns_of_b_2_delta}
+    As a direct corollary of Lemma~\ref{lem:three_sum_columns_of_d_D}, columns of $[d \mid D \mid A_{2}]$ are in $[d \mid D_{0, 2} \mid A_{2} \mid 0]$.
+\end{corollary}
+
+\begin{lemma}\label{lem:three_sum_regularity}
+    Let $B_{1}$ and $B_{2}$ be matrices from Definition~\ref{def:three_sum}. If $B_{1}$ and $B_{2}$ are regular, then $B_{1} \oplus_{3} B_{2}$ is regular.
+\end{lemma}
+
+\begin{proof}
+    Let $B_{2 \Delta}$ be the matrix from Definition~\ref{def:three_sum_delta_wye_exch}. By Lemma~\ref{lem:three_sum_b_2_exch_regular_forward}, $B_{2 \Delta}$ is regular. Since $B_{1} \oplus_{\Delta} B_{2 \Delta} = B_{1} \oplus_{3} B_{2}$, to prove the desired result it suffices to show that $B_{1} \oplus_{\Delta} B_{2 \Delta}$ is regular.
+
+    \todo[inline]{similar argument as for 2-sums; tight point: after signing $B_{2 \Delta}$, need to propagate signing from $\tilde{D}$ to $A_{1} / D$, which involves an argument relying on traversing bipartite graphs; keep track of the form of $D$, the form is preserved under pivoting}
+\end{proof}
+
+\end{document}
