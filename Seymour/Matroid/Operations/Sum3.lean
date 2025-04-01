@@ -126,6 +126,17 @@ lemma standardRepr3sumComposition_Y {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ 
     (standardRepr3sumComposition hXX hYY hXY hYX).fst.Y = S₁.Y ∪ (S₂.Y \ {y₁, y₂, y₃}) :=
   rfl
 
+lemma lll {X Y : Set α} {x₁ x₂ x₃ : α} (hXX : X ∩ Y = {x₁, x₂, x₃}) :
+    X \ {x₁, x₂, x₃} ⫗ Y := by
+  tauto_set
+
+lemma lll' {X Y : Set α} {x₁ x₂ x₃ i : α} (hXX : X ∩ Y = {x₁, x₂, x₃}) (hi : i ∈ X \ {x₁, x₂, x₃}) :
+    i ∉ Y := by
+  have := lll hXX
+  exact Disjoint.not_mem_of_mem_left this hi
+
+set_option maxHeartbeats 0 in
+--#count_heartbeats in
 lemma standardRepr3sumComposition_B {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ y₂ y₃ : α}
     (hXX : S₁.X ∩ S₂.X = {x₁, x₂, x₃}) (hYY : S₁.Y ∩ S₂.Y = {y₁, y₂, y₃}) (hXY : S₁.X ⫗ S₂.Y) (hYX : S₁.Y ⫗ S₂.X) :
     (standardRepr3sumComposition hXX hYY hXY hYX).fst.B =
@@ -177,20 +188,85 @@ lemma standardRepr3sumComposition_B {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ 
       ).toMatrixUnionUnion
     := by
   ext i j
-  rw [standardRepr3sumComposition_X] at i
-  rw [standardRepr3sumComposition_Y] at j
-  -- TODO finishing this proof is important in order to check that the definition and the lemma were changed consistently
+  have hX := standardRepr3sumComposition_X hXX hYY hXY hYX
+  have hY := standardRepr3sumComposition_Y hXX hYY hXY hYX
   if hi : i.val ∈ S₂.X then
-    if hj : j.val ∈ S₁.Y then
-      sorry
+    if hix₁ : i = x₁ then
+      if hj : j.val ∈ S₁.Y then
+        if hjy₁ : j = y₁ then
+          simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+        else if hjy₂ : j = y₂ then
+          simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+        else if hjy₃ : j = y₃ then
+          simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+        else
+          simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+      else
+        have hjY₂ : j.val ∈ S₂.Y \ {y₁, y₂, y₃}
+        · exact in_of_in_union_of_ni_left j.property hj
+        simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+    else if hix₂ : i = x₂ then
+      if hj : j.val ∈ S₁.Y then
+        if hjy₁ : j = y₁ then
+          simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+        else if hjy₂ : j = y₂ then
+          simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+        else if hjy₃ : j = y₃ then
+          simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+        else
+          simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+      else
+        have hjY₂ : j.val ∈ S₂.Y \ {y₁, y₂, y₃}
+        · exact in_of_in_union_of_ni_left j.property hj
+        simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+    else if hix₃ : i = x₃ then
+      if hj : j.val ∈ S₁.Y then
+        if hjy₁ : j = y₁ then
+          simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+        else if hjy₂ : j = y₂ then
+          simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+        else if hjy₃ : j = y₃ then
+          simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+        else
+          simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+      else
+        have hjY₂ : j.val ∈ S₂.Y \ {y₁, y₂, y₃}
+        · exact in_of_in_union_of_ni_left j.property hj
+        simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
     else
-      sorry
-  else
-    if hj : j.val ∈ S₁.Y then
-      sorry
+      have hiX₂ : i.val ∈ S₂.X \ {x₁, x₂, x₃}
+      · simp [*]
+      have hiX₁ : i.val ∉ S₁.X
+      · exact nameme2 hXX hiX₂
+      if hj : j.val ∈ S₁.Y then
+        if hjy₁ : j = y₁ then
+          simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+        else if hjy₂ : j = y₂ then
+          simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+        else if hjy₃ : j = y₃ then
+          simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+        else
+          simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+      else
+        have hjY₂ : j.val ∈ S₂.Y \ {y₁, y₂, y₃}
+        · exact in_of_in_union_of_ni_left j.property hj
+        simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
     else
-      sorry
-  -- aesop: internal error during proof reconstruction: goal 69 was not normalised.
+      have hiX₁ : i.val ∈ S₁.X \ {x₁, x₂, x₃}
+      · exact in_of_in_union_of_ni_right i.property hi
+      if hj : j.val ∈ S₁.Y then
+        if hjy₁ : j = y₁ then
+          simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+        else if hjy₂ : j = y₂ then
+          simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+        else if hjy₃ : j = y₃ then
+          simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+        else
+          simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
+      else
+        have hjY₂ : j.val ∈ S₂.Y \ {y₁, y₂, y₃}
+        · exact in_of_in_union_of_ni_left j.property hj
+        simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion]
 
 instance Matroid.Is3sumOf.finS {M M₁ M₂ : Matroid α} (hM : M.Is3sumOf M₁ M₂) : Finite hM.S.X := by
   obtain ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, rfl, _⟩ := hM

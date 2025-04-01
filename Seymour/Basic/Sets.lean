@@ -28,6 +28,14 @@ lemma nonempty_inter_not_ssubset_empty_inter {A B E : Set α} (hA : (A ∩ E).No
   rw [hB] at hxBE
   tauto
 
+lemma in_of_in_union_of_ni_left {a : α} {X Y : Set α} (ha : a ∈ X ∪ Y) (haX : a ∉ X) : a ∈ Y := by
+  cases ha with
+  | inl hX => exact (haX hX).elim
+  | inr hY => exact hY
+
+lemma in_of_in_union_of_ni_right {a : α} {X Y : Set α} (ha : a ∈ X ∪ Y) (haY : a ∉ Y) : a ∈ X :=
+  in_of_in_union_of_ni_left (Set.union_comm X Y ▸ ha) haY
+
 lemma ssubset_self_union_other_elem {a : α} {X : Set α} (ha : a ∉ X) :
     X ⊂ X ∪ {a} := by
   refine ⟨Set.subset_union_left, ?_⟩
@@ -112,19 +120,35 @@ lemma Disjoint.ni_of_in {X Y : Set α} {a : α} (hXY : X ⫗ Y) (ha : a ∈ X) :
   intro ha'
   simpa [hXY.inter_eq] using Set.mem_inter ha ha'
 
-lemma disjoint_of_singleton_inter_left_wo {X Y : Set α} {a : α} (hXY : X ∩ Y = {a}) :
-    X \ {a} ⫗ Y := by
+lemma disjoint_of_inter_left_wo {X Y Z : Set α} (hXY : X ∩ Y = Z) :
+    X \ Z ⫗ Y := by
   tauto_set
 
-lemma disjoint_of_singleton_inter_right_wo {X Y : Set α} {a : α} (hXY : X ∩ Y = {a}) :
-    X ⫗ Y \ {a} := by
+lemma disjoint_of_inter_right_wo {X Y Z : Set α} (hXY : X ∩ Y = Z) :
+    X ⫗ Y \ Z := by
   rw [disjoint_comm]
   rw [Set.inter_comm] at hXY
-  exact disjoint_of_singleton_inter_left_wo hXY
+  exact disjoint_of_inter_left_wo hXY
+
+lemma disjoint_of_singleton_inter_left_wo {X Y : Set α} {a : α} (hXY : X ∩ Y = {a}) :
+    X \ {a} ⫗ Y :=
+  disjoint_of_inter_left_wo hXY
+
+lemma disjoint_of_singleton_inter_right_wo {X Y : Set α} {a : α} (hXY : X ∩ Y = {a}) :
+    X ⫗ Y \ {a} :=
+  disjoint_of_inter_right_wo hXY
 
 lemma disjoint_of_singleton_inter_both_wo {X Y : Set α} {a : α} (hXY : X ∩ Y = {a}) :
     X \ {a} ⫗ Y \ {a} :=
   Disjoint.disjoint_sdiff_left (disjoint_of_singleton_inter_right_wo hXY)
+
+lemma nameme1 {X Y Z : Set α} (hXY : X ∩ Y = Z) {a : α} (ha : a ∈ X \ Z) :
+    a ∉ Y :=
+  (disjoint_of_inter_left_wo hXY).ni_of_in ha
+
+lemma nameme2 {X Y Z : Set α} (hXY : X ∩ Y = Z) {a : α} (ha : a ∈ Y \ Z) :
+    a ∉ X :=
+  (disjoint_of_inter_right_wo hXY).symm.ni_of_in ha
 
 lemma disjoint_of_singleton_inter_subset_left {X Y Z : Set α} {a : α} (hXY : X ∩ Y = {a}) (hZ : Z ⊆ X) (haZ : a ∉ Z) :
     Z ⫗ Y := by
