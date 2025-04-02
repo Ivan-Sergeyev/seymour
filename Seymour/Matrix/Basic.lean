@@ -35,20 +35,20 @@ lemma Matrix.ext_col {m n : Type} {A B : Matrix m n α} (hAB : ∀ i : m, A i = 
 
 lemma Matrix.det_int_coe [DecidableEq α] [Fintype α] (A : Matrix α α ℤ) (F : Type) [Field F] :
     ((A.det : ℤ) : F) = ((A.map Int.cast).det : F) := by
-  simp [Matrix.det_apply]
+  simp only [Matrix.det_apply, Int.cast_sum, Matrix.map_apply]
   congr
   ext p
-  if h1 : Equiv.Perm.sign p = 1 then
+  if h1 : p.sign = 1 then
     simp [h1]
   else
     simp [Int.units_ne_iff_eq_neg.→ h1]
 
 lemma Matrix.det_rat_coe [DecidableEq α] [Fintype α] (A : Matrix α α ℚ) (F : Type) [Field F] [CharZero F] :
     ((A.det : ℚ) : F) = ((A.map Rat.cast).det : F) := by
-  simp [Matrix.det_apply]
+  simp only [Matrix.det_apply, Rat.cast_sum, Matrix.map_apply]
   congr
   ext p
-  if h1 : Equiv.Perm.sign p = 1 then
+  if h1 : p.sign = 1 then
     simp [h1]
   else
     simp [Int.units_ne_iff_eq_neg.→ h1]

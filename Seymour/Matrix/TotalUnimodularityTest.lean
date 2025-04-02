@@ -60,8 +60,6 @@ def Matrix.testTotallyUnimodularFast {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ
   ∀ (r : Finset (Fin m)) (c : Finset (Fin n)) (h : #r = #c),
     (A.square_set_submatrix r c h).det ∈ SignType.cast.range
 
--- Lemmas that should all be upstreamed to mathlib
--- https://github.com/leanprover-community/mathlib4/pull/23421/files
 lemma Matrix.abs_det_reindex_self_self {m n : Type} [DecidableEq n] [Fintype n]
       [DecidableEq m] [Fintype m]
       {R : Type} [LinearOrderedCommRing R] (e₁ e₂ : m ≃ n) (A : Matrix m m R) :
