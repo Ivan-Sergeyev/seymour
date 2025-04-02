@@ -1,6 +1,7 @@
 import Seymour.Matrix.Basic
 import Mathlib.Data.Matrix.Rank
 
+open scoped Matrix
 
 variable {X Y F : Type} [Fintype X] [Fintype Y] [Field F]
 
@@ -24,8 +25,8 @@ lemma Matrix.linearIndependent_iff_exists_submatrix_unit (A : Matrix X Y F) :
     LinearIndependent F A ↔ ∃ f : X → Y, IsUnit (A.submatrix id f) := by
   constructor
   · intro hA
-    have hXA : #X = A.transpose.rank := (A.rank_transpose.trans hA.rank_matrix).symm
-    obtain ⟨f, hf⟩ := A.transpose.exists_submatrix_rank
+    have hXA : #X = Aᵀ.rank := (A.rank_transpose.trans hA.rank_matrix).symm
+    obtain ⟨f, hf⟩ := Aᵀ.exists_submatrix_rank
     use f ∘ Fintype.equivFinOfCardEq hXA
     have hX : #X = (A.submatrix id (f ∘ Fintype.equivFinOfCardEq hXA)).rank
     · rw [←Matrix.transpose_submatrix, Matrix.rank_transpose] at hf

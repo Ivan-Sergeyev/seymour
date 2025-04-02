@@ -1,6 +1,7 @@
 import Seymour.Basic.Basic
 import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 
+open scoped Matrix
 
 variable {α : Type}
 
@@ -14,7 +15,7 @@ abbrev Matrix.uppendId [Zero α] [One α] {m n : Type} [DecidableEq m] [Decidabl
 
 @[simp]
 lemma Matrix.prependId_transpose [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) :
-    A.prependId.transpose = A.transpose.uppendId := by
+    A.prependIdᵀ = Aᵀ.uppendId := by
   ext i j
   cases i with
   | inr => rfl
@@ -26,7 +27,7 @@ lemma Matrix.prependId_transpose [Zero α] [One α] {m n : Type} [DecidableEq m]
 
 @[simp]
 lemma Matrix.uppendId_transpose [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) :
-    A.uppendId.transpose = A.transpose.prependId := by
+    A.uppendIdᵀ = Aᵀ.prependId := by
   rw [←Matrix.transpose_transpose A.transpose.prependId, Matrix.prependId_transpose, Matrix.transpose_transpose]
 
 lemma Matrix.ext_col {m n : Type} {A B : Matrix m n α} (hAB : ∀ i : m, A i = B i) : A = B :=
