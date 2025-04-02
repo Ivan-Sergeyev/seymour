@@ -123,7 +123,7 @@ lemma Matrix.replicateRow0_fromRows_isTotallyUnimodular_iff {X Y X' R : Type} [C
 
 lemma Matrix.replicateCol0_fromCols_isTotallyUnimodular_iff {X Y Y' R : Type} [CommRing R] (A : Matrix X Y R) :
     (Matrix.fromCols (Matrix.replicateCol Y' 0) A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
-  rw [← Matrix.transpose_isTotallyUnimodular_iff, Matrix.transpose_fromCols, Matrix.transpose_replicateCol,
+  rw [←Matrix.transpose_isTotallyUnimodular_iff, Matrix.transpose_fromCols, Matrix.transpose_replicateCol,
     Matrix.replicateRow0_fromRows_isTotallyUnimodular_iff, Matrix.transpose_isTotallyUnimodular_iff]
 
 lemma Matrix.IsTotallyUnimodular.fromRows_zero {X Y R : Type} (X' : Type) [CommRing R]

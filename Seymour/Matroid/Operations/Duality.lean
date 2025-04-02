@@ -46,7 +46,7 @@ lemma StandardRepr.dual_toMatroid [DivisionRing R] (S : StandardRepr α R) :
     rw [Matroid.dual_isBase_iff Set.diff_subset, Set.diff_diff_cancel_left hG]
 
 /-- Every vector matroid's dual has a standard representation. -/
-lemma VectorMatroid.dual_exists_standardRepr [Field R] (M : VectorMatroid α R) [Fintype M.X] :
+lemma VectorMatroid.dual_exists_standardRepr [Field R] (M : VectorMatroid α R) :
     ∃ S' : StandardRepr α R, S'.toMatroid = M.toMatroid✶ :=
   have ⟨S, hS⟩ := M.exists_standardRepr
   ⟨S✶, hS ▸ S.dual_toMatroid⟩
