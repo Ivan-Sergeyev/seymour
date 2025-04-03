@@ -588,7 +588,7 @@ Delta-Wye Exchange or $\Delta Y$-exchange is an operation of replacing a triangl
     Next, consider each row of $B_{2}'$. It can have one of the following forms.
     \begin{itemize}
         \item $[0 \mid 0]$, $[0 \mid 1]$, $[1 \mid 0]$, $[1 \mid 1]$. In this case, we do not need to modify the signing.
-        \item $[0 \mid -1]$, $[-1 \mid 0]$, $[-1 \mid -1]$. In this case, we can multiply this row by $-1$ to make all its non-negative.
+        \item $[0 \mid -1]$, $[-1 \mid 0]$, $[-1 \mid -1]$. In this case, we can multiply this row by $-1$ to make all its entries non-negative.
         \item $[1 \mid -1]$, $[-1 \mid 1]$. This case leads to a contradiction, as the matrix composed of this row and row $x_{1}$ has
         \[
             \det \begin{bmatrix}
@@ -693,7 +693,7 @@ Delta-Wye Exchange or $\Delta Y$-exchange is an operation of replacing a triangl
     \]
     Thus, $\tilde{d} \in \{0, \pm 1\}^{X_{2}}$ and $\tilde{d}$ is a signing of $d$. Our goal is to prove that $\tilde{T} = [\tilde{d} \mid \tilde{D}_{0, 2} \mid \tilde{A}_{2}] \in \{0, \pm 1\}^{X_{2} \times (\{z, y_{1}, y_{2}\} \cup Y_{2})}$ is TU. To this end, let $V$ be a square submatrix of $\tilde{T}$. We will show that $\det V \in \{0, \pm 1\}$.
 
-    Suppose that column (with index) $z$ (i.e., corresponding to $\tilde{d}$) is \textbf{not} in $V$. Then $V$ is a submatrix of $\tilde{B}_{2}$, which is TU. Thus, $\det V \in \{0, \pm 1\}$. Going forward we assume that column (with index) $z$ is in $V$.
+    Suppose that column (with index) $z$ (i.e., corresponding to $\tilde{d}$) is not in $V$. Then $V$ is a submatrix of $\tilde{B}_{2}$, which is TU. Thus, $\det V \in \{0, \pm 1\}$. Going forward we assume that column (with index) $z$ is in $V$.
 
     Suppose that columns (with indices) $y_{1}$ and $y_{2}$ are both in $V$. Then $V$ contains columns (with indices) $z$, $y_{1}$, and $y_{2}$, which are linearly dependent by construction of $\tilde{d}$. Thus, $\det V = 0$. Going forward we assume that at most one of the columns (with indices) $y_{1}$ and $y_{2}$ is in $V$.
 
@@ -729,8 +729,11 @@ Delta-Wye Exchange or $\Delta Y$-exchange is an operation of replacing a triangl
 \end{lemma}
 
 \begin{proof}
-    Let $\tilde{A}_{2}$, $\tilde{D}$, and $\tilde{d}$ be signings from Lemma~\ref{lem:streamlined_three_sum_d_D_A_2_signing}. Let $B_{1}'$ be a TU signing of $B_{1}$.
-    \todo[inline]{take result of previous lemma, maybe resign $A_{2}$, then match signing of $B_{1}$ by hand similar to above}
+    Let $\tilde{A}_{2}$, $\tilde{D}$, and $\tilde{d}$ be signings from Lemma~\ref{lem:streamlined_three_sum_d_D_A_2_signing}. Let $\tilde{B}_{1}$ be a TU signing of $B_{1}$. Use the procedure from the proof of Lemma~\ref{lem:streamlined_three_sum_B_2_signing} to multiply some rows and columns of $\tilde{B}_{1}$ and $\tilde{T} = [\tilde{d} \mid \tilde{D} \mid \tilde{A}_{2}]$ by $\{\pm 1\}$ factors so that all entries in the submatrix $\{x_{2}, x_{3}\} \times (Y_{1} \cup \{y_{3}\})$ are non-negative in both $\tilde{B}_{1}$ and $\tilde{T}$. This procedure preserves the validity and TUness of both signings. Thus, by restricting $\tilde{B}_{1}$ we get a signing $\tilde{A}_{1}$ of $A_{1}$. By construction, $[\tilde{A}_{1} / \tilde{D}_{1, 0}]$ is a TU signing of $[A_{1} / D_{1, 0}]$.
+
+    It remains to prove that $[\tilde{A}_{1} / \tilde{D}]$ is TU. Let $V$ be a square submatrix of $[\tilde{A}_{1} / \tilde{D}]$. Our goal is to show that $\det V \in \{0, \pm 1\}$.
+
+    If $V$ is a submatrix of only $[\tilde{A}_{1} / \tilde{D}_{1, 0}]$ or $\tilde{D}$, then $\det V \in \{0, \pm 1\}$, as those matrices are TU. Going forward, assume that $V$ intersects $\tilde{A}_{1}$ and $\tilde{D}_{12, 2}$. \todo[inline]{finish}
 \end{proof}
 
 \begin{definition}[Repeats Definition~\ref{def:k_tu}]\label{def:streamlined_three_sum_k_tu}
@@ -753,7 +756,9 @@ Delta-Wye Exchange or $\Delta Y$-exchange is an operation of replacing a triangl
             \tilde{D} & \tilde{A}_{2} \\
         \end{NiceArray}
     \]
-    where $[\tilde{A}_{1} / \tilde{D}]$, $[\tilde{D} \mid \tilde{A}_{2}]$, $\tilde{A}_{1}$, $\tilde{D}$, and $\tilde{A}_{2}$ are all TU (by Lemma~\ref{lem:streamlined_three_sum_B_d_signing} and as submatrices of TU matrices). In particular, all entries of $\tilde{B}$ are in $\{0, \pm 1\}$, so $\tilde{B}$ is $1$-TU. To show that $\tilde{B}$ is $2$-TU, let $V$ be a $2 \times 2$ submatrix of $\tilde{B}$. If $V$ is a submatrix of $[\tilde{A}_{1} / \tilde{D}]$, $[\tilde{D} \mid \tilde{A}_{2}]$, $[\tilde{A}_{1} \mid 0]$, or $[0 / \tilde{A}_{2}]$, then $\det V \in \{0, \pm 1\}$, as all of those four matrices are TU. Otherwise $V$ shares exactly one row and one column index with both $\tilde{A}_{1}$ and $\tilde{A}_{2}$. Let $i$ be the row shared by $V$ and $\tilde{A}_{1}$ and $j$ be the column shared by $V$ and $\tilde{A}_{2}$. Note that $V_{ij} = 0$. Thus, up to sign, $\det V$ equals the product of the entries on the diagonal not containing $V_{ij}$. Since both of those entries are in $\{0, \pm 1\}$, we have $\det V \in \{0, \pm 1\}$.
+    where $[\tilde{A}_{1} / \tilde{D}]$, $[\tilde{D} \mid \tilde{A}_{2}]$, $\tilde{A}_{1}$, $\tilde{D}$, and $\tilde{A}_{2}$ are all TU (by Lemma~\ref{lem:streamlined_three_sum_B_d_signing} and as submatrices of TU matrices). In particular, all entries of $\tilde{B}$ are in $\{0, \pm 1\}$, so $\tilde{B}$ is $1$-TU.
+
+    To show that $\tilde{B}$ is $2$-TU, let $V$ be a $2 \times 2$ submatrix of $\tilde{B}$. If $V$ is a submatrix of $[\tilde{A}_{1} / \tilde{D}]$, $[\tilde{D} \mid \tilde{A}_{2}]$, $[\tilde{A}_{1} \mid 0]$, or $[0 / \tilde{A}_{2}]$, then $\det V \in \{0, \pm 1\}$, as all of those four matrices are TU. Otherwise $V$ shares exactly one row and one column index with both $\tilde{A}_{1}$ and $\tilde{A}_{2}$. Let $i$ be the row shared by $V$ and $\tilde{A}_{1}$ and $j$ be the column shared by $V$ and $\tilde{A}_{2}$. Note that $V_{ij} = 0$. Thus, up to sign, $\det V$ equals the product of the entries on the diagonal not containing $V_{ij}$. Since both of those entries are in $\{0, \pm 1\}$, we have $\det V \in \{0, \pm 1\}$.
 \end{proof}
 
 \begin{lemma}\label{lem:streamlined_three_sum_k_TU_induction}
@@ -761,7 +766,23 @@ Delta-Wye Exchange or $\Delta Y$-exchange is an operation of replacing a triangl
 \end{lemma}
 
 \begin{proof}
-    \todo[inline]{analogous to 2-sum, keep track of changes of $\tilde{D}$, same form after pivot}
+    For the sake of deriving a contradiction, suppose there exist $B_{1}$ and $B_{2}$ such that $\tilde{B}$ is not $k$-TU. Then $\tilde{B}$ contains a $k \times k$ submatrix $V$ with $\det V \notin \{0, \pm 1\}$.
+
+    Note that $V$ cannot be a submatrix of $\left[\tilde{A}_{1} / \tilde{D}\right]$, $\left[\tilde{D} \mid \tilde{A}_{2}\right]$, $\left[\tilde{A}_{1} \mid 0\right]$, or $\left[0 / \tilde{A}_{2}\right]$, as all of those four matrices are TU. Thus, $V$ shares at least one row and one column index with $\tilde{A}_{1}$ and $\tilde{A}_{2}$ each.
+
+    Consider the row of $V$ whose index appears in $\tilde{A}_{1}$. Note that it cannot consist of only $0$ entries, as otherwise $\det V = 0$. Thus there exists a $\pm 1$ entry shared by $V$ and $\tilde{A}_{1}$. Let $r$ and $c$ denote the row and column index of this entry, respectively.
+
+    Perform a pivot in $\tilde{B}$ on the element $\tilde{B}_{rc}$. For every object, its modified counterpart after pivoting is denoted by the same symbol with a hat; for example, $\hat{B}$ denotes the entire matrix after the pivot. Note that after pivoting the following statements hold:
+
+    \begin{itemize}
+        \item $\left[\hat{A}_{1} / \hat{D}\right]$ is TU, since TUness is preserved by pivoting.
+        \item $\hat{A}_{2} = \tilde{A}_{2}$, i.e., $\tilde{A}_{2}$ remains unchanged. This holds because of the $0$ block in $\tilde{B}$.
+        \item The columns of $\hat{D}$ are scaled (by $\{\pm 1\}$ factors) versions of columns of $[\tilde{d} \mid \tilde{D}]$. This can be verified via a direct calculation. \todo[inline]{need more details}
+        \item $\left[\hat{D} \mid \hat{A}_{2}\right]$ is TU, since up to scaling (i.e., multiplying columns by $\{\pm 1\}$ factors) (and taking parallel columns) it is a submatrix of $[\tilde{d} \mid \tilde{D} \mid \tilde{A}_{2}]$.
+        \item $\hat{B}$ is $(k - 1)$-TU. \todo[inline]{need to adjust assumptions of this lemma to be able to use $(k - 1)$-TUness here}
+        \item $\hat{B}$ contains a square submatrix $\hat{V}$ of size $k - 1$ with $\det \hat{V} \notin \{0, \pm 1\}$. Indeed, by Corollary~\ref{cor:pivot_submatrix_det} from Lemma~\ref{lem:pivot_submatrix_det}, pivoting in $V$ on the element $\tilde{B}_{rc}$ results in a matrix containing a $(k - 1) \times (k - 1)$ submatrix $V'$ with $\det V' \in \{0, \pm 1\}$. Since $V$ is a submatrix of $\tilde{B}$, the submatrix $V'$ corresponds to a submatrix $\hat{V}$ of $\hat{B}$ with the same property.
+    \end{itemize}
+    To sum up, after pivoting we obtain a matrix $\hat{B}$ that is $(k - 1)$-TU, but contains a square submatrix of size $k - 1$ with determinant not in $\{0, \pm 1\}$. This contradiction proves the lemma.
 \end{proof}
 
 \begin{lemma}\label{lem:streamlined_three_sum_regular}
