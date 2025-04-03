@@ -236,7 +236,7 @@ private lemma lemma11₂ {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matr
     <;> rcases hg₀ : g 0 with (k₁ | k₁)
     <;> rcases hg₁ : g 1 with (l₁ | l₂)
   -- dispatch TU by closure goals
-  all_goals try · (
+  all_goals try (
     rw [Matrix.det_fin_two]
     repeat rw [Matrix.submatrix_apply]
     simp only [hf₀, hf₁, hg₀, hg₁, Matrix.fromBlocks_apply₂₂, Matrix.fromBlocks_apply₁₁,
