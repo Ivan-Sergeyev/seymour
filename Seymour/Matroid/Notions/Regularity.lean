@@ -292,12 +292,7 @@ lemma Matroid.IsRegular.hasBinaryStandardRepr {M : Matroid α} (hM : M.IsRegular
 private lemma hasTuSigning_iff_hasTuSigning_of_toMatroid_eq_toMatroid {V W : VectorMatroid α Z2} [Finite V.X]
     (hVW : V.toMatroid = W.toMatroid) :
     V.A.HasTuSigning ↔ W.A.HasTuSigning := by
-  obtain ⟨S, rfl⟩ := V.exists_standardRepr
-  have : Fintype S.X := Set.Finite.fintype (by assumption)
-  have hS := S.toMatroid_isBase_X
-  rw [show S.toMatroid = W.toMatroid from hVW] at hS
-  obtain ⟨S', hS', rfl⟩ := W.exists_standardRepr_isBase hS
-  rw [ext_standardRepr_of_same_matroid_same_X hVW hS'.symm]
+  sorry
 
 /-- Binary matroid constructed from a full representation is regular iff the binary matrix has a TU signing. -/
 private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatroid α Z2) [Finite V.X] :
