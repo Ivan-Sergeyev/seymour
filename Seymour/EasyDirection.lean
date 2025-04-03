@@ -2,7 +2,7 @@ import Seymour.Matroid.Operations.Sum1
 import Seymour.Matroid.Operations.Sum2
 import Seymour.Matroid.Operations.Sum3
 import Seymour.Matroid.Notions.Graphicness
-import Seymour.Matroid.Special.R10
+import Seymour.Matroid.Elementary.R10
 
 variable {α : Type} [DecidableEq α]
 
