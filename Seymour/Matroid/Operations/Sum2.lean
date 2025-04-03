@@ -249,7 +249,7 @@ private lemma lemma11₂ {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matr
   · rw [lemma11₂_auxl
       (by if h : · = 0 then simp [h, hf₀] else simp [Fin.eq_one_of_neq_zero, h, hf₁])
       (by if h : · = 0 then simp [h, hg₀] else simp [Fin.eq_one_of_neq_zero, h, hg₁])]
-    exact (Matrix.isTotallyUnimodular_iff A₁).mp hA₁ 2 _ _
+    exact A₁.isTotallyUnimodular_iff.→ hA₁ ..
   · sorry
   · sorry
   · sorry
@@ -258,7 +258,7 @@ private lemma lemma11₂ {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matr
   · rw [lemma11₂_auxr
       (by if h : · = 0 then simp [h, hf₀] else simp [Fin.eq_one_of_neq_zero, h, hf₁])
       (by if h : · = 0 then simp [h, hg₀] else simp [Fin.eq_one_of_neq_zero, h, hg₁])]
-    exact (Matrix.isTotallyUnimodular_iff A₂).mp hA₂ 2 _ _
+    exact A₂.isTotallyUnimodular_iff.→ hA₂ ..
 
 private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
