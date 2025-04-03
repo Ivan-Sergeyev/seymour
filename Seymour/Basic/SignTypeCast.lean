@@ -39,6 +39,12 @@ lemma neg_one_mul_in_signTypeCastRange [Ring R] {a : R}
     (-1) * a ∈ SignType.cast.range :=
   in_signTypeCastRange_mul_in_signTypeCastRange ⟨-1, rfl⟩ ha
 
+lemma neg_in_signTypeCastRange [Ring R] {a : R}
+    (ha : a ∈ SignType.cast.range) :
+    -a ∈ SignType.cast.range := by
+  rw [neg_eq_neg_one_mul]
+  exact neg_one_mul_in_signTypeCastRange ha
+
 lemma in_signTypeCastRange_of_neg_one_mul_self [Ring R] {a : R}
     (ha : (-1) * a ∈ SignType.cast.range) :
     a ∈ SignType.cast.range := by

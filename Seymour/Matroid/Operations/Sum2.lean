@@ -205,10 +205,60 @@ private lemma lemma11₁ {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matr
     | inl j₁ => exact in_signTypeCastRange_mul_in_signTypeCastRange (hAy.apply i₂ ◩()) (hAx.apply ◪() j₁)
     | inr j₂ => exact hA₂.apply i₂ j₂
 
+private lemma lemma11₂_auxl {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ}
+    {y : X₂ → ℚ} {n : ℕ} {f : Fin n → ↑X₁ ⊕ ↑X₂} {g : Fin n → ↑Y₁ ⊕ ↑Y₂}
+    (hf : ∀ a : Fin n, (f a).isLeft) (hg : ∀ a : Fin n, (g a).isLeft) :
+    (matrix2sumComposition A₁ x A₂ y).submatrix f g =
+      A₁.submatrix ((f _).getLeft <| hf ·) ((g _).getLeft <| hg ·) := by
+  ext a b
+  have ⟨ac, hac⟩ := Sum.isLeft_iff.mp (hf a)
+  have ⟨bc, hbc⟩ := Sum.isLeft_iff.mp (hg b)
+  simp_rw [Matrix.submatrix_apply, hac, hbc, Matrix.fromBlocks_apply₁₁, Sum.getLeft_inl]
+
+private lemma lemma11₂_auxr {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ}
+    {y : X₂ → ℚ} {n : ℕ} {f : Fin n → ↑X₁ ⊕ ↑X₂} {g : Fin n → ↑Y₁ ⊕ ↑Y₂}
+    (hf : ∀ a : Fin n, (f a).isRight) (hg : ∀ a : Fin n, (g a).isRight) :
+    (matrix2sumComposition A₁ x A₂ y).submatrix f g =
+      A₂.submatrix ((f _).getRight <| hf ·) ((g _).getRight <| hg ·) := by
+  ext a b
+  have ⟨ac, hac⟩ := Sum.isRight_iff.mp (hf a)
+  have ⟨bc, hbc⟩ := Sum.isRight_iff.mp (hg b)
+  simp_rw [Matrix.submatrix_apply, hac, hbc, Matrix.fromBlocks_apply₂₂, Sum.getRight_inr]
+
 private lemma lemma11₂ {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
-    (hA₁ : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hA₂ : (▮y ◫ A₂).IsTotallyUnimodular) :
+    (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular) :
     (matrix2sumComposition A₁ x A₂ y).IsPreTU 2 := by
-  sorry
+  intro f g
+  have hA₁ : A₁.IsTotallyUnimodular := hAx.comp_rows Sum.inl
+  have hA₂ : A₂.IsTotallyUnimodular := hAy.comp_cols Sum.inr
+  rcases hf₀ : f 0 with (i₁ | i₂)
+    <;> rcases hf₁ : f 1 with (j₁ | j₂)
+    <;> rcases hg₀ : g 0 with (k₁ | k₁)
+    <;> rcases hg₁ : g 1 with (l₁ | l₂)
+  -- dispatch TU by closure goals
+  all_goals try (
+    rw [Matrix.det_fin_two]
+    repeat rw [Matrix.submatrix_apply]
+    simp only [hf₀, hf₁, hg₀, hg₁, Matrix.fromBlocks_apply₂₂, Matrix.fromBlocks_apply₁₁,
+      Matrix.fromBlocks_apply₂₁, Matrix.fromBlocks_apply₁₂, Matrix.zero_apply, mul_zero,
+      sub_zero, zero_mul, zero_in_signTypeCastRange, zero_sub, neg_mul_eq_neg_mul]
+    repeat apply in_signTypeCastRange_mul_in_signTypeCastRange
+    all_goals
+      simp only [neg_in_signTypeCastRange,
+        Matrix.IsTotallyUnimodular.apply hA₁, Matrix.IsTotallyUnimodular.apply hA₂])
+  · rw [lemma11₂_auxl
+      (by if h : · = 0 then simp [h, hf₀] else simp [Fin.eq_one_of_neq_zero, h, hf₁])
+      (by if h : · = 0 then simp [h, hg₀] else simp [Fin.eq_one_of_neq_zero, h, hg₁])]
+    exact A₁.isTotallyUnimodular_iff.→ hA₁ ..
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · rw [lemma11₂_auxr
+      (by if h : · = 0 then simp [h, hf₀] else simp [Fin.eq_one_of_neq_zero, h, hf₁])
+      (by if h : · = 0 then simp [h, hg₀] else simp [Fin.eq_one_of_neq_zero, h, hg₁])]
+    exact A₂.isTotallyUnimodular_iff.→ hA₂ ..
 
 private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
