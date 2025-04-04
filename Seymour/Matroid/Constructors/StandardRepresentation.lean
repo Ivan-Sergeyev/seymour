@@ -283,13 +283,10 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
   let B : Basis G R (Submodule.span R M.Aᵀ.range)
   · apply Basis.mk (v := fun j : G.Elem => ⟨M.Aᵀ (hGY.elem j), by aesop⟩)
     · unfold LinearIndepOn at lin_indep
-      show LinearIndependent R (fun j : G.Elem => Subtype.mk (M.Aᵀ (hGY.elem j)) (_ : M.Aᵀ (hGY.elem j) ∈ Submodule.span R M.Aᵀ.range))
-      --have := lin_indep.comp (ι' := Subtype (Membership.mem (Submodule.span R M.Aᵀ.range)))
       rw [linearIndependent_iff'] at lin_indep ⊢
-      intro s g hsg
-      specialize lin_indep (s.map (⟨fun j => ⟨hGY.elem j, by simp⟩, fun _ => by aesop⟩))
-      specialize lin_indep (g ∘ G.restrictPreimage Subtype.val)
-      sorry
+      intro s g hsg i hi
+      let e : (M.Y ↓∩ G).Elem ≃ G.Elem := ⟨G.restrictPreimage Subtype.val, (⟨hGY.elem ·, by simp⟩), congrFun rfl, congrFun rfl⟩
+      simpa using lin_indep (s.map e.symm.toEmbedding) (g ∘ e) (by sorry) (e.symm i) (Finset.mem_map_equiv.← hi)
     · sorry -- `hRAGY` up to remapping
   let A : Matrix G M.Y R := Matrix.of (fun i j => B.coord i (by use M.Aᵀ j; aesop))
   have hYG : M.Y \ G ⊆ M.Y := Set.diff_subset
