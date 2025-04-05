@@ -286,7 +286,11 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
       rw [linearIndependent_iff'] at lin_indep ⊢
       intro s g hsg i hi
       let e : (M.Y ↓∩ G).Elem ≃ G.Elem := ⟨G.restrictPreimage Subtype.val, (⟨hGY.elem ·, by simp⟩), congrFun rfl, congrFun rfl⟩
-      simpa using lin_indep (s.map e.symm.toEmbedding) (g ∘ e) (by sorry) (e.symm i) (Finset.mem_map_equiv.← hi)
+      simpa using lin_indep (s.map e.symm.toEmbedding) (g ∘ e) (by
+        rw [Subtype.ext_iff_val, ZeroMemClass.coe_zero] at hsg
+        rw [←hsg]
+        suffices ∑ x ∈ s, g x • M.Aᵀ ↑(e.symm x) = ∑ x ∈ s, g x • M.Aᵀ (Subtype.mk ↑x (hGY x.coe_prop)) by simp [this]
+        rfl) (e.symm i) (Finset.mem_map_equiv.← hi)
     · sorry -- `hRAGY` up to remapping
   let A : Matrix G M.Y R := Matrix.of (fun i j => B.coord i (by use M.Aᵀ j; aesop))
   have hYG : M.Y \ G ⊆ M.Y := Set.diff_subset
