@@ -165,7 +165,7 @@ private lemma Matrix.exists_finite_allColsIn {X Y R : Type} [Fintype X] [Decidab
   · let S : Set (X → V) := Set.univ
     let S' : Set (X → R) := (fun v : X → V => fun x : X => (v x).val) '' S
     have hCS' : C ⊆ S' := by
-      rintro x ⟨w, rfl⟩
+      rintro - ⟨w, rfl⟩
       exact ⟨(fun j => ⟨(A · w) j, hAV j w⟩), trivial, rfl⟩
     let e : Y' ↪ C := ⟨fun i => ⟨(A · i), by use i⟩, fun ⟨_, w₁, ⟨y₁, hy₁⟩, _⟩ ⟨_, w₂, ⟨y₂, hy₂⟩, _⟩ hzz => by
       simp_all only [Subtype.mk.injEq, C, Y']
