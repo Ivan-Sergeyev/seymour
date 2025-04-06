@@ -291,7 +291,11 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
         rw [←hsg]
         suffices ∑ x ∈ s, g x • M.Aᵀ ↑(e.symm x) = ∑ x ∈ s, g x • M.Aᵀ (Subtype.mk ↑x (hGY x.coe_prop)) by simp [this]
         rfl) (e.symm i) (Finset.mem_map_equiv.← hi)
-    · sorry -- `hRAGY` up to remapping
+    · apply le_of_eq
+      -- Christian Merten's idea:
+      apply Submodule.map_injective_of_injective (Submodule.span R M.Aᵀ.range).subtype_injective
+      simp [Submodule.map_span, ←hRAGY, ←Set.range_comp, Function.comp_def]
+      rfl
   let A : Matrix G M.Y R := Matrix.of (fun i j => B.coord i (by use M.Aᵀ j; aesop))
   have hYG : M.Y \ G ⊆ M.Y := Set.diff_subset
   use ⟨G, M.Y \ G, Set.disjoint_sdiff_right, A.submatrix id hYG.elem, sorry, sorry⟩
