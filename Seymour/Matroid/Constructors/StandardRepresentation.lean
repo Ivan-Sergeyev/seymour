@@ -298,13 +298,21 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
       rfl
   let A : Matrix G M.Y R := Matrix.of (fun i j => B.coord i (by use M.Aᵀ j; aesop))
   have hYG : M.Y \ G ⊆ M.Y := Set.diff_subset
-  use ⟨G, M.Y \ G, Set.disjoint_sdiff_right, A.submatrix id hYG.elem, sorry, sorry⟩
+  use ⟨G, M.Y \ G, Set.disjoint_sdiff_right, A.submatrix id hYG.elem,
+    (Classical.propDecidable <| · ∈ G), (Classical.propDecidable <| · ∈ M.Y \ G)⟩
   constructor
   · simp
   ext I
   · aesop
-  simp
-  sorry
+  have hGYY : G ∪ M.Y = M.Y := Set.union_eq_self_of_subset_left hGY
+  simp only [StandardRepr.toMatroid_indep_iff_elem', VectorMatroid.toMatroid_indep_iff_elem,
+    Matrix.prependId_transpose, Matrix.transpose_submatrix, Set.union_diff_self]
+  constructor
+  <;> intro ⟨hI, hRAI⟩
+  · use (hGYY ▸ hI)
+    sorry
+  · use Set.subset_union_of_subset_right hI G
+    sorry
 
 /-- Every vector matroid has a standard representation. -/
 lemma VectorMatroid.exists_standardRepr [Field R] (M : VectorMatroid α R) :
