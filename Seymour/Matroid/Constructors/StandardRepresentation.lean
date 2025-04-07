@@ -251,47 +251,28 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
       exact M.toMatroid.base_not_ssubset_indep hMG hMvG (Set.ssubset_insert hj)
     exact le_antisymm (Submodule.span_mono trivi) (Submodule.span_le.← difficult)
   obtain ⟨-, lin_indep⟩ := hMG.indep
-  let B : Basis G R (Submodule.span R M.Aᵀ.range)
-  · apply Basis.mk (v := fun j : G.Elem => ⟨M.Aᵀ (hGY.elem j), by aesop⟩)
-    · unfold LinearIndepOn at lin_indep
-      rw [linearIndependent_iff'] at lin_indep ⊢
-      intro s g hsg i hi
-      let e : (M.Y ↓∩ G).Elem ≃ G.Elem := ⟨G.restrictPreimage Subtype.val, (⟨hGY.elem ·, by simp⟩), congrFun rfl, congrFun rfl⟩
-      simpa using lin_indep (s.map e.symm.toEmbedding) (g ∘ e) (by
-        rw [Subtype.ext_iff_val, ZeroMemClass.coe_zero] at hsg
-        rw [←hsg]
-        suffices ∑ x ∈ s, g x • M.Aᵀ (e.symm x) = ∑ x ∈ s, g x • M.Aᵀ (Subtype.mk x (hGY x.property)) by simp [this]
-        rfl) (e.symm i) (Finset.mem_map_equiv.← hi)
-    · apply le_of_eq
-      -- Christian Merten's idea:
-      apply Submodule.map_injective_of_injective (Submodule.span R M.Aᵀ.range).subtype_injective
-      simp [Submodule.map_span, ←hRAGY, ←Set.range_comp, Function.comp_def]
-      rfl
-  let A : Matrix G M.Y R := Matrix.of (fun i j => B.coord i (by use M.Aᵀ j; aesop))
+  unfold LinearIndepOn at lin_indep
+  let C : Matrix G M.Y R := Matrix.of (fun i j => lin_indep.repr (⟨M.Aᵀ j, by sorry⟩) ⟨hGY.elem i, by simp_all⟩)
+  -- sorry
   have hYG : M.Y \ G ⊆ M.Y := Set.diff_subset
-  use ⟨G, M.Y \ G, Set.disjoint_sdiff_right, A.submatrix id hYG.elem,
+  use ⟨G, M.Y \ G, Set.disjoint_sdiff_right, C.submatrix id hYG.elem,
     (Classical.propDecidable <| · ∈ G), (Classical.propDecidable <| · ∈ M.Y \ G)⟩
   constructor
   · simp
   ext I
   · aesop
-  have hAG : ∀ a : G, (A · (hGY.elem a)) = Finsupp.single a 1
-  · intro i
-    simp [A, B, ←B.repr_self i]
-  have hA1 : A.submatrix id hGY.elem = 1
-  · ext i j
-    simp only [Matrix.submatrix_apply, id]
-    rw [congr_fun (hAG j) i]
-    by_cases hij : i = j <;> simp [Matrix.one_apply, Finsupp.single_eq_set_indicator, hij]
   have hGYY : G ∪ M.Y = M.Y := Set.union_eq_self_of_subset_left hGY
   simp only [StandardRepr.toMatroid_indep_iff_elem', VectorMatroid.toMatroid_indep_iff_elem,
     Matrix.transpose_submatrix, Set.union_diff_self]
   constructor
-  <;> intro ⟨hI, hRAI⟩
-  · use hGYY ▸ hI
+  · intro ⟨hI, hRCI⟩
+    use hGYY ▸ hI
     sorry
-  · use Set.subset_union_of_subset_right hI G
+  · intro ⟨hI, hRAI⟩
+    use Set.subset_union_of_subset_right hI G
     sorry
+
+#check LinearIndepOn.of_comp
 
 /-- Every vector matroid has a standard representation. -/
 lemma VectorMatroid.exists_standardRepr [Field R] (M : VectorMatroid α R) :
