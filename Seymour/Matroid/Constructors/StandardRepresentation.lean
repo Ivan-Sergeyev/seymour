@@ -282,10 +282,26 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
 
   have hCG : ∀ g : G, (C · (hGY.elem g)) = Finsupp.single g 1
   · intro g
-    have t := lin_indep.repr_eq_single ⟨hGY.elem g, by sorry⟩
+    have t := lin_indep.repr_eq_single ⟨hGY.elem g, by simp⟩
     simp [C]
-    -- simp [LinearIndependent.repr_eq_single]
-    sorry
+    have : (lin_indep.repr (Subtype.mk (M.Aᵀ (Subtype.mk g.val (hGY.elem g).prop)) (by
+      rw [Finsupp.mem_span_range_iff_exists_finsupp]
+      use Finsupp.single (Subtype.mk (hGY.elem g) (by simp)) 1
+      simp only [zero_smul, Finsupp.sum_single_index, one_smul, C]
+      rfl))) =
+        Finsupp.single ⟨hGY.elem g, by simp⟩ 1 := by
+      rw [LinearIndependent.repr_eq_single]
+      simp only [HasSubset.Subset.elem, C]
+    rw [this]
+    funext x
+    by_cases h : x = g
+    · subst h
+      simp
+    · rw [Finsupp.single_eq_of_ne (h ·.symm), Finsupp.single_eq_of_ne]
+      simp only [HasSubset.Subset.elem, ne_eq, Subtype.mk.injEq, C]
+      by_contra!
+      absurd Subtype.val_inj.mp this
+      exact Ne.symm h
 
   have hC1 : C.submatrix id hGY.elem = 1
   · ext i j
