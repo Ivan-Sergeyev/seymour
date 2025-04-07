@@ -277,12 +277,30 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
   · aesop
   have hGYY : G ∪ M.Y = M.Y := Set.union_eq_self_of_subset_left hGY
   simp only [StandardRepr.toMatroid_indep_iff_elem', VectorMatroid.toMatroid_indep_iff_elem,
-    Matrix.prependId_transpose, Matrix.transpose_submatrix, Set.union_diff_self]
+    Matrix.transpose_submatrix, Set.union_diff_self]
   constructor
   <;> intro ⟨hI, hRAI⟩
   · use hGYY ▸ hI
     sorry
   · use Set.subset_union_of_subset_right hI G
+    suffices : LinearIndepOn R Aᵀ hI.elem.range
+    · clear hRAI
+      have hGYGY : G ∪ M.Y \ G = M.Y := Set.union_diff_cancel' (fun _ => id) hGE
+      have hGYGY' : (G ∪ M.Y \ G).Elem = M.Y.Elem := congr_arg Set.Elem hGYGY
+      let hIG := (Iff.of_eq (congr_arg (I ⊆ ·) Set.union_diff_self)).← (Set.subset_union_of_subset_right hI G)
+      show LinearIndepOn R _ hIG.elem.range
+      unfold LinearIndepOn
+      convert this.comp (fun a : hIG.elem.range => ⟨hGYGY ▸ a.val, by have ⟨i, hi⟩ := a.property; sorry⟩) sorry
+      rename_i i
+      simp only [Matrix.transpose_submatrix, Function.comp_apply]
+      classical
+      -- let e : G.Elem ⊕ (M.Y \ G).Elem ≃ M.Y.Elem := hGY.myEquiv
+      -- let q := e i.val.toSum
+      cases hi : i.val.toSum with
+      | inl i₁ =>
+        sorry
+      | inr i₂ =>
+        sorry
     sorry
 
 /-- Every vector matroid has a standard representation. -/

@@ -7,12 +7,13 @@ import Mathlib.Tactic
 import Seymour.Basic.Basic
 
 /-!
-This provides lemmas about sets (mostly dealing with disjointness) that are missing in Mathlib.
+This file provides lemmas about sets that are missing in Mathlib.
 -/
 
 variable {α : Type}
 
-section Other
+
+section other
 
 lemma set_union_union_eq_rev (X Y Z : Set α) : X ∪ Y ∪ Z = Z ∪ Y ∪ X := by
   rw [Set.union_assoc, Set.union_comm, Set.union_comm Y Z]
@@ -111,10 +112,10 @@ lemma inter_subset_union {X₁ X₂ : Set α} :
 lemma eq_of_subset_of_diff_empty {A B : Set α} (hAB : A ⊆ B) (hBA : B \ A = ∅) : A = B :=
   A.union_empty ▸ hBA ▸ Set.union_diff_cancel hAB
 
-end Other
+end other
 
 
-section Disjoint
+section disjointness
 
 lemma Disjoint.ni_of_in {X Y : Set α} {a : α} (hXY : X ⫗ Y) (ha : a ∈ X) :
     a ∉ Y := by
@@ -246,10 +247,10 @@ lemma right_eq_right_of_union_eq_union {A₁ A₂ B₁ B₂ : Set α}
     B₁ = B₂ := by
   tauto_set
 
-end Disjoint
+end disjointness
 
 
-section symmDiff
+section symmetric_difference
 
 /-- Symmetric difference of two sets is their union minus their intersection. -/
 lemma symmDiff_eq_alt (X Y : Set α) : symmDiff X Y = (X ∪ Y) \ (X ∩ Y) := by
@@ -274,4 +275,21 @@ lemma symmDiff_subset_ground_right {X Y E : Set α} (hE : symmDiff X Y ⊆ E) (h
 lemma symmDiff_subset_ground_left {X Y E : Set α} (hE : symmDiff X Y ⊆ E) (hX : Y ⊆ E) : X ⊆ E :=
   symmDiff_subset_ground_right (symmDiff_comm X Y ▸ hE) hX
 
-end symmDiff
+end symmetric_difference
+
+
+section bijections
+
+def HasSubset.Subset.myEquiv {A B : Set α} [∀ i, Decidable (i ∈ A)] (hAB : A ⊆ B) : A.Elem ⊕ (B \ A).Elem ≃ B.Elem :=
+  ⟨(·.casesOn hAB.elem Set.diff_subset.elem),
+  fun i => if hiA : i.val ∈ A then ◩⟨i.val, hiA⟩ else ◪⟨i.val, by simp [hiA]⟩,
+  fun _ => by aesop,
+  fun _ => by aesop⟩
+
+lemma HasSubset.Subset.myEquiv_val {A B : Set α} [∀ i, Decidable (i ∈ A)] (hAB : A ⊆ B) (x : A.Elem ⊕ (B \ A).Elem) :
+    (hAB.myEquiv x).val = x.elim Subtype.val Subtype.val := by
+  cases x with
+  | inl => rfl
+  | inr => rfl
+
+end bijections
