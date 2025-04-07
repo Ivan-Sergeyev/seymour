@@ -220,3 +220,32 @@ lemma Matrix.IsTotallyUnimodular.shortTableauPivot [DecidableEq X] [DecidableEq 
   exact (((hA.one_fromCols).addMultiples x ◪y hxy).getShortTableau x y).mulRow x hAxy
 
 #print axioms Matrix.IsTotallyUnimodular.shortTableauPivot
+
+lemma lemma1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F} {r c : Fin k.succ} (hArc : A r c ≠ 0) :
+    ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, ((A.shortTableauPivot r c).submatrix f g).det = A.det / A r c := by
+  use r.succAbove
+  use c.succAbove
+  sorry
+
+lemma corollary1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F} (hA : A.det ∉ SignType.cast.range)
+    {r c : Fin k.succ} (hArc : A r c = 1 ∨ A r c = -1) :
+    ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ,
+      ((A.shortTableauPivot r c).submatrix f g).det ∉ SignType.cast.range := by
+  have hArc0 : A r c ≠ 0
+  · cases hArc with
+    | inl h1 =>
+      rw [h1]
+      norm_num
+    | inr h9 =>
+      rw [h9]
+      norm_num
+  obtain ⟨f, g, hAfg⟩ := lemma1 hArc0
+  use f, g
+  rw [hAfg]
+  cases hArc with
+  | inl h1 =>
+    rw [h1, div_one]
+    exact hA
+  | inr h9 =>
+    rw [h9, div_neg, div_one]
+    exact (hA <| in_signTypeCastRange_of_neg ·)

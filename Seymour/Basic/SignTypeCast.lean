@@ -52,6 +52,12 @@ lemma in_signTypeCastRange_of_neg_one_mul_self [Ring R] {a : R}
   apply neg_one_mul_in_signTypeCastRange
   rwa [neg_eq_neg_one_mul]
 
+lemma in_signTypeCastRange_of_neg [Ring R] {a : R}
+    (ha : -a ∈ SignType.cast.range) :
+    a ∈ SignType.cast.range := by
+  rw [neg_eq_neg_one_mul] at ha
+  exact in_signTypeCastRange_of_neg_one_mul_self ha
+
 lemma in_signTypeCastRange_iff_abs [LinearOrderedCommRing R] (a : R) :
     a ∈ SignType.cast.range ↔ |a| ∈ SignType.cast.range := by
   constructor
