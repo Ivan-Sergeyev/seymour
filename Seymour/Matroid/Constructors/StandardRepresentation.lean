@@ -1,6 +1,5 @@
 import Seymour.Basic.Sets
 import Seymour.Matrix.LinearIndependence
-import Seymour.Matrix.OfLinearMaps
 import Seymour.Matroid.Constructors.BinaryMatroid
 import Seymour.Matroid.Elementary.Basic
 
@@ -214,34 +213,6 @@ lemma StandardRepr.toMatroid_indep' [DivisionRing R] (S : StandardRepr α R) :
     S.toMatroid.Indep = (∃ hI : · ⊆ S.X ∪ S.Y, LinearIndepOn R (S.Bᵀ.uppendId ∘ Subtype.toSum) hI.elem.range) := by
   simp
 
-private def VectorMatroid.mapEquiv [CommRing R] (M : VectorMatroid α R) [Fintype M.X] {X' : Set α}
-    (e : (M.X → R) ≃ₗ[R] (X' → R)) :
-    VectorMatroid α R where
-  X := X'
-  Y := M.Y
-  A := e.toMatrix' * M.A
-
-@[app_unexpander VectorMatroid.mapEquiv]
-private def VectorMatroid.mapEquiv_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $x) => `($(x).$(Lean.mkIdent `mapEquiv))
-  | _ => throw ()
-
-private lemma VectorMatroid.mapEquiv_toMatroid [Field R] (M : VectorMatroid α R) [Fintype M.X] {X' : Set α}
-    (e : (M.X → R) ≃ₗ[R] (X' → R)) :
-    (M.mapEquiv e).toMatroid = M.toMatroid := by
-  ext I hI
-  <;> simp [VectorMatroid.mapEquiv]
-  constructor
-  <;> intro ⟨hI', lin_indep⟩
-  <;> use hI'
-  · --rw [←Matrix.transpose_mul] at lin_indep
-    let l : (M.X.Elem → R) →ₗ[R] (M.Y.Elem → R) := LinearMap.toMatrix'.symm M.Aᵀ
-    let l' : (X'.Elem → R) →ₗ[R] (M.Y.Elem → R) := l ∘ₗ e.symm.toLinearMap
-    have : Fintype X' := sorry
-    let L := l'.toMatrix'
-    sorry
-  · sorry
-
 /-- Every vector matroid has a standard representation whose rows are a given base. -/
 lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
     (M : VectorMatroid α R) (hMG : M.toMatroid.IsBase G) :
@@ -289,7 +260,7 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
       simpa using lin_indep (s.map e.symm.toEmbedding) (g ∘ e) (by
         rw [Subtype.ext_iff_val, ZeroMemClass.coe_zero] at hsg
         rw [←hsg]
-        suffices ∑ x ∈ s, g x • M.Aᵀ ↑(e.symm x) = ∑ x ∈ s, g x • M.Aᵀ (Subtype.mk ↑x (hGY x.coe_prop)) by simp [this]
+        suffices ∑ x ∈ s, g x • M.Aᵀ (e.symm x) = ∑ x ∈ s, g x • M.Aᵀ (Subtype.mk x (hGY x.property)) by simp [this]
         rfl) (e.symm i) (Finset.mem_map_equiv.← hi)
     · apply le_of_eq
       -- Christian Merten's idea:
@@ -309,7 +280,7 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
     Matrix.prependId_transpose, Matrix.transpose_submatrix, Set.union_diff_self]
   constructor
   <;> intro ⟨hI, hRAI⟩
-  · use (hGYY ▸ hI)
+  · use hGYY ▸ hI
     sorry
   · use Set.subset_union_of_subset_right hI G
     sorry
