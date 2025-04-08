@@ -188,25 +188,21 @@ private lemma lemma11₁ {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matr
     | inl j₁ => exact in_signTypeCastRange_mul_in_signTypeCastRange (hAy.apply i₂ ◩()) (hAx.apply ◪() j₁)
     | inr j₂ => exact hA₂.apply i₂ j₂
 
-private lemma lemma11₂_auxl {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ}
-    {y : X₂ → ℚ} {n : ℕ} {f : Fin n → ↑X₁ ⊕ ↑X₂} {g : Fin n → ↑Y₁ ⊕ ↑Y₂}
-    (hf : ∀ a : Fin n, (f a).isLeft) (hg : ∀ a : Fin n, (g a).isLeft) :
-    (matrix2sumComposition A₁ x A₂ y).submatrix f g =
-      A₁.submatrix ((f _).getLeft <| hf ·) ((g _).getLeft <| hg ·) := by
-  ext a b
-  have ⟨ac, hac⟩ := Sum.isLeft_iff.mp (hf a)
-  have ⟨bc, hbc⟩ := Sum.isLeft_iff.mp (hg b)
-  simp_rw [Matrix.submatrix_apply, hac, hbc, Matrix.fromBlocks_apply₁₁, Sum.getLeft_inl]
+private lemma lemma11₂_auxl {α : Type} {X₁ Y₁ X₂ Y₂ : Set α}
+    {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
+    {n : ℕ} {f : Fin n → ↑X₁ ⊕ ↑X₂} {g : Fin n → ↑Y₁ ⊕ ↑Y₂}
+    (hf : ∀ a : Fin n, ∀ b : X₂, f a ≠ ◪b) (hg : ∀ a : Fin n, ∀ b : Y₂, g a ≠ ◪b) :
+    (matrix2sumComposition A₁ x A₂ y).submatrix f g = A₁.submatrix (fn_of_sum_ne_inr hf) (fn_of_sum_ne_inr hg) := by
+  ext
+  simp [eq_of_fn_sum_ne_inr hf, eq_of_fn_sum_ne_inr hg]
 
-private lemma lemma11₂_auxr {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ}
-    {y : X₂ → ℚ} {n : ℕ} {f : Fin n → ↑X₁ ⊕ ↑X₂} {g : Fin n → ↑Y₁ ⊕ ↑Y₂}
-    (hf : ∀ a : Fin n, (f a).isRight) (hg : ∀ a : Fin n, (g a).isRight) :
-    (matrix2sumComposition A₁ x A₂ y).submatrix f g =
-      A₂.submatrix ((f _).getRight <| hf ·) ((g _).getRight <| hg ·) := by
-  ext a b
-  have ⟨ac, hac⟩ := Sum.isRight_iff.mp (hf a)
-  have ⟨bc, hbc⟩ := Sum.isRight_iff.mp (hg b)
-  simp_rw [Matrix.submatrix_apply, hac, hbc, Matrix.fromBlocks_apply₂₂, Sum.getRight_inr]
+private lemma lemma11₂_auxr {α : Type} {X₁ Y₁ X₂ Y₂ : Set α}
+    {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
+    {n : ℕ} {f : Fin n → ↑X₁ ⊕ ↑X₂} {g : Fin n → ↑Y₁ ⊕ ↑Y₂}
+    (hf : ∀ a : Fin n, ∀ b : X₁, f a ≠ ◩b) (hg : ∀ a : Fin n, ∀ b : Y₁, g a ≠ ◩b) :
+    (matrix2sumComposition A₁ x A₂ y).submatrix f g = A₂.submatrix (fn_of_sum_ne_inl hf) (fn_of_sum_ne_inl hg) := by
+  ext
+  simp [eq_of_fn_sum_ne_inl hf, eq_of_fn_sum_ne_inl hg]
 
 private lemma lemma11₂ {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
     (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular) :
@@ -229,18 +225,14 @@ private lemma lemma11₂ {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matr
     all_goals
       simp only [neg_in_signTypeCastRange,
         Matrix.IsTotallyUnimodular.apply hA₁, Matrix.IsTotallyUnimodular.apply hA₂])
-  · rw [lemma11₂_auxl
-      (by if h : · = 0 then simp [h, hf₀] else simp [Fin.eq_one_of_neq_zero, h, hf₁])
-      (by if h : · = 0 then simp [h, hg₀] else simp [Fin.eq_one_of_neq_zero, h, hg₁])]
+  · rw [lemma11₂_auxl (by fin_cases · <;> simp_all) (by fin_cases · <;> simp_all)]
     exact A₁.isTotallyUnimodular_iff.→ hA₁ ..
   · sorry
   · sorry
   · sorry
   · sorry
   · sorry
-  · rw [lemma11₂_auxr
-      (by if h : · = 0 then simp [h, hf₀] else simp [Fin.eq_one_of_neq_zero, h, hf₁])
-      (by if h : · = 0 then simp [h, hg₀] else simp [Fin.eq_one_of_neq_zero, h, hg₁])]
+  · rw [lemma11₂_auxr (by fin_cases · <;> simp_all) (by fin_cases · <;> simp_all)]
     exact A₂.isTotallyUnimodular_iff.→ hA₂ ..
 
 private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
