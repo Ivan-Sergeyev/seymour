@@ -348,10 +348,10 @@ private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α
           right
           exact hs.symm
       let B := (matrix2sumComposition A₁ x A₂ y).shortTableauPivot (f i₁) (g j₀)
-      obtain ⟨f', g', hf', hg', impossible⟩ := corollary1 hAfg i₁ j₀ (by convert hAxy1 <;> unfold matrix2sumComposition <;> simp [*])
-      apply impossible
-      specialize hkAxAy (f ∘ f') (g ∘ g')
-      rw [(matrix2sumComposition A₁ x A₂ y).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix, hix₁, hjy₀]
+      -- obtain ⟨f', g', hf', hg', impossible⟩ := corollary1' hAfg i₁ j₀ (by convert hAxy1 <;> unfold matrix2sumComposition <;> simp [*])
+      -- apply impossible
+      -- specialize hkAxAy (f ∘ f') (g ∘ g')
+      -- rw [(matrix2sumComposition A₁ x A₂ y).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix, hix₁, hjy₀]
       sorry
 
 lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}

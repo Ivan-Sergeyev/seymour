@@ -225,6 +225,15 @@ lemma Matrix.IsTotallyUnimodular.shortTableauPivot [DecidableEq X] [DecidableEq 
 
 #print axioms Matrix.IsTotallyUnimodular.shortTableauPivot
 
+lemma Matrix.submatrix_shortTableauPivot [DecidableEq X] [DecidableEq Y] {X' Y' : Type} [DecidableEq X'] [DecidableEq Y']
+    [Field F] {f : X' → X} {g : Y' → Y} (A : Matrix X Y F) (hf : f.Injective) (hg : g.Injective) (x : X') (y : Y') :
+    (A.submatrix f g).shortTableauPivot x y = (A.shortTableauPivot (f x) (g y)).submatrix f g := by
+  ext i j
+  have hfix : f i = f x → i = x := (hf ·)
+  have hgjy : g j = g y → j = y := (hg ·)
+  unfold Matrix.shortTableauPivot
+  aesop
+
 lemma lemma1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F} {r c : Fin k.succ} (hArc : A r c ≠ 0) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
       ((A.shortTableauPivot r c).submatrix f g).det = A.det / A r c := by
@@ -257,14 +266,20 @@ lemma corollary1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F}
     rw [h9, div_neg, div_one]
     exact (hA <| in_signTypeCastRange_of_neg ·)
 
-lemma Matrix.submatrix_shortTableauPivot [DecidableEq X] [DecidableEq Y] {X' Y' : Type} [DecidableEq X'] [DecidableEq Y']
-    [Field F] {f : X' → X} {g : Y' → Y} (A : Matrix X Y F) (hf : f.Injective) (hg : g.Injective) (x : X') (y : Y') :
-    (A.submatrix f g).shortTableauPivot x y = (A.shortTableauPivot (f x) (g y)).submatrix f g := by
-  ext i j
-  have hfix : f i = f x → i = x := (hf ·)
-  have hgjy : g j = g y → j = y := (hg ·)
-  unfold Matrix.shortTableauPivot
-  aesop
+lemma corollary1' [Field F] {k : ℕ} {A : Matrix X Y F} {p} {q} (hp : p.Injective) (hq : q.Injective) [DecidableEq X] [DecidableEq Y]
+    (hA : (A.submatrix p q).det ∉ SignType.cast.range) (r c : Fin k.succ) (hArc : A (p r) (q c) = 1 ∨ A (p r) (q c) = -1) :
+    ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
+      ((A.shortTableauPivot (p r) (q c)).submatrix (p ∘ f) (q ∘ g)).det ∉ SignType.cast.range := by
+  obtain ⟨f, g, hf, hg, hAfg⟩ := corollary1 hA r c hArc
+  use f, g, hf, hg
+  rwa [←Matrix.submatrix_submatrix, ←A.submatrix_shortTableauPivot hp hq]
+
+lemma corollary1'' [Field F] {k : ℕ} {A : Matrix X Y F} {p} {q} (hp : p.Injective) (hq : q.Injective) [DecidableEq X] [DecidableEq Y]
+    (hA : (A.submatrix p q).det ∉ SignType.cast.range) (r c : Fin k.succ) (hArc : A (p r) (q c) = 1 ∨ A (p r) (q c) = -1) :
+    ∃ f : Fin k → X, ∃ g : Fin k → Y, f.Injective ∧ g.Injective ∧
+      ((A.shortTableauPivot (p r) (q c)).submatrix f g).det ∉ SignType.cast.range := by
+  obtain ⟨f, g, hf, hg, hAfg⟩ := corollary1' hp hq hA r c hArc
+  exact ⟨p ∘ f, q ∘ g, Function.Injective.comp hp hf, Function.Injective.comp hq hg, hAfg⟩
 
 
 section Experimental
