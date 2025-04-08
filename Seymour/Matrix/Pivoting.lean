@@ -221,7 +221,7 @@ lemma Matrix.IsTotallyUnimodular.shortTableauPivot [DecidableEq X] [DecidableEq 
   exact (((hA.one_fromCols).addMultiples x ◪y hxy).getShortTableau x y).mulRow x hAxy
 
 -- todo: add lemma: pivoting preserves PreTU for any k
--- todo: maybe prove lemma about preservation of TUness as corollary of ^
+-- It does not!!! Consider `!![1, 1; 1, -1]` over `ℚ` as a counterexample.
 
 #print axioms Matrix.IsTotallyUnimodular.shortTableauPivot
 
@@ -304,9 +304,9 @@ def Matrix.shortTableauPivotExternalCol_explicit [Field F] [DecidableEq X] (A : 
     Matrix X Y F :=
   Matrix.of <| fun i j =>
     if i = x then
-        A x j / c x
-      else
-        A i j - c i * A x j / c x
+      A x j / c x
+    else
+      A i j - c i * A x j / c x
 
 lemma shortTableauPivotExternalCol_eq [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (x : X) (c : X → F) :
     A.shortTableauPivotExternalCol_explicit x c = A.shortTableauPivotExternalCol x c :=

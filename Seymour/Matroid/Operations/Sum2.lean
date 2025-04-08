@@ -254,19 +254,6 @@ private lemma matrix2sumComposition.shortTableauPivot_is2sum {α : Type} [Decida
   -- (use lemma Matrix.shortTableauPivot_rank_one in Pivoting.lean)
   sorry
 
-private lemma matrix2sumComposition.shortTableauPivot_IsPreTU {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
-    (A₁ : Matrix X₁ Y₁ ℚ) (x : Y₁ → ℚ) (A₂ : Matrix X₂ Y₂ ℚ) (y : X₂ → ℚ) (r : X₁) (c : Y₁) (hrc : A₁ r c ≠ 0)
-    {k : ℕ} (hkAxAy : (matrix2sumComposition A₁ x A₂ y).IsPreTU k) :
-    ((matrix2sumComposition A₁ x A₂ y).shortTableauPivot (Sum.inl r) (Sum.inl c)).IsPreTU k := by
-  -- pivoting preserves PreTUness (see Pivoting file) (b/c determinant of every k × k submatrix is preserved (at least up to sign))
-
-  -- note: this lemma is not needed!
-  -- pivoting in A₁ in 2-sum yields another 2-sum (with the same matrix sizes);
-  -- if we assume that all 2-sums (with the same matrix size) are PreTU for some k,
-  -- then the result after pivoting is PreTU by this assumption
-  -- (use this argument in the proof of lemma12 rather than referring to this lemma)
-  sorry
-
 private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
     (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular)
@@ -348,10 +335,10 @@ private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α
           right
           exact hs.symm
       let B := (matrix2sumComposition A₁ x A₂ y).shortTableauPivot (f i₁) (g j₀)
-      -- obtain ⟨f', g', hf', hg', impossible⟩ := corollary1' hAfg i₁ j₀ (by convert hAxy1 <;> unfold matrix2sumComposition <;> simp [*])
-      -- apply impossible
-      -- specialize hkAxAy (f ∘ f') (g ∘ g')
-      -- rw [(matrix2sumComposition A₁ x A₂ y).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix, hix₁, hjy₀]
+      obtain ⟨f', g', hf', hg', impossible⟩ := corollary1 hAfg i₁ j₀ (by convert hAxy1 <;> simp [matrix2sumComposition, *])
+      apply impossible
+      specialize hkAxAy (f ∘ f') (g ∘ g')
+      rw [(matrix2sumComposition A₁ x A₂ y).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix, hix₁, hjy₀]
       sorry
 
 lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
