@@ -1,6 +1,7 @@
 import Seymour.Basic.FunctionToHalfSum
 import Seymour.Matrix.Pivoting
 import Seymour.Matroid.Notions.Regularity
+import Seymour.Matrix.PreTU
 
 
 /-- `Matrix`-level 2-sum for matroids defined by their standard representation matrices; does not check legitimacy. -/
@@ -161,24 +162,6 @@ lemma lemma6₂ {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
     ((y · * x ·) ◫ A₂).IsTotallyUnimodular :=
   lemma6₂_aux hAy (hAx.apply ◪())
 
-/-- Matrix `A` satisfies TUness for submatrices up to `k`×`k` size, i.e.,
-    the determinant of every `k`×`k` submatrix of `A` (not necessarily injective) is `1`, `0`, or `-1`. -/
-private def Matrix.IsPreTU {X Y R : Type} [CommRing R] (A : Matrix X Y R) (k : ℕ) : Prop :=
-  ∀ f : Fin k → X, ∀ g : Fin k → Y, (A.submatrix f g).det ∈ SignType.cast.range
-
-@[app_unexpander Matrix.IsPreTU]
-private def Matrix.IsPreTU_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $x) => `($(x).$(Lean.mkIdent `IsPreTU))
-  | _ => throw ()
-
-private lemma exists_submatrix_of_not_isPreTU {X Y R : Type} [CommRing R] {A : Matrix X Y R} {k : ℕ} (hAk : ¬ A.IsPreTU k) :
-    ∃ f : Fin k → X, ∃ g : Fin k → Y, (A.submatrix f g).det ∉ SignType.cast.range := by
-  simpa [Matrix.IsPreTU] using hAk
-
-private lemma Matrix.isTotallyUnimodular_iff_forall_IsPreTU {X Y R : Type} [CommRing R] (A : Matrix X Y R) :
-    A.IsTotallyUnimodular ↔ ∀ k, A.IsPreTU k :=
-  A.isTotallyUnimodular_iff
-
 private lemma matrix2sumComposition_eq_fromRows {α β : Type} [Semiring β] {X₁ Y₁ X₂ Y₂ : Set α}
     (A₁ : Matrix X₁ Y₁ β) (x : Y₁ → β) (A₂ : Matrix X₂ Y₂ β) (y : X₂ → β) :
     matrix2sumComposition A₁ x A₂ y = (A₁ ◫ 0) ⊟ ((y · * x ·) ◫ A₂) := by
@@ -259,6 +242,24 @@ private lemma lemma11₂ {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matr
       (by if h : · = 0 then simp [h, hf₀] else simp [Fin.eq_one_of_neq_zero, h, hf₁])
       (by if h : · = 0 then simp [h, hg₀] else simp [Fin.eq_one_of_neq_zero, h, hg₁])]
     exact A₂.isTotallyUnimodular_iff.→ hA₂ ..
+
+private lemma matrix2sumComposition.shortTableauPivot_is2sum {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
+    (A₁ : Matrix X₁ Y₁ ℚ) (x : Y₁ → ℚ) (A₂ : Matrix X₂ Y₂ ℚ) (y : X₂ → ℚ) (r : X₁) (c : Y₁) (hrc : A₁ r c ≠ 0) :
+    ∃ A₁' : Matrix X₁ Y₁ ℚ, ∃ x' : Y₁ → ℚ, ∃ A₂' : Matrix X₂ Y₂ ℚ, ∃ y' : X₂ → ℚ,
+      (matrix2sumComposition A₁ x A₂ y).shortTableauPivot (Sum.inl r) (Sum.inl c) = matrix2sumComposition A₁' x' A₂' y' := by
+  -- see Lemma 3 in write-up on regularity of 2
+  -- A₂' = A₂, y' = y
+  -- A₁' = A₁.shortTableauPivot r c
+  -- after pivoting, D' consists of copies of y scaled by {0, ± 1} factors, so can express it as D' = x' ⬝ y (outer product)
+  -- use that x'
+  sorry
+
+private lemma matrix2sumComposition.shortTableauPivot_IsPreTU {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
+    (A₁ : Matrix X₁ Y₁ ℚ) (x : Y₁ → ℚ) (A₂ : Matrix X₂ Y₂ ℚ) (y : X₂ → ℚ) (r : X₁) (c : Y₁) (hrc : A₁ r c ≠ 0)
+    {k : ℕ} (hkAxAy : (matrix2sumComposition A₁ x A₂ y).IsPreTU k) :
+    ((matrix2sumComposition A₁ x A₂ y).shortTableauPivot (Sum.inl r) (Sum.inl c)).IsPreTU k := by
+  -- pivoting preserves PreTUness (see Pivoting file) (b/c determinant of every k × k submatrix is preserved (at least up to sign))
+  sorry
 
 private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
