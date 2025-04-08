@@ -361,6 +361,7 @@ lemma Matrix.shortTableauPivot_submatrix_zero_external_col [Field F] [DecidableE
   unfold shortTableauPivot
   aesop
 
+-- TODO turn it into (noncomputable) definition so that we can argue about `x` and `y` later
 lemma Matrix.shortTableauPivot_rank_one [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F)
   (r : X) (c : Y) {X'} {Y'} (f : X' → X) (g : Y' → Y) (hf : r ∉ f.range) (hg : c ∈ g.range)
   (hA1 : A.IsPreTU 1) (hA2 : A.IsPreTU 2) (hArc : A r c = 1 ∨ A r c = -1)
