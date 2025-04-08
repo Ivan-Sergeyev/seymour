@@ -222,14 +222,17 @@ lemma Matrix.IsTotallyUnimodular.shortTableauPivot [DecidableEq X] [DecidableEq 
 #print axioms Matrix.IsTotallyUnimodular.shortTableauPivot
 
 lemma lemma1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F} {r c : Fin k.succ} (hArc : A r c ≠ 0) :
-    ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, ((A.shortTableauPivot r c).submatrix f g).det = A.det / A r c := by
+    ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
+      ((A.shortTableauPivot r c).submatrix f g).det = A.det / A r c := by
   use r.succAbove
   use c.succAbove
+  use Fin.succAbove_right_injective
+  use Fin.succAbove_right_injective
   sorry
 
-lemma corollary1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F} (hA : A.det ∉ SignType.cast.range)
-    {r c : Fin k.succ} (hArc : A r c = 1 ∨ A r c = -1) :
-    ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ,
+lemma corollary1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F}
+    (hA : A.det ∉ SignType.cast.range) (r c : Fin k.succ) (hArc : A r c = 1 ∨ A r c = -1) :
+    ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
       ((A.shortTableauPivot r c).submatrix f g).det ∉ SignType.cast.range := by
   have hArc0 : A r c ≠ 0
   · cases hArc with
@@ -239,8 +242,8 @@ lemma corollary1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F} (h
     | inr h9 =>
       rw [h9]
       norm_num
-  obtain ⟨f, g, hAfg⟩ := lemma1 hArc0
-  use f, g
+  obtain ⟨f, g, hf, hg, hAfg⟩ := lemma1 hArc0
+  use f, g, hf, hg
   rw [hAfg]
   cases hArc with
   | inl h1 =>
@@ -249,3 +252,12 @@ lemma corollary1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F} (h
   | inr h9 =>
     rw [h9, div_neg, div_one]
     exact (hA <| in_signTypeCastRange_of_neg ·)
+
+lemma Matrix.submatrix_shortTableauPivot [DecidableEq X] [DecidableEq Y] {X' Y' : Type} [DecidableEq X'] [DecidableEq Y']
+    [Field F] {f : X' → X} {g : Y' → Y} (A : Matrix X Y F) (hf : f.Injective) (hg : g.Injective) (x : X') (y : Y') :
+    (A.submatrix f g).shortTableauPivot x y = (A.shortTableauPivot (f x) (g y)).submatrix f g := by
+  ext i j
+  have hfix : f i = f x → i = x := (hf ·)
+  have hgjy : g j = g y → j = y := (hg ·)
+  unfold Matrix.shortTableauPivot
+  aesop

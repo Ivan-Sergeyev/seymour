@@ -267,13 +267,15 @@ private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α
     (matrix2sumComposition A₁ x A₂ y).IsPreTU k.succ := by
   cases k with
   | zero => exact lemma11₁ hAx hAy
-  | succ n => cases n with
+  | succ n => induction n generalizing A₁ A₂ x y with
     | zero => exact lemma11₂ hAx hAy
-    | succ k =>
+    | succ k ih =>
       have hA₁ : A₁.IsTotallyUnimodular := hAx.comp_rows Sum.inl
       have hA₂ : A₂.IsTotallyUnimodular := hAy.comp_cols Sum.inr
       by_contra contr
       obtain ⟨f, g, hAfg⟩ := exists_submatrix_of_not_isPreTU contr
+      have hf : f.Injective := sorry
+      have hg : g.Injective := sorry
       -- now we show that all four blocks are part of the submatrix
       obtain ⟨i₁, x₁, hix₁⟩ : ∃ i₁ : Fin (k + 3), ∃ x₁ : X₁, f i₁ = ◩x₁
       · have isTU := lemma6₂ hAx hAy -- `D ◫ A₂` is TU
@@ -315,7 +317,7 @@ private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α
         ext i j
         rewrite [Matrix.submatrix_apply, eq_of_fn_sum_ne_inr hgY₂ j]
         rfl
-      obtain ⟨j₀, y₀, hjy₀⟩ : ∃ j₀ : Fin (k + 3), ∃ y₀ : Y₁, g j₀ = ◩y₀ ∧ A₁ x₁ y₀ ≠ 0
+      obtain ⟨j₀, y₀, hjy₀, hAxy0⟩ : ∃ j₀ : Fin (k + 3), ∃ y₀ : Y₁, g j₀ = ◩y₀ ∧ A₁ x₁ y₀ ≠ 0
       · by_contra! hgY₁ -- because the `i₁`th row cannot be all `0`s
         apply hAfg
         convert zero_in_signTypeCastRange
@@ -325,6 +327,24 @@ private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α
         cases hgz : g z with
         | inl => exact hgY₁ z _ hgz
         | inr => simp
+      have hAxy1 : A₁ x₁ y₀ = 1 ∨ A₁ x₁ y₀ = -1
+      · obtain ⟨s, hs⟩ := hA₁.apply x₁ y₀
+        cases s with
+        | zero =>
+          exfalso
+          apply hAxy0
+          exact hs.symm
+        | pos =>
+          left
+          exact hs.symm
+        | neg =>
+          right
+          exact hs.symm
+      let B := (matrix2sumComposition A₁ x A₂ y).shortTableauPivot (f i₁) (g j₀)
+      obtain ⟨f', g', hf', hg', impossible⟩ := corollary1 hAfg i₁ j₀ (by convert hAxy1 <;> unfold matrix2sumComposition <;> simp [*])
+      apply impossible
+      specialize hkAxAy (f ∘ f') (g ∘ g')
+      rw [(matrix2sumComposition A₁ x A₂ y).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix, hix₁, hjy₀]
       sorry
 
 lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
