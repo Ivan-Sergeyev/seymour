@@ -243,10 +243,10 @@ private lemma lemma11₂ {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matr
       (by if h : · = 0 then simp [h, hg₀] else simp [Fin.eq_one_of_neq_zero, h, hg₁])]
     exact A₂.isTotallyUnimodular_iff.→ hA₂ ..
 
-private lemma matrix2sumComposition.shortTableauPivot_is2sum {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
+private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
     (A₁ : Matrix X₁ Y₁ ℚ) (x : Y₁ → ℚ) (A₂ : Matrix X₂ Y₂ ℚ) (y : X₂ → ℚ) (r : X₁) (c : Y₁) (hrc : A₁ r c ≠ 0) :
     ∃ A₁' : Matrix X₁ Y₁ ℚ, ∃ x' : Y₁ → ℚ, ∃ A₂' : Matrix X₂ Y₂ ℚ, ∃ y' : X₂ → ℚ,
-      (matrix2sumComposition A₁ x A₂ y).shortTableauPivot (Sum.inl r) (Sum.inl c) = matrix2sumComposition A₁' x' A₂' y' := by
+      (matrix2sumComposition A₁ x A₂ y).shortTableauPivot ◩r ◩c = matrix2sumComposition A₁' x' A₂' y' := by
   -- see Lemma 3 in write-up on regularity of 2
   -- A₂' = A₂, y' = y
   -- A₁' = A₁.shortTableauPivot r c
@@ -254,22 +254,27 @@ private lemma matrix2sumComposition.shortTableauPivot_is2sum {α : Type} [Decida
   -- (use lemma Matrix.shortTableauPivot_rank_one in Pivoting.lean)
   sorry
 
-private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
+private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α} {k : ℕ}
+    (ih : ∀ {A₁ : Matrix X₁ Y₁ ℚ}, ∀ {x : Y₁ → ℚ}, ∀ {A₂ : Matrix X₂ Y₂ ℚ}, ∀ {y : X₂ → ℚ},
+      (A₁ ⊟ ▬x).IsTotallyUnimodular → (▮y ◫ A₂).IsTotallyUnimodular → (matrix2sumComposition A₁ x A₂ y).IsPreTU k)
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
-    (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular)
-    {k : ℕ} (hkAxAy : (matrix2sumComposition A₁ x A₂ y).IsPreTU k) :
+    (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular) :
     (matrix2sumComposition A₁ x A₂ y).IsPreTU k.succ := by
   cases k with
   | zero => exact lemma11₁ hAx hAy
-  | succ n => induction n generalizing A₁ A₂ x y with
+  | succ n => cases n with
     | zero => exact lemma11₂ hAx hAy
-    | succ k ih =>
+    | succ k =>
       have hA₁ : A₁.IsTotallyUnimodular := hAx.comp_rows Sum.inl
       have hA₂ : A₂.IsTotallyUnimodular := hAy.comp_cols Sum.inr
       by_contra contr
       obtain ⟨f, g, hAfg⟩ := exists_submatrix_of_not_isPreTU contr
-      have hf : f.Injective := sorry
-      have hg : g.Injective := sorry
+      wlog hf : f.Injective
+      · -- if `f` has a collision, the conclusion is already covered by the induction hypothesis
+        sorry
+      wlog hg : g.Injective
+      · -- if `g` has a collision, the conclusion is already covered by the induction hypothesis
+        sorry
       -- now we show that all four blocks are part of the submatrix
       obtain ⟨i₁, x₁, hix₁⟩ : ∃ i₁ : Fin (k + 3), ∃ x₁ : X₁, f i₁ = ◩x₁
       · have isTU := lemma6₂ hAx hAy -- `D ◫ A₂` is TU
@@ -337,9 +342,12 @@ private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α
       let B := (matrix2sumComposition A₁ x A₂ y).shortTableauPivot (f i₁) (g j₀)
       obtain ⟨f', g', hf', hg', impossible⟩ := corollary1 hAfg i₁ j₀ (by convert hAxy1 <;> simp [matrix2sumComposition, *])
       apply impossible
-      specialize hkAxAy (f ∘ f') (g ∘ g')
       rw [(matrix2sumComposition A₁ x A₂ y).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix, hix₁, hjy₀]
-      sorry
+      obtain ⟨A₁', x', A₂', y', hAxAy'⟩ := matrix2sumComposition_shortTableauPivot A₁ x A₂ y x₁ y₀ hAxy0
+      rw [hAxAy']
+      apply ih
+      · sorry -- TODO we need to more know about `A₁'` and `x'`
+      · sorry -- TODO we need to more know about `A₂'` and `y'`
 
 lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
@@ -347,9 +355,9 @@ lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X�
     (matrix2sumComposition A₁ x A₂ y).IsTotallyUnimodular := by
   rw [Matrix.isTotallyUnimodular_iff_forall_IsPreTU]
   intro k
-  induction k with
+  induction k generalizing A₁ x A₂ y with
   | zero => simp [Matrix.IsPreTU]
-  | succ _ ih => exact lemma12 hA₁ hA₂ ih
+  | succ n ih => exact lemma12 ih hA₁ hA₂
 
 lemma standardRepr2sumComposition_B {α : Type} [DecidableEq α] {S₁ S₂ : StandardRepr α Z2} {a : α}
     (ha : S₁.X ∩ S₂.Y = {a}) (hXY : S₂.X ⫗ S₁.Y) :
