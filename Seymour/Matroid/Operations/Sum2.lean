@@ -251,7 +251,7 @@ private lemma matrix2sumComposition.shortTableauPivot_is2sum {α : Type} [Decida
   -- A₂' = A₂, y' = y
   -- A₁' = A₁.shortTableauPivot r c
   -- after pivoting, D' consists of copies of y scaled by {0, ± 1} factors, so can express it as D' = x' ⬝ y (outer product)
-  -- use that x'
+  -- (use lemma Matrix.shortTableauPivot_rank_one in Pivoting.lean)
   sorry
 
 private lemma matrix2sumComposition.shortTableauPivot_IsPreTU {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
@@ -259,6 +259,12 @@ private lemma matrix2sumComposition.shortTableauPivot_IsPreTU {α : Type} [Decid
     {k : ℕ} (hkAxAy : (matrix2sumComposition A₁ x A₂ y).IsPreTU k) :
     ((matrix2sumComposition A₁ x A₂ y).shortTableauPivot (Sum.inl r) (Sum.inl c)).IsPreTU k := by
   -- pivoting preserves PreTUness (see Pivoting file) (b/c determinant of every k × k submatrix is preserved (at least up to sign))
+
+  -- note: this lemma is not needed!
+  -- pivoting in A₁ in 2-sum yields another 2-sum (with the same matrix sizes);
+  -- if we assume that all 2-sums (with the same matrix size) are PreTU for some k,
+  -- then the result after pivoting is PreTU by this assumption
+  -- (use this argument in the proof of lemma12 rather than referring to this lemma)
   sorry
 
 private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
