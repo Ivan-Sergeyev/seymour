@@ -1,5 +1,6 @@
 import Seymour.Basic.SignTypeCast
 import Seymour.Matrix.Basic
+import Seymour.Matrix.PreTU
 
 
 variable {X Y F : Type}
@@ -218,6 +219,9 @@ lemma Matrix.IsTotallyUnimodular.shortTableauPivot [DecidableEq X] [DecidableEq 
   have hAxy : 1 / A x y ∈ SignType.cast.range
   · rw [inv_eq_self_of_in_signTypeCastRange] <;> exact hA.apply x y
   exact (((hA.one_fromCols).addMultiples x ◪y hxy).getShortTableau x y).mulRow x hAxy
+
+-- todo: add lemma: pivoting preserves PreTU for any k
+-- todo: maybe prove lemma about preservation of TUness as corollary of ^
 
 #print axioms Matrix.IsTotallyUnimodular.shortTableauPivot
 
