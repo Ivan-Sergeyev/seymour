@@ -174,7 +174,7 @@ private lemma Matrix.IsTotallyUnimodular.addMultiples [DecidableEq X] [Field F] 
     if hAxy : A x y = 1 then
       simpa [hAxy] using similar
     else if hAyx : A x y = -1 then
-      exact in_signTypeCastRange_of_neg_one_mul_self (hAyx ▸ similar)
+      exact in_signTypeCastRange_of_neg_one_mul (hAyx ▸ similar)
     else
       exfalso
       obtain ⟨s, hs⟩ := hA.apply x y

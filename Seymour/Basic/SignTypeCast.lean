@@ -45,7 +45,7 @@ lemma neg_in_signTypeCastRange [Ring R] {a : R}
   rw [neg_eq_neg_one_mul]
   exact neg_one_mul_in_signTypeCastRange ha
 
-lemma in_signTypeCastRange_of_neg_one_mul_self [Ring R] {a : R}
+lemma in_signTypeCastRange_of_neg_one_mul [Ring R] {a : R}
     (ha : (-1) * a ∈ SignType.cast.range) :
     a ∈ SignType.cast.range := by
   rw [←neg_neg a, neg_eq_neg_one_mul]
@@ -56,12 +56,12 @@ lemma in_signTypeCastRange_of_neg [Ring R] {a : R}
     (ha : -a ∈ SignType.cast.range) :
     a ∈ SignType.cast.range := by
   rw [neg_eq_neg_one_mul] at ha
-  exact in_signTypeCastRange_of_neg_one_mul_self ha
+  exact in_signTypeCastRange_of_neg_one_mul ha
 
 lemma in_signTypeCastRange_iff_abs [LinearOrderedCommRing R] (a : R) :
     a ∈ SignType.cast.range ↔ |a| ∈ SignType.cast.range := by
   constructor
-  · rintro ⟨(h | h | h), rfl⟩ <;> simp
+  · rintro ⟨(-|-|-), rfl⟩ <;> simp
   · intro ⟨s, hs⟩
     symm at hs
     cases s with
@@ -73,17 +73,17 @@ lemma in_signTypeCastRange_iff_abs [LinearOrderedCommRing R] (a : R) :
       cases hs with
       | inl poz =>
         exact ⟨1, poz.left.symm⟩
-      | inr neg =>
+      | inr nig =>
         use -1
-        rw [neg_eq_iff_eq_neg] at neg
-        exact neg.left.symm
+        rw [neg_eq_iff_eq_neg] at nig
+        exact nig.left.symm
     | neg =>
       exfalso
       rw [SignType.neg_eq_neg_one, SignType.coe_neg, SignType.coe_one] at hs
       have h0 := (abs_nonneg a).trans_eq hs
       norm_num at h0
 
-lemma inv_eq_self_of_in_signTypeCastRange [Field R] {a : R} (ha : a ∈ SignType.cast.range) :
+lemma inv_eq_self_of_in_signTypeCastRange [DivisionRing R] {a : R} (ha : a ∈ SignType.cast.range) :
     1 / a = a := by
   obtain ⟨s, rfl⟩ := ha
   cases s <;> simp
