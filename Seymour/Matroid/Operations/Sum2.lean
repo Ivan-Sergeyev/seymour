@@ -245,14 +245,16 @@ private lemma lemma11₂ {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matr
 
 private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
     (A₁ : Matrix X₁ Y₁ ℚ) (x : Y₁ → ℚ) (A₂ : Matrix X₂ Y₂ ℚ) (y : X₂ → ℚ) {r : X₁} {c : Y₁} (hrc : A₁ r c ≠ 0) :
-    let B := (matrix2sumComposition A₁ x A₂ y).shortTableauPivot ◩r ◩c
-    ∃ x' : Y₁ → ℚ, B = matrix2sumComposition (A₁.shortTableauPivot r c) x' A₂ y := by
+    let B := matrix2sumComposition A₁ x A₂ y
+    B.shortTableauPivot ◩r ◩c =
+    matrix2sumComposition (A₁.shortTableauPivot r c) (B.shortTableauPivotTheRow ◩r ◩c Sum.inl ⟨c, rfl⟩ x) A₂ y := by
   intro B
   have hBA₁ : B.toBlocks₁₁ = A₁.shortTableauPivot r c
   · sorry
   have hBA₂ : B.toBlocks₂₂ = A₂
   · sorry
   rw [←hBA₁, ←hBA₂]
+  have hBD := B.shortTableauPivot_rank_one ◩r ◩c Sum.inr Sum.inl (by simp) ⟨c, rfl⟩ (by sorry) (by sorry) x y (by sorry)
   -- see Lemma 3 in write-up on regularity of 2
   -- after pivoting, D' consists of copies of y scaled by {0, ± 1} factors, so can express it as D' = x' ⬝ y (outer product)
   -- (use lemma Matrix.shortTableauPivot_rank_one in Pivoting.lean)
@@ -345,12 +347,11 @@ private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α
           exact hs.symm
       obtain ⟨f', g', hf', hg', impossible⟩ := corollary1 hAfg i₁ j₀ (by convert hAxy1 <;> simp [matrix2sumComposition, *])
       apply impossible
-      rw [(matrix2sumComposition A₁ x A₂ y).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix, hix₁, hjy₀]
-      obtain ⟨x', hAxAy'⟩ := matrix2sumComposition_shortTableauPivot A₁ x A₂ y hAxy0
-      rw [hAxAy']
+      rw [(matrix2sumComposition A₁ x A₂ y).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix,
+        hix₁, hjy₀, matrix2sumComposition_shortTableauPivot A₁ x A₂ y hAxy0]
       apply ih
-      · sorry -- TODO we need to know what `x'` is
-      · sorry -- TODO we need to know what `y'` is
+      · sorry
+      · exact hAy
 
 lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
