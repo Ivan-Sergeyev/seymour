@@ -350,28 +350,34 @@ end Experimental
 section Blocks
 
 lemma Matrix.shortTableauPivot_submatrix_zero_external_row [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F)
-  (r : X) (c : Y) {X'} {Y'} (f : X' → X) (g : Y' → Y) (hf : r ∉ f.range) (hg : c ∉ g.range) (hAr : ∀ j, A r (g j) = 0) :
+    (r : X) (c : Y) {X' Y' : Type} (f : X' → X) (g : Y' → Y) (hf : r ∉ f.range) (hg : c ∉ g.range) (hAr : ∀ j, A r (g j) = 0) :
     (A.shortTableauPivot r c).submatrix f g = A.submatrix f g := by
   unfold shortTableauPivot
   aesop
 
 lemma Matrix.shortTableauPivot_submatrix_zero_external_col [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F)
-  (r : X) (c : Y) {X'} {Y'} (f : X' → X) (g : Y' → Y) (hf : r ∉ f.range) (hg : c ∉ g.range) (hAc : ∀ i, A (f i) c = 0) :
+    (r : X) (c : Y) {X' Y' : Type} (f : X' → X) (g : Y' → Y) (hf : r ∉ f.range) (hg : c ∉ g.range) (hAc : ∀ i, A (f i) c = 0) :
     (A.shortTableauPivot r c).submatrix f g = A.submatrix f g := by
   unfold shortTableauPivot
   aesop
 
--- TODO turn it into (noncomputable) definition so that we can argue about `x` and `y` later
+noncomputable def Matrix.shortTableauPivotTheRow [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F)
+    {r : X} {c : Y} {X' Y' : Type} {f : X' → X} {g : Y' → Y} (hf : r ∉ f.range) (hg : c ∈ g.range)
+    (hA2 : A.IsPreTU 2) (hArc : A r c = 1 ∨ A r c = -1) :
+    Y' → F := by
+  --obtain ⟨c', hc'⟩ := hg
+  --let x' := fun j => (A r (g c') * x j - A r (g j) * x c') / A r (g c')
+  sorry
+
 lemma Matrix.shortTableauPivot_rank_one [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F)
-  (r : X) (c : Y) {X'} {Y'} (f : X' → X) (g : Y' → Y) (hf : r ∉ f.range) (hg : c ∈ g.range)
-  (hA1 : A.IsPreTU 1) (hA2 : A.IsPreTU 2) (hArc : A r c = 1 ∨ A r c = -1)
-  (x : Y' → F) (y : X' → F) (hAfg : ∀ i j, A (f i) (g j) = (x j) * (y i)) :
-    ∃ x' : Y' → F, ∀ i j, (A.shortTableauPivot r c) (f i) (g j) = (x' j) * (y i) := by
+    (r : X) (c : Y) {X' Y' : Type} (f : X' → X) (g : Y' → Y) (hf : r ∉ f.range) (hg : c ∈ g.range)
+    (hA2 : A.IsPreTU 2) (hArc : A r c = 1 ∨ A r c = -1)
+    (x : Y' → F) (y : X' → F) (hAfg : ∀ i j, A (f i) (g j) = x j * y i) :
+    ∀ i : X', ∀ j : Y',
+      (A.shortTableauPivot r c) (f i) (g j) =
+      A.shortTableauPivotTheRow hf hg hA2 hArc j * y i := by
   -- moreover, x, y, and x' are {0, ±1} vectors
   -- note that x' is defined explicitly, maybe can put the formula in the statement of the lemma
-  obtain ⟨c', hc'⟩ := hg
-  let x' := fun j => (A r (g c') * x j - A r (g j) * x c') / A r (g c')
-  use x'
   sorry
 
 end Blocks
