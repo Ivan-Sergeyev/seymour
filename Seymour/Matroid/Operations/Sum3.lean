@@ -13,7 +13,6 @@ noncomputable abbrev matrix3sumComposition {β : Type} [CommRing β] {X₁ Y₁ 
   let D₁₂ : Matrix X₂ Y₁ β := D₂ * D₀⁻¹ * D₁
   Matrix.fromBlocks A₁ 0 (Matrix.fromBlocks D₁ D₀ D₁₂ D₂) A₂
 
-
 -- /-- `Matrix`-level 3-sum for matroids defined by their standard representation matrices; does not check legitimacy. -/
 -- noncomputable abbrev matrix3sumComposition {β : Type} [CommRing β] {X₁ Y₁ X₂ Y₂ : Set α}
 --     (A₁ : Matrix X₁ (Y₁ ⊕ Fin 2) β) (A₂ : Matrix (Fin 2 ⊕ X₂) Y₂ β)
@@ -188,18 +187,16 @@ lemma standardRepr3sumComposition_B {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ 
       (Sum.map id (fun i : (S₂.X \ {x₁}).Elem =>
           if hx₂ : i.val = x₂ then ◩0 else
           if hx₃ : i.val = x₃ then ◩1 else
-          ◪⟨i, by aesop⟩ -- todo: can be optimized
-          )
+          ◪⟨i, by obtain ⟨_, _⟩ := i; simp_all; simp_all⟩)
       )
       (Sum.map (fun j : (S₁.Y \ {y₃}).Elem =>
           if hy₁ : j.val = y₁ then ◪0 else
           if hy₂ : j.val = y₂ then ◪1 else
-          ◩⟨j, by aesop⟩) -- todo: can be optimized
+          ◩⟨j, by obtain ⟨_, _⟩ := j; simp_all; simp_all⟩)
           id
       )
     ).toMatrixUnionUnion
     := by sorry
-  -- -- This proof is not worth optimizing because we might be throwing it away soon.
   -- have hX := standardRepr3sumComposition_X hXX hYY hXY hYX
   -- have hY := standardRepr3sumComposition_Y hXX hYY hXY hYX
   -- ext i j
@@ -289,7 +286,7 @@ instance Matroid.Is3sumOf.finS {M M₁ M₂ : Matroid α} (hM : M.Is3sumOf M₁ 
 lemma standardRepr3sumComposition_hasTuSigning {α : Type} [DecidableEq α] {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ y₂ y₃ : α}
     (hXX : S₁.X ∩ S₂.X = {x₁, x₂, x₃}) (hYY : S₁.Y ∩ S₂.Y = {y₁, y₂, y₃}) (hXY : S₁.X ⫗ S₂.Y) (hYX : S₁.Y ⫗ S₂.X) :
     (standardRepr3sumComposition hXX hYY hXY hYX).fst.HasTuSigning := by
-  -- invoke matrix3sumComposition_toCanonicalSigning_TU
+  -- invoke `matrix3sumComposition_toCanonicalSigning_TU`
   sorry
 
 /-- Any 3-sum of regular matroids is a regular matroid.
@@ -298,7 +295,7 @@ theorem Matroid.Is3sumOf.isRegular {M M₁ M₂ : Matroid α}
     (hM : M.Is3sumOf M₁ M₂) (hM₁ : M₁.IsRegular) (hM₂ : M₂.IsRegular) :
     M.IsRegular := by
   have := hM.finS
-  -- invoke standardRepr3sumComposition_hasTuSigning
+  -- invoke `standardRepr3sumComposition_hasTuSigning`
   sorry
 
 section AuxiliaryLemmas
@@ -342,7 +339,7 @@ lemma Matrix.toCanonicalSigning_3x3_constructive₂ (A : Matrix (Fin 3) (Fin 3) 
     ∀ i j, A i j * x i * y j = !![1, 1, 0; 1, 1, 1; 0, 1, 1] i j := by
   sorry
 
--- possible refactor: reinstate β
+-- possible refactor: reinstate `β`
 def matrix3sumComposition_B₁ {X₁ Y₁ : Set α}
     (A₁ : Matrix X₁ (Y₁ ⊕ Fin 2) ℚ)
     (D₀ : Matrix (Fin 2) (Fin 2) ℚ) (D₁ : Matrix (Fin 2) Y₁ ℚ) :
@@ -361,8 +358,8 @@ noncomputable def matrix3sumComposition_toCanonicalSigning {X₁ Y₁ X₂ Y₂ 
     (x₁ : X₁) (y₃ : Y₂) :
     Matrix (X₁ ⊕ (Fin 2 ⊕ X₂)) ((Y₁ ⊕ Fin 2) ⊕ Y₂) ℚ
     :=
-    -- get multiplication factors to get 3×3 matrix containing D₀ to canonical form
-    let D₀_ext := !![A₁ x₁ (.inr 0), A₁ x₁ (.inr 1), 0; D₀ 0 0, D₀ 0 1, A₂ (.inl 0) y₃; D₀ 1 0, D₀ 1 1, A₂ (.inl 1) y₃];
+    -- get multiplication factors to get 3×3 matrix containing `D₀` to canonical form
+    let D₀_ext := !![A₁ x₁ ◪0, A₁ x₁ ◪1, 0; D₀ 0 0, D₀ 0 1, A₂ ◩0 y₃; D₀ 1 0, D₀ 1 1, A₂ ◩1 y₃];
     let D₀_row_mult := D₀_ext.toCanonicalSigning_3x3_constructive.fst;
     let D₀_col_mult := D₀_ext.toCanonicalSigning_3x3_constructive.snd;
     -- extend multiplication factors to vectors over corresponding domains
@@ -385,10 +382,12 @@ noncomputable def matrix3sumComposition_toCanonicalSigning {X₁ Y₁ X₂ Y₂ 
 private def Matrix.IsSigningOf {X Y : Type} (A : Matrix X Y ℚ) {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
   ∀ i j, |A i j| = (U i j).val
 
-private lemma Matrix.IsTuSigningOf_IsSigningOf {X Y : Type} (A : Matrix X Y ℚ) {n : ℕ} (U : Matrix X Y (ZMod n)) :
-  A.IsTuSigningOf U → A.IsSigningOf U := And.right
+private lemma Matrix.IsTuSigningOf.isSigningOf {X Y : Type} {A : Matrix X Y ℚ} {n : ℕ} {U : Matrix X Y (ZMod n)}
+    (hAU : A.IsTuSigningOf U) :
+    A.IsSigningOf U :=
+  hAU.right
 
-lemma matrix3sumComposition_toCanonicalSigning_IsSigning {X₁ Y₁ X₂ Y₂ : Set α}
+lemma matrix3sumComposition_toCanonicalSigning_isSigning {X₁ Y₁ X₂ Y₂ : Set α}
     (A₁ : Matrix X₁ (Y₁ ⊕ Fin 2) Z2) (A₂ : Matrix (Fin 2 ⊕ X₂) Y₂ Z2)
     (D₀ : Matrix (Fin 2) (Fin 2) Z2) (D₁ : Matrix (Fin 2) Y₁ Z2) (D₂ : Matrix X₂ (Fin 2) Z2)
     (x₁ : X₁) (y₃ : Y₂)
@@ -491,6 +490,6 @@ lemma matrix3sumComposition_toCanonicalSigning_TU {X₁ Y₁ X₂ Y₂ : Set α}
     (matrix3sumComposition_toCanonicalSigning A₁ A₂ D₀ D₁ D₂ x₁ y₃).IsTotallyUnimodular
     := by
   sorry
-  -- todo: inductive proof of PreTUness for every k
+  -- todo: inductive proof of PreTUness for every `k`
 
 end AuxiliaryLemmas

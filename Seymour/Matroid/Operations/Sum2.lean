@@ -105,7 +105,7 @@ private lemma Matrix.IsTotallyUnimodular.aux190 {α : Type} [DecidableEq α] {X�
 private lemma lemma6₁_aux {α : Type} [DecidableEq α] {X₁ Y₁ X₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {y : X₂ → ℚ}
     (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hy : ∀ x : X₂, y x ∈ SignType.cast.range) :
     (A₁ ⊟ (y · * x ·)).IsTotallyUnimodular := by
-  convert hAx.aux190.comp_rows (fun i : X₁.Elem ⊕ X₂.Elem => i.casesOn (Sum.inl ∘ Sum.inl ∘ Sum.inl) (fun i₂ =>
+  convert hAx.aux190.comp_rows (fun i : X₁.Elem ⊕ X₂.Elem => i.casesOn (Sum.inl ∘ Sum.inl ∘ Sum.inl) (fun i₂ : X₂ =>
     if h1 : y i₂ = 1 then
       ◩◩◪()
     else if h9 : y i₂ = -1 then

@@ -252,8 +252,6 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
   obtain ⟨-, lin_indep⟩ := hMG.indep
   unfold LinearIndepOn at lin_indep
 
-
-
   have a2 : ∀ j, M.Aᵀ j ∈ M.Aᵀ.range := Set.mem_range_self
   have a3 : M.Aᵀ.range ⊆ Submodule.span R M.Aᵀ.range := Submodule.subset_span
   have a1 : ∀ j, M.Aᵀ j ∈ Submodule.span R M.Aᵀ.range := fun j => a3 (a2 j)
@@ -263,7 +261,6 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
   -- -- have aaa : ∀
   -- have ttt : Submodule.span R (Set.range ((fun x => M.Aᵀ ↑x) : ↑(M.Y ↓∩ G) → ↑M.X → R)) = Submodule.span R (M.Aᵀ.submatrix hGY.elem id).range := by sorry
   -- have tt : Submodule.span R (Set.range ((fun x => M.Aᵀ ↑x) : ↑(M.Y ↓∩ G) → ↑M.X → R)) = Submodule.span R M.Aᵀ.range := by sorry
-
 
   -- todo: need additional conversion between G ∩ M.Y and G
   let C : Matrix G M.Y R := Matrix.of (fun i j => lin_indep.repr (⟨M.Aᵀ j, by convert a4 j; sorry⟩) ⟨hGY.elem i, by simp_all⟩)
@@ -318,11 +315,11 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
     ext i j
     cases j with
     | inl j1 =>
-        simp
-        sorry
+      simp
+      sorry
     | inr j2 =>
-        simp
-        rfl
+      simp
+      rfl
 
   -- have t3 := LinearMap.linearIndependent_iff_of_disjoint t2 (by sorry)
   -- apply LinearMap.linearIndependent_iff_of_disjoint
@@ -337,13 +334,8 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
   -- unfold LinearIndepOn
   -- rw [M.toMatroid_indep_iff_elem] at lin_indep
   constructor
-  · intro h
-
-    sorry
-  · intro h
-
-    sorry
-
+  · sorry
+  · sorry
 
 -- theorem LinearMap.linearIndependent_iff_of_injOn {ι : Type u'} {R : Type u_2} {M : Type u_4} {M' : Type u_5} {v : ι → M} [Semiring R] [AddCommMonoid M] [AddCommMonoid M'] [Module R M] [Module R M'] (f : M →ₗ[R] M') (hf_inj : Set.InjOn ⇑f ↑(Submodule.span R (Set.range v))) :
 -- LinearIndependent R (⇑f ∘ v) ↔ LinearIndependent R v
