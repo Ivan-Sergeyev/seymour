@@ -263,6 +263,11 @@ lemma corollary1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F}
     rw [h9, div_neg, div_one]
     exact (hA <| in_signTypeCastRange_of_neg ·)
 
+lemma Matrix.shortTableauPivot_zero {X' Y' : Type} [DecidableEq X] [DecidableEq Y] [DecidableEq X'] [Field F]
+    (B : Matrix X Y F) (r' : X') (c : Y) (f : X' → X) (g : Y' → Y) (hg : c ∉ g.range) (hBfg : ∀ i j, B (f i) (g j) = 0) :
+    ∀ i : X', ∀ j : Y', (B.shortTableauPivot (f r') c) (f i) (g j) = 0 := by
+  unfold Matrix.shortTableauPivot
+  aesop
 
 lemma Matrix.shortTableauPivot_submatrix_zero_external_row [DivisionRing F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F)
     (r : X) (c : Y) {X' Y' : Type} (f : X' → X) (g : Y' → Y) (hf : r ∉ f.range) (hg : c ∉ g.range) (hAr : ∀ j, A r (g j) = 0) :

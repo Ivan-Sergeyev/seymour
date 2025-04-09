@@ -194,8 +194,8 @@ private lemma lemma11₂_auxl {α : Type} {X₁ Y₁ X₂ Y₂ : Set α}
     (hg : ∀ a : Fin n, ∀ b : Y₂, g a ≠ ◪b) :
     (matrix2sumComposition A₁ x A₂ y).submatrix f g = (A₁ ⊟ (y · * x ·)).submatrix f (fn_of_sum_ne_inr hg) := by
   ext
-  simp [eq_of_fn_sum_ne_inr hg, Matrix.fromCols_apply_inl]
-  simp [matrix2sumComposition_eq_fromCols] -- TODO check simping
+  rw [Matrix.submatrix_apply, eq_of_fn_sum_ne_inr hg, matrix2sumComposition_eq_fromCols]
+  simp
 
 private lemma lemma11₂_auxr {α : Type} {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
@@ -203,8 +203,8 @@ private lemma lemma11₂_auxr {α : Type} {X₁ Y₁ X₂ Y₂ : Set α}
     (hf : ∀ a : Fin n, ∀ b : X₁, f a ≠ ◩b) :
     (matrix2sumComposition A₁ x A₂ y).submatrix f g = ((y · * x ·) ◫ A₂).submatrix (fn_of_sum_ne_inl hf) g := by
   ext
-  simp [eq_of_fn_sum_ne_inl hf, Matrix.fromCols_apply_inr]
-  simp [matrix2sumComposition_eq_fromRows] -- TODO check simping
+  rw [Matrix.submatrix_apply, eq_of_fn_sum_ne_inl hf, matrix2sumComposition_eq_fromRows]
+  simp
 
 private lemma lemma11₂_auxll {α : Type} {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
@@ -218,7 +218,8 @@ private lemma lemma11₂_auxrl {α : Type} {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
     {n : ℕ} {f : Fin n → ↑X₁ ⊕ ↑X₂} {g : Fin n → ↑Y₁ ⊕ ↑Y₂}
     (hf : ∀ a : Fin n, ∀ b : X₁, f a ≠ ◩b) (hg : ∀ a : Fin n, ∀ b : Y₂, g a ≠ ◪b) :
-    (matrix2sumComposition A₁ x A₂ y).submatrix f g = (Matrix.of (y · * x ·)).submatrix (fn_of_sum_ne_inl hf) (fn_of_sum_ne_inr hg) := by
+    (matrix2sumComposition A₁ x A₂ y).submatrix f g =
+    Matrix.submatrix (y · * x ·) (fn_of_sum_ne_inl hf) (fn_of_sum_ne_inr hg) := by
   ext
   simp [eq_of_fn_sum_ne_inl hf, eq_of_fn_sum_ne_inr hg]
 
@@ -230,60 +231,44 @@ private lemma lemma11₂_auxrr {α : Type} {X₁ Y₁ X₂ Y₂ : Set α}
   ext
   simp [eq_of_fn_sum_ne_inl hf, eq_of_fn_sum_ne_inl hg]
 
-private lemma lemma11₂ {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
+private lemma lemma11₂ {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
+    {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
     (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular) :
     (matrix2sumComposition A₁ x A₂ y).IsPreTU 2 := by
   intro f g
   have hA₁ : A₁.IsTotallyUnimodular := hAx.comp_rows Sum.inl
   have hA₂ : A₂.IsTotallyUnimodular := hAy.comp_cols Sum.inr
-  rcases hf₀ : f 0 with (i₁ | i₂)
-    <;> rcases hf₁ : f 1 with (j₁ | j₂)
-    <;> rcases hg₀ : g 0 with (k₁ | k₁)
-    <;> rcases hg₁ : g 1 with (l₁ | l₂)
-  -- dispatch TU by closure goals
-  all_goals try (
+  cases hf0 : f 0 <;> cases hf1 : f 1 <;> cases hg0 : g 0 <;> cases hg1 : g 1
+  all_goals try
     rw [Matrix.det_fin_two]
     repeat rw [Matrix.submatrix_apply]
-    simp only [hf₀, hf₁, hg₀, hg₁, Matrix.fromBlocks_apply₂₂, Matrix.fromBlocks_apply₁₁,
-      Matrix.fromBlocks_apply₂₁, Matrix.fromBlocks_apply₁₂, Matrix.zero_apply, mul_zero,
-      sub_zero, zero_mul, zero_in_signTypeCastRange, zero_sub, neg_mul_eq_neg_mul]
+    simp only [hf0, hf1, hg0, hg1,
+      Matrix.fromBlocks_apply₂₂, Matrix.fromBlocks_apply₁₁, Matrix.fromBlocks_apply₂₁, Matrix.fromBlocks_apply₁₂,
+      Matrix.zero_apply, mul_zero, zero_mul, sub_zero, zero_sub, neg_mul_eq_neg_mul, zero_in_signTypeCastRange]
     repeat apply in_signTypeCastRange_mul_in_signTypeCastRange
-    all_goals
-      simp only [neg_in_signTypeCastRange,
-        Matrix.IsTotallyUnimodular.apply hA₁, Matrix.IsTotallyUnimodular.apply hA₂])
+    all_goals simp only [neg_in_signTypeCastRange, hA₁.apply, hA₂.apply]
   · rw [lemma11₂_auxll (by fin_cases · <;> simp_all) (by fin_cases · <;> simp_all)]
-    exact A₁.isTotallyUnimodular_iff.→ hA₁ ..
-  · have := lemma6₁ hAx hAy
-    rw [lemma11₂_auxl (by fin_cases · <;> simp_all)]
-    rw [Matrix.isTotallyUnimodular_iff] at this
-    apply this
-  · have := lemma6₁ hAx hAy
-    rw [lemma11₂_auxl (by fin_cases · <;> simp_all)]
-    rw [Matrix.isTotallyUnimodular_iff] at this
-    apply this
-  · have := lemma6₁ hAx hAy
-    have := this.submatrix Sum.inr id
-    rw [Matrix.isTotallyUnimodular_iff] at this
-    rw [lemma11₂_auxrl (by fin_cases · <;> simp_all) (by fin_cases · <;> simp_all)]
-    apply this
-  · have := lemma6₂ hAx hAy
-    rw [lemma11₂_auxr (by fin_cases · <;> simp_all)]
-    rw [Matrix.isTotallyUnimodular_iff] at this
-    apply this
-  · have := lemma6₂ hAx hAy
-    rw [lemma11₂_auxr (by fin_cases · <;> simp_all)]
-    rw [Matrix.isTotallyUnimodular_iff] at this
-    apply this
+    apply A₁.isTotallyUnimodular_iff.→ hA₁
+  · rw [lemma11₂_auxl (by fin_cases · <;> simp_all)]
+    apply (Matrix.isTotallyUnimodular_iff _).→ (lemma6₁ hAx hAy)
+  · rw [lemma11₂_auxl (by fin_cases · <;> simp_all)]
+    apply (Matrix.isTotallyUnimodular_iff _).→ (lemma6₁ hAx hAy)
+  · rw [lemma11₂_auxrl (by fin_cases · <;> simp_all) (by fin_cases · <;> simp_all)]
+    apply (Matrix.isTotallyUnimodular_iff _).→ ((lemma6₁ hAx hAy).comp_rows Sum.inr)
+  · rw [lemma11₂_auxr (by fin_cases · <;> simp_all)]
+    apply (Matrix.isTotallyUnimodular_iff _).→ (lemma6₂ hAx hAy)
+  · rw [lemma11₂_auxr (by fin_cases · <;> simp_all)]
+    apply (Matrix.isTotallyUnimodular_iff _).→ (lemma6₂ hAx hAy)
   · rw [lemma11₂_auxrr (by fin_cases · <;> simp_all) (by fin_cases · <;> simp_all)]
-    exact A₂.isTotallyUnimodular_iff.→ hA₂ ..
+    apply A₂.isTotallyUnimodular_iff.→ hA₂
 
-/-- Compute the row vector for the outer product after pivoting outside. -/
-private noncomputable def Matrix.shortTableauPivotTheRow {X Y Y' R : Type} [DecidableEq Y'] [DivisionRing R] (B : Matrix X Y R)
-    (r : X) (c' : Y') (g : Y' → Y) (x : Y' → R) (s : R) :
+/-- Compute the row vector for the outer product after pivoting outside of the outer product. -/
+private noncomputable def Matrix.shortTableauPivotTheRow {X Y Y' R : Type} [DecidableEq Y'] [DivisionRing R]
+    (B : Matrix X Y R) (r : X) (c' : Y') (g : Y' → Y) (x : Y' → R) (s : R) :
     Y' → R :=
   fun j : Y' => if j = c' then -s * x j else (B r (g c') * x j - B r (g j) * x c') / B r (g c')
 
-private lemma Matrix.shortTableauPivot_rank_one {X Y X' Y' R : Type} [DecidableEq X] [DecidableEq Y] [DecidableEq Y'] [Field R]
+private lemma Matrix.shortTableauPivot_outer {X Y X' Y' R : Type} [DecidableEq X] [DecidableEq Y] [DecidableEq Y'] [Field R]
     (B : Matrix X Y R) (r : X) (c' : Y') (f : X' → X) (g : Y' → Y) (hf : r ∉ f.range) (hg : g.Injective)
     (hBrc : B r (g c') = 1 ∨ B r (g c') = -1)
     (x : Y' → R) (y : X' → R) (hBfg : ∀ i j, B (f i) (g j) = x j * y i) :
@@ -295,7 +280,7 @@ private lemma Matrix.shortTableauPivot_rank_one {X Y X' Y' R : Type} [DecidableE
   cases hBrc with
   | inl h1 =>
     if hj : j = c' then
-      aesop
+      simp_all
     else
       have hgj : g j ≠ g c' := (hj <| hg ·)
       have hfi : f i ≠ r := (hf <| ⟨i, ·⟩)
@@ -303,18 +288,12 @@ private lemma Matrix.shortTableauPivot_rank_one {X Y X' Y' R : Type} [DecidableE
       ring
   | inr h9 =>
     if hj : j = c' then
-      aesop
+      simp_all
     else
       have hgj : g j ≠ g c' := (hj <| hg ·)
       have hfi : f i ≠ r := (hf <| ⟨i, ·⟩)
       simp [*]
       ring
-
-private lemma Matrix.shortTableauPivot_zero {X Y X' Y' R : Type} [DecidableEq X] [DecidableEq Y] [DecidableEq X'] [Field R]
-    (B : Matrix X Y R) (r' : X') (c : Y) (f : X' → X) (g : Y' → Y) (hg : c ∉ g.range) (hBfg : ∀ i j, B (f i) (g j) = 0) :
-    ∀ i : X', ∀ j : Y', (B.shortTableauPivot (f r') c) (f i) (g j) = 0 := by
-  unfold Matrix.shortTableauPivot
-  aesop
 
 private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
     (A₁ : Matrix X₁ Y₁ ℚ) (x : Y₁ → ℚ) (A₂ : Matrix X₂ Y₂ ℚ) (y : X₂ → ℚ) {r : X₁} {c : Y₁} (hrc : A₁ r c = 1 ∨ A₁ r c = -1) :
@@ -326,18 +305,20 @@ private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq �
   · exact (B.submatrix_shortTableauPivot Sum.inl_injective Sum.inl_injective r c).symm
   have hBA₂ : (B.shortTableauPivot ◩r ◩c).toBlocks₂₂ = A₂
   · exact B.shortTableauPivot_submatrix_zero_external_row ◩r ◩c Sum.inr Sum.inr (by aesop) (by aesop) (by aesop)
-  have hBD : (B.shortTableauPivot ◩r ◩c).toBlocks₂₁ = Matrix.of (fun i j => Matrix.shortTableauPivotTheRow B (◩r) c Sum.inl x (B ◩r ◩c) j * y i)
-  · have := B.shortTableauPivot_rank_one ◩r c Sum.inr Sum.inl (by simp) Sum.inl_injective hrc x y
-      (by simp [B, matrix2sumComposition, mul_comm])
-    aesop
   have hB0 : (B.shortTableauPivot ◩r ◩c).toBlocks₁₂ = 0
   · ext i j
     exact B.shortTableauPivot_zero r ◩c Sum.inl Sum.inr (by simp) (by simp [matrix2sumComposition, B]) i j
-  rw [←(B.shortTableauPivot ◩r ◩c).fromBlocks_toBlocks, hBA₁, hBA₂, hBD, hB0]
+  have hBD :
+    (B.shortTableauPivot ◩r ◩c).toBlocks₂₁ = Matrix.of (fun i : X₂ => fun j : Y₁ =>
+      Matrix.shortTableauPivotTheRow B ◩r c Sum.inl x (B ◩r ◩c) j * y i)
+  · have := B.shortTableauPivot_outer ◩r c Sum.inr Sum.inl (by simp) Sum.inl_injective hrc x y
+      (by simp [B, matrix2sumComposition, mul_comm])
+    aesop
+  rw [←(B.shortTableauPivot ◩r ◩c).fromBlocks_toBlocks, hBA₁, hBA₂, hB0, hBD]
   have hBrc : B ◩r ◩c = A₁ r c
   · rfl
   simp [matrix2sumComposition, hBrc]
-  ext i j
+  ext
   simp [mul_comm]
 
 lemma Matrix.submatrix_det_zero_of_not_injective_right {X Y Z R : Type} [Fintype Z] [DecidableEq Z] [CommRing R] {f : Z → X} {g : Z → Y}
@@ -441,7 +422,7 @@ private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α
         | neg =>
           right
           exact hs.symm
-      obtain ⟨f', g', hf', hg', impossible⟩ := corollary1 hAfg i₁ j₀ (by convert hAxy1 <;> simp [matrix2sumComposition, *])
+      obtain ⟨_, _, -, -, impossible⟩ := corollary1 hAfg i₁ j₀ (by convert hAxy1 <;> simp [matrix2sumComposition, *])
       apply impossible
       rw [(matrix2sumComposition A₁ x A₂ y).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix,
         hix₁, hjy₀, matrix2sumComposition_shortTableauPivot A₁ x A₂ y hAxy1]
@@ -450,9 +431,9 @@ private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α
         convert hAx.shortTableauPivot hAxy0'
         ext i j
         cases i with
-        | inl i₁ =>
+        | inl =>
           simp [Matrix.shortTableauPivot]
-        | inr i₂ =>
+        | inr =>
           simp [Matrix.shortTableauPivot, Matrix.shortTableauPivotTheRow]
           if hj : j = y₀ then
             cases hAxy1 with
@@ -471,7 +452,7 @@ lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X�
   intro k
   induction k generalizing A₁ x A₂ y with
   | zero => simp [Matrix.IsPreTU]
-  | succ n ih => exact lemma12 ih hA₁ hA₂
+  | succ _ ih => exact lemma12 ih hA₁ hA₂
 
 lemma standardRepr2sumComposition_B {α : Type} [DecidableEq α] {S₁ S₂ : StandardRepr α Z2} {a : α}
     (ha : S₁.X ∩ S₂.Y = {a}) (hXY : S₂.X ⫗ S₁.Y) :
