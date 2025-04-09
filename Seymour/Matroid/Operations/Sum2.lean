@@ -263,7 +263,7 @@ private lemma lemma11₂ {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set
     apply A₂.isTotallyUnimodular_iff.→ hA₂
 
 /-- Compute the row vector for the outer product after pivoting outside of the outer product. -/
-private noncomputable def Matrix.shortTableauPivotTheRow {X Y Y' R : Type} [DecidableEq Y'] [DivisionRing R]
+private noncomputable def Matrix.shortTableauPivotOuterRow {X Y Y' R : Type} [DecidableEq Y'] [DivisionRing R]
     (B : Matrix X Y R) (r : X) (c' : Y') (g : Y' → Y) (x : Y' → R) (s : R) :
     Y' → R :=
   fun j : Y' => if j = c' then -s * x j else (B r (g c') * x j - B r (g j) * x c') / B r (g c')
@@ -274,9 +274,9 @@ private lemma Matrix.shortTableauPivot_outer {X Y X' Y' R : Type} [DecidableEq X
     (x : Y' → R) (y : X' → R) (hBfg : ∀ i j, B (f i) (g j) = y i * x j) :
     ∀ i : X', ∀ j : Y',
       (B.shortTableauPivot r (g c')) (f i) (g j) =
-      y i * B.shortTableauPivotTheRow r c' g x (B r (g c')) j := by
+      y i * B.shortTableauPivotOuterRow r c' g x (B r (g c')) j := by
   intro i j
-  unfold shortTableauPivot Matrix.shortTableauPivotTheRow
+  unfold shortTableauPivot Matrix.shortTableauPivotOuterRow
   cases hBrc with
   | inl h1 =>
     if hj : j = c' then
@@ -299,7 +299,7 @@ private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq �
     (A₁ : Matrix X₁ Y₁ ℚ) (x : Y₁ → ℚ) (A₂ : Matrix X₂ Y₂ ℚ) (y : X₂ → ℚ) {r : X₁} {c : Y₁} (hrc : A₁ r c = 1 ∨ A₁ r c = -1) :
     let B := matrix2sumComposition A₁ x A₂ y
     B.shortTableauPivot ◩r ◩c =
-    matrix2sumComposition (A₁.shortTableauPivot r c) (B.shortTableauPivotTheRow ◩r c Sum.inl x (A₁ r c)) A₂ y := by
+    matrix2sumComposition (A₁.shortTableauPivot r c) (B.shortTableauPivotOuterRow ◩r c Sum.inl x (A₁ r c)) A₂ y := by
   intro B
   have hBA₁ : (B.shortTableauPivot ◩r ◩c).toBlocks₁₁ = A₁.shortTableauPivot r c
   · exact (B.submatrix_shortTableauPivot Sum.inl_injective Sum.inl_injective r c).symm
@@ -309,7 +309,7 @@ private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq �
   · ext i j
     exact B.shortTableauPivot_zero r ◩c Sum.inl Sum.inr (by simp) (by simp [matrix2sumComposition, B]) i j
   have hBD :
-    (B.shortTableauPivot ◩r ◩c).toBlocks₂₁ = Matrix.of (y · * Matrix.shortTableauPivotTheRow B ◩r c Sum.inl x (B ◩r ◩c) ·)
+    (B.shortTableauPivot ◩r ◩c).toBlocks₂₁ = Matrix.of (y · * Matrix.shortTableauPivotOuterRow B ◩r c Sum.inl x (B ◩r ◩c) ·)
   · have := B.shortTableauPivot_outer ◩r c Sum.inr Sum.inl (by simp) Sum.inl_injective hrc x y
     aesop
   rw [←(B.shortTableauPivot ◩r ◩c).fromBlocks_toBlocks, hBA₁, hBA₂, hB0, hBD]
@@ -333,123 +333,115 @@ lemma Matrix.submatrix_det_zero_of_not_injective_left {X Y Z R : Type} [Fintype 
   rw [←Matrix.det_transpose, Matrix.transpose_submatrix]
   exact A.transpose.submatrix_det_zero_of_not_injective_right hf
 
-private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α} {k : ℕ}
-    (ih : ∀ {A₁ : Matrix X₁ Y₁ ℚ}, ∀ {x : Y₁ → ℚ}, ∀ {A₂ : Matrix X₂ Y₂ ℚ}, ∀ {y : X₂ → ℚ},
-      (A₁ ⊟ ▬x).IsTotallyUnimodular → (▮y ◫ A₂).IsTotallyUnimodular → (matrix2sumComposition A₁ x A₂ y).IsPreTU k)
-    {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
-    (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular) :
-    (matrix2sumComposition A₁ x A₂ y).IsPreTU k.succ := by
-  cases k with
-  | zero => exact lemma11₁ hAx hAy
-  | succ n => cases n with
-    | zero => exact lemma11₂ hAx hAy
-    | succ k =>
-      have hA₁ : A₁.IsTotallyUnimodular := hAx.comp_rows Sum.inl
-      have hA₂ : A₂.IsTotallyUnimodular := hAy.comp_cols Sum.inr
-      by_contra contr
-      obtain ⟨f, g, hAfg⟩ := exists_submatrix_of_not_isPreTU contr
-      wlog hf : f.Injective
-      · apply hAfg
-        convert zero_in_signTypeCastRange
-        exact (matrix2sumComposition A₁ x A₂ y).submatrix_det_zero_of_not_injective_left hf
-      wlog hg : g.Injective
-      · apply hAfg
-        convert zero_in_signTypeCastRange
-        exact (matrix2sumComposition A₁ x A₂ y).submatrix_det_zero_of_not_injective_right hg
-      -- now we show that all four blocks are part of the submatrix
-      obtain ⟨i₁, x₁, hix₁⟩ : ∃ i₁ : Fin (k + 3), ∃ x₁ : X₁, f i₁ = ◩x₁
-      · have isTU := lemma6₂ hAx hAy -- `D ◫ A₂` is TU
-        rw [Matrix.isTotallyUnimodular_iff] at isTU
-        rw [matrix2sumComposition_eq_fromRows] at hAfg
-        by_contra! hfX₁
-        apply hAfg
-        convert isTU (k + 3) (fn_of_sum_ne_inl hfX₁) g using 2
-        ext i j
-        rewrite [Matrix.submatrix_apply, eq_of_fn_sum_ne_inl hfX₁ i]
-        rfl
-      obtain ⟨i₂, x₂, hix₂⟩ : ∃ i₂ : Fin (k + 3), ∃ x₂ : X₂, f i₂ = ◪x₂
-      · have isTU := hA₁.fromCols_zero Y₂ -- `A₁ ◫ 0` is TU
-        rw [Matrix.isTotallyUnimodular_iff] at isTU
-        rw [matrix2sumComposition_eq_fromRows] at hAfg
-        by_contra! hfX₂
-        apply hAfg
-        convert isTU (k + 3) (fn_of_sum_ne_inr hfX₂) g using 2
-        ext i j
-        rewrite [Matrix.submatrix_apply, eq_of_fn_sum_ne_inr hfX₂ i]
-        rfl
-      obtain ⟨j₁, y₁, hjy₁⟩ : ∃ j₁ : Fin (k + 3), ∃ y₁ : Y₁, g j₁ = ◩y₁
-      · have isTU := hA₂.zero_fromRows X₁ -- `0 ⊟ A₂` is TU
-        rw [Matrix.isTotallyUnimodular_iff] at isTU
-        rw [matrix2sumComposition_eq_fromCols] at hAfg
-        by_contra! hgY₁
-        apply hAfg
-        convert isTU (k + 3) f (fn_of_sum_ne_inl hgY₁) using 2
-        ext i j
-        rewrite [Matrix.submatrix_apply, eq_of_fn_sum_ne_inl hgY₁ j]
-        rfl
-      obtain ⟨j₂, y₂, hjy₂⟩ : ∃ j₂ : Fin (k + 3), ∃ y₂ : Y₂, g j₂ = ◪y₂
-      · have isTU := lemma6₁ hAx hAy -- `A₁ ⊟ D` is TU
-        rw [Matrix.isTotallyUnimodular_iff] at isTU
-        rw [matrix2sumComposition_eq_fromCols] at hAfg
-        by_contra! hgY₂
-        apply hAfg
-        convert isTU (k + 3) f (fn_of_sum_ne_inr hgY₂) using 2
-        ext i j
-        rewrite [Matrix.submatrix_apply, eq_of_fn_sum_ne_inr hgY₂ j]
-        rfl
-      obtain ⟨j₀, y₀, hjy₀, hAxy0⟩ : ∃ j₀ : Fin (k + 3), ∃ y₀ : Y₁, g j₀ = ◩y₀ ∧ A₁ x₁ y₀ ≠ 0
-      · by_contra! hgY₁ -- because the `i₁`th row cannot be all `0`s
-        apply hAfg
-        convert zero_in_signTypeCastRange
-        apply Matrix.det_eq_zero_of_row_eq_zero i₁
-        intro z
-        rw [matrix2sumComposition_eq_fromRows, Matrix.submatrix_apply, hix₁, Matrix.fromRows_apply_inl]
-        cases hgz : g z with
-        | inl => exact hgY₁ z _ hgz
-        | inr => simp
-      have hAxy1 : A₁ x₁ y₀ = 1 ∨ A₁ x₁ y₀ = -1
-      · obtain ⟨s, hs⟩ := hA₁.apply x₁ y₀
-        cases s with
-        | zero =>
-          exfalso
-          apply hAxy0
-          exact hs.symm
-        | pos =>
-          left
-          exact hs.symm
-        | neg =>
-          right
-          exact hs.symm
-      obtain ⟨_, _, -, -, impossible⟩ := corollary1 hAfg i₁ j₀ (by convert hAxy1 <;> simp [matrix2sumComposition, *])
-      apply impossible
-      rw [(matrix2sumComposition A₁ x A₂ y).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix,
-        hix₁, hjy₀, matrix2sumComposition_shortTableauPivot A₁ x A₂ y hAxy1]
-      apply ih _ hAy
-      have hAxy0' : (A₁ ⊟ ▬x) ◩x₁ y₀ ≠ 0 := hAxy0
-      convert hAx.shortTableauPivot hAxy0'
-      ext i j
-      cases i with
-      | inl =>
-        simp [Matrix.shortTableauPivot]
-      | inr =>
-        simp [Matrix.shortTableauPivot, Matrix.shortTableauPivotTheRow]
-        if hj : j = y₀ then
-          cases hAxy1 with
-          | inl h1 => simp [hj, h1]
-          | inr h9 => simp [hj, h9]
-        else
-          field_simp [hj]
-          ring
-
 lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
-    (hA₁ : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hA₂ : (▮y ◫ A₂).IsTotallyUnimodular) :
+    (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular) :
     (matrix2sumComposition A₁ x A₂ y).IsTotallyUnimodular := by
   rw [Matrix.isTotallyUnimodular_iff_forall_IsPreTU]
   intro k
-  induction k generalizing A₁ x A₂ y with
+  cases k with
   | zero => simp [Matrix.IsPreTU]
-  | succ _ ih => exact lemma12 ih hA₁ hA₂
+  | succ n => cases n with
+    | zero => exact lemma11₁ hAx hAy
+    | succ m => induction m generalizing A₁ x A₂ y with
+      | zero => exact lemma11₂ hAx hAy
+      | succ k ih =>
+        have hA₁ : A₁.IsTotallyUnimodular := hAx.comp_rows Sum.inl
+        have hA₂ : A₂.IsTotallyUnimodular := hAy.comp_cols Sum.inr
+        by_contra contr
+        obtain ⟨f, g, hAfg⟩ := exists_submatrix_of_not_isPreTU contr
+        wlog hf : f.Injective
+        · apply hAfg
+          convert zero_in_signTypeCastRange
+          exact (matrix2sumComposition A₁ x A₂ y).submatrix_det_zero_of_not_injective_left hf
+        wlog hg : g.Injective
+        · apply hAfg
+          convert zero_in_signTypeCastRange
+          exact (matrix2sumComposition A₁ x A₂ y).submatrix_det_zero_of_not_injective_right hg
+        -- now we show that all four blocks are part of the submatrix
+        obtain ⟨i₁, x₁, hix₁⟩ : ∃ i₁ : Fin (k + 3), ∃ x₁ : X₁, f i₁ = ◩x₁
+        · have isTU := lemma6₂ hAx hAy -- `D ◫ A₂` is TU
+          rw [Matrix.isTotallyUnimodular_iff] at isTU
+          rw [matrix2sumComposition_eq_fromRows] at hAfg
+          by_contra! hfX₁
+          apply hAfg
+          convert isTU (k + 3) (fn_of_sum_ne_inl hfX₁) g using 2
+          ext i j
+          rewrite [Matrix.submatrix_apply, eq_of_fn_sum_ne_inl hfX₁ i]
+          rfl
+        obtain ⟨i₂, x₂, hix₂⟩ : ∃ i₂ : Fin (k + 3), ∃ x₂ : X₂, f i₂ = ◪x₂
+        · have isTU := hA₁.fromCols_zero Y₂ -- `A₁ ◫ 0` is TU
+          rw [Matrix.isTotallyUnimodular_iff] at isTU
+          rw [matrix2sumComposition_eq_fromRows] at hAfg
+          by_contra! hfX₂
+          apply hAfg
+          convert isTU (k + 3) (fn_of_sum_ne_inr hfX₂) g using 2
+          ext i j
+          rewrite [Matrix.submatrix_apply, eq_of_fn_sum_ne_inr hfX₂ i]
+          rfl
+        obtain ⟨j₁, y₁, hjy₁⟩ : ∃ j₁ : Fin (k + 3), ∃ y₁ : Y₁, g j₁ = ◩y₁
+        · have isTU := hA₂.zero_fromRows X₁ -- `0 ⊟ A₂` is TU
+          rw [Matrix.isTotallyUnimodular_iff] at isTU
+          rw [matrix2sumComposition_eq_fromCols] at hAfg
+          by_contra! hgY₁
+          apply hAfg
+          convert isTU (k + 3) f (fn_of_sum_ne_inl hgY₁) using 2
+          ext i j
+          rewrite [Matrix.submatrix_apply, eq_of_fn_sum_ne_inl hgY₁ j]
+          rfl
+        obtain ⟨j₂, y₂, hjy₂⟩ : ∃ j₂ : Fin (k + 3), ∃ y₂ : Y₂, g j₂ = ◪y₂
+        · have isTU := lemma6₁ hAx hAy -- `A₁ ⊟ D` is TU
+          rw [Matrix.isTotallyUnimodular_iff] at isTU
+          rw [matrix2sumComposition_eq_fromCols] at hAfg
+          by_contra! hgY₂
+          apply hAfg
+          convert isTU (k + 3) f (fn_of_sum_ne_inr hgY₂) using 2
+          ext i j
+          rewrite [Matrix.submatrix_apply, eq_of_fn_sum_ne_inr hgY₂ j]
+          rfl
+        obtain ⟨j₀, y₀, hjy₀, hAxy0⟩ : ∃ j₀ : Fin (k + 3), ∃ y₀ : Y₁, g j₀ = ◩y₀ ∧ A₁ x₁ y₀ ≠ 0
+        · by_contra! hgY₁ -- because the `i₁`th row cannot be all `0`s
+          apply hAfg
+          convert zero_in_signTypeCastRange
+          apply Matrix.det_eq_zero_of_row_eq_zero i₁
+          intro z
+          rw [matrix2sumComposition_eq_fromRows, Matrix.submatrix_apply, hix₁, Matrix.fromRows_apply_inl]
+          cases hgz : g z with
+          | inl => exact hgY₁ z _ hgz
+          | inr => simp
+        have hAxy1 : A₁ x₁ y₀ = 1 ∨ A₁ x₁ y₀ = -1
+        · obtain ⟨s, hs⟩ := hA₁.apply x₁ y₀
+          cases s with
+          | zero =>
+            exfalso
+            apply hAxy0
+            exact hs.symm
+          | pos =>
+            left
+            exact hs.symm
+          | neg =>
+            right
+            exact hs.symm
+        obtain ⟨_, _, -, -, impossible⟩ := corollary1 hAfg i₁ j₀ (by convert hAxy1 <;> simp [matrix2sumComposition, *])
+        apply impossible
+        rw [(matrix2sumComposition A₁ x A₂ y).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix,
+          hix₁, hjy₀, matrix2sumComposition_shortTableauPivot A₁ x A₂ y hAxy1]
+        apply ih _ hAy
+        have hAxy0' : (A₁ ⊟ ▬x) ◩x₁ y₀ ≠ 0 := hAxy0
+        convert hAx.shortTableauPivot hAxy0'
+        ext i j
+        cases i with
+        | inl =>
+          simp [Matrix.shortTableauPivot]
+        | inr =>
+          simp [Matrix.shortTableauPivot, Matrix.shortTableauPivotOuterRow]
+          if hj : j = y₀ then
+            cases hAxy1 with
+            | inl h1 => simp [hj, h1]
+            | inr h9 => simp [hj, h9]
+          else
+            field_simp [hj]
+            ring
 
 lemma standardRepr2sumComposition_B {α : Type} [DecidableEq α] {S₁ S₂ : StandardRepr α Z2} {a : α}
     (ha : S₁.X ∩ S₂.Y = {a}) (hXY : S₂.X ⫗ S₁.Y) :
