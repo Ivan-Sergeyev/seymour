@@ -6,13 +6,23 @@ variable {α : Type} [DecidableEq α]
 /-- `Matrix`-level 3-sum for matroids defined by their standard representation matrices; does not check legitimacy. -/
 noncomputable abbrev matrix3sumComposition {β : Type} [CommRing β] {X₁ Y₁ X₂ Y₂ : Set α}
     (A₁ : Matrix X₁ (Y₁ ⊕ Fin 2) β) (A₂ : Matrix (Fin 2 ⊕ X₂) Y₂ β)
-    (z₁ : Y₁ → β) (z₂ : X₂ → β) (D : Matrix (Fin 2) (Fin 2) β) (D₁ : Matrix (Fin 2) Y₁ β) (D₂ : Matrix X₂ (Fin 2) β) :
-    Matrix ((X₁ ⊕ Unit) ⊕ (Fin 2 ⊕ X₂)) ((Y₁ ⊕ Fin 2) ⊕ (Unit ⊕ Y₂)) β :=
+    (D₀ : Matrix (Fin 2) (Fin 2) β) (D₁ : Matrix (Fin 2) Y₁ β) (D₂ : Matrix X₂ (Fin 2) β) :
+    Matrix (X₁ ⊕ (Fin 2 ⊕ X₂)) ((Y₁ ⊕ Fin 2) ⊕ Y₂) β :=
   -- Unfortunately `Ring.inverse` is `noncomputable` and upgrading `β` to `Field` does not help.
-  let D₁₂ : Matrix X₂ Y₁ β := D₂ * D⁻¹ * D₁
-  Matrix.fromBlocks
-    (Matrix.fromRows A₁ (Matrix.replicateRow Unit (Sum.elim z₁ ![1, 1]))) 0
-    (Matrix.fromBlocks D₁ D D₁₂ D₂) (Matrix.fromCols (Matrix.replicateCol Unit (Sum.elim ![1, 1] z₂)) A₂)
+  let D₁₂ : Matrix X₂ Y₁ β := D₂ * D₀⁻¹ * D₁
+  Matrix.fromBlocks A₁ 0 (Matrix.fromBlocks D₁ D₀ D₁₂ D₂) A₂
+
+
+-- /-- `Matrix`-level 3-sum for matroids defined by their standard representation matrices; does not check legitimacy. -/
+-- noncomputable abbrev matrix3sumComposition {β : Type} [CommRing β] {X₁ Y₁ X₂ Y₂ : Set α}
+--     (A₁ : Matrix X₁ (Y₁ ⊕ Fin 2) β) (A₂ : Matrix (Fin 2 ⊕ X₂) Y₂ β)
+--     (z₁ : Y₁ → β) (z₂ : X₂ → β) (D : Matrix (Fin 2) (Fin 2) β) (D₁ : Matrix (Fin 2) Y₁ β) (D₂ : Matrix X₂ (Fin 2) β) :
+--     Matrix ((X₁ ⊕ Unit) ⊕ (Fin 2 ⊕ X₂)) ((Y₁ ⊕ Fin 2) ⊕ (Unit ⊕ Y₂)) β :=
+--   -- Unfortunately `Ring.inverse` is `noncomputable` and upgrading `β` to `Field` does not help.
+--   let D₁₂ : Matrix X₂ Y₁ β := D₂ * D⁻¹ * D₁
+--   Matrix.fromBlocks
+--     (Matrix.fromRows A₁ (Matrix.replicateRow Unit (Sum.elim z₁ ![1, 1]))) 0
+--     (Matrix.fromBlocks D₁ D D₁₂ D₂) (Matrix.fromCols (Matrix.replicateCol Unit (Sum.elim ![1, 1] z₂)) A₂)
 
 /-- `StandardRepr`-level 3-sum of two matroids.
     The second part checks legitimacy (invertibility of a certain 2x2 submatrix and
@@ -37,18 +47,18 @@ noncomputable def standardRepr3sumComposition {S₁ S₂ : StandardRepr α Z2} {
   have y₃inY₁ : y₃ ∈ S₁.Y := hyyy₁ (by simp)
   have y₃inY₂ : y₃ ∈ S₂.Y := hyyy₂ (by simp)
   -- The actual definition starts here:
-  let A₁ : Matrix (S₁.X \ {x₁, x₂, x₃}).Elem ((S₁.Y \ {y₁, y₂, y₃}).Elem ⊕ Fin 2) Z2 := -- the top left submatrix
-    Matrix.of (fun i j => S₁.B
-        ⟨i.val, Set.mem_of_mem_diff i.property⟩
-        (j.casesOn (fun j' => ⟨j'.val, Set.mem_of_mem_diff j'.property⟩) ![⟨y₁, y₁inY₁⟩, ⟨y₂, y₂inY₁⟩]))
-  let A₂ : Matrix (Fin 2 ⊕ (S₂.X \ {x₁, x₂, x₃}).Elem) (S₂.Y \ {y₁, y₂, y₃}).Elem Z2 := -- the bottom right submatrix
-    Matrix.of (fun i j => S₂.B
-        (i.casesOn ![⟨x₂, x₂inX₂⟩, ⟨x₃, x₃inX₂⟩] (fun i' => ⟨i'.val, Set.mem_of_mem_diff i'.property⟩))
-        ⟨j.val, Set.mem_of_mem_diff j.property⟩)
-  let z₁ : (S₁.Y \ {y₁, y₂, y₃}).Elem → Z2 := -- the middle left "row vector"
-    (fun j => S₁.B ⟨x₁, x₁inX₁⟩ ⟨j.val, Set.mem_of_mem_diff j.property⟩)
-  let z₂ : (S₂.X \ {x₁, x₂, x₃}).Elem → Z2 := -- the bottom middle "column vector"
-    (fun i => S₂.B ⟨i.val, Set.mem_of_mem_diff i.property⟩ ⟨y₃, y₃inY₂⟩)
+  let A₁ₗ : Matrix (S₁.X \ {x₂, x₃}).Elem (S₁.Y \ {y₁, y₂, y₃}).Elem Z2 :=
+    Matrix.of (fun i j => S₁.B ⟨i.val, Set.mem_of_mem_diff i.property⟩ ⟨j.val, Set.mem_of_mem_diff j.property⟩)
+  let A₁ᵣ : Matrix (S₁.X \ {x₂, x₃}).Elem (Fin 2) Z2 :=
+    Matrix.of (fun i j => S₁.B ⟨i, Set.mem_of_mem_diff i.property⟩ (![⟨y₁, y₁inY₁⟩, ⟨y₂, y₂inY₁⟩] j))
+  let A₁ : Matrix (S₁.X \ {x₂, x₃}).Elem ((S₁.Y \ {y₁, y₂, y₃}).Elem ⊕ Fin 2) Z2 := -- the top left submatrix
+    Matrix.fromCols A₁ₗ A₁ᵣ
+  let A₂ₗ : Matrix (Fin 2) (S₂.Y \ {y₁, y₂}).Elem Z2 :=
+    Matrix.of (fun i j => S₂.B (![⟨x₂, x₂inX₂⟩, ⟨x₃, x₃inX₂⟩] i) ⟨j.val, Set.mem_of_mem_diff j.property⟩)
+  let A₂ᵣ : Matrix (S₂.X \ {x₁, x₂, x₃}).Elem (S₂.Y \ {y₁, y₂}).Elem Z2 :=
+    Matrix.of (fun i j => S₂.B ⟨i.val, Set.mem_of_mem_diff i.property⟩ ⟨j.val, Set.mem_of_mem_diff j.property⟩)
+  let A₂ : Matrix (Fin 2 ⊕ (S₂.X \ {x₁, x₂, x₃}).Elem) (S₂.Y \ {y₁, y₂}).Elem Z2 := -- the bottom right submatrix
+    Matrix.fromRows A₂ₗ A₂ᵣ
   let D_₁ : Matrix (Fin 2) (Fin 2) Z2 := -- the bottom middle 2x2 submatrix
     Matrix.of (fun i j => S₁.B (![⟨x₂, x₂inX₁⟩, ⟨x₃, x₃inX₁⟩] i) (![⟨y₁, y₁inY₁⟩, ⟨y₂, y₂inY₁⟩] j))
   let D_₂ : Matrix (Fin 2) (Fin 2) Z2 := -- the middle left 2x2 submatrix
@@ -59,27 +69,31 @@ noncomputable def standardRepr3sumComposition {S₁ S₂ : StandardRepr α Z2} {
     Matrix.of (fun i j => S₂.B ⟨i.val, Set.mem_of_mem_diff i.property⟩ (![⟨y₁, y₁inY₂⟩, ⟨y₂, y₂inY₂⟩] j))
   ⟨
     ⟨
-      (S₁.X \ {x₁, x₂, x₃}) ∪ S₂.X,
-      S₁.Y ∪ (S₂.Y \ {y₁, y₂, y₃}),
+      (S₁.X \ {x₂, x₃}) ∪ (S₂.X \ {x₁}),
+      (S₁.Y \ {y₃}) ∪ (S₂.Y \ {y₁, y₂}),
       by
         rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
-        exact
-          ⟨⟨S₁.hXY.disjoint_sdiff_left, hYX.symm⟩, ⟨hXY.disjoint_sdiff_right.disjoint_sdiff_left, S₂.hXY.disjoint_sdiff_right⟩⟩,
+        exact ⟨
+          ⟨S₁.hXY.disjoint_sdiff_left.disjoint_sdiff_right, hYX.symm.disjoint_sdiff_left.disjoint_sdiff_right⟩,
+          ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right, S₂.hXY.disjoint_sdiff_left.disjoint_sdiff_right⟩
+        ⟩,
       Matrix.of (fun i j =>
-        matrix3sumComposition A₁ A₂ z₁ z₂ D_₁ D₁ D₂ (
-          if hi₁ : i.val ∈ S₁.X \ {x₁, x₂, x₃} then ◩◩⟨i, hi₁⟩ else
+        matrix3sumComposition A₁ A₂ D_₁ D₁ D₂ (
+          if hi₁ : i.val ∈ S₁.X \ {x₂, x₃} then ◩⟨i, hi₁⟩ else
           if hi₂ : i.val ∈ S₂.X \ {x₁, x₂, x₃} then ◪◪⟨i, hi₂⟩ else
-          if hx₁ : i.val = x₁ then ◩◪() else
           if hx₂ : i.val = x₂ then ◪◩0 else
           if hx₃ : i.val = x₃ then ◪◩1 else
-          (i.property.elim hi₁ (by simp_all)).elim
+          False.elim (by aesop) -- todo: refactor - there's probably an easier way to prove this
+          -- sorry -- use instead of aesop for faster compilation
+          -- old version: (i.property.elim hi₁ (by simp_all)).elim
         ) (
           if hj₁ : j.val ∈ S₁.Y \ {y₁, y₂, y₃} then ◩◩⟨j, hj₁⟩ else
-          if hj₂ : j.val ∈ S₂.Y \ {y₁, y₂, y₃} then ◪◪⟨j, hj₂⟩ else
+          if hj₂ : j.val ∈ S₂.Y \ {y₁, y₂} then ◪⟨j, hj₂⟩ else
           if hy₁ : j.val = y₁ then ◩◪0 else
           if hy₂ : j.val = y₂ then ◩◪1 else
-          if hy₃ : j.val = y₃ then ◪◩() else
-          (j.property.elim (by simp_all) hj₂).elim
+          False.elim (by aesop) -- todo: refactor - there's probably an easier way to prove this
+          -- sorry -- use instead of aesop for faster compilation
+          -- old version: (j.property.elim (by simp_all) hj₂).elim
         )
       ),
       inferInstance,
@@ -118,12 +132,12 @@ structure Matroid.Is3sumOf (M : Matroid α) (M₁ M₂ : Matroid α) where
 
 lemma standardRepr3sumComposition_X {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ y₂ y₃ : α}
     (hXX : S₁.X ∩ S₂.X = {x₁, x₂, x₃}) (hYY : S₁.Y ∩ S₂.Y = {y₁, y₂, y₃}) (hXY : S₁.X ⫗ S₂.Y) (hYX : S₁.Y ⫗ S₂.X) :
-    (standardRepr3sumComposition hXX hYY hXY hYX).fst.X = (S₁.X \ {x₁, x₂, x₃}) ∪ S₂.X :=
+    (standardRepr3sumComposition hXX hYY hXY hYX).fst.X = (S₁.X \ {x₂, x₃}) ∪ (S₂.X \ {x₁}) :=
   rfl
 
 lemma standardRepr3sumComposition_Y {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ y₂ y₃ : α}
     (hXX : S₁.X ∩ S₂.X = {x₁, x₂, x₃}) (hYY : S₁.Y ∩ S₂.Y = {y₁, y₂, y₃}) (hXY : S₁.X ⫗ S₂.Y) (hYX : S₁.Y ⫗ S₂.X) :
-    (standardRepr3sumComposition hXX hYY hXY hYX).fst.Y = S₁.Y ∪ (S₂.Y \ {y₁, y₂, y₃}) :=
+    (standardRepr3sumComposition hXX hYY hXY hYX).fst.Y = (S₁.Y \ {y₃}) ∪ (S₂.Y \ {y₁, y₂}) :=
   rfl
 
 local macro "finish3B" : tactic => `(tactic| simp_all [standardRepr3sumComposition, Equiv.sumAssoc, Matrix.toMatrixUnionUnion])
@@ -137,6 +151,7 @@ lemma standardRepr3sumComposition_B {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ 
     have hyyy₁ : {y₁, y₂, y₃} ⊆ S₁.Y := hYY.symm.subset.trans Set.inter_subset_left
     have hyyy₂ : {y₁, y₂, y₃} ⊆ S₂.Y := hYY.symm.subset.trans Set.inter_subset_right
     have x₁inX₁ : x₁ ∈ S₁.X := hxxx₁ (Set.mem_insert x₁ {x₂, x₃})
+    have x₁inX₂ : x₁ ∈ S₂.X := hxxx₂ (Set.mem_insert x₁ {x₂, x₃})
     have x₂inX₁ : x₂ ∈ S₁.X := hxxx₁ (Set.insert_comm x₁ x₂ {x₃} ▸ Set.mem_insert x₂ {x₁, x₃})
     have x₂inX₂ : x₂ ∈ S₂.X := hxxx₂ (Set.insert_comm x₁ x₂ {x₃} ▸ Set.mem_insert x₂ {x₁, x₃})
     have x₃inX₁ : x₃ ∈ S₁.X := hxxx₁ (by simp)
@@ -145,121 +160,125 @@ lemma standardRepr3sumComposition_B {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ 
     have y₁inY₂ : y₁ ∈ S₂.Y := hyyy₂ (Set.mem_insert y₁ {y₂, y₃})
     have y₂inY₁ : y₂ ∈ S₁.Y := hyyy₁ (Set.insert_comm y₁ y₂ {y₃} ▸ Set.mem_insert y₂ {y₁, y₃})
     have y₂inY₂ : y₂ ∈ S₂.Y := hyyy₂ (Set.insert_comm y₁ y₂ {y₃} ▸ Set.mem_insert y₂ {y₁, y₃})
+    have y₃inY₁ : y₃ ∈ S₁.Y := hyyy₁ (by simp)
     have y₃inY₂ : y₃ ∈ S₂.Y := hyyy₂ (by simp)
-    let A₁ : Matrix (S₁.X \ {x₁, x₂, x₃}).Elem ((S₁.Y \ {y₁, y₂, y₃}).Elem ⊕ Fin 2) Z2 := -- the top left submatrix
-      Matrix.of (fun i j => S₁.B
-          ⟨i.val, Set.mem_of_mem_diff i.property⟩
-          (j.casesOn (fun j' => ⟨j'.val, Set.mem_of_mem_diff j'.property⟩) ![⟨y₁, y₁inY₁⟩, ⟨y₂, y₂inY₁⟩]))
-    let A₂ : Matrix (Fin 2 ⊕ (S₂.X \ {x₁, x₂, x₃}).Elem) (S₂.Y \ {y₁, y₂, y₃}).Elem Z2 := -- the bottom right submatrix
-      Matrix.of (fun i j => S₂.B
-          (i.casesOn ![⟨x₂, x₂inX₂⟩, ⟨x₃, x₃inX₂⟩] (fun i' => ⟨i'.val, Set.mem_of_mem_diff i'.property⟩))
-          ⟨j.val, Set.mem_of_mem_diff j.property⟩)
-    let z₁ : (S₁.Y \ {y₁, y₂, y₃}).Elem → Z2 := -- the middle left "row vector"
-      (fun j => S₁.B ⟨x₁, x₁inX₁⟩ ⟨j.val, Set.mem_of_mem_diff j.property⟩)
-    let z₂ : (S₂.X \ {x₁, x₂, x₃}).Elem → Z2 := -- the bottom middle "column vector"
-      (fun i => S₂.B ⟨i.val, Set.mem_of_mem_diff i.property⟩ ⟨y₃, y₃inY₂⟩)
+    -- The actual definition starts here:
+    let A₁ₗ : Matrix (S₁.X \ {x₂, x₃}).Elem (S₁.Y \ {y₁, y₂, y₃}).Elem Z2 :=
+      Matrix.of (fun i j => S₁.B ⟨i.val, Set.mem_of_mem_diff i.property⟩ ⟨j.val, Set.mem_of_mem_diff j.property⟩)
+    let A₁ᵣ : Matrix (S₁.X \ {x₂, x₃}).Elem (Fin 2) Z2 :=
+      Matrix.of (fun i j => S₁.B ⟨i, Set.mem_of_mem_diff i.property⟩ (![⟨y₁, y₁inY₁⟩, ⟨y₂, y₂inY₁⟩] j))
+    let A₁ : Matrix (S₁.X \ {x₂, x₃}).Elem ((S₁.Y \ {y₁, y₂, y₃}).Elem ⊕ Fin 2) Z2 := -- the top left submatrix
+      Matrix.fromCols A₁ₗ A₁ᵣ
+    let A₂ₗ : Matrix (Fin 2) (S₂.Y \ {y₁, y₂}).Elem Z2 :=
+      Matrix.of (fun i j => S₂.B (![⟨x₂, x₂inX₂⟩, ⟨x₃, x₃inX₂⟩] i) ⟨j.val, Set.mem_of_mem_diff j.property⟩)
+    let A₂ᵣ : Matrix (S₂.X \ {x₁, x₂, x₃}).Elem (S₂.Y \ {y₁, y₂}).Elem Z2 :=
+      Matrix.of (fun i j => S₂.B ⟨i.val, Set.mem_of_mem_diff i.property⟩ ⟨j.val, Set.mem_of_mem_diff j.property⟩)
+    let A₂ : Matrix (Fin 2 ⊕ (S₂.X \ {x₁, x₂, x₃}).Elem) (S₂.Y \ {y₁, y₂}).Elem Z2 := -- the bottom right submatrix
+      Matrix.fromRows A₂ₗ A₂ᵣ
     let D_₁ : Matrix (Fin 2) (Fin 2) Z2 := -- the bottom middle 2x2 submatrix
       Matrix.of (fun i j => S₁.B (![⟨x₂, x₂inX₁⟩, ⟨x₃, x₃inX₁⟩] i) (![⟨y₁, y₁inY₁⟩, ⟨y₂, y₂inY₁⟩] j))
+    let D_₂ : Matrix (Fin 2) (Fin 2) Z2 := -- the middle left 2x2 submatrix
+      Matrix.of (fun i j => S₂.B (![⟨x₂, x₂inX₂⟩, ⟨x₃, x₃inX₂⟩] i) (![⟨y₁, y₁inY₂⟩, ⟨y₂, y₂inY₂⟩] j))
     let D₁ : Matrix (Fin 2) (S₁.Y \ {y₁, y₂, y₃}).Elem Z2 := -- the bottom left submatrix
       Matrix.of (fun i j => S₁.B (![⟨x₂, x₂inX₁⟩, ⟨x₃, x₃inX₁⟩] i) ⟨j.val, Set.mem_of_mem_diff j.property⟩)
     let D₂ : Matrix (S₂.X \ {x₁, x₂, x₃}).Elem (Fin 2) Z2 := -- the bottom left submatrix
       Matrix.of (fun i j => S₂.B ⟨i.val, Set.mem_of_mem_diff i.property⟩ (![⟨y₁, y₁inY₂⟩, ⟨y₂, y₂inY₂⟩] j))
-    ((matrix3sumComposition A₁ A₂ z₁ z₂ D_₁ D₁ D₂).submatrix
-      ((Equiv.sumAssoc (S₁.X \ {x₁, x₂, x₃}).Elem Unit (Fin 2 ⊕ (S₂.X \ {x₁, x₂, x₃}).Elem)).invFun ∘
-        Sum.map id (fun i : S₂.X =>
-          if hx₁ : i.val = x₁ then ◩() else
-          if hx₂ : i.val = x₂ then ◪◩0 else
-          if hx₃ : i.val = x₃ then ◪◩1 else
-          ◪◪⟨i, by simp_all⟩))
-      ((Equiv.sumAssoc ((S₁.Y \ {y₁, y₂, y₃}).Elem ⊕ Fin 2) Unit (S₂.Y \ {y₁, y₂, y₃}).Elem).toFun ∘
-        Sum.map (fun j : S₁.Y =>
-          if hy₁ : j.val = y₁ then ◩◪0 else
-          if hy₂ : j.val = y₂ then ◩◪1 else
-          if hy₃ : j.val = y₃ then ◪() else
-          ◩◩⟨j, by simp_all⟩) id)
-      ).toMatrixUnionUnion
-    := by
-  -- This proof is not worth optimizing because we might be throwing it away soon.
-  have hX := standardRepr3sumComposition_X hXX hYY hXY hYX
-  have hY := standardRepr3sumComposition_Y hXX hYY hXY hYX
-  ext i j
-  if hi : i.val ∈ S₂.X then
-    if hix₁ : i = x₁ then
-      if hj : j.val ∈ S₁.Y then
-        if hjy₁ : j = y₁ then
-          finish3B
-        else if hjy₂ : j = y₂ then
-          finish3B
-        else if hjy₃ : j = y₃ then
-          finish3B
-        else
-          finish3B
-      else
-        have hjY₂ : j.val ∈ S₂.Y \ {y₁, y₂, y₃}
-        · exact in_of_in_union_of_ni_left j.property hj
-        finish3B
-    else if hix₂ : i = x₂ then
-      if hj : j.val ∈ S₁.Y then
-        if hjy₁ : j = y₁ then
-          finish3B
-        else if hjy₂ : j = y₂ then
-          finish3B
-        else if hjy₃ : j = y₃ then
-          finish3B
-        else
-          finish3B
-      else
-        have hjY₂ : j.val ∈ S₂.Y \ {y₁, y₂, y₃}
-        · exact in_of_in_union_of_ni_left j.property hj
-        finish3B
-    else if hix₃ : i = x₃ then
-      if hj : j.val ∈ S₁.Y then
-        if hjy₁ : j = y₁ then
-          finish3B
-        else if hjy₂ : j = y₂ then
-          finish3B
-        else if hjy₃ : j = y₃ then
-          finish3B
-        else
-          finish3B
-      else
-        have hjY₂ : j.val ∈ S₂.Y \ {y₁, y₂, y₃}
-        · exact in_of_in_union_of_ni_left j.property hj
-        finish3B
-    else
-      have hiX₂ : i.val ∈ S₂.X \ {x₁, x₂, x₃}
-      · simp [*]
-      have hiX₁ : i.val ∉ S₁.X
-      · exact ni_of_in_wo_of_inter_right hXX hiX₂
-      if hj : j.val ∈ S₁.Y then
-        if hjy₁ : j = y₁ then
-          finish3B
-        else if hjy₂ : j = y₂ then
-          finish3B
-        else if hjy₃ : j = y₃ then
-          finish3B
-        else
-          finish3B
-      else
-        have hjY₂ : j.val ∈ S₂.Y \ {y₁, y₂, y₃}
-        · exact in_of_in_union_of_ni_left j.property hj
-        finish3B
-  else
-    have hiX₁ : i.val ∈ S₁.X \ {x₁, x₂, x₃}
-    · exact in_of_in_union_of_ni_right i.property hi
-    if hj : j.val ∈ S₁.Y then
-      if hjy₁ : j = y₁ then
-        finish3B
-      else if hjy₂ : j = y₂ then
-        finish3B
-      else if hjy₃ : j = y₃ then
-        finish3B
-      else
-        finish3B
-    else
-      have hjY₂ : j.val ∈ S₂.Y \ {y₁, y₂, y₃}
-      · exact in_of_in_union_of_ni_left j.property hj
-      finish3B
+    ((matrix3sumComposition A₁ A₂ D_₁ D₁ D₂).submatrix
+      (Sum.map id (fun i : (S₂.X \ {x₁}).Elem =>
+          if hx₂ : i.val = x₂ then ◩0 else
+          if hx₃ : i.val = x₃ then ◩1 else
+          ◪⟨i, by aesop⟩ -- todo: can be optimized
+          )
+      )
+      (Sum.map (fun j : (S₁.Y \ {y₃}).Elem =>
+          if hy₁ : j.val = y₁ then ◪0 else
+          if hy₂ : j.val = y₂ then ◪1 else
+          ◩⟨j, by aesop⟩) -- todo: can be optimized
+          id
+      )
+    ).toMatrixUnionUnion
+    := by sorry
+  -- -- This proof is not worth optimizing because we might be throwing it away soon.
+  -- have hX := standardRepr3sumComposition_X hXX hYY hXY hYX
+  -- have hY := standardRepr3sumComposition_Y hXX hYY hXY hYX
+  -- ext i j
+  -- if hi : i.val ∈ S₂.X then
+  --   if hix₁ : i = x₁ then
+  --     if hj : j.val ∈ S₁.Y then
+  --       if hjy₁ : j = y₁ then
+  --         finish3B
+  --       else if hjy₂ : j = y₂ then
+  --         finish3B
+  --       else if hjy₃ : j = y₃ then
+  --         finish3B
+  --       else
+  --         finish3B
+  --     else
+  --       have hjY₂ : j.val ∈ S₂.Y \ {y₁, y₂, y₃}
+  --       · exact in_of_in_union_of_ni_left j.property hj
+  --       finish3B
+  --   else if hix₂ : i = x₂ then
+  --     if hj : j.val ∈ S₁.Y then
+  --       if hjy₁ : j = y₁ then
+  --         finish3B
+  --       else if hjy₂ : j = y₂ then
+  --         finish3B
+  --       else if hjy₃ : j = y₃ then
+  --         finish3B
+  --       else
+  --         finish3B
+  --     else
+  --       have hjY₂ : j.val ∈ S₂.Y \ {y₁, y₂, y₃}
+  --       · exact in_of_in_union_of_ni_left j.property hj
+  --       finish3B
+  --   else if hix₃ : i = x₃ then
+  --     if hj : j.val ∈ S₁.Y then
+  --       if hjy₁ : j = y₁ then
+  --         finish3B
+  --       else if hjy₂ : j = y₂ then
+  --         finish3B
+  --       else if hjy₃ : j = y₃ then
+  --         finish3B
+  --       else
+  --         finish3B
+  --     else
+  --       have hjY₂ : j.val ∈ S₂.Y \ {y₁, y₂, y₃}
+  --       · exact in_of_in_union_of_ni_left j.property hj
+  --       finish3B
+  --   else
+  --     have hiX₂ : i.val ∈ S₂.X \ {x₁, x₂, x₃}
+  --     · simp [*]
+  --     have hiX₁ : i.val ∉ S₁.X
+  --     · exact ni_of_in_wo_of_inter_right hXX hiX₂
+  --     if hj : j.val ∈ S₁.Y then
+  --       if hjy₁ : j = y₁ then
+  --         finish3B
+  --       else if hjy₂ : j = y₂ then
+  --         finish3B
+  --       else if hjy₃ : j = y₃ then
+  --         finish3B
+  --       else
+  --         finish3B
+  --     else
+  --       have hjY₂ : j.val ∈ S₂.Y \ {y₁, y₂, y₃}
+  --       · exact in_of_in_union_of_ni_left j.property hj
+  --       finish3B
+  -- else
+  --   have hiX₁ : i.val ∈ S₁.X \ {x₁, x₂, x₃}
+  --   · exact in_of_in_union_of_ni_right i.property hi
+  --   if hj : j.val ∈ S₁.Y then
+  --     if hjy₁ : j = y₁ then
+  --       finish3B
+  --     else if hjy₂ : j = y₂ then
+  --       finish3B
+  --     else if hjy₃ : j = y₃ then
+  --       finish3B
+  --     else
+  --       finish3B
+  --   else
+  --     have hjY₂ : j.val ∈ S₂.Y \ {y₁, y₂, y₃}
+  --     · exact in_of_in_union_of_ni_left j.property hj
+  --     finish3B
 
 instance Matroid.Is3sumOf.finS {M M₁ M₂ : Matroid α} (hM : M.Is3sumOf M₁ M₂) : Finite hM.S.X := by
   obtain ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, rfl, _⟩ := hM
@@ -273,3 +292,33 @@ theorem Matroid.Is3sumOf.isRegular {M M₁ M₂ : Matroid α}
     M.IsRegular := by
   have := hM.finS
   sorry
+
+section AuxiliaryLemmas
+
+-- lemma 14 in the write-up
+lemma Matrix.Z2_2x2_nonsingular_form (A : Matrix (Fin 2) (Fin 2) Z2) (hA : IsUnit A) :
+    A = 1 ∨ A = !![1, 1; 0, 1] := by
+  sorry
+
+def Matrix.IsSigningOf {X Y : Type} (A : Matrix X Y ℚ) {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
+  ∀ i j, |A i j| = (U i j).val
+
+-- lemma 15 in the write-up
+-- todo: make constructive (definition with explicit formula?)
+lemma Matrix.toCanonicalSigning_3x3₁ (A : Matrix (Fin 3) (Fin 3) ℚ) (hA : A.IsSigningOf (!![1, 1, 0; 1, 0, 1; 0, 1, 1] : Matrix (Fin 3) (Fin 3) Z2)) :
+    ∃ x : Fin 3 → ℚ, ∃ y : Fin 3 → ℚ,
+    ∀ i j, A i j * x i * y j = !![1, 1, 0; 1, 0, 1; 0, -1, 1] i j := by
+  sorry
+
+-- lemma 16 in the write-up
+-- todo: make constructive (definition with explicit formula?)
+lemma Matrix.toCanonicalSigning_3x3₂ (A : Matrix (Fin 3) (Fin 3) ℚ) (hA : A.IsSigningOf (!![1, 1, 0; 1, 1, 1; 0, 1, 1] : Matrix (Fin 3) (Fin 3) Z2)) :
+    ∃ x : Fin 3 → ℚ, ∃ y : Fin 3 → ℚ,
+    ∀ i j, A i j * x i * y j = !![1, 1, 0; 1, 1, 1; 0, 1, 1] i j := by
+  sorry
+
+-- lemma Matrix.toCanonicalSigning_A₁ {β : Type} [CommRing β] {X₁ Y₁ X₂ Y₂ : Set α}
+--     (A₁ : Matrix X₁ (Y₁ ⊕ Fin 2) β) (A₂ : Matrix (Fin 2 ⊕ X₂) Y₂ β)
+--     (z₁ : Y₁ → β) (z₂ : X₂ → β) (D : Matrix (Fin 2) (Fin 2) β) (D₁ : Matrix (Fin 2) Y₁ β) (D₂ : Matrix X₂ (Fin 2) β) :
+
+end AuxiliaryLemmas
