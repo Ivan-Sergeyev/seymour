@@ -197,9 +197,4 @@ The guideline below is written primarily to assist you in reading the code.
 - If you have a standard representation matrix and need a full representation matrix, use `Matrix.prependId` to put the identity matrix on the left of the standard representation matrix.
 - We do not write a space after `←` in the `rw` syntax.
 - We do not write `↦` as this syntax does not work everywhere. Write `=>` instead.
-- Ordering of cases when eliminating `SignType` is: zero, pos, neg.
-
-### TODO
-
-- We want to write `_subset_` not `_sub_` when referring to the `⊆` relation in the name of constants.
-- We want to write `_ssubset_` not `_ss_` when referring to the `⊂` relation in the name of constants.
+- Ordering of cases when eliminating `SignType` is: first `zero` (0), then `pos` (1), then `neg` (-1).

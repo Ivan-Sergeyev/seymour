@@ -268,8 +268,7 @@ lemma empty_symmDiff_eq (X : Set α) : symmDiff ∅ X = X := by
   rw [symmDiff_eq_alt, Set.empty_union, Set.empty_inter, Set.diff_empty]
 
 lemma symmDiff_subset_ground_right {X Y E : Set α} (hE : symmDiff X Y ⊆ E) (hX : X ⊆ E) : Y ⊆ E := by
-  rw [symmDiff_eq_alt, Set.diff_subset_iff, Set.union_eq_self_of_subset_left (inter_subset_left hX),
-    Set.union_subset_iff] at hE
+  rw [symmDiff_eq_alt, Set.diff_subset_iff, Set.union_eq_self_of_subset_left (inter_subset_left hX), Set.union_subset_iff] at hE
   exact hE.right
 
 lemma symmDiff_subset_ground_left {X Y E : Set α} (hE : symmDiff X Y ⊆ E) (hX : Y ⊆ E) : X ⊆ E :=
