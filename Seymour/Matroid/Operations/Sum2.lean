@@ -72,7 +72,7 @@ private lemma Matrix.IsTotallyUnimodular.aux190 {α : Type} [DecidableEq α] {X�
   intro k f g hf hg
   have almost := hAx.duplicate_last_row k f g hf hg
   if last_row : ∃ i : Fin k, f i = ◪() then
-    apply in_signTypeCastRange_of_neg_one_mul_self
+    apply in_signTypeCastRange_of_neg_one_mul
     convert almost
     obtain ⟨i, hi⟩ := last_row
     have flipped : (A₁ ⊟ ▬x ⊟ ▬(-x)) = (A₁ ⊟ ▬x ⊟ ▬x).updateRow ◪() (-x)
@@ -188,25 +188,21 @@ private lemma lemma11₁ {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matr
     | inl j₁ => exact in_signTypeCastRange_mul_in_signTypeCastRange (hAy.apply i₂ ◩()) (hAx.apply ◪() j₁)
     | inr j₂ => exact hA₂.apply i₂ j₂
 
-private lemma lemma11₂_auxl {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ}
-    {y : X₂ → ℚ} {n : ℕ} {f : Fin n → ↑X₁ ⊕ ↑X₂} {g : Fin n → ↑Y₁ ⊕ ↑Y₂}
-    (hf : ∀ a : Fin n, (f a).isLeft) (hg : ∀ a : Fin n, (g a).isLeft) :
-    (matrix2sumComposition A₁ x A₂ y).submatrix f g =
-      A₁.submatrix ((f _).getLeft <| hf ·) ((g _).getLeft <| hg ·) := by
-  ext a b
-  have ⟨ac, hac⟩ := Sum.isLeft_iff.mp (hf a)
-  have ⟨bc, hbc⟩ := Sum.isLeft_iff.mp (hg b)
-  simp_rw [Matrix.submatrix_apply, hac, hbc, Matrix.fromBlocks_apply₁₁, Sum.getLeft_inl]
+private lemma lemma11₂_auxl {α : Type} {X₁ Y₁ X₂ Y₂ : Set α}
+    {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
+    {n : ℕ} {f : Fin n → ↑X₁ ⊕ ↑X₂} {g : Fin n → ↑Y₁ ⊕ ↑Y₂}
+    (hf : ∀ a : Fin n, ∀ b : X₂, f a ≠ ◪b) (hg : ∀ a : Fin n, ∀ b : Y₂, g a ≠ ◪b) :
+    (matrix2sumComposition A₁ x A₂ y).submatrix f g = A₁.submatrix (fn_of_sum_ne_inr hf) (fn_of_sum_ne_inr hg) := by
+  ext
+  simp [eq_of_fn_sum_ne_inr hf, eq_of_fn_sum_ne_inr hg]
 
-private lemma lemma11₂_auxr {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ}
-    {y : X₂ → ℚ} {n : ℕ} {f : Fin n → ↑X₁ ⊕ ↑X₂} {g : Fin n → ↑Y₁ ⊕ ↑Y₂}
-    (hf : ∀ a : Fin n, (f a).isRight) (hg : ∀ a : Fin n, (g a).isRight) :
-    (matrix2sumComposition A₁ x A₂ y).submatrix f g =
-      A₂.submatrix ((f _).getRight <| hf ·) ((g _).getRight <| hg ·) := by
-  ext a b
-  have ⟨ac, hac⟩ := Sum.isRight_iff.mp (hf a)
-  have ⟨bc, hbc⟩ := Sum.isRight_iff.mp (hg b)
-  simp_rw [Matrix.submatrix_apply, hac, hbc, Matrix.fromBlocks_apply₂₂, Sum.getRight_inr]
+private lemma lemma11₂_auxr {α : Type} {X₁ Y₁ X₂ Y₂ : Set α}
+    {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
+    {n : ℕ} {f : Fin n → ↑X₁ ⊕ ↑X₂} {g : Fin n → ↑Y₁ ⊕ ↑Y₂}
+    (hf : ∀ a : Fin n, ∀ b : X₁, f a ≠ ◩b) (hg : ∀ a : Fin n, ∀ b : Y₁, g a ≠ ◩b) :
+    (matrix2sumComposition A₁ x A₂ y).submatrix f g = A₂.submatrix (fn_of_sum_ne_inl hf) (fn_of_sum_ne_inl hg) := by
+  ext
+  simp [eq_of_fn_sum_ne_inl hf, eq_of_fn_sum_ne_inl hg]
 
 private lemma lemma11₂ {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
     (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular) :
@@ -229,60 +225,54 @@ private lemma lemma11₂ {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matr
     all_goals
       simp only [neg_in_signTypeCastRange,
         Matrix.IsTotallyUnimodular.apply hA₁, Matrix.IsTotallyUnimodular.apply hA₂])
-  · rw [lemma11₂_auxl
-      (by if h : · = 0 then simp [h, hf₀] else simp [Fin.eq_one_of_neq_zero, h, hf₁])
-      (by if h : · = 0 then simp [h, hg₀] else simp [Fin.eq_one_of_neq_zero, h, hg₁])]
+  · rw [lemma11₂_auxl (by fin_cases · <;> simp_all) (by fin_cases · <;> simp_all)]
     exact A₁.isTotallyUnimodular_iff.→ hA₁ ..
   · sorry
   · sorry
   · sorry
   · sorry
   · sorry
-  · rw [lemma11₂_auxr
-      (by if h : · = 0 then simp [h, hf₀] else simp [Fin.eq_one_of_neq_zero, h, hf₁])
-      (by if h : · = 0 then simp [h, hg₀] else simp [Fin.eq_one_of_neq_zero, h, hg₁])]
+  · rw [lemma11₂_auxr (by fin_cases · <;> simp_all) (by fin_cases · <;> simp_all)]
     exact A₂.isTotallyUnimodular_iff.→ hA₂ ..
 
-private lemma matrix2sumComposition.shortTableauPivot_is2sum {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
-    (A₁ : Matrix X₁ Y₁ ℚ) (x : Y₁ → ℚ) (A₂ : Matrix X₂ Y₂ ℚ) (y : X₂ → ℚ) (r : X₁) (c : Y₁) (hrc : A₁ r c ≠ 0) :
-    ∃ A₁' : Matrix X₁ Y₁ ℚ, ∃ x' : Y₁ → ℚ, ∃ A₂' : Matrix X₂ Y₂ ℚ, ∃ y' : X₂ → ℚ,
-      (matrix2sumComposition A₁ x A₂ y).shortTableauPivot (Sum.inl r) (Sum.inl c) = matrix2sumComposition A₁' x' A₂' y' := by
+private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
+    (A₁ : Matrix X₁ Y₁ ℚ) (x : Y₁ → ℚ) (A₂ : Matrix X₂ Y₂ ℚ) (y : X₂ → ℚ) {r : X₁} {c : Y₁} (hrc : A₁ r c ≠ 0) :
+    let B := matrix2sumComposition A₁ x A₂ y
+    B.shortTableauPivot ◩r ◩c =
+    matrix2sumComposition (A₁.shortTableauPivot r c) (B.shortTableauPivotTheRow ◩r ◩c Sum.inl ⟨c, rfl⟩ x) A₂ y := by
+  intro B
+  have hBA₁ : B.toBlocks₁₁ = A₁.shortTableauPivot r c
+  · sorry
+  have hBA₂ : B.toBlocks₂₂ = A₂
+  · sorry
+  rw [←hBA₁, ←hBA₂]
+  have hBD := B.shortTableauPivot_rank_one ◩r ◩c Sum.inr Sum.inl (by simp) ⟨c, rfl⟩ (by sorry) (by sorry) x y (by sorry)
   -- see Lemma 3 in write-up on regularity of 2
-  -- A₂' = A₂, y' = y
-  -- A₁' = A₁.shortTableauPivot r c
   -- after pivoting, D' consists of copies of y scaled by {0, ± 1} factors, so can express it as D' = x' ⬝ y (outer product)
   -- (use lemma Matrix.shortTableauPivot_rank_one in Pivoting.lean)
   sorry
 
-private lemma matrix2sumComposition.shortTableauPivot_IsPreTU {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
-    (A₁ : Matrix X₁ Y₁ ℚ) (x : Y₁ → ℚ) (A₂ : Matrix X₂ Y₂ ℚ) (y : X₂ → ℚ) (r : X₁) (c : Y₁) (hrc : A₁ r c ≠ 0)
-    {k : ℕ} (hkAxAy : (matrix2sumComposition A₁ x A₂ y).IsPreTU k) :
-    ((matrix2sumComposition A₁ x A₂ y).shortTableauPivot (Sum.inl r) (Sum.inl c)).IsPreTU k := by
-  -- pivoting preserves PreTUness (see Pivoting file) (b/c determinant of every k × k submatrix is preserved (at least up to sign))
-
-  -- note: this lemma is not needed!
-  -- pivoting in A₁ in 2-sum yields another 2-sum (with the same matrix sizes);
-  -- if we assume that all 2-sums (with the same matrix size) are PreTU for some k,
-  -- then the result after pivoting is PreTU by this assumption
-  -- (use this argument in the proof of lemma12 rather than referring to this lemma)
-  sorry
-
-private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
+private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α} {k : ℕ}
+    (ih : ∀ {A₁ : Matrix X₁ Y₁ ℚ}, ∀ {x : Y₁ → ℚ}, ∀ {A₂ : Matrix X₂ Y₂ ℚ}, ∀ {y : X₂ → ℚ},
+      (A₁ ⊟ ▬x).IsTotallyUnimodular → (▮y ◫ A₂).IsTotallyUnimodular → (matrix2sumComposition A₁ x A₂ y).IsPreTU k)
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
-    (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular)
-    {k : ℕ} (hkAxAy : (matrix2sumComposition A₁ x A₂ y).IsPreTU k) :
+    (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular) :
     (matrix2sumComposition A₁ x A₂ y).IsPreTU k.succ := by
   cases k with
   | zero => exact lemma11₁ hAx hAy
-  | succ n => induction n generalizing A₁ A₂ x y with
+  | succ n => cases n with
     | zero => exact lemma11₂ hAx hAy
-    | succ k ih =>
+    | succ k =>
       have hA₁ : A₁.IsTotallyUnimodular := hAx.comp_rows Sum.inl
       have hA₂ : A₂.IsTotallyUnimodular := hAy.comp_cols Sum.inr
       by_contra contr
       obtain ⟨f, g, hAfg⟩ := exists_submatrix_of_not_isPreTU contr
-      have hf : f.Injective := sorry
-      have hg : g.Injective := sorry
+      wlog hf : f.Injective
+      · -- if `f` has a collision, the conclusion is already covered by the induction hypothesis
+        sorry
+      wlog hg : g.Injective
+      · -- if `g` has a collision, the conclusion is already covered by the induction hypothesis
+        sorry
       -- now we show that all four blocks are part of the submatrix
       obtain ⟨i₁, x₁, hix₁⟩ : ∃ i₁ : Fin (k + 3), ∃ x₁ : X₁, f i₁ = ◩x₁
       · have isTU := lemma6₂ hAx hAy -- `D ◫ A₂` is TU
@@ -347,12 +337,13 @@ private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α
         | neg =>
           right
           exact hs.symm
-      let B := (matrix2sumComposition A₁ x A₂ y).shortTableauPivot (f i₁) (g j₀)
-      -- obtain ⟨f', g', hf', hg', impossible⟩ := corollary1' hAfg i₁ j₀ (by convert hAxy1 <;> unfold matrix2sumComposition <;> simp [*])
-      -- apply impossible
-      -- specialize hkAxAy (f ∘ f') (g ∘ g')
-      -- rw [(matrix2sumComposition A₁ x A₂ y).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix, hix₁, hjy₀]
-      sorry
+      obtain ⟨f', g', hf', hg', impossible⟩ := corollary1 hAfg i₁ j₀ (by convert hAxy1 <;> simp [matrix2sumComposition, *])
+      apply impossible
+      rw [(matrix2sumComposition A₁ x A₂ y).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix,
+        hix₁, hjy₀, matrix2sumComposition_shortTableauPivot A₁ x A₂ y hAxy0]
+      apply ih
+      · sorry
+      · exact hAy
 
 lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
@@ -360,9 +351,9 @@ lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X�
     (matrix2sumComposition A₁ x A₂ y).IsTotallyUnimodular := by
   rw [Matrix.isTotallyUnimodular_iff_forall_IsPreTU]
   intro k
-  induction k with
+  induction k generalizing A₁ x A₂ y with
   | zero => simp [Matrix.IsPreTU]
-  | succ _ ih => exact lemma12 hA₁ hA₂ ih
+  | succ n ih => exact lemma12 ih hA₁ hA₂
 
 lemma standardRepr2sumComposition_B {α : Type} [DecidableEq α] {S₁ S₂ : StandardRepr α Z2} {a : α}
     (ha : S₁.X ∩ S₂.Y = {a}) (hXY : S₂.X ⫗ S₁.Y) :

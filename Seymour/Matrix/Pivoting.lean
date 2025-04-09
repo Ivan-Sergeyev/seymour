@@ -7,7 +7,7 @@ variable {X Y F : Type}
 
 /-- The result of the pivot operation in a short tableau (without exchanging the indices that define the pivot).
     This definition makes sense only if `A x y` is nonzero. -/
-def Matrix.shortTableauPivot [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (x : X) (y : Y) :
+def Matrix.shortTableauPivot [DivisionRing F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (x : X) (y : Y) :
     Matrix X Y F :=
   Matrix.of <| fun i j =>
     if j = y then
@@ -21,18 +21,18 @@ def Matrix.shortTableauPivot [Field F] [DecidableEq X] [DecidableEq Y] (A : Matr
       else
         A i j - A i y * A x j / A x y
 
-lemma Matrix.shortTableauPivot_elem_of_ne_ne [Field F] [DecidableEq X] [DecidableEq Y] {A : Matrix X Y F}
+lemma Matrix.shortTableauPivot_elem_of_ne_ne [DivisionRing F] [DecidableEq X] [DecidableEq Y] {A : Matrix X Y F}
     {x : X} {y : Y} {i : X} {j : Y} (hix : i ≠ x) (hjx : j ≠ y) :
     A.shortTableauPivot x y i j = A i j - A i y * A x j / A x y := by
   simp [Matrix.shortTableauPivot, hix, hjx]
 
-lemma Matrix.shortTableauPivot_row_pivot [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (x : X) (y : Y) :
+lemma Matrix.shortTableauPivot_row_pivot [DivisionRing F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (x : X) (y : Y) :
     A.shortTableauPivot x y x =
     (fun j : Y => if j = y then 1 / A x y else A x j / A x y) := by
   ext
   simp [Matrix.shortTableauPivot]
 
-lemma Matrix.shortTableauPivot_row_other [Field F] [DecidableEq X] [DecidableEq Y]
+lemma Matrix.shortTableauPivot_row_other [DivisionRing F] [DecidableEq X] [DecidableEq Y]
     (A : Matrix X Y F) (x : X) (y : Y) (i : X) (hix : i ≠ x) :
     A.shortTableauPivot x y i =
     (fun j : Y => if j = y then - A i y / A x y else A i j - A i y * A x j / A x y) := by
@@ -174,7 +174,7 @@ private lemma Matrix.IsTotallyUnimodular.addMultiples [DecidableEq X] [Field F] 
     if hAxy : A x y = 1 then
       simpa [hAxy] using similar
     else if hAyx : A x y = -1 then
-      exact in_signTypeCastRange_of_neg_one_mul_self (hAyx ▸ similar)
+      exact in_signTypeCastRange_of_neg_one_mul (hAyx ▸ similar)
     else
       exfalso
       obtain ⟨s, hs⟩ := hA.apply x y
@@ -221,12 +221,12 @@ lemma Matrix.IsTotallyUnimodular.shortTableauPivot [DecidableEq X] [DecidableEq 
   exact (((hA.one_fromCols).addMultiples x ◪y hxy).getShortTableau x y).mulRow x hAxy
 
 -- todo: add lemma: pivoting preserves PreTU for any k
--- todo: maybe prove lemma about preservation of TUness as corollary of ^
+-- It does not!!! Consider `!![1, 1; 1, -1]` over `ℚ` as a counterexample.
 
 #print axioms Matrix.IsTotallyUnimodular.shortTableauPivot
 
 lemma Matrix.submatrix_shortTableauPivot [DecidableEq X] [DecidableEq Y] {X' Y' : Type} [DecidableEq X'] [DecidableEq Y']
-    [Field F] {f : X' → X} {g : Y' → Y} (A : Matrix X Y F) (hf : f.Injective) (hg : g.Injective) (x : X') (y : Y') :
+    [DivisionRing F] {f : X' → X} {g : Y' → Y} (A : Matrix X Y F) (hf : f.Injective) (hg : g.Injective) (x : X') (y : Y') :
     (A.submatrix f g).shortTableauPivot x y = (A.shortTableauPivot (f x) (g y)).submatrix f g := by
   ext i j
   have hfix : f i = f x → i = x := (hf ·)
@@ -284,41 +284,39 @@ lemma corollary1'' [Field F] {k : ℕ} {A : Matrix X Y F} {p} {q} (hp : p.Inject
 
 section Experimental
 
-@[simp low]
 abbrev Matrix.prependCol {α : Type} [Zero α] [One α] {m n : Type} (A : Matrix m n α) (v : m → α) :
     Matrix m (Unit ⊕ n) α :=
   Matrix.fromCols (Matrix.replicateCol Unit v) A
 
-@[simp low]
 abbrev Matrix.prependRow {α : Type} [Zero α] [One α] {m n : Type} (A : Matrix m n α) (v : n → α) :
     Matrix (Unit ⊕ m) n α :=
   Matrix.fromRows (Matrix.replicateRow Unit v) A
 
 /-- The result of the pivot operation in a short tableau performed on an external column. -/
-def Matrix.shortTableauPivotExternalCol [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (x : X) (c : X → F) :
+def Matrix.shortTableauPivotExternalCol [DivisionRing F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (x : X) (c : X → F) :
     Matrix X Y F :=
   ((A.prependCol c).shortTableauPivot x ◩()).toCols₂
 
 -- note: in the explicit definition, DecidableEq Y is not needed
-def Matrix.shortTableauPivotExternalCol_explicit [Field F] [DecidableEq X] (A : Matrix X Y F) (x : X) (c : X → F) :
+def Matrix.shortTableauPivotExternalCol_explicit [DivisionRing F] [DecidableEq X] (A : Matrix X Y F) (x : X) (c : X → F) :
     Matrix X Y F :=
   Matrix.of <| fun i j =>
     if i = x then
-        A x j / c x
-      else
-        A i j - c i * A x j / c x
+      A x j / c x
+    else
+      A i j - c i * A x j / c x
 
-lemma shortTableauPivotExternalCol_eq [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (x : X) (c : X → F) :
+lemma shortTableauPivotExternalCol_eq [DivisionRing F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (x : X) (c : X → F) :
     A.shortTableauPivotExternalCol_explicit x c = A.shortTableauPivotExternalCol x c :=
   rfl
 
 /-- The result of the pivot operation in a short tableau performed on an external row. -/
-def Matrix.shortTableauPivotExternalRow [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (r : Y → F) (y : Y) :
+def Matrix.shortTableauPivotExternalRow [DivisionRing F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (r : Y → F) (y : Y) :
     Matrix X Y F :=
   ((A.prependRow r).shortTableauPivot ◩() y).toRows₂
 
 -- note: in the explicit definition, DecidableEq X is not needed
-def Matrix.shortTableauPivotExternalRow_explicit [Field F] [DecidableEq Y] (A : Matrix X Y F) (r : Y → F) (y : Y) :
+def Matrix.shortTableauPivotExternalRow_explicit [DivisionRing F] [DecidableEq Y] (A : Matrix X Y F) (r : Y → F) (y : Y) :
     Matrix X Y F :=
   Matrix.of <| fun i j =>
     if j = y then
@@ -326,21 +324,23 @@ def Matrix.shortTableauPivotExternalRow_explicit [Field F] [DecidableEq Y] (A : 
     else
       A i j - A i y * r j / r y
 
-lemma Matrix.shortTableauPivotExternalRow_eq [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (r : Y → F) (y : Y) :
+lemma Matrix.shortTableauPivotExternalRow_eq [DivisionRing F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (r : Y → F) (y : Y) :
     A.shortTableauPivotExternalRow_explicit r y = A.shortTableauPivotExternalRow r y :=
   rfl
 
 /-- The result of the pivot operation in a short tableau performed on an external row and column. -/
-def Matrix.shortTableauPivotExternalRowCol [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (a : F) (r : Y → F)
-    (c : X → F) : Matrix X Y F :=
+def Matrix.shortTableauPivotExternalRowCol [DivisionRing F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (a : F)
+    (r : Y → F) (c : X → F) :
+    Matrix X Y F :=
   ((Matrix.fromBlocks (Matrix.of fun _ _ => a) (Matrix.replicateRow Unit r) (Matrix.replicateCol Unit c) A
-    ).shortTableauPivot ◩() ◩()).submatrix Sum.inr Sum.inr
+    ).shortTableauPivot ◩() ◩()).toBlocks₂₂
 
-def Matrix.shortTableauPivotExternalRowCol_explicit [Field F] (A : Matrix X Y F) (a : F) (r : Y → F) (c : X → F) :
-  Matrix X Y F := Matrix.of fun i j => A i j - c i * r j / a
+def Matrix.shortTableauPivotExternalRowCol_explicit [DivisionRing F] (A : Matrix X Y F) (a : F) (r : Y → F) (c : X → F) :
+    Matrix X Y F :=
+  Matrix.of fun i j => A i j - c i * r j / a
 
-lemma Matrix.shortTableauPivotExternalRowCol_eq [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (a : F) (r : Y → F)
-    (c : X → F) :
+lemma Matrix.shortTableauPivotExternalRowCol_eq [DivisionRing F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (a : F)
+    (r : Y → F) (c : X → F) :
     A.shortTableauPivotExternalRowCol_explicit a r c = A.shortTableauPivotExternalRowCol a r c :=
   rfl
 
@@ -349,28 +349,34 @@ end Experimental
 
 section Blocks
 
-lemma Matrix.shortTableauPivot_submatrix_zero_external_row [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F)
-  (r : X) (c : Y) {X'} {Y'} (f : X' → X) (g : Y' → Y) (hf : r ∉ f.range) (hg : c ∉ g.range) (hAr : ∀ j, A r (g j) = 0) :
+lemma Matrix.shortTableauPivot_submatrix_zero_external_row [DivisionRing F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F)
+    (r : X) (c : Y) {X' Y' : Type} (f : X' → X) (g : Y' → Y) (hf : r ∉ f.range) (hg : c ∉ g.range) (hAr : ∀ j, A r (g j) = 0) :
     (A.shortTableauPivot r c).submatrix f g = A.submatrix f g := by
   unfold shortTableauPivot
   aesop
 
-lemma Matrix.shortTableauPivot_submatrix_zero_external_col [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F)
-  (r : X) (c : Y) {X'} {Y'} (f : X' → X) (g : Y' → Y) (hf : r ∉ f.range) (hg : c ∉ g.range) (hAc : ∀ i, A (f i) c = 0) :
+lemma Matrix.shortTableauPivot_submatrix_zero_external_col [DivisionRing F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F)
+    (r : X) (c : Y) {X' Y' : Type} (f : X' → X) (g : Y' → Y) (hf : r ∉ f.range) (hg : c ∉ g.range) (hAc : ∀ i, A (f i) c = 0) :
     (A.shortTableauPivot r c).submatrix f g = A.submatrix f g := by
   unfold shortTableauPivot
   aesop
+
+-- TODO check !!!!!!!!!!!!!!!!!!!!!!
+noncomputable def Matrix.shortTableauPivotTheRow [DivisionRing F] (A : Matrix X Y F)
+    (r : X) (c : Y) {Y' : Type} (g : Y' → Y) (hg : c ∈ g.range) (x : Y' → F) :
+    Y' → F :=
+  fun j => (A r (g hg.choose) * x j - A r (g j) * x hg.choose) / A r (g hg.choose)
 
 lemma Matrix.shortTableauPivot_rank_one [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F)
-  (r : X) (c : Y) {X'} {Y'} (f : X' → X) (g : Y' → Y) (hf : r ∉ f.range) (hg : c ∈ g.range)
-  (hA1 : A.IsPreTU 1) (hA2 : A.IsPreTU 2) (hArc : A r c = 1 ∨ A r c = -1)
-  (x : Y' → F) (y : X' → F) (hAfg : ∀ i j, A (f i) (g j) = (x j) * (y i)) :
-    ∃ x' : Y' → F, ∀ i j, (A.shortTableauPivot r c) (f i) (g j) = (x' j) * (y i) := by
+    (r : X) (c : Y) {X' Y' : Type} (f : X' → X) (g : Y' → Y) (hf : r ∉ f.range) (hg : c ∈ g.range)
+    (hA2 : A.IsPreTU 2) (hArc : A r c = 1 ∨ A r c = -1)
+    (x : Y' → F) (y : X' → F) (hAfg : ∀ i j, A (f i) (g j) = x j * y i) :
+    ∀ i : X', ∀ j : Y',
+      (A.shortTableauPivot r c) (f i) (g j) =
+      A.shortTableauPivotTheRow r c g hg x j * y i := by
+  intro i j
   -- moreover, x, y, and x' are {0, ±1} vectors
   -- note that x' is defined explicitly, maybe can put the formula in the statement of the lemma
-  obtain ⟨c', hc'⟩ := hg
-  let x' := fun j => (A r (g c') * x j - A r (g j) * x c') / A r (g c')
-  use x'
   sorry
 
 end Blocks
