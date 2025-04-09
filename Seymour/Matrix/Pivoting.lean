@@ -1,6 +1,5 @@
 import Seymour.Basic.SignTypeCast
 import Seymour.Matrix.Basic
-import Seymour.Matrix.PreTU
 
 
 variable {X Y F : Type}

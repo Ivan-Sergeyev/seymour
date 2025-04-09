@@ -1,7 +1,8 @@
 import Seymour.Basic.FunctionToHalfSum
 import Seymour.Matrix.Pivoting
 import Seymour.Matroid.Notions.Regularity
-import Seymour.Matrix.PreTU
+import Seymour.Matrix.Determinants
+import Seymour.Matrix.PreTUness
 
 
 /-- `Matrix`-level 2-sum for matroids defined by their standard representation matrices; does not check legitimacy. -/
@@ -315,23 +316,8 @@ private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq �
   rw [←(B.shortTableauPivot ◩r ◩c).fromBlocks_toBlocks, hBA₁, hBA₂, hB0, hBD]
   have hBrc : B ◩r ◩c = A₁ r c
   · rfl
-  simp [matrix2sumComposition, hBrc]
-  ext
-  simp [mul_comm]
-
-lemma Matrix.submatrix_det_zero_of_not_injective_right {X Y Z R : Type} [Fintype Z] [DecidableEq Z] [CommRing R] {f : Z → X} {g : Z → Y}
-    (A : Matrix X Y R) (hg : ¬g.Injective) :
-    (A.submatrix f g).det = 0 := by
-  rw [Function.not_injective_iff] at hg
-  obtain ⟨i, j, hgij, hij⟩ := hg
-  apply Matrix.det_zero_of_column_eq hij
-  simp [hgij]
-
-lemma Matrix.submatrix_det_zero_of_not_injective_left {X Y Z R : Type} [Fintype Z] [DecidableEq Z] [CommRing R] {f : Z → X} {g : Z → Y}
-    (A : Matrix X Y R) (hf : ¬f.Injective) :
-    (A.submatrix f g).det = 0 := by
-  rw [←Matrix.det_transpose, Matrix.transpose_submatrix]
-  exact A.transpose.submatrix_det_zero_of_not_injective_right hf
+  unfold matrix2sumComposition
+  aesop
 
 lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
