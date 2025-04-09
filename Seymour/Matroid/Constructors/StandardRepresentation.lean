@@ -354,7 +354,6 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
 -- LinearIndepOn.of_comp
 -- LinearMap.linearIndependent_iff_of_injOn
 -- also look at LinearIndependent.linearCombinationEquiv
-#check LinearIndepOn.of_comp
 
 /-- Every vector matroid has a standard representation. -/
 lemma VectorMatroid.exists_standardRepr [Field R] (M : VectorMatroid α R) :

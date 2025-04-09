@@ -245,8 +245,8 @@ private lemma lemma11₂ {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set
     simp only [hf0, hf1, hg0, hg1,
       Matrix.fromBlocks_apply₂₂, Matrix.fromBlocks_apply₁₁, Matrix.fromBlocks_apply₂₁, Matrix.fromBlocks_apply₁₂,
       Matrix.zero_apply, mul_zero, zero_mul, sub_zero, zero_sub, neg_mul_eq_neg_mul, zero_in_signTypeCastRange]
-    repeat apply in_signTypeCastRange_mul_in_signTypeCastRange
-    all_goals simp only [neg_in_signTypeCastRange, hA₁.apply, hA₂.apply]
+    all_goals apply in_signTypeCastRange_mul_in_signTypeCastRange <;>
+      simp only [neg_in_signTypeCastRange, hA₁.apply, hA₂.apply]
   · rw [lemma11₂_auxll (by fin_cases · <;> simp_all) (by fin_cases · <;> simp_all)]
     apply A₁.isTotallyUnimodular_iff.→ hA₁
   · rw [lemma11₂_auxl (by fin_cases · <;> simp_all)]
@@ -271,10 +271,10 @@ private noncomputable def Matrix.shortTableauPivotTheRow {X Y Y' R : Type} [Deci
 private lemma Matrix.shortTableauPivot_outer {X Y X' Y' R : Type} [DecidableEq X] [DecidableEq Y] [DecidableEq Y'] [Field R]
     (B : Matrix X Y R) (r : X) (c' : Y') (f : X' → X) (g : Y' → Y) (hf : r ∉ f.range) (hg : g.Injective)
     (hBrc : B r (g c') = 1 ∨ B r (g c') = -1)
-    (x : Y' → R) (y : X' → R) (hBfg : ∀ i j, B (f i) (g j) = x j * y i) :
+    (x : Y' → R) (y : X' → R) (hBfg : ∀ i j, B (f i) (g j) = y i * x j) :
     ∀ i : X', ∀ j : Y',
       (B.shortTableauPivot r (g c')) (f i) (g j) =
-      B.shortTableauPivotTheRow r c' g x (B r (g c')) j * y i := by
+      y i * B.shortTableauPivotTheRow r c' g x (B r (g c')) j := by
   intro i j
   unfold shortTableauPivot Matrix.shortTableauPivotTheRow
   cases hBrc with
@@ -309,10 +309,8 @@ private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq �
   · ext i j
     exact B.shortTableauPivot_zero r ◩c Sum.inl Sum.inr (by simp) (by simp [matrix2sumComposition, B]) i j
   have hBD :
-    (B.shortTableauPivot ◩r ◩c).toBlocks₂₁ = Matrix.of (fun i : X₂ => fun j : Y₁ =>
-      Matrix.shortTableauPivotTheRow B ◩r c Sum.inl x (B ◩r ◩c) j * y i)
+    (B.shortTableauPivot ◩r ◩c).toBlocks₂₁ = Matrix.of (y · * Matrix.shortTableauPivotTheRow B ◩r c Sum.inl x (B ◩r ◩c) ·)
   · have := B.shortTableauPivot_outer ◩r c Sum.inr Sum.inl (by simp) Sum.inl_injective hrc x y
-      (by simp [B, matrix2sumComposition, mul_comm])
     aesop
   rw [←(B.shortTableauPivot ◩r ◩c).fromBlocks_toBlocks, hBA₁, hBA₂, hB0, hBD]
   have hBrc : B ◩r ◩c = A₁ r c
@@ -426,23 +424,22 @@ private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α
       apply impossible
       rw [(matrix2sumComposition A₁ x A₂ y).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix,
         hix₁, hjy₀, matrix2sumComposition_shortTableauPivot A₁ x A₂ y hAxy1]
-      apply ih
-      · have hAxy0' : (A₁ ⊟ ▬x) ◩x₁ y₀ ≠ 0 := hAxy0
-        convert hAx.shortTableauPivot hAxy0'
-        ext i j
-        cases i with
-        | inl =>
-          simp [Matrix.shortTableauPivot]
-        | inr =>
-          simp [Matrix.shortTableauPivot, Matrix.shortTableauPivotTheRow]
-          if hj : j = y₀ then
-            cases hAxy1 with
-            | inl h1 => simp [hj, h1]
-            | inr h9 => simp [hj, h9]
-          else
-            field_simp [hj]
-            ring
-      · exact hAy
+      apply ih _ hAy
+      have hAxy0' : (A₁ ⊟ ▬x) ◩x₁ y₀ ≠ 0 := hAxy0
+      convert hAx.shortTableauPivot hAxy0'
+      ext i j
+      cases i with
+      | inl =>
+        simp [Matrix.shortTableauPivot]
+      | inr =>
+        simp [Matrix.shortTableauPivot, Matrix.shortTableauPivotTheRow]
+        if hj : j = y₀ then
+          cases hAxy1 with
+          | inl h1 => simp [hj, h1]
+          | inr h9 => simp [hj, h9]
+        else
+          field_simp [hj]
+          ring
 
 lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
