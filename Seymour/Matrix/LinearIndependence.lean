@@ -30,7 +30,6 @@ lemma LinearIndepOn.span_eq_top_of_maximal (hmax : Maximal (LinearIndepOn R v ·
 end LinearIndepen
 namespace Matrix
 
-
 open Set Submodule Cardinal
 
 universe u v w u₁ u₂
@@ -95,7 +94,6 @@ lemma IsRowBasis.isColBasis_transpose [Semiring R] (h : A.IsRowBasis R s) : Aᵀ
 
 lemma exists_isColBasis (R : Type*) [DivisionRing R] (A : Matrix m n R) : ∃ s, A.IsColBasis R s :=
   Aᵀ.exists_isRowBasis R
-
 
 variable {α : Type*}
 
