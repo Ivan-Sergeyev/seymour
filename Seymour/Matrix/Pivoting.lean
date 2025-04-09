@@ -220,9 +220,6 @@ lemma Matrix.IsTotallyUnimodular.shortTableauPivot [DecidableEq X] [DecidableEq 
   · rw [inv_eq_self_of_in_signTypeCastRange] <;> exact hA.apply x y
   exact (((hA.one_fromCols).addMultiples x ◪y hxy).getShortTableau x y).mulRow x hAxy
 
--- todo: add lemma: pivoting preserves PreTU for any k
--- It does not!!! Consider `!![1, 1; 1, -1]` over `ℚ` as a counterexample.
-
 #print axioms Matrix.IsTotallyUnimodular.shortTableauPivot
 
 lemma Matrix.submatrix_shortTableauPivot [DecidableEq X] [DecidableEq Y] {X' Y' : Type} [DecidableEq X'] [DecidableEq Y']
