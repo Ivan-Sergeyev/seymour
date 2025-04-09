@@ -27,20 +27,19 @@ abbrev StandardRepr.HasTuSigning {α : Type} [DecidableEq α] (S : StandardRepr 
 
 -- ## Auxiliary stuff
 
-def Matrix.support {X Y : Type} (A : Matrix X Y ℚ) (n : ℕ := 2) : Matrix X Y (ZMod n) :=
+def Matrix.support {X Y : Type} (A : Matrix X Y ℚ) : Matrix X Y Z2 :=
   Matrix.of (if A · · = 0 then 0 else 1)
 
-private lemma Matrix.support_transpose {X Y : Type} (A : Matrix X Y ℚ) :
+lemma Matrix.support_transpose {X Y : Type} (A : Matrix X Y ℚ) :
     A.support.transpose = A.transpose.support :=
   rfl
 
-private lemma Matrix.support_submatrix {X X' Y Y' : Type} (A : Matrix X Y ℚ) (f : X' → X) (g : Y' → Y) :
+lemma Matrix.support_submatrix {X X' Y Y' : Type} (A : Matrix X Y ℚ) (f : X' → X) (g : Y' → Y) :
     A.support.submatrix f g = (A.submatrix f g).support :=
   rfl
 
-private lemma Matrix.IsTotallyUnimodular.support {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular)
-    {n : ℕ} (hn : 1 < n) :
-    A.IsTuSigningOf (A.support n) := by
+private lemma Matrix.IsTotallyUnimodular.support {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
+    A.IsTuSigningOf A.support := by
   refine ⟨hA, fun i j => ?_⟩
   if hAij : A i j = 0 then
     simp [Matrix.support, hAij]
@@ -53,21 +52,19 @@ private lemma Matrix.IsTotallyUnimodular.support {X Y : Type} {A : Matrix X Y �
       rw [SignType.pos_eq_one, SignType.coe_one] at hs
       rw [←hs]
       simp [Matrix.support, hAij]
-      rewrite [ZMod.val_one'' (· ▸ hn |>.false)]
       rfl
     | neg =>
       rw [SignType.neg_eq_neg_one, SignType.coe_neg, SignType.coe_one] at hs
       rw [←hs]
       simp [Matrix.support, hAij]
-      rewrite [ZMod.val_one'' (· ▸ hn |>.false)]
       rfl
 
-private def Matrix.suppZ2 {X Y : Type} (A : Matrix X Y ℤ) : Matrix X Y Z2 :=
+private def Matrix.suppAux {X Y : Type} (A : Matrix X Y ℤ) : Matrix X Y Z2 :=
   Matrix.of (if A · · = 0 then 0 else 1)
 
-@[app_unexpander Matrix.suppZ2]
-private def Matrix.suppZ2_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $x) => `($(x).$(Lean.mkIdent `suppZ2))
+@[app_unexpander Matrix.suppAux]
+private def Matrix.suppAux_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $x) => `($(x).$(Lean.mkIdent `suppAux))
   | _ => throw ()
 
 variable {α : Type}
@@ -87,13 +84,13 @@ lemma Matroid.isRegular_mapEquiv_iff {β : Type} (M : Matroid α) (f : α ≃ β
 
 variable [DecidableEq α]
 
-private lemma Matrix.IsTotallyUnimodular.intCast_det_eq_suppZ2_det [Fintype α] {A : Matrix α α ℤ}
+private lemma Matrix.IsTotallyUnimodular.intCast_det_eq_suppAux_det [Fintype α] {A : Matrix α α ℤ}
     (hA : A.IsTotallyUnimodular) :
-    A.det.cast = A.suppZ2.det := by
+    A.det.cast = A.suppAux.det := by
   rw [Matrix.det_int_coe]
   congr
   ext i j
-  simp [Matrix.suppZ2]
+  simp [Matrix.suppAux]
   if h0 : A i j = 0 then
     rewrite [h0]
     rfl
@@ -111,10 +108,10 @@ private lemma Matrix.IsTotallyUnimodular.intCast_det_eq_suppZ2_det [Fintype α] 
 private lemma Matrix.IsTotallyUnimodular.ratCast_det_eq_support_det [Fintype α] {A : Matrix α α ℚ}
     (hA : A.IsTotallyUnimodular) :
     A.det.cast = A.support.det := by
-  rw [hA.det_eq_map_ratFloor_det, Rat.cast_intCast, hA.map_ratFloor.intCast_det_eq_suppZ2_det]
+  rw [hA.det_eq_map_ratFloor_det, Rat.cast_intCast, hA.map_ratFloor.intCast_det_eq_suppAux_det]
   congr
   ext i j
-  simp only [Matrix.support, Matrix.suppZ2]
+  simp only [Matrix.support, Matrix.suppAux]
   if h0 : A i j = 0 then
     simp [h0]
     rfl
@@ -234,7 +231,7 @@ private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearInd
     have := Set.Finite.fintype hY'
     rw [(hA.submatrix id Subtype.val).linearIndependent_iff_support_linearIndependent_of_finite_of_finite] at lin_indep
     exact A.support.linearIndependent_if_LinearIndependent_subset_cols lin_indep
-  · obtain ⟨Y', hY', hAY'⟩ := A.support.exists_finite_allColsIn Finset.univ (Finset.mem_univ <| A.support 2 · ·)
+  · obtain ⟨Y', hY', hAY'⟩ := A.support.exists_finite_allColsIn Finset.univ (Finset.mem_univ <| A.support · ·)
     rw [A.support.linearIndependent_iff_allColsSubmatrix_linearIndependent hAY'] at lin_indep
     rw [Matrix.support_submatrix] at lin_indep
     have := Set.Finite.fintype hY'
