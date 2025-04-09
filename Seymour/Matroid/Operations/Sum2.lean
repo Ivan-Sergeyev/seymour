@@ -235,22 +235,61 @@ private lemma lemma11₂ {α : Type} {X₁ Y₁ X₂ Y₂ : Set α} {A₁ : Matr
   · rw [lemma11₂_auxr (by fin_cases · <;> simp_all) (by fin_cases · <;> simp_all)]
     exact A₂.isTotallyUnimodular_iff.→ hA₂ ..
 
+/-- Compute the row vector for the outer product after pivoting outside. -/
+private noncomputable def Matrix.shortTableauPivotTheRow {X Y Y' R : Type} [DecidableEq Y'] [DivisionRing R] (B : Matrix X Y R)
+    (r : X) (c' : Y') (g : Y' → Y) (x : Y' → R) (s : R) :
+    Y' → R :=
+  fun j : Y' => if j = c' then -s * x j else (B r (g c') * x j - B r (g j) * x c') / B r (g c')
+
+private lemma Matrix.shortTableauPivot_rank_one {X Y X' Y' R : Type} [DecidableEq X] [DecidableEq Y] [DecidableEq Y'] [Field R]
+    (B : Matrix X Y R) (r : X) (c' : Y') (f : X' → X) (g : Y' → Y) (hf : r ∉ f.range) (hg : g.Injective)
+    (hBrc : B r (g c') = 1 ∨ B r (g c') = -1)
+    (x : Y' → R) (y : X' → R) (hBfg : ∀ i j, B (f i) (g j) = x j * y i) :
+    ∀ i : X', ∀ j : Y',
+      (B.shortTableauPivot r (g c')) (f i) (g j) =
+      B.shortTableauPivotTheRow r c' g x (B r (g c')) j * y i := by
+  intro i j
+  unfold shortTableauPivot Matrix.shortTableauPivotTheRow
+  cases hBrc with
+  | inl h1 =>
+    if hj : j = c' then
+      aesop
+    else
+      have hgj : g j ≠ g c' := (hj <| hg ·)
+      have hfi : f i ≠ r := (hf <| ⟨i, ·⟩)
+      simp [*]
+      ring
+  | inr h9 =>
+    if hj : j = c' then
+      aesop
+    else
+      have hgj : g j ≠ g c' := (hj <| hg ·)
+      have hfi : f i ≠ r := (hf <| ⟨i, ·⟩)
+      simp [*]
+      ring
+
 private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
-    (A₁ : Matrix X₁ Y₁ ℚ) (x : Y₁ → ℚ) (A₂ : Matrix X₂ Y₂ ℚ) (y : X₂ → ℚ) {r : X₁} {c : Y₁} (hrc : A₁ r c ≠ 0) :
+    (A₁ : Matrix X₁ Y₁ ℚ) (x : Y₁ → ℚ) (A₂ : Matrix X₂ Y₂ ℚ) (y : X₂ → ℚ) {r : X₁} {c : Y₁} (hrc : A₁ r c = 1 ∨ A₁ r c = -1) :
     let B := matrix2sumComposition A₁ x A₂ y
     B.shortTableauPivot ◩r ◩c =
-    matrix2sumComposition (A₁.shortTableauPivot r c) (B.shortTableauPivotTheRow ◩r ◩c Sum.inl ⟨c, rfl⟩ x) A₂ y := by
+    matrix2sumComposition (A₁.shortTableauPivot r c) (B.shortTableauPivotTheRow ◩r c Sum.inl x (A₁ r c)) A₂ y := by
   intro B
   have hBA₁ : (B.shortTableauPivot ◩r ◩c).toBlocks₁₁ = A₁.shortTableauPivot r c
   · sorry
   have hBA₂ : (B.shortTableauPivot ◩r ◩c).toBlocks₂₂ = A₂
+  · exact B.shortTableauPivot_submatrix_zero_external_row ◩r ◩c Sum.inr Sum.inr (by aesop) (by aesop) (by aesop)
+  have hBD : (B.shortTableauPivot ◩r ◩c).toBlocks₂₁ = Matrix.of (fun i j => Matrix.shortTableauPivotTheRow B (◩r) c Sum.inl x (B ◩r ◩c) j * y i)
+  · have := B.shortTableauPivot_rank_one ◩r c Sum.inr Sum.inl (by simp) Sum.inl_injective hrc x y
+      (by simp [B, matrix2sumComposition, mul_comm])
+    aesop
+  have hB0 : (B.shortTableauPivot ◩r ◩c).toBlocks₁₂ = 0
   · sorry
-  rw [←hBA₁, ←hBA₂]
-  have hBD := B.shortTableauPivot_rank_one ◩r ◩c Sum.inr Sum.inl (by simp) ⟨c, rfl⟩ (by sorry) (by sorry) x y (by sorry)
-  -- see Lemma 3 in write-up on regularity of 2
-  -- after pivoting, D' consists of copies of y scaled by {0, ± 1} factors, so can express it as D' = x' ⬝ y (outer product)
-  -- (use lemma Matrix.shortTableauPivot_rank_one in Pivoting.lean)
-  sorry
+  rw [←(B.shortTableauPivot ◩r ◩c).fromBlocks_toBlocks, hBA₁, hBA₂, hBD, hB0]
+  have hBrc : B ◩r ◩c = A₁ r c
+  · rfl
+  simp [matrix2sumComposition, hBrc]
+  ext i j
+  simp [mul_comm]
 
 private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α} {k : ℕ}
     (ih : ∀ {A₁ : Matrix X₁ Y₁ ℚ}, ∀ {x : Y₁ → ℚ}, ∀ {A₂ : Matrix X₂ Y₂ ℚ}, ∀ {y : X₂ → ℚ},
@@ -340,9 +379,23 @@ private lemma lemma12 {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α
       obtain ⟨f', g', hf', hg', impossible⟩ := corollary1 hAfg i₁ j₀ (by convert hAxy1 <;> simp [matrix2sumComposition, *])
       apply impossible
       rw [(matrix2sumComposition A₁ x A₂ y).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix,
-        hix₁, hjy₀, matrix2sumComposition_shortTableauPivot A₁ x A₂ y hAxy0]
+        hix₁, hjy₀, matrix2sumComposition_shortTableauPivot A₁ x A₂ y hAxy1]
       apply ih
-      · sorry
+      · have hAxy0' : (A₁ ⊟ ▬x) ◩x₁ y₀ ≠ 0 := hAxy0
+        convert hAx.shortTableauPivot hAxy0'
+        ext i j
+        cases i with
+        | inl i₁ =>
+          simp [Matrix.shortTableauPivot]
+        | inr i₂ =>
+          simp [Matrix.shortTableauPivot, Matrix.shortTableauPivotTheRow]
+          if hj : j = y₀ then
+            cases hAxy1 with
+            | inl h1 => simp [hj, h1]
+            | inr h9 => simp [hj, h9]
+          else
+            field_simp [hj]
+            ring
       · exact hAy
 
 lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
