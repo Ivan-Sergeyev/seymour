@@ -241,9 +241,9 @@ private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq �
     B.shortTableauPivot ◩r ◩c =
     matrix2sumComposition (A₁.shortTableauPivot r c) (B.shortTableauPivotTheRow ◩r ◩c Sum.inl ⟨c, rfl⟩ x) A₂ y := by
   intro B
-  have hBA₁ : B.toBlocks₁₁ = A₁.shortTableauPivot r c
+  have hBA₁ : (B.shortTableauPivot ◩r ◩c).toBlocks₁₁ = A₁.shortTableauPivot r c
   · sorry
-  have hBA₂ : B.toBlocks₂₂ = A₂
+  have hBA₂ : (B.shortTableauPivot ◩r ◩c).toBlocks₂₂ = A₂
   · sorry
   rw [←hBA₁, ←hBA₂]
   have hBD := B.shortTableauPivot_rank_one ◩r ◩c Sum.inr Sum.inl (by simp) ⟨c, rfl⟩ (by sorry) (by sorry) x y (by sorry)
