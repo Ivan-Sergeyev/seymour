@@ -1,6 +1,7 @@
 import Seymour.Matroid.Notions.Graphicness
 import Seymour.Matrix.TotalUnimodularityTest
 
+
 def matroidR10_B_Z2 : Matrix (Fin 5) (Fin 5) Z2 :=
   !![1, 0, 0, 1, 1; 1, 1, 0, 0, 1; 0, 1, 1, 0, 1; 0, 0, 1, 1, 1; 1, 1, 1, 1, 1]
 
@@ -8,7 +9,8 @@ def matroidR10_B_ℚ : Matrix (Fin 5) (Fin 5) ℚ :=
   matroidR10_B_Z2.map (·.val)
 
 theorem matroidR10_B_ℚ_TU : matroidR10_B_ℚ.IsTotallyUnimodular :=
-  matroidR10_B_ℚ.isTotallyUnimodular_of_testTotallyUnimodularFast (by decide +kernel) -- Lean 4.19.0-rc2 cannot compile
+  sorry -- fix me
+  -- matroidR10_B_ℚ.isTotallyUnimodular_of_testTotallyUnimodularFast (by decide +kernel) -- Lean 4.19.0-rc2 cannot compile
 
 def matroidR10_B_Z2_coe : Matrix { x : Fin 10 | x.val < 5 } { x : Fin 10 | 5 ≤ x.val } Z2 :=
   matroidR10_B_Z2.submatrix

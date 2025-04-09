@@ -20,8 +20,7 @@ lemma IsIncidenceMatrixColumn.eq_if_mem {m : Type} [DecidableEq m] {v : m → �
   refine Or.imp_right (fun hv ↦ ?_) hv
   peel hv with x₁ x₂ h
   refine ⟨h.1, ?_⟩
-  simp only [List.toFinset_cons, List.toFinset_nil, insert_emptyc_eq, Finset.mem_insert,
-    Finset.mem_singleton]
+  simp only [List.toFinset_cons, List.toFinset_nil, LawfulSingleton.insert_empty_eq, Finset.mem_insert, Finset.mem_singleton]
   ext x
   by_cases x = x₁
   · simp_all
@@ -47,12 +46,12 @@ lemma IsIncidenceMatrixColumn.elem_in_signTypeCastRange {m : Type} [DecidableEq 
 lemma IsIncidenceMatrixColumn.sum_zero {m : Type} [Fintype m] [DecidableEq m] {v : m → ℚ} (hv : IsIncidenceMatrixColumn v) :
     ∑ i : m, v i = 0 := by
   cases IsIncidenceMatrixColumn.eq_if_mem hv with
-  | inl h => simp_all
-  | inr h =>
-    rw [h.choose_spec.choose_spec.2, Finset.sum_ite_mem, Finset.univ_inter,
-      List.toFinset_cons, List.toFinset_cons, List.toFinset_nil, insert_emptyc_eq,
-      Finset.sum_insert (by simpa using h.choose_spec.choose_spec.1), Finset.sum_singleton]
-    simp_rw [ne_eq, ite_true, h.choose_spec.choose_spec.1.symm, ite_false, add_neg_cancel]
+  | inl => simp_all
+  | inr hv =>
+    rw [hv.choose_spec.choose_spec.right, Finset.sum_ite_mem, Finset.univ_inter,
+      List.toFinset_cons, List.toFinset_cons, List.toFinset_nil, LawfulSingleton.insert_empty_eq,
+      Finset.sum_insert (by simpa using hv.choose_spec.choose_spec.left), Finset.sum_singleton]
+    simp_rw [ne_eq, ite_true, hv.choose_spec.choose_spec.left.symm, ite_false, add_neg_cancel]
 
 /-- Every element of a graphic matrix is `1`, `0`, or `-1`. -/
 lemma Matrix.IsGraphic.elem_in_signTypeCastRange {m n : Type} [DecidableEq m] {A : Matrix m n ℚ}
