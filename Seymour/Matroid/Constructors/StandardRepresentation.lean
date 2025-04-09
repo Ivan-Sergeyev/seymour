@@ -330,7 +330,8 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
           -- (C.submatrix id (sorry) : Matrix (G ⊕ (M.Y \ G).Elem) R) := sorry
   -- have t := Subtype.toSum
   let f := fun v => lin_indep.repr v
-  let e : G ≃ M.Y ↓∩ G := sorry
+  let e : G ≃ M.Y ↓∩ G := Equiv.mk
+    (fun a => ⟨hGY.elem a, a.prop⟩) (fun b => ⟨b, Set.mem_preimage.mp b.prop⟩) (fun _ => rfl) (fun _ => rfl)
   have t : ∀ j : M.Y, f ⟨(M.Aᵀ j), (by sorry)⟩ ∘ e = (C · j) := sorry
   rw [t4]
   -- unfold LinearIndepOn
