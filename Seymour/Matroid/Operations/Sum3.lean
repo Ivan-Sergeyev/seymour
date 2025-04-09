@@ -1,4 +1,5 @@
 import Seymour.Matroid.Notions.Regularity
+import Seymour.Matrix.PreTUness
 
 
 variable {α : Type} [DecidableEq α]
@@ -285,40 +286,211 @@ instance Matroid.Is3sumOf.finS {M M₁ M₂ : Matroid α} (hM : M.Is3sumOf M₁ 
   rw [standardRepr3sumComposition_X]
   apply Finite.Set.finite_union
 
+lemma standardRepr3sumComposition_hasTuSigning {α : Type} [DecidableEq α] {S₁ S₂ : StandardRepr α Z2} {x₁ x₂ x₃ y₁ y₂ y₃ : α}
+    (hXX : S₁.X ∩ S₂.X = {x₁, x₂, x₃}) (hYY : S₁.Y ∩ S₂.Y = {y₁, y₂, y₃}) (hXY : S₁.X ⫗ S₂.Y) (hYX : S₁.Y ⫗ S₂.X) :
+    (standardRepr3sumComposition hXX hYY hXY hYX).fst.HasTuSigning := by
+  -- invoke matrix3sumComposition_toCanonicalSigning_TU
+  sorry
+
 /-- Any 3-sum of regular matroids is a regular matroid.
     This is the final of the three parts of the easy direction of the Seymour's theorem. -/
 theorem Matroid.Is3sumOf.isRegular {M M₁ M₂ : Matroid α}
     (hM : M.Is3sumOf M₁ M₂) (hM₁ : M₁.IsRegular) (hM₂ : M₂.IsRegular) :
     M.IsRegular := by
   have := hM.finS
+  -- invoke standardRepr3sumComposition_hasTuSigning
   sorry
 
 section AuxiliaryLemmas
 
 -- lemma 14 in the write-up
 lemma Matrix.Z2_2x2_nonsingular_form (A : Matrix (Fin 2) (Fin 2) Z2) (hA : IsUnit A) :
-    A = 1 ∨ A = !![1, 1; 0, 1] := by
+    ∃ f : Fin 2 ≃ Fin 2, ∃ g : Fin 2 ≃ Fin 2, A.submatrix f g = 1 ∨ A.submatrix f g = !![1, 1; 0, 1] := by
   sorry
 
-def Matrix.IsSigningOf {X Y : Type} (A : Matrix X Y ℚ) {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
-  ∀ i j, |A i j| = (U i j).val
+-- recipe for flipping signs in 3 × 3 matrix, works in both cases!
+def Matrix.toCanonicalSigning_3x3_constructive (A : Matrix (Fin 3) (Fin 3) ℚ) : (Fin 3 → ℚ) × (Fin 3 → ℚ) :=
+  ⟨![1, A 0 0 * A 1 0, A 0 0 * A 1 0 * A 1 2 * A 2 2], ![A 0 0, A 0 1, A 0 0 * A 1 0 * A 1 2]⟩
 
 -- lemma 15 in the write-up
 -- todo: make constructive (definition with explicit formula?)
-lemma Matrix.toCanonicalSigning_3x3₁ (A : Matrix (Fin 3) (Fin 3) ℚ) (hA : A.IsSigningOf (!![1, 1, 0; 1, 0, 1; 0, 1, 1] : Matrix (Fin 3) (Fin 3) Z2)) :
+lemma Matrix.toCanonicalSigning_3x3₁ (A : Matrix (Fin 3) (Fin 3) ℚ)
+    (hA : A.IsTuSigningOf (!![1, 1, 0; 1, 0, 1; 0, 1, 1] : Matrix (Fin 3) (Fin 3) Z2)) :
     ∃ x : Fin 3 → ℚ, ∃ y : Fin 3 → ℚ,
     ∀ i j, A i j * x i * y j = !![1, 1, 0; 1, 0, 1; 0, -1, 1] i j := by
   sorry
 
 -- lemma 16 in the write-up
 -- todo: make constructive (definition with explicit formula?)
-lemma Matrix.toCanonicalSigning_3x3₂ (A : Matrix (Fin 3) (Fin 3) ℚ) (hA : A.IsSigningOf (!![1, 1, 0; 1, 1, 1; 0, 1, 1] : Matrix (Fin 3) (Fin 3) Z2)) :
+lemma Matrix.toCanonicalSigning_3x3₂ (A : Matrix (Fin 3) (Fin 3) ℚ)
+    (hA : A.IsTuSigningOf (!![1, 1, 0; 1, 1, 1; 0, 1, 1] : Matrix (Fin 3) (Fin 3) Z2)) :
     ∃ x : Fin 3 → ℚ, ∃ y : Fin 3 → ℚ,
     ∀ i j, A i j * x i * y j = !![1, 1, 0; 1, 1, 1; 0, 1, 1] i j := by
   sorry
 
--- lemma Matrix.toCanonicalSigning_A₁ {β : Type} [CommRing β] {X₁ Y₁ X₂ Y₂ : Set α}
---     (A₁ : Matrix X₁ (Y₁ ⊕ Fin 2) β) (A₂ : Matrix (Fin 2 ⊕ X₂) Y₂ β)
---     (z₁ : Y₁ → β) (z₂ : X₂ → β) (D : Matrix (Fin 2) (Fin 2) β) (D₁ : Matrix (Fin 2) Y₁ β) (D₂ : Matrix X₂ (Fin 2) β) :
+lemma Matrix.toCanonicalSigning_3x3_constructive₁ (A : Matrix (Fin 3) (Fin 3) ℚ)
+    (hA : A.IsTuSigningOf (!![1, 1, 0; 1, 0, 1; 0, 1, 1] : Matrix (Fin 3) (Fin 3) Z2)) :
+    let x := A.toCanonicalSigning_3x3_constructive.fst;
+    let y := A.toCanonicalSigning_3x3_constructive.snd;
+    ∀ i j, A i j * x i * y j = !![1, 1, 0; 1, 0, 1; 0, -1, 1] i j := by
+  sorry
+
+lemma Matrix.toCanonicalSigning_3x3_constructive₂ (A : Matrix (Fin 3) (Fin 3) ℚ)
+    (hA : A.IsTuSigningOf (!![1, 1, 0; 1, 1, 1; 0, 1, 1] : Matrix (Fin 3) (Fin 3) Z2)) :
+    let x := A.toCanonicalSigning_3x3_constructive.fst;
+    let y := A.toCanonicalSigning_3x3_constructive.snd;
+    ∀ i j, A i j * x i * y j = !![1, 1, 0; 1, 1, 1; 0, 1, 1] i j := by
+  sorry
+
+-- possible refactor: reinstate β
+def matrix3sumComposition_B₁ {X₁ Y₁ : Set α}
+    (A₁ : Matrix X₁ (Y₁ ⊕ Fin 2) ℚ)
+    (D₀ : Matrix (Fin 2) (Fin 2) ℚ) (D₁ : Matrix (Fin 2) Y₁ ℚ) :
+    Matrix (X₁ ⊕ (Fin 2)) ((Y₁ ⊕ Fin 2) ⊕ Fin 1) ℚ :=
+  Matrix.fromBlocks A₁ 0 (Matrix.fromCols D₁ D₀) !![1; 1]
+
+def matrix3sumComposition_B₂ {X₂ Y₂ : Set α}
+    (A₂ : Matrix (Fin 2 ⊕ X₂) Y₂ ℚ)
+    (D₀ : Matrix (Fin 2) (Fin 2) ℚ) (D₂ : Matrix X₂ (Fin 2) ℚ) :
+    Matrix (Fin 1 ⊕ (Fin 2 ⊕ X₂)) (Fin 2 ⊕ Y₂) ℚ :=
+  Matrix.fromBlocks !![1, 1] 0 (Matrix.fromRows D₀ D₂) A₂
+
+noncomputable def matrix3sumComposition_toCanonicalSigning {X₁ Y₁ X₂ Y₂ : Set α}
+    (A₁ : Matrix X₁ (Y₁ ⊕ Fin 2) ℚ) (A₂ : Matrix (Fin 2 ⊕ X₂) Y₂ ℚ)
+    (D₀ : Matrix (Fin 2) (Fin 2) ℚ) (D₁ : Matrix (Fin 2) Y₁ ℚ) (D₂ : Matrix X₂ (Fin 2) ℚ)
+    (x₁ : X₁) (y₃ : Y₂) :
+    Matrix (X₁ ⊕ (Fin 2 ⊕ X₂)) ((Y₁ ⊕ Fin 2) ⊕ Y₂) ℚ
+    :=
+    -- get multiplication factors to get 3×3 matrix containing D₀ to canonical form
+    let D₀_ext := !![A₁ x₁ (.inr 0), A₁ x₁ (.inr 1), 0; D₀ 0 0, D₀ 0 1, A₂ (.inl 0) y₃; D₀ 1 0, D₀ 1 1, A₂ (.inl 1) y₃];
+    let D₀_row_mult := D₀_ext.toCanonicalSigning_3x3_constructive.fst;
+    let D₀_col_mult := D₀_ext.toCanonicalSigning_3x3_constructive.snd;
+    -- extend multiplication factors to vectors over corresponding domains
+    let A₁_row_mult : X₁ → ℚ := fun i => if i = x₁ then D₀_row_mult 0 else 1;
+    let A₁_col_mult : Y₁ ⊕ Fin 2 → ℚ := fun j => j.casesOn 1 ![D₀_col_mult 0, D₀_col_mult 1];
+    let A₂_row_mult : Fin 2 ⊕ X₂ → ℚ := fun i => i.casesOn ![D₀_row_mult 1, D₀_row_mult 2] 1;
+    let A₂_col_mult : Y₂ → ℚ := fun j => if j = y₃ then D₀_col_mult 2 else 1;
+    -- apply multiplication factors to all matrices
+    let A₁' := Matrix.of (fun i j => A₁ i j * A₁_row_mult i * A₁_col_mult j);
+    let A₂' := Matrix.of (fun i j => A₂ i j * A₂_row_mult i * A₂_col_mult j);
+    let D₀' := Matrix.of (fun i j => D₀ i j * D₀_row_mult i * D₀_col_mult j);
+    let D₁' := Matrix.of (fun i j => D₁ i j * ![D₀_row_mult 1, D₀_row_mult 2] i);
+    let D₂' := Matrix.of (fun i j => D₂ i j * ![D₀_col_mult 0, D₀_col_mult 1] j);
+    -- manually define signing for bottom left corner
+    let D₁₂' := D₂' * D₀⁻¹ * D₁';
+    -- compose signed matrix
+    Matrix.fromBlocks A₁' 0 (Matrix.fromBlocks D₁' D₀' D₁₂' D₂') A₂'
+
+-- note: this is probably unnecessary, as we obtain TU signings of all submatrices from TU signings of B₁ and B₂
+private def Matrix.IsSigningOf {X Y : Type} (A : Matrix X Y ℚ) {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
+  ∀ i j, |A i j| = (U i j).val
+
+private lemma Matrix.IsTuSigningOf_IsSigningOf {X Y : Type} (A : Matrix X Y ℚ) {n : ℕ} (U : Matrix X Y (ZMod n)) :
+  A.IsTuSigningOf U → A.IsSigningOf U := And.right
+
+lemma matrix3sumComposition_toCanonicalSigning_IsSigning {X₁ Y₁ X₂ Y₂ : Set α}
+    (A₁ : Matrix X₁ (Y₁ ⊕ Fin 2) Z2) (A₂ : Matrix (Fin 2 ⊕ X₂) Y₂ Z2)
+    (D₀ : Matrix (Fin 2) (Fin 2) Z2) (D₁ : Matrix (Fin 2) Y₁ Z2) (D₂ : Matrix X₂ (Fin 2) Z2)
+    (x₁ : X₁) (y₃ : Y₂)
+    :
+    ∀ A₁' A₂' D₀' D₁' D₂',
+    A₁'.IsSigningOf A₁ →
+    A₂'.IsSigningOf A₂ →
+    D₀'.IsSigningOf D₀ →
+    D₁'.IsSigningOf D₁ →
+    D₂'.IsSigningOf D₂ →
+    (matrix3sumComposition_toCanonicalSigning A₁' A₂' D₀' D₁' D₂' x₁ y₃).support = matrix3sumComposition A₁ A₂ D₀ D₁ D₂
+    := by
+  sorry
+
+lemma matrix3sumComposition_toCanonicalSigning_A₁_TU {X₁ Y₁ X₂ Y₂ : Set α}
+    (A₁ : Matrix X₁ (Y₁ ⊕ Fin 2) ℚ) (A₂ : Matrix (Fin 2 ⊕ X₂) Y₂ ℚ)
+    (D₀ : Matrix (Fin 2) (Fin 2) ℚ) (D₁ : Matrix (Fin 2) Y₁ ℚ) (D₂ : Matrix X₂ (Fin 2) ℚ)
+    (x₁ : X₁) (y₃ : Y₂)
+    (hD₀ : D₀.IsTuSigningOf (1 : Matrix (Fin 2) (Fin 2) Z2) ∨
+           D₀.IsTuSigningOf (!![1, 1; 0, 1] : Matrix (Fin 2) (Fin 2) Z2))
+    (hB₁ : (matrix3sumComposition_B₁ A₁ D₀ D₁).IsTotallyUnimodular)
+    (hB₂ : (matrix3sumComposition_B₂ A₂ D₀ D₂).IsTotallyUnimodular) :
+    (matrix3sumComposition_toCanonicalSigning A₁ A₂ D₀ D₁ D₂ x₁ y₃).toBlocks₁₁.IsTotallyUnimodular
+    := by
+  sorry
+
+lemma matrix3sumComposition_toCanonicalSigning_D_TU {X₁ Y₁ X₂ Y₂ : Set α}
+    (A₁ : Matrix X₁ (Y₁ ⊕ Fin 2) ℚ) (A₂ : Matrix (Fin 2 ⊕ X₂) Y₂ ℚ)
+    (D₀ : Matrix (Fin 2) (Fin 2) ℚ) (D₁ : Matrix (Fin 2) Y₁ ℚ) (D₂ : Matrix X₂ (Fin 2) ℚ)
+    (x₁ : X₁) (y₃ : Y₂)
+    (hD₀ : D₀.IsTuSigningOf (1 : Matrix (Fin 2) (Fin 2) Z2) ∨
+           D₀.IsTuSigningOf (!![1, 1; 0, 1] : Matrix (Fin 2) (Fin 2) Z2))
+    (hB₁ : (matrix3sumComposition_B₁ A₁ D₀ D₁).IsTotallyUnimodular)
+    (hB₂ : (matrix3sumComposition_B₂ A₂ D₀ D₂).IsTotallyUnimodular) :
+    (matrix3sumComposition_toCanonicalSigning A₁ A₂ D₀ D₁ D₂ x₁ y₃).toBlocks₂₁.IsTotallyUnimodular
+    := by
+  sorry
+
+lemma matrix3sumComposition_toCanonicalSigning_zero {X₁ Y₁ X₂ Y₂ : Set α}
+    (A₁ : Matrix X₁ (Y₁ ⊕ Fin 2) ℚ) (A₂ : Matrix (Fin 2 ⊕ X₂) Y₂ ℚ)
+    (D₀ : Matrix (Fin 2) (Fin 2) ℚ) (D₁ : Matrix (Fin 2) Y₁ ℚ) (D₂ : Matrix X₂ (Fin 2) ℚ)
+    (x₁ : X₁) (y₃ : Y₂)
+    (hD₀ : D₀.IsTuSigningOf (1 : Matrix (Fin 2) (Fin 2) Z2) ∨
+           D₀.IsTuSigningOf (!![1, 1; 0, 1] : Matrix (Fin 2) (Fin 2) Z2))
+    (hB₁ : (matrix3sumComposition_B₁ A₁ D₀ D₁).IsTotallyUnimodular)
+    (hB₂ : (matrix3sumComposition_B₂ A₂ D₀ D₂).IsTotallyUnimodular) :
+    (matrix3sumComposition_toCanonicalSigning A₁ A₂ D₀ D₁ D₂ x₁ y₃).toBlocks₁₂ = 0
+    := by
+  sorry
+
+lemma matrix3sumComposition_toCanonicalSigning_A₂_TU {X₁ Y₁ X₂ Y₂ : Set α}
+    (A₁ : Matrix X₁ (Y₁ ⊕ Fin 2) ℚ) (A₂ : Matrix (Fin 2 ⊕ X₂) Y₂ ℚ)
+    (D₀ : Matrix (Fin 2) (Fin 2) ℚ) (D₁ : Matrix (Fin 2) Y₁ ℚ) (D₂ : Matrix X₂ (Fin 2) ℚ)
+    (x₁ : X₁) (y₃ : Y₂)
+    (hD₀ : D₀.IsTuSigningOf (1 : Matrix (Fin 2) (Fin 2) Z2) ∨
+           D₀.IsTuSigningOf (!![1, 1; 0, 1] : Matrix (Fin 2) (Fin 2) Z2))
+    (hB₁ : (matrix3sumComposition_B₁ A₁ D₀ D₁).IsTotallyUnimodular)
+    (hB₂ : (matrix3sumComposition_B₂ A₂ D₀ D₂).IsTotallyUnimodular) :
+    (matrix3sumComposition_toCanonicalSigning A₁ A₂ D₀ D₁ D₂ x₁ y₃).toBlocks₂₂.IsTotallyUnimodular
+    := by
+  sorry
+
+-- definition of d-tilde (and e-tilde)
+-- lemma about columns of D being copies of d-tilde, a-tilde, b-tilde up to multiplication by 0, ±1
+-- lemma about columns of D remaining copies of d-tilde, a-tilde, b-tilde up to multiplication by 0, ±1 after pivot in A₁
+-- lemmas about structure of B after pivoting
+
+lemma matrix3sumComposition_toCanonicalSigning_PreTU_1 {X₁ Y₁ X₂ Y₂ : Set α}
+    (A₁ : Matrix X₁ (Y₁ ⊕ Fin 2) ℚ) (A₂ : Matrix (Fin 2 ⊕ X₂) Y₂ ℚ)
+    (D₀ : Matrix (Fin 2) (Fin 2) ℚ) (D₁ : Matrix (Fin 2) Y₁ ℚ) (D₂ : Matrix X₂ (Fin 2) ℚ)
+    (x₁ : X₁) (y₃ : Y₂)
+    (hD₀ : D₀.IsTuSigningOf (1 : Matrix (Fin 2) (Fin 2) Z2) ∨
+           D₀.IsTuSigningOf (!![1, 1; 0, 1] : Matrix (Fin 2) (Fin 2) Z2))
+    (hB₁ : (matrix3sumComposition_B₁ A₁ D₀ D₁).IsTotallyUnimodular)
+    (hB₂ : (matrix3sumComposition_B₂ A₂ D₀ D₂).IsTotallyUnimodular) :
+    (matrix3sumComposition_toCanonicalSigning A₁ A₂ D₀ D₁ D₂ x₁ y₃).IsPreTU 1
+    := by
+  sorry
+
+lemma matrix3sumComposition_toCanonicalSigning_PreTU_2 {X₁ Y₁ X₂ Y₂ : Set α}
+    (A₁ : Matrix X₁ (Y₁ ⊕ Fin 2) ℚ) (A₂ : Matrix (Fin 2 ⊕ X₂) Y₂ ℚ)
+    (D₀ : Matrix (Fin 2) (Fin 2) ℚ) (D₁ : Matrix (Fin 2) Y₁ ℚ) (D₂ : Matrix X₂ (Fin 2) ℚ)
+    (x₁ : X₁) (y₃ : Y₂)
+    (hD₀ : D₀.IsTuSigningOf (1 : Matrix (Fin 2) (Fin 2) Z2) ∨
+           D₀.IsTuSigningOf (!![1, 1; 0, 1] : Matrix (Fin 2) (Fin 2) Z2))
+    (hB₁ : (matrix3sumComposition_B₁ A₁ D₀ D₁).IsTotallyUnimodular)
+    (hB₂ : (matrix3sumComposition_B₂ A₂ D₀ D₂).IsTotallyUnimodular) :
+    (matrix3sumComposition_toCanonicalSigning A₁ A₂ D₀ D₁ D₂ x₁ y₃).IsPreTU 2
+    := by
+  sorry
+
+lemma matrix3sumComposition_toCanonicalSigning_TU {X₁ Y₁ X₂ Y₂ : Set α}
+    (A₁ : Matrix X₁ (Y₁ ⊕ Fin 2) ℚ) (A₂ : Matrix (Fin 2 ⊕ X₂) Y₂ ℚ)
+    (D₀ : Matrix (Fin 2) (Fin 2) ℚ) (D₁ : Matrix (Fin 2) Y₁ ℚ) (D₂ : Matrix X₂ (Fin 2) ℚ)
+    (x₁ : X₁) (y₃ : Y₂)
+    (hD₀ : D₀.IsTuSigningOf (1 : Matrix (Fin 2) (Fin 2) Z2) ∨
+           D₀.IsTuSigningOf (!![1, 1; 0, 1] : Matrix (Fin 2) (Fin 2) Z2))
+    (hB₁ : (matrix3sumComposition_B₁ A₁ D₀ D₁).IsTotallyUnimodular)
+    (hB₂ : (matrix3sumComposition_B₂ A₂ D₀ D₂).IsTotallyUnimodular) :
+    (matrix3sumComposition_toCanonicalSigning A₁ A₂ D₀ D₁ D₂ x₁ y₃).IsTotallyUnimodular
+    := by
+  sorry
+  -- todo: inductive proof of PreTUness for every k
 
 end AuxiliaryLemmas

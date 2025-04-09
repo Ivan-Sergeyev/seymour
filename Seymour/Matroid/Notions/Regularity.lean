@@ -27,13 +27,8 @@ abbrev StandardRepr.HasTuSigning {α : Type} [DecidableEq α] (S : StandardRepr 
 
 -- ## Auxiliary stuff
 
-private def Matrix.support {X Y : Type} (A : Matrix X Y ℚ) (n : ℕ := 2) : Matrix X Y (ZMod n) :=
+def Matrix.support {X Y : Type} (A : Matrix X Y ℚ) (n : ℕ := 2) : Matrix X Y (ZMod n) :=
   Matrix.of (if A · · = 0 then 0 else 1)
-
-@[app_unexpander Matrix.support]
-private def Matrix.support_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $x) => `($(x).$(Lean.mkIdent `support))
-  | _ => throw ()
 
 private lemma Matrix.support_transpose {X Y : Type} (A : Matrix X Y ℚ) :
     A.support.transpose = A.transpose.support :=
