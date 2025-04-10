@@ -461,8 +461,9 @@ lemma matrixGeneralizedComposition_isTotallyUnimodular {α : Type} [DecidableEq 
         | neg =>
           right
           exact hs.symm
-      obtain ⟨f', g', -, -, impossible⟩ := corollary1 hAfg i₁ j₀ (by convert hAxy1 <;> simp [matrix2sumComposition, *])
+      obtain ⟨f', g', -, -, impossible⟩ := corollary1 hAfg i₁ j₀ (by convert hAxy1 <;> simp [*])
       apply impossible
       rw [(⊞ A₁ 0 D A₂).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix, hix₁, hjy₀]
-      -- TODO to `apply ih` here?
+      specialize ih hAD hAC hD
+      -- TODO generalize `matrix2sumComposition_shortTableauPivot` and rewrite here, then `ih` will be directly applicable
       sorry
