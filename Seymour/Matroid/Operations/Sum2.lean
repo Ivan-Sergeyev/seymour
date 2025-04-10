@@ -151,12 +151,6 @@ private lemma lemma6₂_aux {α : Type} [DecidableEq α] {Y₁ X₂ Y₂ : Set �
   convert (lemma6₂_aux' hAy' hx).comp_cols Sum.swap
   aesop
 
-lemma lemma6₁ {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
-    {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
-    (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular) :
-    (A₁ ⊟ (y · * x ·)).IsTotallyUnimodular :=
-  lemma6₁_aux hAx (hAy.apply · ◩())
-
 lemma lemma6₂ {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
     (hAx : (A₁ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ A₂).IsTotallyUnimodular) :
