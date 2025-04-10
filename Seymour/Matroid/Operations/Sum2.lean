@@ -415,56 +415,54 @@ lemma matrixGeneralizedComposition_isTotallyUnimodular {α : Type} [DecidableEq 
   intro k
   cases k with
   | zero => simp [Matrix.IsPreTU]
-  | succ n => cases n with
+  | succ m => induction m generalizing A₁ A₂ D with
     | zero => sorry
-    | succ m => induction m generalizing A₁ A₂ D with
-      | zero => sorry
-      | succ k ih =>
-        have hA₁ : A₁.IsTotallyUnimodular := hAD.comp_rows Sum.inl
-        have hA₂ : A₂.IsTotallyUnimodular := hAC.comp_cols Sum.inr
-        by_contra contr
-        obtain ⟨f, g, hAfg⟩ := exists_submatrix_of_not_isPreTU contr
-        wlog hf : f.Injective
-        · apply hAfg
-          convert zero_in_signTypeCastRange
-          exact (⊞ A₁ 0 D A₂).submatrix_det_zero_of_not_injective_left hf
-        wlog hg : g.Injective
-        · apply hAfg
-          convert zero_in_signTypeCastRange
-          exact (⊞ A₁ 0 D A₂).submatrix_det_zero_of_not_injective_right hg
-        -- now we show that all four blocks are part of the submatrix
-        obtain ⟨i₁, x₁, hix₁⟩ : ∃ i₁ : Fin (k + 3), ∃ x₁ : X₁, f i₁ = ◩x₁
-        · rw [Matrix.isTotallyUnimodular_iff] at hAC
-          rw [←Matrix.fromRows_fromCols_eq_fromBlocks] at hAfg
-          by_contra! hfX₁
-          apply hAfg
-          specialize hAC (k + 3) (fn_of_sum_ne_inl hfX₁)
-          sorry
-        obtain ⟨j₀, y₀, hjy₀, hAxy0⟩ : ∃ j₀ : Fin (k + 3), ∃ y₀ : Y₁, g j₀ = ◩y₀ ∧ A₁ x₁ y₀ ≠ 0
-        · by_contra! hgY₁
-          apply hAfg
-          convert zero_in_signTypeCastRange
-          apply Matrix.det_eq_zero_of_row_eq_zero i₁
-          intro z
-          rw [←Matrix.fromRows_fromCols_eq_fromBlocks, Matrix.submatrix_apply, hix₁, Matrix.fromRows_apply_inl]
-          cases hgz : g z with
-          | inl => exact hgY₁ z _ hgz
-          | inr => simp
-        have hAxy1 : A₁ x₁ y₀ = 1 ∨ A₁ x₁ y₀ = -1
-        · obtain ⟨s, hs⟩ := hA₁.apply x₁ y₀
-          cases s with
-          | zero =>
-            exfalso
-            apply hAxy0
-            exact hs.symm
-          | pos =>
-            left
-            exact hs.symm
-          | neg =>
-            right
-            exact hs.symm
-        obtain ⟨f', g', -, -, impossible⟩ := corollary1 hAfg i₁ j₀ (by convert hAxy1 <;> simp [matrix2sumComposition, *])
-        apply impossible
-        rw [(⊞ A₁ 0 D A₂).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix, hix₁, hjy₀]
-        -- TODO to `apply ih` here?
+    | succ n ih =>
+      have hA₁ : A₁.IsTotallyUnimodular := hAD.comp_rows Sum.inl
+      have hA₂ : A₂.IsTotallyUnimodular := hAC.comp_cols Sum.inr
+      by_contra contr
+      obtain ⟨f, g, hAfg⟩ := exists_submatrix_of_not_isPreTU contr
+      wlog hf : f.Injective
+      · apply hAfg
+        convert zero_in_signTypeCastRange
+        exact (⊞ A₁ 0 D A₂).submatrix_det_zero_of_not_injective_left hf
+      wlog hg : g.Injective
+      · apply hAfg
+        convert zero_in_signTypeCastRange
+        exact (⊞ A₁ 0 D A₂).submatrix_det_zero_of_not_injective_right hg
+      -- now we show that all four blocks are part of the submatrix
+      obtain ⟨i₁, x₁, hix₁⟩ : ∃ i₁ : Fin (n + 2), ∃ x₁ : X₁, f i₁ = ◩x₁
+      · rw [Matrix.isTotallyUnimodular_iff] at hAC
+        rw [←Matrix.fromRows_fromCols_eq_fromBlocks] at hAfg
+        by_contra! hfX₁
+        apply hAfg
+        specialize hAC (n + 2) (fn_of_sum_ne_inl hfX₁)
         sorry
+      obtain ⟨j₀, y₀, hjy₀, hAxy0⟩ : ∃ j₀ : Fin (n + 2), ∃ y₀ : Y₁, g j₀ = ◩y₀ ∧ A₁ x₁ y₀ ≠ 0
+      · by_contra! hgY₁
+        apply hAfg
+        convert zero_in_signTypeCastRange
+        apply Matrix.det_eq_zero_of_row_eq_zero i₁
+        intro z
+        rw [←Matrix.fromRows_fromCols_eq_fromBlocks, Matrix.submatrix_apply, hix₁, Matrix.fromRows_apply_inl]
+        cases hgz : g z with
+        | inl => exact hgY₁ z _ hgz
+        | inr => simp
+      have hAxy1 : A₁ x₁ y₀ = 1 ∨ A₁ x₁ y₀ = -1
+      · obtain ⟨s, hs⟩ := hA₁.apply x₁ y₀
+        cases s with
+        | zero =>
+          exfalso
+          apply hAxy0
+          exact hs.symm
+        | pos =>
+          left
+          exact hs.symm
+        | neg =>
+          right
+          exact hs.symm
+      obtain ⟨f', g', -, -, impossible⟩ := corollary1 hAfg i₁ j₀ (by convert hAxy1 <;> simp [matrix2sumComposition, *])
+      apply impossible
+      rw [(⊞ A₁ 0 D A₂).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix, hix₁, hjy₀]
+      -- TODO to `apply ih` here?
+      sorry
