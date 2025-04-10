@@ -241,11 +241,11 @@ lemma lemma1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F} {r c :
   sorry
 
 lemma corollary1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F}
-    (hA : A.det ∉ SignType.cast.range) (r c : Fin k.succ) (hArc : A r c = 1 ∨ A r c = -1) :
+    (hA : A.det ∉ SignType.cast.range) (i j : Fin k.succ) (hAij : A i j = 1 ∨ A i j = -1) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
-      ((A.shortTableauPivot r c).submatrix f g).det ∉ SignType.cast.range := by
-  have hArc0 : A r c ≠ 0
-  · cases hArc with
+      ((A.shortTableauPivot i j).submatrix f g).det ∉ SignType.cast.range := by
+  have hArc0 : A i j ≠ 0
+  · cases hAij with
     | inl h1 =>
       rw [h1]
       norm_num
@@ -255,7 +255,7 @@ lemma corollary1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F}
   obtain ⟨f, g, hf, hg, hAfg⟩ := lemma1 hArc0
   use f, g, hf, hg
   rw [hAfg]
-  cases hArc with
+  cases hAij with
   | inl h1 =>
     rw [h1, div_one]
     exact hA
@@ -263,9 +263,9 @@ lemma corollary1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F}
     rw [h9, div_neg, div_one]
     exact (hA <| in_signTypeCastRange_of_neg ·)
 
-lemma Matrix.shortTableauPivot_zero {X' Y' : Type} [DecidableEq X] [DecidableEq Y] [DecidableEq X'] [Field F]
-    (B : Matrix X Y F) (r' : X') (c : Y) (f : X' → X) (g : Y' → Y) (hg : c ∉ g.range) (hBfg : ∀ i j, B (f i) (g j) = 0) :
-    ∀ i : X', ∀ j : Y', (B.shortTableauPivot (f r') c) (f i) (g j) = 0 := by
+lemma Matrix.shortTableauPivot_zero {X' Y' : Type} [DecidableEq X] [DecidableEq Y] [DecidableEq X'] [DivisionRing F]
+    (B : Matrix X Y F) (x : X') (y : Y) (f : X' → X) (g : Y' → Y) (hg : y ∉ g.range) (hBfg : ∀ i j, B (f i) (g j) = 0) :
+    ∀ i : X', ∀ j : Y', (B.shortTableauPivot (f x) y) (f i) (g j) = 0 := by
   unfold Matrix.shortTableauPivot
   aesop
 
