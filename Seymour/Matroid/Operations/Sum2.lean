@@ -188,7 +188,7 @@ private lemma matrix2sumComposition_isPreTU_1 {α : Type} {X₁ Y₁ X₂ Y₂ :
     | inr j₂ => exact hA₂.apply i₂ j₂
 
 /-- How row `v` changes after pivoting on `j`-th element of row `u`. -/
-private noncomputable def shortTableauPivotOuterRow {Y Y' R : Type} [DecidableEq Y'] [DivisionRing R]
+noncomputable def shortTableauPivotOuterRow {Y Y' R : Type} [DecidableEq Y'] [DivisionRing R]
     (u : Y → R) (j : Y') (g : Y' → Y) (v : Y' → R) :
     Y' → R :=
   fun j' : Y' => if j' = j then -v j' / u (g j) else (u (g j) * v j' - u (g j') * v j) / u (g j)
