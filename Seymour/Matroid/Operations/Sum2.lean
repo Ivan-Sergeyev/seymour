@@ -187,11 +187,11 @@ private lemma matrix2sumComposition_isPreTU_1 {α : Type} {X₁ Y₁ X₂ Y₂ :
     | inl j₁ => exact in_signTypeCastRange_mul_in_signTypeCastRange (hAy.apply i₂ ◩()) (hAx.apply ◪() j₁)
     | inr j₂ => exact hA₂.apply i₂ j₂
 
-/-- Compute the row vector for the outer product after pivoting outside of the outer product. -/
-private noncomputable def Matrix.shortTableauPivotOuterRow {X Y Y' R : Type} [DecidableEq Y'] [DivisionRing R]
-    (B : Matrix X Y R) (i : X) (j : Y') (g : Y' → Y) (v : Y' → R) (s : R) :
+/-- How row `v` changes after pivoting on `j`-th element of row `u`. -/
+private noncomputable def shortTableauPivotOuterRow {Y Y' R : Type} [DecidableEq Y'] [DivisionRing R]
+    (u : Y → R) (j : Y') (g : Y' → Y) (v : Y' → R) :
     Y' → R :=
-  fun j' : Y' => if j' = j then -s * v j' else (B i (g j) * v j' - B i (g j') * v j) / B i (g j)
+  fun j' : Y' => if j' = j then -v j' / u (g j) else (u (g j) * v j' - u (g j') * v j) / u (g j)
 
 private lemma Matrix.shortTableauPivot_outer {X Y X' Y' R : Type} [DecidableEq X] [DecidableEq Y] [DecidableEq Y'] [Field R]
     (B : Matrix X Y R) (i : X) (j : Y') (f : X' → X) (g : Y' → Y) (hf : i ∉ f.range) (hg : g.Injective)
@@ -199,9 +199,9 @@ private lemma Matrix.shortTableauPivot_outer {X Y X' Y' R : Type} [DecidableEq X
     (v : Y' → R) (y : X' → R) (hBfg : ∀ i j, B (f i) (g j) = y i * v j) :
     ∀ i' : X', ∀ j' : Y',
       (B.shortTableauPivot i (g j)) (f i') (g j') =
-      y i' * B.shortTableauPivotOuterRow i j g v (B i (g j)) j' := by
+      y i' * shortTableauPivotOuterRow (B i) j g v j' := by
   intro i' j'
-  unfold shortTableauPivot Matrix.shortTableauPivotOuterRow
+  unfold shortTableauPivot shortTableauPivotOuterRow
   cases hBij with
   | inl h1 =>
     if hj : j' = j then
@@ -224,7 +224,7 @@ private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq �
     (A₁ : Matrix X₁ Y₁ ℚ) (x : Y₁ → ℚ) (A₂ : Matrix X₂ Y₂ ℚ) (y : X₂ → ℚ) {i : X₁} {j : Y₁} (hAij : A₁ i j = 1 ∨ A₁ i j = -1) :
     let B := matrix2sumComposition A₁ x A₂ y
     B.shortTableauPivot ◩i ◩j =
-    matrix2sumComposition (A₁.shortTableauPivot i j) (B.shortTableauPivotOuterRow ◩i j Sum.inl x (A₁ i j)) A₂ y := by
+    matrix2sumComposition (A₁.shortTableauPivot i j) (shortTableauPivotOuterRow (B ◩i) j Sum.inl x) A₂ y := by
   intro B
   have hBA₁ : (B.shortTableauPivot ◩i ◩j).toBlocks₁₁ = A₁.shortTableauPivot i j
   · exact (B.submatrix_shortTableauPivot Sum.inl_injective Sum.inl_injective i j).symm
@@ -234,7 +234,7 @@ private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq �
   · ext i₁ j₂
     exact B.shortTableauPivot_zero i ◩j Sum.inl Sum.inr (by simp) (by simp [matrix2sumComposition, B]) i₁ j₂
   have hBD :
-    (B.shortTableauPivot ◩i ◩j).toBlocks₂₁ = Matrix.of (y · * Matrix.shortTableauPivotOuterRow B ◩i j Sum.inl x (B ◩i ◩j) ·)
+    (B.shortTableauPivot ◩i ◩j).toBlocks₂₁ = Matrix.of (y · * shortTableauPivotOuterRow (B ◩i) j Sum.inl x ·)
   · have := B.shortTableauPivot_outer ◩i j Sum.inr Sum.inl (by simp) Sum.inl_injective hAij x y
     aesop
   rw [←(B.shortTableauPivot ◩i ◩j).fromBlocks_toBlocks, hBA₁, hBA₂, hB0, hBD]
@@ -311,7 +311,7 @@ lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X�
       | inl =>
         simp [Matrix.shortTableauPivot]
       | inr =>
-        simp [Matrix.shortTableauPivot, Matrix.shortTableauPivotOuterRow]
+        simp [Matrix.shortTableauPivot, shortTableauPivotOuterRow]
         if hj : j = y₀ then
           cases hAxy1 with
           | inl h1 => simp [hj, h1]
