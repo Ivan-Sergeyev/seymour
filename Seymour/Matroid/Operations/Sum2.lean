@@ -189,8 +189,7 @@ private lemma matrix2sumComposition_isPreTU_1 {α : Type} {X₁ Y₁ X₂ Y₂ :
 
 /-- The result of the vector `v` after pivoting on `j`th element in the row `u` and restriction. -/
 noncomputable def shortTableauPivotOuterRow {Y Y' R : Type} [DecidableEq Y'] [DivisionRing R]
-    (u : Y → R) (j : Y') (g : Y' → Y) (v : Y' → R) :
-    Y' → R :=
+    (u : Y → R) (j : Y') (g : Y' → Y) (v : Y' → R) : Y' → R :=
   fun j' : Y' => if j' = j then -v j' / u (g j) else (u (g j) * v j' - u (g j') * v j) / u (g j)
 
 private lemma Matrix.shortTableauPivot_outer {X Y X' Y' R : Type} [DecidableEq X] [DecidableEq Y] [DecidableEq Y'] [Field R]
@@ -228,20 +227,16 @@ private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq �
   intro B
   have hBA₁ : (B.shortTableauPivot ◩i ◩j).toBlocks₁₁ = A₁.shortTableauPivot i j
   · exact (B.submatrix_shortTableauPivot Sum.inl_injective Sum.inl_injective i j).symm
-  have hBA₂ : (B.shortTableauPivot ◩i ◩j).toBlocks₂₂ = A₂
-  · exact B.shortTableauPivot_submatrix_zero_external_row ◩i ◩j Sum.inr Sum.inr (by aesop) (by aesop) (by aesop)
   have hB0 : (B.shortTableauPivot ◩i ◩j).toBlocks₁₂ = 0
   · ext i₁ j₂
     exact B.shortTableauPivot_zero i ◩j Sum.inl Sum.inr (by simp) (by simp [matrix2sumComposition, B]) i₁ j₂
-  have hBD :
-    (B.shortTableauPivot ◩i ◩j).toBlocks₂₁ = Matrix.of (y · * shortTableauPivotOuterRow (B ◩i) j Sum.inl x ·)
+  have hBD : (B.shortTableauPivot ◩i ◩j).toBlocks₂₁ = Matrix.of (y · * shortTableauPivotOuterRow (B ◩i) j Sum.inl x ·)
   · have := B.shortTableauPivot_outer ◩i j Sum.inr Sum.inl (by simp) Sum.inl_injective hAij x y
     aesop
+  have hBA₂ : (B.shortTableauPivot ◩i ◩j).toBlocks₂₂ = A₂
+  · exact B.shortTableauPivot_submatrix_zero_external_row ◩i ◩j Sum.inr Sum.inr (by aesop) (by aesop) (by aesop)
   rw [←(B.shortTableauPivot ◩i ◩j).fromBlocks_toBlocks, hBA₁, hBA₂, hB0, hBD]
-  have hBij : B ◩i ◩j = A₁ i j
-  · rfl
-  unfold matrix2sumComposition
-  aesop
+  rfl
 
 lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {x : Y₁ → ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {y : X₂ → ℚ}
