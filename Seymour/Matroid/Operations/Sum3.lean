@@ -1,8 +1,5 @@
 import Seymour.Matroid.Notions.Regularity
 import Seymour.Matroid.Operations.Sum2
-import Seymour.Matrix.Pivoting
-import Seymour.Matrix.Determinants
-import Seymour.Matrix.PreTUness
 
 
 variable {α : Type} [DecidableEq α]
@@ -123,16 +120,23 @@ end StandardMatrixDefinition
 
 section AlternativeMatrixDefinition
 
+omit [DecidableEq α] in
 /-- Alternative definition of 3-sum composition using sum of two outer products of vectors to define bottom left submatrix. -/
 def matrix3sumCompositionAlt {β : Type} [CommRing β] {X₁ Y₁ X₂ Y₂ : Set α}
     (A₁ : Matrix X₁ Y₁ β) (A₂ : Matrix X₂ Y₂ β) (r₀ : Y₁ → β) (r₁ : Y₁ → β) (c₀ : X₂ → β) (c₁ : X₂ → β) :
     Matrix (X₁ ⊕ X₂) (Y₁ ⊕ Y₂) β :=
   Matrix.fromBlocks A₁ 0 ((c₀ · * r₀ ·) + (c₁ · * r₁ ·)) A₂
 
+omit [DecidableEq α] in
+private lemma matrix3sumCompositionAlt_eq_fromRows {β : Type} [CommRing β] {X₁ Y₁ X₂ Y₂ : Set α}
+    (A₁ : Matrix X₁ Y₁ β) (A₂ : Matrix X₂ Y₂ β) (r₀ : Y₁ → β) (r₁ : Y₁ → β) (c₀ : X₂ → β) (c₁ : X₂ → β) :
+    matrix3sumCompositionAlt A₁ A₂ r₀ r₁ c₀ c₁ = (A₁ ◫ 0) ⊟ (((c₀ · * r₀ ·) + (c₁ · * r₁ ·)) ◫ A₂) := by
+  rfl
+
 lemma matrix3sumCompositionAlt_isPreTU_1 {α : Type} {X₁ Y₁ X₂ Y₂ : Set α}
-    (A₁ : Matrix X₁ Y₁ ℚ) (A₂ : Matrix X₂ Y₂ ℚ) (r₀ : Y₁ → ℚ) (r₁ : Y₁ → ℚ) (c₀ : X₂ → ℚ) (c₁ : X₂ → ℚ)
+    {A₁ : Matrix X₁ Y₁ ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {r₀ : Y₁ → ℚ} {r₁ : Y₁ → ℚ} {c₀ : X₂ → ℚ} {c₁ : X₂ → ℚ}
     (hA₁ : (▬r₀ ⊟ ▬r₁ ⊟ A₁).IsTotallyUnimodular) (hA₂ : (▮c₀ ◫ ▮c₁ ◫ A₂).IsTotallyUnimodular)
-    (hc₀c₁ : ∀ i, (c₀ - c₁) i ∈ SignType.cast.range) (hr₀r₁ : ∀ j, (r₀ + r₁) j ∈ SignType.cast.range) :
+    (hcc : ∀ i : X₂, (c₀ - c₁) i ∈ SignType.cast.range) (hrr : ∀ j : Y₁, (r₀ + r₁) j ∈ SignType.cast.range) :
     (matrix3sumCompositionAlt A₁ A₂ r₀ r₁ c₀ c₁).IsPreTU 1 := by
   intro f g
   rw [Matrix.det_unique, Fin.default_eq_zero, Matrix.submatrix_apply]
@@ -146,9 +150,16 @@ lemma matrix3sumCompositionAlt_isPreTU_1 {α : Type} {X₁ Y₁ X₂ Y₂ : Set 
     | inl j₁ =>
       unfold matrix3sumCompositionAlt
       rw [Matrix.fromBlocks_apply₂₁, Pi.add_apply, Pi.add_apply]
-      -- todo: follows from c₀, c₁, c₀ - c₁, r₀, r₁, r₀ + r₁ being {0, ±1} vectors
+      -- todo: follows from `c₀`, `c₁`, `c₀ - c₁`, `r₀`, `r₁`, `r₀ + r₁` all being {0, ±1} vectors
       sorry
     | inr j₂ => exact hA₂.apply i₂ j₂
+
+lemma matrix3sumCompositionAlt_bottom_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ : Set α}
+    {A₁ : Matrix X₁ Y₁ ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {r₀ : Y₁ → ℚ} {r₁ : Y₁ → ℚ} {c₀ : X₂ → ℚ} {c₁ : X₂ → ℚ}
+    (hA₁ : (▬r₀ ⊟ ▬r₁ ⊟ A₁).IsTotallyUnimodular) (hA₂ : (▮c₀ ◫ ▮c₁ ◫ A₂).IsTotallyUnimodular)
+    (hcc : ∀ i : X₂, (c₀ - c₁) i ∈ SignType.cast.range) (hrr : ∀ j : Y₁, (r₀ + r₁) j ∈ SignType.cast.range) :
+    (((c₀ · * r₀ ·) + (c₁ · * r₁ ·)) ◫ A₂).IsTotallyUnimodular :=
+  sorry
 
 /-- Expresses how row vector of first outer product changes after pivot in A₁. -/
 def matrix3sumCompositionAlt_pivotA₁_Dr₀ {X₁ Y₁ X₂ : Set α}
@@ -174,7 +185,7 @@ lemma matrix3sumCompositionAlt_pivotA₁_Dr₀r₁_properties_preserved {X₁ Y�
     (▬r₀' ⊟ ▬r₁' ⊟ A₁).IsTotallyUnimodular ∧ ∀ j, (r₀' + r₁') j ∈ SignType.cast.range := by
   sorry
 
-lemma matrix3sumCompositionAlt_shortTableauPivotA₁ {X₁ Y₁ X₂ Y₂ : Set α}
+lemma matrix3sumCompositionAlt_shortTableauPivot {X₁ Y₁ X₂ Y₂ : Set α}
     (A₁ : Matrix X₁ Y₁ ℚ) (A₂ : Matrix X₂ Y₂ ℚ) (r₀ : Y₁ → ℚ) (r₁ : Y₁ → ℚ) (c₀ : X₂ → ℚ) (c₁ : X₂ → ℚ)
     {i : X₁} {j : Y₁} (hij : A₁ i j = 1 ∨ A₁ i j = -1) :
     let B := (matrix3sumCompositionAlt A₁ A₂ r₀ r₁ c₀ c₁)
@@ -190,17 +201,74 @@ lemma matrix3sumCompositionAlt_shortTableauPivotA₁ {X₁ Y₁ X₂ Y₂ : Set 
   have hBD : (B.shortTableauPivot ◩i ◩j).toBlocks₂₁ = ((c₀ · * r₀' ·) + (c₁ · * r₁' ·))
   · sorry
   have hBA₂ : (B.shortTableauPivot ◩i ◩j).toBlocks₂₂ = A₂
-  · exact B.shortTableauPivot_submatrix_zero_external_row ◩i ◩j Sum.inr Sum.inr (by aesop) (by aesop) (by aesop)
+  · exact B.shortTableauPivot_submatrix_zero_external_row ◩i ◩j Sum.inr Sum.inr (by simp) (by simp) (fun _ => rfl)
   rw [←(B.shortTableauPivot ◩i ◩j).fromBlocks_toBlocks, hBA₁, hB0, hBD, hBA₂]
   rfl
 
 lemma matrix3sumCompositionAlt_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ : Set α}
-    (A₁ : Matrix X₁ Y₁ ℚ) (A₂ : Matrix X₂ Y₂ ℚ) (r₀ : Y₁ → ℚ) (r₁ : Y₁ → ℚ) (c₀ : X₂ → ℚ) (c₁ : X₂ → ℚ)
-    (hA₁ : (▬r₀ ⊟ ▬r₁ ⊟ A₁).IsTotallyUnimodular) (hA₂ : (▮c₀ ◫ ▮c₁ ◫ A₂).IsTotallyUnimodular)
-    (hc₀c₁ : ∀ i, (c₀ - c₁) i ∈ SignType.cast.range) (hr₀r₁ : ∀ j, (r₀ + r₁) j ∈ SignType.cast.range) :
+    {A₁ : Matrix X₁ Y₁ ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {r₀ : Y₁ → ℚ} {r₁ : Y₁ → ℚ} {c₀ : X₂ → ℚ} {c₁ : X₂ → ℚ}
+    (hrrA₁ : (▬r₀ ⊟ ▬r₁ ⊟ A₁).IsTotallyUnimodular) (hccA₂ : (▮c₀ ◫ ▮c₁ ◫ A₂).IsTotallyUnimodular)
+    (hcc : ∀ i : X₂, (c₀ - c₁) i ∈ SignType.cast.range) (hrr : ∀ j : Y₁, (r₀ + r₁) j ∈ SignType.cast.range) :
     (matrix3sumCompositionAlt A₁ A₂ r₀ r₁ c₀ c₁).IsTotallyUnimodular := by
-  -- todo: adapt from 2-sum
-  sorry
+  rw [Matrix.isTotallyUnimodular_iff_forall_IsPreTU]
+  intro k
+  cases k with
+  | zero => simp [Matrix.IsPreTU]
+  | succ m => induction m generalizing A₁ A₂ r₀ r₁ c₀ c₁ with
+    | zero => exact matrix3sumCompositionAlt_isPreTU_1 hrrA₁ hccA₂ hcc hrr
+    | succ n ih =>
+      have hA₁ : A₁.IsTotallyUnimodular := hrrA₁.comp_rows Sum.inr
+      have hA₂ : A₂.IsTotallyUnimodular := hccA₂.comp_cols Sum.inr
+      by_contra contr
+      obtain ⟨f, g, hAfg⟩ := exists_submatrix_of_not_isPreTU contr
+      wlog hf : f.Injective
+      · apply hAfg
+        convert zero_in_signTypeCastRange
+        exact (matrix3sumCompositionAlt A₁ A₂ r₀ r₁ c₀ c₁).submatrix_det_zero_of_not_injective_left hf
+      wlog hg : g.Injective
+      · apply hAfg
+        convert zero_in_signTypeCastRange
+        exact (matrix3sumCompositionAlt A₁ A₂ r₀ r₁ c₀ c₁).submatrix_det_zero_of_not_injective_right hg
+      obtain ⟨i₁, x₁, hix₁⟩ : ∃ i₁ : Fin (n + 2), ∃ x₁ : X₁, f i₁ = ◩x₁
+      · have isTU := matrix3sumCompositionAlt_bottom_isTotallyUnimodular hrrA₁ hccA₂ hcc hrr
+        rw [Matrix.isTotallyUnimodular_iff] at isTU
+        rw [matrix3sumCompositionAlt_eq_fromRows] at hAfg
+        by_contra! hfX₁
+        apply hAfg
+        convert isTU (n + 2) (fn_of_sum_ne_inl hfX₁) g using 2
+        ext i j
+        rewrite [Matrix.submatrix_apply, eq_of_fn_sum_ne_inl hfX₁ i]
+        rfl
+      obtain ⟨j₀, y₀, hjy₀, hAxy0⟩ : ∃ j₀ : Fin (n + 2), ∃ y₀ : Y₁, g j₀ = ◩y₀ ∧ A₁ x₁ y₀ ≠ 0
+      · by_contra! hgY₁ -- because the `i₁`th row cannot be all `0`s
+        apply hAfg
+        convert zero_in_signTypeCastRange
+        apply Matrix.det_eq_zero_of_row_eq_zero i₁
+        intro z
+        rw [matrix3sumCompositionAlt_eq_fromRows, Matrix.submatrix_apply, hix₁, Matrix.fromRows_apply_inl]
+        cases hgz : g z with
+        | inl => exact hgY₁ z _ hgz
+        | inr => simp
+      have hAxy1 : A₁ x₁ y₀ = 1 ∨ A₁ x₁ y₀ = -1
+      · obtain ⟨s, hs⟩ := hA₁.apply x₁ y₀
+        cases s with
+        | zero =>
+          exfalso
+          apply hAxy0
+          exact hs.symm
+        | pos =>
+          left
+          exact hs.symm
+        | neg =>
+          right
+          exact hs.symm
+      obtain ⟨f', g', -, -, impossible⟩ := corollary1 hAfg i₁ j₀ (by convert hAxy1 <;> simp [matrix3sumCompositionAlt, *])
+      apply impossible
+      rw [(matrix3sumCompositionAlt A₁ A₂ r₀ r₁ c₀ c₁).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix,
+        hix₁, hjy₀, matrix3sumCompositionAlt_shortTableauPivot A₁ A₂ r₀ r₁ c₀ c₁ hAxy1]
+      apply ih _ hccA₂ hcc _
+      · sorry
+      · sorry
 
 end AlternativeMatrixDefinition
 

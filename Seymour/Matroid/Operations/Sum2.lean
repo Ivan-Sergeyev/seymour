@@ -78,7 +78,7 @@ private lemma Matrix.IsTotallyUnimodular.aux190 {α : Type} [DecidableEq α] {X�
     obtain ⟨i, hi⟩ := last_row
     have flipped : (A₁ ⊟ ▬x ⊟ ▬(-x)) = (A₁ ⊟ ▬x ⊟ ▬x).updateRow ◪() (-x)
     · aesop
-    have bubbled : ((A₁ ⊟ ▬x ⊟ ▬x).updateRow (◪()) (-x)).submatrix f g = ((A₁ ⊟ ▬x ⊟ ▬x).submatrix f g).updateRow i ((-x) ∘ g)
+    have bubbled : ((A₁ ⊟ ▬x ⊟ ▬x).updateRow ◪() (-x)).submatrix f g = ((A₁ ⊟ ▬x ⊟ ▬x).submatrix f g).updateRow i ((-x) ∘ g)
     · ext r
       if hr : r = i then
         simp [hr, hi]
@@ -234,7 +234,7 @@ private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq �
   · have := B.shortTableauPivot_outer ◩i j Sum.inr Sum.inl (by simp) Sum.inl_injective hAij x y
     aesop
   have hBA₂ : (B.shortTableauPivot ◩i ◩j).toBlocks₂₂ = A₂
-  · exact B.shortTableauPivot_submatrix_zero_external_row ◩i ◩j Sum.inr Sum.inr (by aesop) (by aesop) (by aesop)
+  · exact B.shortTableauPivot_submatrix_zero_external_row ◩i ◩j Sum.inr Sum.inr (by simp) (by simp) (fun _ => rfl)
   rw [←(B.shortTableauPivot ◩i ◩j).fromBlocks_toBlocks, hBA₁, hBA₂, hB0, hBD]
   rfl
 
