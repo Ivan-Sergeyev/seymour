@@ -49,15 +49,20 @@ theorem Matrix.testTotallyUnimodular_eq_isTotallyUnimodular {m n : ℕ} (A : Mat
 instance {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Decidable A.IsTotallyUnimodular :=
   decidable_of_iff _ A.testTotallyUnimodular_eq_isTotallyUnimodular
 
+theorem filter_in {n : ℕ} {s : Finset (Fin n)} :
+    (List.filter (· ∈ s) (List.finRange n)).length = s.card := by
+  have := (List.filter (· ∈ s) (List.finRange n)).toFinset_card_of_nodup (List.Nodup.filter _ (List.nodup_finRange n))
+  simp_all
+
 abbrev Matrix.square_set_submatrix {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ)
-      (r : Finset (Fin m)) (c : Finset (Fin n)) (h : #r = #c) :=
-  @Matrix.submatrix (Fin (#r)) _ _ (Fin (#r)) ℚ A ((r.sort (· ≤ ·))[·]) (fun p ↦ (c.sort (· ≤ ·))[p]'(by
-    rw [Finset.length_sort, show c.card = r.card by simp_all only [Fintype.card_coe], ←Fintype.card_coe r]
-    exact Fin.isLt p))
+      (r : Finset (Fin m)) (c : Finset (Fin n)) (h : r.card = c.card) : Matrix (Fin r.card) (Fin r.card) ℚ :=
+  Matrix.submatrix A
+    (fun p : Fin r.card => ((List.finRange m).filter (· ∈ r))[p]'(by convert p.isLt; exact filter_in))
+    (fun p : Fin r.card => ((List.finRange n).filter (· ∈ c))[p]'(by convert p.isLt; rw [h]; exact filter_in))
 
 /-- Faster algorithm for testing total unimodularity without permutation with pending formal guarantees. -/
 def Matrix.testTotallyUnimodularFast {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Bool :=
-  ∀ (r : Finset (Fin m)) (c : Finset (Fin n)) (h : #r = #c),
+  ∀ (r : Finset (Fin m)) (c : Finset (Fin n)) (h : r.card = c.card),
     (A.square_set_submatrix r c h).det ∈ SignType.cast.range
 
 lemma Matrix.abs_det_reindex_self_self {m n : Type} [DecidableEq n] [Fintype n]
@@ -145,35 +150,26 @@ lemma Matrix.isTotallyUnimodular_of_testTotallyUnimodularFast {m n : ℕ} (A : M
   have hfg : f.range.toFinset.card = g.range.toFinset.card := (by
     simp_rw [Function.range, Set.toFinset_card, Set.card_range_of_injective hf, Set.card_range_of_injective hg])
   obtain ⟨e₁, e₂, hee⟩ := @Matrix.submatrix_eq_submatrix_reindex
-    _ _ (Fin (#{ x // x ∈ f.range.toFinset })) (Fin (#{ x // x ∈ f.range.toFinset })) _ _
+    _ _ (Fin f.range.toFinset.card) (Fin f.range.toFinset.card) _ _
     _ _ _ _ _ _  _ _ _ _ _ _ _ _
-    (fun x => (f.range.toFinset.sort (· ≤ ·))[x]'(by
-      rw [Finset.length_sort, ←Fintype.card_coe f.range.toFinset]
-      exact Fin.isLt x
-    ))
-    (fun p => (g.range.toFinset.sort (· ≤ ·))[p]'(by
-      rw [Finset.length_sort, show g.range.toFinset.card = f.range.toFinset.card by simp_all only [Fintype.card_coe],
-        ←Fintype.card_coe f.range.toFinset]
-      exact Fin.isLt p
-    ))
+    (fun p => ((List.finRange m).filter (· ∈ f.range.toFinset))[p]'(by convert p.isLt; exact filter_in))
+    (fun p => ((List.finRange n).filter (· ∈ g.range.toFinset))[p]'(by convert p.isLt; rw [hfg]; exact filter_in))
     f g
-    (by
-      intro a₁ a₂ haa
-      have := (List.nodup_iff_injective_get.→ <| Finset.sort_nodup (· ≤ ·) f.range.toFinset) haa
+    (fun a₁ a₂ haa => by
+      have := (List.nodup_iff_injective_get.→ <| List.Nodup.filter _ (List.nodup_finRange m)) haa
       simp_rw [Fin.mk.injEq, Fin.val_inj] at this
       exact this)
-    (by
-      intro a₁ a₂ haa
-      have := (List.nodup_iff_injective_get.→ <| Finset.sort_nodup (· ≤ ·) g.range.toFinset) haa
+    (fun a₁ a₂ haa => by
+      have := (List.nodup_iff_injective_get.→ <| List.Nodup.filter _ (List.nodup_finRange n)) haa
       simp_rw [Fin.mk.injEq, Fin.val_inj] at this
       exact this)
     hf hg
     (by
-      rw [Set.range_of_list_get (by rw [Finset.length_sort, Fintype.card_coe])]
+      rw [Set.range_of_list_get (filter_in.symm)]
       simp
     )
     (by
-      rw [Set.range_of_list_get (by rw [Finset.length_sort, Fintype.card_coe]; exact hfg)]
+      rw [Set.range_of_list_get (by rw [hfg]; exact filter_in.symm)]
       simp
     )
     A
