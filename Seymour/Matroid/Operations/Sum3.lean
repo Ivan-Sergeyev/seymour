@@ -6,7 +6,7 @@ variable {α : Type} [DecidableEq α]
 
 section StandardMatrixDefinition
 
-/-- 3-sum composition of two matrices. -/
+/-- The 3-sum composition of two matrices. -/
 noncomputable def matrix3sumComposition_standard {β : Type} [Field β] {X₁ Y₁ X₂ Y₂ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
     [∀ x, Decidable (x ∈ X₁ \ {x₀, x₁, x'})] [∀ x, Decidable (x ∈ X₂ \ {x₀, x₁, x'})] -- for reindexing of `D`
     [∀ y, Decidable (y ∈ Y₁ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Y₂ \ {y₀, y₁, y'})] -- for reindexing of `D`
@@ -85,7 +85,7 @@ noncomputable def matrix3sumComposition_standard {β : Type} [Field β] {X₁ Y�
     ∧ (∀ y, ∀ hy : y ∈ Y₂, y ≠ y₀ ∧ y ≠ y₁ → B₂ ⟨x', x'inX₂⟩ ⟨y, hy⟩ = 0)
   ⟩
 
-/-- 3-sum composition of two binary matroids given by their stanard representations. -/
+/-- The 3-sum composition of two binary matroids given by their stanard representations. -/
 noncomputable def standardRepr3sumComposition_standard {S₁ S₂ : StandardRepr α Z2} {x₀ x₁ x' y₀ y₁ y' : α}
     (hXX : S₁.X ∩ S₂.X = {x₀, x₁, x'}) (hYY : S₁.Y ∩ S₂.Y = {y₀, y₁, y'}) (hXY : S₁.X ⫗ S₂.Y) (hYX : S₁.Y ⫗ S₂.X) :
     StandardRepr α Z2 × Prop :=
@@ -161,14 +161,14 @@ private lemma matrix3sumCompositionAlt_bottom_isTotallyUnimodular {X₁ Y₁ X�
     (((c₀ · * r₀ ·) + (c₁ · * r₁ ·)) ◫ A₂).IsTotallyUnimodular :=
   sorry
 
-/-- Expresses how row vector of first outer product changes after pivot in A₁. -/
+/-- Expresses how row vector of first outer product changes after pivot in `A₁`. -/
 private def matrix3sumCompositionAlt_pivotA₁_Dr₀ {X₁ Y₁ X₂ : Set α}
     (A₁ : Matrix X₁ Y₁ ℚ) (r₀ : Y₁ → ℚ) (r₁ : Y₁ → ℚ) (c₀ : X₂ → ℚ) (c₁ : X₂ → ℚ)
     {i : X₁} {j : Y₁} (hij : A₁ i j = 1 ∨ A₁ i j = -1) : Y₁ → ℚ :=
   -- todo: find explicit formula
   sorry
 
-/-- Expresses how row vector of second outer product changes after pivot in A₁. -/
+/-- Expresses how row vector of second outer product changes after pivot in `A₁`. -/
 private def matrix3sumCompositionAlt_pivotA₁_Dr₁ {X₁ Y₁ X₂ : Set α}
     (A₁ : Matrix X₁ Y₁ ℚ) (r₀ : Y₁ → ℚ) (r₁ : Y₁ → ℚ) (c₀ : X₂ → ℚ) (c₁ : X₂ → ℚ)
     {i : X₁} {j : Y₁} (hij : A₁ i j = 1 ∨ A₁ i j = -1) : Y₁ → ℚ :=
@@ -280,8 +280,9 @@ lemma matrix3sumComposition_standard_toAlt_eq {β : Type} [Field β] {X₁ Y₁ 
     [∀ y, Decidable (y ∈ Y₁ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Y₂ \ {y₀, y₁, y'})] -- for reindexing of `D`
     (B₁ : Matrix X₁ Y₁ β) (B₂ : Matrix X₂ Y₂ β) (hX₁X₂ : X₁ ∩ X₂ = {x₀, x₁, x'}) (hY₁Y₂ : Y₁ ∩ Y₂ = {y₀, y₁, y'})
     {B} (hB : B = matrix3sumComposition_standard B₁ B₂ hX₁X₂ hY₁Y₂) :
-    -- question: what is the correct way to introduce B, so that we have access to both B.fst and B.snd?
-    -- note: this definition doesn't make sense unless B.snd is satisfied, for example, B₁ and B₂ have to match on intersection
+    -- question: what is the correct way to introduce `B`, so that we have access to both `B.fst` and `B.snd`?
+    -- note: this definition doesn't make sense unless `B.snd` is satisfied
+    -- for example, `B₁` and `B₂` have to match on their intersection
 
     -- row and column membership
     have hrX₁ : {x₀, x₁, x'} ⊆ X₁ := hX₁X₂.symm.subset.trans Set.inter_subset_left
@@ -322,7 +323,7 @@ lemma matrix3sumComposition_standard_toAlt_eq {β : Type} [Field β] {X₁ Y₁ 
     ext i j
     simp_all only [Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff, false_or,
       Matrix.of_apply, Pi.add_apply]
-    -- todo: need to use properties from B.snd
+    -- todo: need to use properties from `B.snd`
     if hi : i = x₀ then
       if hj : j = y₀ then
         -- aesop
@@ -347,12 +348,12 @@ private lemma Matrix.Z2_2x2_nonsingular_form (A : Matrix (Fin 2) (Fin 2) Z2) (hA
 private def Matrix.toCanonicalSigning_3x3 (A : Matrix (Fin 3) (Fin 3) ℚ) : (Fin 3 → ℚ) × (Fin 3 → ℚ) :=
   ⟨![1, A 0 0 * A 1 0, A 0 0 * A 1 0 * A 1 2 * A 2 2], ![A 0 0, A 0 1, A 0 0 * A 1 0 * A 1 2]⟩
 
--- todo: modify this definition to produce components of matrix3sumCompositionAlt + new assumptions
+-- todo: modify this definition to produce components of `matrix3sumCompositionAlt` + new assumptions
 private noncomputable def matrix3sumComposition_toCanonicalSigning {X₁ Y₁ X₂ Y₂ : Set α}
   (A₁ : Matrix X₁ (Y₁ ⊕ Fin 2) ℚ) (A₂ : Matrix (Fin 2 ⊕ X₂) Y₂ ℚ)
   (D₀ : Matrix (Fin 2) (Fin 2) ℚ) (D₁ : Matrix (Fin 2) Y₁ ℚ) (D₂ : Matrix X₂ (Fin 2) ℚ) (x₁ : X₁) (y₃ : Y₂) :
     Matrix (X₁ ⊕ (Fin 2 ⊕ X₂)) ((Y₁ ⊕ Fin 2) ⊕ Y₂) ℚ :=
-  -- get multiplication factors to get 3×3 matrix containing D₀ to canonical form
+  -- get multiplication factors to get 3×3 matrix containing `D₀` to canonical form
   let D₀_ext := !![A₁ x₁ (.inr 0), A₁ x₁ (.inr 1), 0; D₀ 0 0, D₀ 0 1, A₂ (.inl 0) y₃; D₀ 1 0, D₀ 1 1, A₂ (.inl 1) y₃];
   let D₀_row_mult := D₀_ext.toCanonicalSigning_3x3.fst;
   let D₀_col_mult := D₀_ext.toCanonicalSigning_3x3.snd;
