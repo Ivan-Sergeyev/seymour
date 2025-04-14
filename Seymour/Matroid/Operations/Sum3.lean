@@ -160,7 +160,10 @@ private lemma matrix3sumCompositionAlt_bottom_isTotallyUnimodular_aux {X₂ Y₂
     (▮0 ◫ ▮(-c₀-c₁) ◫ ▮(c₀-c₁) ◫ ▮(c₁-c₀) ◫ ▮(c₀+c₁) ◫ ▮(-c₀) ◫ ▮(-c₁) ◫ ▮c₀ ◫ ▮c₁ ◫ A₂).IsTotallyUnimodular := by
   sorry
 
+attribute [local simp] neg_add_eq_sub in
+attribute [local simp ←] sub_eq_add_neg in
 set_option maxHeartbeats 500000 in
+/-- In our settings `D ◫ A₂` is totally unimodular.-/
 private lemma matrix3sumCompositionAlt_bottom_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {r₀ : Y₁ → ℚ} {r₁ : Y₁ → ℚ} {c₀ : X₂ → ℚ} {c₁ : X₂ → ℚ}
     (hA₁ : (▬r₀ ⊟ ▬r₁ ⊟ A₁).IsTotallyUnimodular) (hA₂ : (▮c₀ ◫ ▮c₁ ◫ A₂).IsTotallyUnimodular)
@@ -186,62 +189,73 @@ private lemma matrix3sumCompositionAlt_bottom_isTotallyUnimodular {X₁ Y₁ X�
             | .zero => ◩◩◩◩◪()
             | .pos => ◩◩◩◩◩◩◪()
             | .neg => ◩◩◩◩◩◩◩◩◪()
-          )
-          Sum.inr
         )
+      Sum.inr)
   ext i j
   cases j with
   | inl j' =>
-    cases hs₀ : (hA₁.apply ◩◩() j').choose <;> cases hs₁ : (hA₁.apply ◩◪() j').choose
-    · have hr₀ : r₀ j' = 0
-      · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
-      have hr₁ : r₁ j' = 0
-      · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
-      aesop
-    · have hr₀ : r₀ j' = 0
-      · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
-      have hr₁ : r₁ j' = -1
-      · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
-      aesop
-    · have hr₀ : r₀ j' = 0
-      · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
-      have hr₁ : r₁ j' = 1
-      · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
-      aesop
-    · have hr₀ : r₀ j' = -1
-      · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
-      have hr₁ : r₁ j' = 0
-      · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
-      aesop
-    · have hr₀ : r₀ j' = -1
-      · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
-      have hr₁ : r₁ j' = -1
-      · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
-      aesopnt
-      ring
-    · have hr₀ : r₀ j' = -1
-      · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
-      have hr₁ : r₁ j' = 1
-      · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
-      aesopnt
-      ring
-    · have hr₀ : r₀ j' = 1
-      · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
-      have hr₁ : r₁ j' = 0
-      · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
-      aesop
-    · have hr₀ : r₀ j' = 1
-      · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
-      have hr₁ : r₁ j' = -1
-      · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
-      aesopnt
-      ring
-    · have hr₀ : r₀ j' = 1
-      · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
-      have hr₁ : r₁ j' = 1
-      · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
-      aesop
-  | inr j₂ => simp
+    cases hs₀ : (hA₁.apply ◩◩() j').choose with
+    | zero =>
+      cases hs₁ : (hA₁.apply ◩◪() j').choose with
+      | zero =>
+        have hr₀ : r₀ j' = 0
+        · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
+        have hr₁ : r₁ j' = 0
+        · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
+        aesop
+      | pos =>
+        have hr₀ : r₀ j' = 0
+        · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
+        have hr₁ : r₁ j' = 1
+        · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
+        aesop
+      | neg =>
+        have hr₀ : r₀ j' = 0
+        · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
+        have hr₁ : r₁ j' = -1
+        · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
+        aesop
+    | pos =>
+      cases hs₁ : (hA₁.apply ◩◪() j').choose with
+      | zero =>
+        have hr₀ : r₀ j' = 1
+        · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
+        have hr₁ : r₁ j' = 0
+        · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
+        aesop
+      | pos =>
+        have hr₀ : r₀ j' = 1
+        · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
+        have hr₁ : r₁ j' = 1
+        · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
+        aesop
+      | neg =>
+        have hr₀ : r₀ j' = 1
+        · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
+        have hr₁ : r₁ j' = -1
+        · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
+        aesop
+    | neg =>
+      cases hs₁ : (hA₁.apply ◩◪() j').choose with
+      | zero =>
+        have hr₀ : r₀ j' = -1
+        · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
+        have hr₁ : r₁ j' = 0
+        · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
+        aesop
+      | pos =>
+        have hr₀ : r₀ j' = -1
+        · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
+        have hr₁ : r₁ j' = 1
+        · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
+        aesop
+      | neg =>
+        have hr₀ : r₀ j' = -1
+        · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
+        have hr₁ : r₁ j' = -1
+        · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
+        aesop
+  | inr => simp
 
 /-- Expresses how row vector of first outer product changes after pivot in `A₁`. -/
 private def matrix3sumCompositionAlt_pivotA₁_Dr₀ {X₁ Y₁ X₂ : Set α}
