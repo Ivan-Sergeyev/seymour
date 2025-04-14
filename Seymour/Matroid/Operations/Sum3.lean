@@ -133,7 +133,7 @@ private lemma matrix3sumCompositionAlt_eq_fromRows {β : Type} [CommRing β] {X�
     matrix3sumCompositionAlt A₁ A₂ r₀ r₁ c₀ c₁ = (A₁ ◫ 0) ⊟ (((c₀ · * r₀ ·) + (c₁ · * r₁ ·)) ◫ A₂) := by
   rfl
 
-lemma matrix3sumCompositionAlt_isPreTU_1 {α : Type} {X₁ Y₁ X₂ Y₂ : Set α}
+private lemma matrix3sumCompositionAlt_isPreTU_1 {α : Type} {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {r₀ : Y₁ → ℚ} {r₁ : Y₁ → ℚ} {c₀ : X₂ → ℚ} {c₁ : X₂ → ℚ}
     (hA₁ : (▬r₀ ⊟ ▬r₁ ⊟ A₁).IsTotallyUnimodular) (hA₂ : (▮c₀ ◫ ▮c₁ ◫ A₂).IsTotallyUnimodular)
     (hcc : ∀ i : X₂, (c₀ - c₁) i ∈ SignType.cast.range) (hrr : ∀ j : Y₁, (r₀ + r₁) j ∈ SignType.cast.range) :
@@ -154,7 +154,7 @@ lemma matrix3sumCompositionAlt_isPreTU_1 {α : Type} {X₁ Y₁ X₂ Y₂ : Set 
       sorry
     | inr j₂ => exact hA₂.apply i₂ j₂
 
-lemma matrix3sumCompositionAlt_bottom_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ : Set α}
+private lemma matrix3sumCompositionAlt_bottom_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {r₀ : Y₁ → ℚ} {r₁ : Y₁ → ℚ} {c₀ : X₂ → ℚ} {c₁ : X₂ → ℚ}
     (hA₁ : (▬r₀ ⊟ ▬r₁ ⊟ A₁).IsTotallyUnimodular) (hA₂ : (▮c₀ ◫ ▮c₁ ◫ A₂).IsTotallyUnimodular)
     (hcc : ∀ i : X₂, (c₀ - c₁) i ∈ SignType.cast.range) (hrr : ∀ j : Y₁, (r₀ + r₁) j ∈ SignType.cast.range) :
@@ -162,20 +162,20 @@ lemma matrix3sumCompositionAlt_bottom_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ :
   sorry
 
 /-- Expresses how row vector of first outer product changes after pivot in A₁. -/
-def matrix3sumCompositionAlt_pivotA₁_Dr₀ {X₁ Y₁ X₂ : Set α}
+private def matrix3sumCompositionAlt_pivotA₁_Dr₀ {X₁ Y₁ X₂ : Set α}
     (A₁ : Matrix X₁ Y₁ ℚ) (r₀ : Y₁ → ℚ) (r₁ : Y₁ → ℚ) (c₀ : X₂ → ℚ) (c₁ : X₂ → ℚ)
     {i : X₁} {j : Y₁} (hij : A₁ i j = 1 ∨ A₁ i j = -1) : Y₁ → ℚ :=
   -- todo: find explicit formula
   sorry
 
 /-- Expresses how row vector of second outer product changes after pivot in A₁. -/
-def matrix3sumCompositionAlt_pivotA₁_Dr₁ {X₁ Y₁ X₂ : Set α}
+private def matrix3sumCompositionAlt_pivotA₁_Dr₁ {X₁ Y₁ X₂ : Set α}
     (A₁ : Matrix X₁ Y₁ ℚ) (r₀ : Y₁ → ℚ) (r₁ : Y₁ → ℚ) (c₀ : X₂ → ℚ) (c₁ : X₂ → ℚ)
     {i : X₁} {j : Y₁} (hij : A₁ i j = 1 ∨ A₁ i j = -1) : Y₁ → ℚ :=
   -- todo: find explicit formula
   sorry
 
-lemma matrix3sumCompositionAlt_pivotA₁_Dr₀r₁_properties_preserved {X₁ Y₁ X₂ : Set α}
+private lemma matrix3sumCompositionAlt_pivotA₁_Dr₀r₁_properties_preserved {X₁ Y₁ X₂ : Set α}
     (A₁ : Matrix X₁ Y₁ ℚ) (r₀ : Y₁ → ℚ) (r₁ : Y₁ → ℚ) (c₀ : X₂ → ℚ) (c₁ : X₂ → ℚ)
     {i : X₁} {j : Y₁} (hij : A₁ i j = 1 ∨ A₁ i j = -1)
     (hA₁ : (▬r₀ ⊟ ▬r₁ ⊟ A₁).IsTotallyUnimodular) (hA₂ : (▮c₀ ◫ ▮c₁).IsTotallyUnimodular)
@@ -185,7 +185,7 @@ lemma matrix3sumCompositionAlt_pivotA₁_Dr₀r₁_properties_preserved {X₁ Y�
     (▬r₀' ⊟ ▬r₁' ⊟ A₁).IsTotallyUnimodular ∧ ∀ j, (r₀' + r₁') j ∈ SignType.cast.range := by
   sorry
 
-lemma matrix3sumCompositionAlt_shortTableauPivot {X₁ Y₁ X₂ Y₂ : Set α}
+private lemma matrix3sumCompositionAlt_shortTableauPivot {X₁ Y₁ X₂ Y₂ : Set α}
     (A₁ : Matrix X₁ Y₁ ℚ) (A₂ : Matrix X₂ Y₂ ℚ) (r₀ : Y₁ → ℚ) (r₁ : Y₁ → ℚ) (c₀ : X₂ → ℚ) (c₁ : X₂ → ℚ)
     {i : X₁} {j : Y₁} (hij : A₁ i j = 1 ∨ A₁ i j = -1) :
     let B := (matrix3sumCompositionAlt A₁ A₂ r₀ r₁ c₀ c₁)
@@ -205,7 +205,7 @@ lemma matrix3sumCompositionAlt_shortTableauPivot {X₁ Y₁ X₂ Y₂ : Set α}
   rw [←(B.shortTableauPivot ◩i ◩j).fromBlocks_toBlocks, hBA₁, hB0, hBD, hBA₂]
   rfl
 
-lemma matrix3sumCompositionAlt_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ : Set α}
+private lemma matrix3sumCompositionAlt_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {r₀ : Y₁ → ℚ} {r₁ : Y₁ → ℚ} {c₀ : X₂ → ℚ} {c₁ : X₂ → ℚ}
     (hrrA₁ : (▬r₀ ⊟ ▬r₁ ⊟ A₁).IsTotallyUnimodular) (hccA₂ : (▮c₀ ◫ ▮c₁ ◫ A₂).IsTotallyUnimodular)
     (hcc : ∀ i : X₂, (c₀ - c₁) i ∈ SignType.cast.range) (hrr : ∀ j : Y₁, (r₀ + r₁) j ∈ SignType.cast.range) :
@@ -275,7 +275,6 @@ end AlternativeMatrixDefinition
 
 section ConversionStandardAlternative
 
--- set_option maxHeartbeats 6000000 in
 lemma matrix3sumComposition_standard_toAlt_eq {β : Type} [Field β] {X₁ Y₁ X₂ Y₂ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
     [∀ x, Decidable (x ∈ X₁ \ {x₀, x₁, x'})] [∀ x, Decidable (x ∈ X₂ \ {x₀, x₁, x'})] -- for reindexing of `D`
     [∀ y, Decidable (y ∈ Y₁ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Y₂ \ {y₀, y₁, y'})] -- for reindexing of `D`
@@ -341,15 +340,15 @@ end ConversionStandardAlternative
 
 section CanonicalSigning
 
-lemma Matrix.Z2_2x2_nonsingular_form (A : Matrix (Fin 2) (Fin 2) Z2) (hA : IsUnit A) :
+private lemma Matrix.Z2_2x2_nonsingular_form (A : Matrix (Fin 2) (Fin 2) Z2) (hA : IsUnit A) :
     ∃ f : Fin 2 ≃ Fin 2, ∃ g : Fin 2 ≃ Fin 2, A.submatrix f g = 1 ∨ A.submatrix f g = !![1, 1; 0, 1] := by
   sorry
 
-def Matrix.toCanonicalSigning_3x3 (A : Matrix (Fin 3) (Fin 3) ℚ) : (Fin 3 → ℚ) × (Fin 3 → ℚ) :=
+private def Matrix.toCanonicalSigning_3x3 (A : Matrix (Fin 3) (Fin 3) ℚ) : (Fin 3 → ℚ) × (Fin 3 → ℚ) :=
   ⟨![1, A 0 0 * A 1 0, A 0 0 * A 1 0 * A 1 2 * A 2 2], ![A 0 0, A 0 1, A 0 0 * A 1 0 * A 1 2]⟩
 
 -- todo: modify this definition to produce components of matrix3sumCompositionAlt + new assumptions
-noncomputable def matrix3sumComposition_toCanonicalSigning {X₁ Y₁ X₂ Y₂ : Set α}
+private noncomputable def matrix3sumComposition_toCanonicalSigning {X₁ Y₁ X₂ Y₂ : Set α}
   (A₁ : Matrix X₁ (Y₁ ⊕ Fin 2) ℚ) (A₂ : Matrix (Fin 2 ⊕ X₂) Y₂ ℚ)
   (D₀ : Matrix (Fin 2) (Fin 2) ℚ) (D₁ : Matrix (Fin 2) Y₁ ℚ) (D₂ : Matrix X₂ (Fin 2) ℚ) (x₁ : X₁) (y₃ : Y₂) :
     Matrix (X₁ ⊕ (Fin 2 ⊕ X₂)) ((Y₁ ⊕ Fin 2) ⊕ Y₂) ℚ :=
