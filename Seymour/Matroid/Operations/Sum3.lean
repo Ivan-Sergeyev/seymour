@@ -154,12 +154,94 @@ private lemma matrix3sumCompositionAlt_isPreTU_1 {α : Type} {X₁ Y₁ X₂ Y�
       sorry
     | inr j₂ => exact hA₂.apply i₂ j₂
 
+private lemma matrix3sumCompositionAlt_bottom_isTotallyUnimodular_aux {X₂ Y₂ : Set α}
+    {A₂ : Matrix X₂ Y₂ ℚ} {c₀ : X₂ → ℚ} {c₁ : X₂ → ℚ}
+    (hA₂ : (▮c₀ ◫ ▮c₁ ◫ A₂).IsTotallyUnimodular) (hcc : ∀ i : X₂, (c₀ - c₁) i ∈ SignType.cast.range) :
+    (▮0 ◫ ▮(-c₀-c₁) ◫ ▮(c₀-c₁) ◫ ▮(c₁-c₀) ◫ ▮(c₀+c₁) ◫ ▮(-c₀) ◫ ▮(-c₁) ◫ ▮c₀ ◫ ▮c₁ ◫ A₂).IsTotallyUnimodular := by
+  sorry
+
+set_option maxHeartbeats 500000 in
 private lemma matrix3sumCompositionAlt_bottom_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ : Set α}
     {A₁ : Matrix X₁ Y₁ ℚ} {A₂ : Matrix X₂ Y₂ ℚ} {r₀ : Y₁ → ℚ} {r₁ : Y₁ → ℚ} {c₀ : X₂ → ℚ} {c₁ : X₂ → ℚ}
     (hA₁ : (▬r₀ ⊟ ▬r₁ ⊟ A₁).IsTotallyUnimodular) (hA₂ : (▮c₀ ◫ ▮c₁ ◫ A₂).IsTotallyUnimodular)
-    (hcc : ∀ i : X₂, (c₀ - c₁) i ∈ SignType.cast.range) (hrr : ∀ j : Y₁, (r₀ + r₁) j ∈ SignType.cast.range) :
-    (((c₀ · * r₀ ·) + (c₁ · * r₁ ·)) ◫ A₂).IsTotallyUnimodular :=
-  sorry
+    (hcc : ∀ i : X₂, (c₀ - c₁) i ∈ SignType.cast.range) :
+    (((c₀ · * r₀ ·) + (c₁ · * r₁ ·)) ◫ A₂).IsTotallyUnimodular := by
+  convert
+    (matrix3sumCompositionAlt_bottom_isTotallyUnimodular_aux hA₂ hcc).submatrix id
+      (fun y : Y₁.Elem ⊕ Y₂.Elem => y.casesOn
+        (fun y' =>
+          match hs₀ : (hA₁.apply ◩◩() y').choose with
+          | .zero =>
+            match hs₁ : (hA₁.apply ◩◪() y').choose with
+            | .zero => ◩◩◩◩◩◩◩◩◩()
+            | .pos => ◩◪()
+            | .neg => ◩◩◩◪()
+          | .pos =>
+            match hs₁ : (hA₁.apply ◩◪() y').choose with
+            | .zero => ◩◩◪()
+            | .pos => ◩◩◩◩◩◪()
+            | .neg => ◩◩◩◩◩◩◩◪()
+          | .neg =>
+            match hs₁ : (hA₁.apply ◩◪() y').choose with
+            | .zero => ◩◩◩◩◪()
+            | .pos => ◩◩◩◩◩◩◪()
+            | .neg => ◩◩◩◩◩◩◩◩◪()
+          )
+          Sum.inr
+        )
+  ext i j
+  cases j with
+  | inl j' =>
+    cases hs₀ : (hA₁.apply ◩◩() j').choose <;> cases hs₁ : (hA₁.apply ◩◪() j').choose
+    · have hr₀ : r₀ j' = 0
+      · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
+      have hr₁ : r₁ j' = 0
+      · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
+      aesop
+    · have hr₀ : r₀ j' = 0
+      · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
+      have hr₁ : r₁ j' = -1
+      · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
+      aesop
+    · have hr₀ : r₀ j' = 0
+      · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
+      have hr₁ : r₁ j' = 1
+      · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
+      aesop
+    · have hr₀ : r₀ j' = -1
+      · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
+      have hr₁ : r₁ j' = 0
+      · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
+      aesop
+    · have hr₀ : r₀ j' = -1
+      · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
+      have hr₁ : r₁ j' = -1
+      · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
+      aesopnt
+      ring
+    · have hr₀ : r₀ j' = -1
+      · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
+      have hr₁ : r₁ j' = 1
+      · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
+      aesopnt
+      ring
+    · have hr₀ : r₀ j' = 1
+      · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
+      have hr₁ : r₁ j' = 0
+      · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
+      aesop
+    · have hr₀ : r₀ j' = 1
+      · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
+      have hr₁ : r₁ j' = -1
+      · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
+      aesopnt
+      ring
+    · have hr₀ : r₀ j' = 1
+      · simpa [hs₀] using (hA₁.apply ◩◩() j').choose_spec.symm
+      have hr₁ : r₁ j' = 1
+      · simpa [hs₁] using (hA₁.apply ◩◪() j').choose_spec.symm
+      aesop
+  | inr j₂ => simp
 
 /-- Expresses how row vector of first outer product changes after pivot in `A₁`. -/
 private def matrix3sumCompositionAlt_pivotA₁_Dr₀ {X₁ Y₁ X₂ : Set α}
@@ -230,7 +312,7 @@ private lemma matrix3sumCompositionAlt_isTotallyUnimodular {X₁ Y₁ X₂ Y₂ 
         convert zero_in_signTypeCastRange
         exact (matrix3sumCompositionAlt A₁ A₂ r₀ r₁ c₀ c₁).submatrix_det_zero_of_not_injective_right hg
       obtain ⟨i₁, x₁, hix₁⟩ : ∃ i₁ : Fin (n + 2), ∃ x₁ : X₁, f i₁ = ◩x₁
-      · have isTU := matrix3sumCompositionAlt_bottom_isTotallyUnimodular hrrA₁ hccA₂ hcc hrr
+      · have isTU := matrix3sumCompositionAlt_bottom_isTotallyUnimodular hrrA₁ hccA₂ hcc
         rw [Matrix.isTotallyUnimodular_iff] at isTU
         rw [matrix3sumCompositionAlt_eq_fromRows] at hAfg
         by_contra! hfX₁
@@ -315,7 +397,7 @@ lemma matrix3sumComposition_standard_toAlt_eq {β : Type} [Field β] {X₁ Y₁ 
   have hB₁₂ : B.fst.toBlocks₁₂ = 0 := hB ▸ rfl
   have hB₂₂ : B.fst.toBlocks₂₂ = A₂ := hB ▸ rfl
 
-  have hB₂₁ : B.fst.toBlocks₂₁ = ((c₀ · * r₀ ·) + (c₁ · * r₁ ·)) := by
+  have hB₂₁ : B.fst.toBlocks₂₁ = (c₀ · * r₀ ·) + (c₁ · * r₁ ·) := by
     rw [hB]
     unfold matrix3sumComposition_standard
     simp_all only [HasSubset.Subset.elem, Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff,
