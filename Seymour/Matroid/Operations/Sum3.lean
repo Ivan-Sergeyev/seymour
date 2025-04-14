@@ -154,6 +154,13 @@ private lemma matrix3sumCompositionAlt_isPreTU_1 {α : Type} {X₁ Y₁ X₂ Y�
       sorry
     | inr j₂ => exact hA₂.apply i₂ j₂
 
+/-
+Does not hold!
+Counterexample:
+`A₂ := !![0]`
+`c₀ := ![1]`
+`c₁ := ![1]`
+-/
 private lemma matrix3sumCompositionAlt_bottom_isTotallyUnimodular_aux {X₂ Y₂ : Set α}
     {A₂ : Matrix X₂ Y₂ ℚ} {c₀ : X₂ → ℚ} {c₁ : X₂ → ℚ}
     (hA₂ : (▮c₀ ◫ ▮c₁ ◫ A₂).IsTotallyUnimodular) (hcc : ∀ i : X₂, (c₀ - c₁) i ∈ SignType.cast.range) :
@@ -190,7 +197,8 @@ private lemma matrix3sumCompositionAlt_bottom_isTotallyUnimodular {X₁ Y₁ X�
             | .pos => ◩◩◩◩◩◩◪()
             | .neg => ◩◩◩◩◩◩◩◩◪()
         )
-      Sum.inr)
+        Sum.inr
+      )
   ext i j
   cases j with
   | inl j' =>

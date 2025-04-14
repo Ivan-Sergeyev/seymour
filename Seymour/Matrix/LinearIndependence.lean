@@ -5,7 +5,7 @@ import Mathlib.Data.Matrix.Rank
 section fromPeterNelson
 
 section
-variable {ι R M : Type} [DivisionRing R] [AddCommGroup M] [Module R M] {t : Set ι} {v : ι → M}
+variable {ι R O : Type} [DivisionRing R] [AddCommGroup O] [Module R O] {t : Set ι} {v : ι → O}
 
 private lemma LinearIndepOn.exists_maximal {s₀ : Set ι} (hli : LinearIndepOn R v s₀) (hs₀t : s₀ ⊆ t) :
     ∃ s : Set ι, s₀ ⊆ s ∧ Maximal (fun r => r ⊆ t ∧ LinearIndepOn R v r) s :=
