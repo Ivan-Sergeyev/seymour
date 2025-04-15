@@ -61,7 +61,7 @@ lemma todo_left (hA : LinearIndepOn R A (X ↓∩ G)) {B : Basis G R (Submodule.
   have hX : G ∪ (X \ G) = X := Set.union_diff_cancel' (by tauto) hGX
   let e : hIGX.elem.range → hIX.elem.range := fun ⟨⟨i, hi⟩, hhi⟩ => ⟨⟨i, hX ▸ hi⟩, by simpa using hhi⟩
   unfold LinearIndepOn -- `convert` doesn't see through definitional equalities
-  convert (todo_left_aux hA hGX hIX hB hAI).comp e (fun _ _ hee => by ext; simpa [e] using hee) with ⟨⟨i, hi⟩, hhi⟩
+  convert (todo_left_aux hA hGX hIX hB hAI).comp e (fun _ _ hee => by ext; simpa [e] using hee) with ⟨⟨i, hi⟩, -⟩
   ext ⟨j, hj⟩
   have hiX : i ∈ X := hX ▸ hi
   if hiG : i ∈ G then

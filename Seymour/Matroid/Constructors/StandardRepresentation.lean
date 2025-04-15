@@ -295,7 +295,7 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
   · intro ⟨hI, hRAI⟩
     use hGYY.symm ▸ hI
     classical
-    convert todo_left lin_indep hGY hYGY hI (by tauto) hB hRAI
+    convert todo_left lin_indep hGY hYGY hI hIGY hB hRAI
 
 /-- Every vector matroid has a standard representation. -/
 lemma VectorMatroid.exists_standardRepr [Field R] (M : VectorMatroid α R) :
