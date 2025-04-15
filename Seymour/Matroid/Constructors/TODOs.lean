@@ -13,12 +13,17 @@ lemma in_submoduleSpan_range {O : Type} [Semiring R] [AddCommMonoid O] [Module R
 
 variable [DecidableEq α] [Field R] {X Y G I : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ G)] {A : Matrix X Y R}
 
--- Potential lemmas to use in the following two proofs:
+-- Potential lemmas to use in the following proofs:
 -- LinearMap.linearIndependent_iff_of_disjoint
 -- LinearIndependent.of_comp
 -- LinearIndepOn.of_comp
 -- LinearMap.linearIndependent_iff_of_injOn
 -- LinearIndependent.linearCombinationEquiv
+
+lemma todo_left_aux (hA : LinearIndepOn R A (X ↓∩ G)) (B : Basis G R (Submodule.span R A.range))
+    (hGX : G ⊆ X) (hIX : I ⊆ X) (hAI : LinearIndepOn R A hIX.elem.range) :
+    LinearIndepOn R (Matrix.of (fun x : X => fun g : G => B.repr ⟨A x, in_submoduleSpan_range A x⟩ g)) hIX.elem.range := by
+  sorry
 
 lemma todo_left (hA : LinearIndepOn R A (X ↓∩ G)) (B : Basis G R (Submodule.span R A.range))
     (hGX : G ⊆ X) (hXGX : X \ G ⊆ X) -- tautological but keep
@@ -26,8 +31,9 @@ lemma todo_left (hA : LinearIndepOn R A (X ↓∩ G)) (B : Basis G R (Submodule.
     (hAI : LinearIndepOn R A hIX.elem.range) :
     LinearIndepOn R
       (((Matrix.of (fun x : X => fun g : G => B.repr ⟨A x, in_submoduleSpan_range A x⟩ g)).submatrix hXGX.elem id).uppendId
-       ∘ Subtype.toSum) hIGX.elem.range
-     := by
+       ∘ Subtype.toSum)
+      hIGX.elem.range := by
+  have intermediate_step := todo_left_aux hA B hGX hIX hAI
   sorry
 
 lemma todo_right (hA : LinearIndepOn R A (X ↓∩ G)) (B : Basis G R (Submodule.span R A.range))
@@ -38,18 +44,3 @@ lemma todo_right (hA : LinearIndepOn R A (X ↓∩ G)) (B : Basis G R (Submodule
        ∘ Subtype.toSum) hIGX.elem.range) :
     LinearIndepOn R A hIX.elem.range := by
   sorry
-
--- lemma todo_right' [Field R] {X G I : Set α} {O : Type} [AddCommMonoid O] [Module R O]
---     [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ G)] {A : X → O}
---     (lin_indep : LinearIndepOn R A (X ↓∩ G))
---     (B : Basis G R (Submodule.span R A.range))
---     (hGX : G ⊆ X)
---     (hXGX : X \ G ⊆ X) -- redundant but keep
---     (hGXX : G ∪ X = X) -- redundant but keep
---     (hI : I ⊆ G ∪ X)
---     (hBI : LinearIndepOn R
---       (((Matrix.of (fun x : X => fun g : G => B.coord g ⟨A x, in_submoduleSpan_range A x⟩)).submatrix hXGX.elem id).uppendId
---        ∘ Subtype.toSum)
---       ((Iff.of_eq (congr_arg (I ⊆ ·) Set.union_diff_self)).← hI).elem.range) :
---     LinearIndepOn R A (hGXX ▸ hI).elem.range := by
---   sorry
