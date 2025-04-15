@@ -11,6 +11,20 @@ lemma in_submoduleSpan_range {O : Type} [Semiring R] [AddCommMonoid O] [Module R
   · apply Submodule.subset_span
   · simp
 
+lemma todo_left_aux_aux' {O : Type} [Field R] [AddCommMonoid O] [Module R O] {f : α → O} {G I : Set α}
+    (hf : LinearIndepOn R f G) {B : Basis G R (Submodule.span R f.range)}
+    (hB : ∀ a g : G, ∀ haR : f a ∈ Submodule.span R f.range, B.repr ⟨f a, haR⟩ g = B.repr (B a) g)
+    (hAI : LinearIndepOn R f I) :
+    LinearIndepOn R (fun a : α => B.repr ⟨f a, in_submoduleSpan_range f a⟩) I := by
+  sorry
+
+lemma todo_left_aux_aux {O : Type} [Field R] [AddCommMonoid O] [Module R O] {f : α → O} {G I : Set α}
+    (hf : LinearIndepOn R f G) {B : Basis G R (Submodule.span R f.range)}
+    (hB : ∀ a : α, ∀ g : G, ∀ haG : a ∈ G, ∀ haR : f a ∈ Submodule.span R f.range, B.repr ⟨f a, haR⟩ g = B.repr (B ⟨a, haG⟩) g)
+    (hAI : LinearIndepOn R f I) :
+    LinearIndepOn R (fun a : α => B.repr ⟨f a, in_submoduleSpan_range f a⟩) I := by
+  sorry
+
 variable [DecidableEq α] [Field R] {X Y G I : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ G)] {A : Matrix X Y R}
 
 -- Potentially useful lemmas for the following proofs:
@@ -23,9 +37,9 @@ variable [DecidableEq α] [Field R] {X Y G I : Set α} [∀ a, Decidable (a ∈ 
 lemma todo_left_aux (hA : LinearIndepOn R A (X ↓∩ G)) {B : Basis G R (Submodule.span R A.range)}
     (hGX : G ⊆ X) (hIX : I ⊆ X)
     (hB : ∀ i : α, ∀ g : G, ∀ hiX : i ∈ X, ∀ hiG : i ∈ G, ∀ hiR : A ⟨i, hiX⟩ ∈ Submodule.span R A.range,
-      B.repr ⟨(A ⟨i, hiX⟩), hiR⟩ g = B.repr (B ⟨i, hiG⟩) g)
+      B.repr ⟨A ⟨i, hiX⟩, hiR⟩ g = B.repr (B ⟨i, hiG⟩) g)
     (hAI : LinearIndepOn R A hIX.elem.range) :
-    LinearIndepOn R (Matrix.of (fun x : X => fun g : G => B.repr ⟨A x, in_submoduleSpan_range A x⟩ g)) hIX.elem.range := by
+    LinearIndepOn R (fun x : X => fun g : G => B.repr ⟨A x, in_submoduleSpan_range A x⟩ g) hIX.elem.range := by
   have hB' :
     ∀ x : X, ∀ g : G, ∀ hxG : x.val ∈ G, ∀ hxR : A x ∈ Submodule.span R A.range,
       B.repr ⟨(A x), hxR⟩ g = B.repr (B ⟨x, hxG⟩) g
@@ -36,25 +50,21 @@ lemma todo_left_aux (hA : LinearIndepOn R A (X ↓∩ G)) {B : Basis G R (Submod
       B.repr ⟨A (hGX.elem x), hxR⟩ g = B.repr (B x) g
   · intros
     apply hB'
-  -- rw [linearIndepOn_iff'] at hAI ⊢
-  -- intro s q hs hsq
-  -- apply hAI s q hs
-  -- ext j
-  -- have hsqj := congr_fun hsq ⟨j, by sorry⟩
-  -- simp at hsqj ⊢
-  simp only [Basis.repr_self_apply] at hB''
-  apply LinearIndepOn.of_comp (M' := Y → R)
-  convert hAI
-  ext ⟨i, hi⟩ ⟨j, hj⟩
-  rw [Function.comp_apply]
+  show LinearIndepOn R (fun x : X => (B.repr ⟨A x, in_submoduleSpan_range A x⟩).toFun) hIX.elem.range
   sorry
-  sorry
+  -- simp only [Basis.repr_self_apply] at hB''
+  -- apply LinearIndepOn.of_comp (M' := Y → R)
+  -- convert hAI
+  -- ext ⟨i, hi⟩ ⟨j, hj⟩
+  -- rw [Function.comp_apply]
+  -- sorry
+  -- sorry
 
 lemma todo_left (hA : LinearIndepOn R A (X ↓∩ G)) {B : Basis G R (Submodule.span R A.range)}
     (hGX : G ⊆ X) (hXGX : X \ G ⊆ X) -- tautological but keep
     (hIX : I ⊆ X) (hIGX : I ⊆ G ∪ (X \ G)) -- redundant but keep
     (hB : ∀ i : α, ∀ g : G, ∀ hiX : i ∈ X, ∀ hiG : i ∈ G, ∀ hiR : A ⟨i, hiX⟩ ∈ Submodule.span R A.range,
-      B.repr ⟨(A ⟨i, hiX⟩), hiR⟩ g = B.repr (B ⟨i, hiG⟩) g)
+      B.repr ⟨A ⟨i, hiX⟩, hiR⟩ g = B.repr (B ⟨i, hiG⟩) g)
     (hAI : LinearIndepOn R A hIX.elem.range) :
     LinearIndepOn R
       (((Matrix.of (fun x : X => fun g : G => B.repr ⟨A x, in_submoduleSpan_range A x⟩ g)).submatrix hXGX.elem id).uppendId
@@ -91,7 +101,7 @@ lemma todo_right (hA : LinearIndepOn R A (X ↓∩ G)) {B : Basis G R (Submodule
     (hGX : G ⊆ X) (hXGX : X \ G ⊆ X) -- tautological but keep
     (hIX : I ⊆ X) (hIGX : I ⊆ G ∪ (X \ G)) -- redundant but keep
     (hB : ∀ i : α, ∀ g : G, ∀ hiX : i ∈ X, ∀ hiG : i ∈ G, ∀ hiR : A ⟨i, hiX⟩ ∈ Submodule.span R A.range,
-      B.repr ⟨(A ⟨i, hiX⟩), hiR⟩ g = B.repr (B ⟨i, hiG⟩) g)
+      B.repr ⟨A ⟨i, hiX⟩, hiR⟩ g = B.repr (B ⟨i, hiG⟩) g)
     (hBI : LinearIndepOn R
       (((Matrix.of (fun x : X => fun g : G => B.repr ⟨A x, in_submoduleSpan_range A x⟩ g)).submatrix hXGX.elem id).uppendId
        ∘ Subtype.toSum) hIGX.elem.range) :

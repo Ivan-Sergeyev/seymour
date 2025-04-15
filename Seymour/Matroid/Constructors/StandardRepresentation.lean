@@ -281,7 +281,7 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
   · aesop
   have hB :
     ∀ j : α, ∀ g : G, ∀ hjy : j ∈ M.Y, ∀ hjg : j ∈ G, ∀ hjR : M.Aᵀ ⟨j, hjy⟩ ∈ Submodule.span R M.Aᵀ.range,
-      B.repr ⟨(M.Aᵀ ⟨j, hjy⟩), hjR⟩ g = B.repr (B ⟨j, hjg⟩) g
+      B.repr ⟨M.Aᵀ ⟨j, hjy⟩, hjR⟩ g = B.repr (B ⟨j, hjg⟩) g
   · simp [B]
   simp only [StandardRepr.toMatroid_indep_iff_elem', VectorMatroid.toMatroid_indep_iff_elem,
     Matrix.prependId_transpose, Matrix.transpose_submatrix, Set.union_diff_self]
