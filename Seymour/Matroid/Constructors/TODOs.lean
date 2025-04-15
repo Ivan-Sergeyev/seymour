@@ -21,27 +21,22 @@ variable [DecidableEq α] [Field R] {X Y G I : Set α} [∀ a, Decidable (a ∈ 
 -- LinearIndependent.linearCombinationEquiv
 
 lemma todo_left (hA : LinearIndepOn R A (X ↓∩ G)) (B : Basis G R (Submodule.span R A.range))
-    (hGX : G ⊆ X)
-    (hXGX : X \ G ⊆ X) -- redundant but keep
-    (hI : I ⊆ X)
-    (hI' : I ⊆ (G ∪ X \ G)) -- redundant but keep
-    (hAI : LinearIndepOn R A hI.elem.range) :
+    (hGX : G ⊆ X) (hXGX : X \ G ⊆ X) -- tautological but keep
+    (hIX : I ⊆ X) (hIGX : I ⊆ G ∪ (X \ G)) -- redundant but keep
+    (hAI : LinearIndepOn R A hIX.elem.range) :
     LinearIndepOn R
       (((Matrix.of (fun x : X => fun g : G => B.repr ⟨A x, in_submoduleSpan_range A x⟩ g)).submatrix hXGX.elem id).uppendId
-       ∘ Subtype.toSum) hI'.elem.range
+       ∘ Subtype.toSum) hIGX.elem.range
      := by
   sorry
 
 lemma todo_right (hA : LinearIndepOn R A (X ↓∩ G)) (B : Basis G R (Submodule.span R A.range))
-    (hGX : G ⊆ X)
-    (hXGX : X \ G ⊆ X) -- redundant but keep
-    (hGXX : G ∪ X = X) -- redundant but keep
-    (hI : I ⊆ G ∪ X)
+    (hGX : G ⊆ X) (hXGX : X \ G ⊆ X) -- tautological but keep
+    (hIX : I ⊆ X) (hIGX : I ⊆ G ∪ (X \ G)) -- redundant but keep
     (hBI : LinearIndepOn R
       (((Matrix.of (fun x : X => fun g : G => B.repr ⟨A x, in_submoduleSpan_range A x⟩ g)).submatrix hXGX.elem id).uppendId
-       ∘ Subtype.toSum)
-      ((Iff.of_eq (congr_arg (I ⊆ ·) Set.union_diff_self)).← hI).elem.range) :
-    LinearIndepOn R A (hGXX ▸ hI).elem.range := by
+       ∘ Subtype.toSum) hIGX.elem.range) :
+    LinearIndepOn R A hIX.elem.range := by
   sorry
 
 -- lemma todo_right' [Field R] {X G I : Set α} {O : Type} [AddCommMonoid O] [Module R O]
