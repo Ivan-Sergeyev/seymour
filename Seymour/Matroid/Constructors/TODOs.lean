@@ -31,21 +31,23 @@ lemma todo_left_aux (hA : LinearIndepOn R A (X ↓∩ G)) {B : Basis G R (Submod
       B.repr ⟨(A x), hxR⟩ g = B.repr (B ⟨x, hxG⟩) g
   · intros
     apply hB
+  have hB'' :
+    ∀ x : G, ∀ g : G, ∀ hxR : A (hGX.elem x) ∈ Submodule.span R A.range,
+      B.repr ⟨A (hGX.elem x), hxR⟩ g = B.repr (B x) g
+  · intros
+    apply hB'
   -- rw [linearIndepOn_iff'] at hAI ⊢
   -- intro s q hs hsq
   -- apply hAI s q hs
   -- ext j
   -- have hsqj := congr_fun hsq ⟨j, by sorry⟩
   -- simp at hsqj ⊢
-  unfold LinearIndepOn at hAI ⊢
-  have : Fintype G := sorry
-  classical
-  apply LinearIndependent.of_comp (R := R) (M' := Y → R) (M := G → R)
-    (v := (fun x => fun g : G => B.repr ⟨A x, in_submoduleSpan_range A x⟩ g))
-    (ι := hIX.elem.range) (f := ⟨⟨fun v => (B.repr.symm ⟨Finset.univ.filter (v · ≠ 0), v, by simp⟩).val, by sorry⟩, by sorry⟩)
-  convert hAI with ⟨⟨i, hi⟩, hhi⟩
-  ext ⟨j, hj⟩
-  simp only [Basis.repr_symm_apply, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply]
+  simp only [Basis.repr_self_apply] at hB''
+  apply LinearIndepOn.of_comp (M' := Y → R)
+  convert hAI
+  ext ⟨i, hi⟩ ⟨j, hj⟩
+  rw [Function.comp_apply]
+  sorry
   sorry
 
 lemma todo_left (hA : LinearIndepOn R A (X ↓∩ G)) {B : Basis G R (Submodule.span R A.range)}
