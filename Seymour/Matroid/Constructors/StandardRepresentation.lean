@@ -2,6 +2,7 @@ import Seymour.Basic.Sets
 import Seymour.Matrix.LinearIndependence
 import Seymour.Matroid.Constructors.BinaryMatroid
 import Seymour.Matroid.Elementary.Basic
+import Seymour.Matroid.Constructors.TODOs
 
 open scoped Matrix Set.Notation
 
@@ -270,30 +271,28 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
       apply Submodule.map_injective_of_injective (Submodule.span R M.Aᵀ.range).subtype_injective
       simp [Submodule.map_span, ←hRAGY, ←Set.range_comp, Function.comp_def]
       rfl
-  let C : Matrix G M.Y R := Matrix.of (fun i : G => fun j : M.Y => B.coord i (by use M.Aᵀ j; aesop))
-  have hYG : M.Y \ G ⊆ M.Y := Set.diff_subset
-  use ⟨G, M.Y \ G, Set.disjoint_sdiff_right, C.submatrix id hYG.elem,
+  let C : Matrix G M.Y R := Matrix.of (fun i : G => fun j : M.Y => B.coord i ⟨M.Aᵀ j, in_submoduleSpan_range M.Aᵀ j⟩)
+  have hYGY : M.Y \ G ⊆ M.Y := Set.diff_subset
+  use ⟨G, M.Y \ G, Set.disjoint_sdiff_right, C.submatrix id hYGY.elem,
     (Classical.propDecidable <| · ∈ G), (Classical.propDecidable <| · ∈ M.Y \ G)⟩
   constructor
   · simp
-  ext I
+  ext I _hI
   · aesop
+  clear _hI
   have hGYY : G ∪ M.Y = M.Y := Set.union_eq_self_of_subset_left hGY
   simp only [StandardRepr.toMatroid_indep_iff_elem', VectorMatroid.toMatroid_indep_iff_elem,
     Matrix.prependId_transpose, Matrix.transpose_submatrix, Set.union_diff_self]
-  -- Possible lemmas to use:
-  -- LinearMap.linearIndependent_iff_of_disjoint
-  -- LinearIndependent.of_comp
-  -- LinearIndepOn.of_comp
-  -- LinearMap.linearIndependent_iff_of_injOn
-  -- LinearIndependent.linearCombinationEquiv
   constructor
   · intro ⟨hI, hRCI⟩
     use hGYY ▸ hI
-    sorry
+    classical
+    apply todo_right lin_indep B hGY hYGY hGYY hI
+    convert hRCI
   · intro ⟨hI, hRAI⟩
-    use Set.subset_union_of_subset_right hI G
-    sorry
+    use hGYY.symm ▸ hI
+    classical
+    convert todo_left lin_indep B hGY hYGY hGYY hI hRAI
 
 /-- Every vector matroid has a standard representation. -/
 lemma VectorMatroid.exists_standardRepr [Field R] (M : VectorMatroid α R) :
