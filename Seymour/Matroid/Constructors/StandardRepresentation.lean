@@ -252,7 +252,7 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
     exact le_antisymm (Submodule.span_mono easy) (Submodule.span_le.← difficult)
   obtain ⟨-, lin_indep⟩ := hMG.indep
   let B : Basis G R (Submodule.span R M.Aᵀ.range)
-  · apply Basis.mk (v := fun j : G.Elem => ⟨M.Aᵀ (hGY.elem j), by aesop⟩)
+  · apply Basis.mk (v := fun j : G.Elem => ⟨M.Aᵀ (hGY.elem j), in_submoduleSpan_range M.Aᵀ (hGY.elem j)⟩)
     · unfold LinearIndepOn at lin_indep
       rw [linearIndependent_iff'] at lin_indep ⊢
       intro s g hsg i hi
@@ -277,8 +277,12 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
     (Classical.propDecidable <| · ∈ G), (Classical.propDecidable <| · ∈ M.Y \ G)⟩
   constructor
   · simp
-  ext I
+  ext I hIGY
   · aesop
+  have hB :
+    ∀ j : α, ∀ g : G, ∀ hjy : j ∈ M.Y, ∀ hjg : j ∈ G, ∀ hjR : M.Aᵀ ⟨j, hjy⟩ ∈ Submodule.span R M.Aᵀ.range,
+      B.repr ⟨(M.Aᵀ ⟨j, hjy⟩), hjR⟩ g = B.repr (B ⟨j, hjg⟩) g
+  · simp [B]
   simp only [StandardRepr.toMatroid_indep_iff_elem', VectorMatroid.toMatroid_indep_iff_elem,
     Matrix.prependId_transpose, Matrix.transpose_submatrix, Set.union_diff_self]
   have hGYY : G ∪ M.Y = M.Y := Set.union_eq_self_of_subset_left hGY
@@ -286,12 +290,12 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
   · intro ⟨hI, hRCI⟩
     use hGYY ▸ hI
     classical
-    apply todo_right lin_indep B hGY hYGY (hGYY ▸ hI)
+    apply todo_right lin_indep hGY hYGY (hGYY ▸ hI) hIGY hB
     convert hRCI
   · intro ⟨hI, hRAI⟩
     use hGYY.symm ▸ hI
     classical
-    convert todo_left lin_indep B hGY hYGY hI (by tauto) hRAI
+    convert todo_left lin_indep hGY hYGY hI (by tauto) hB hRAI
 
 /-- Every vector matroid has a standard representation. -/
 lemma VectorMatroid.exists_standardRepr [Field R] (M : VectorMatroid α R) :
