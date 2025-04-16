@@ -11,7 +11,7 @@ lemma in_submoduleSpan_range {O : Type} [Semiring R] [AddCommMonoid O] [Module R
   · apply Submodule.subset_span
   · simp
 
-variable [Field R] {X Y G I : Set α} {A : Matrix X Y R} [Finite G]
+variable [Field R] {X Y G I : Set α} {A : Matrix X Y R}
 
 lemma todo_left_aux (B : Basis G R (Submodule.span R A.range)) (hIX : I ⊆ X)
     (hAI : LinearIndepOn R A hIX.elem.range) :
@@ -26,6 +26,7 @@ lemma todo_left_aux (B : Basis G R (Submodule.span R A.range)) (hIX : I ⊆ X)
       (Submodule.span_mono
         (Set.image_subset_range (fun x : X => (⟨A x, in_submoduleSpan_range A x⟩ : Submodule.span R A.range)) hIX.elem.range))
     simp
+  have : Finite G := sorry -- hopefully not needed in the end
   show LinearIndepOn R
     ((Finsupp.linearEquivFunOnFinite R R G.Elem).toLinearMap ∘ B.repr.toLinearMap ∘
       (fun x : X => ⟨A x, in_submoduleSpan_range A x⟩))

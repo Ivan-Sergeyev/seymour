@@ -234,7 +234,7 @@ lemma VectorMatroid.isFinitary [Field R] (M : VectorMatroid α R) : M.toMatroid.
   exact hI s (fun a ha => ⟨⟨a.val, Set.mem_image_of_mem Subtype.val ha⟩, by simp⟩) hAs
 
 /-- Every vector matroid has a standard representation whose rows are a given base. -/
-lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α} [Finite G]
+lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
     (M : VectorMatroid α R) (hMG : M.toMatroid.IsBase G) :
     ∃ S : StandardRepr α R, S.X = G ∧ S.toMatroid = M.toMatroid := by
   have hGY : G ⊆ M.Y := hMG.subset_ground
@@ -319,11 +319,8 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α} [Finite G]
 /-- Every vector matroid has a standard representation. -/
 lemma VectorMatroid.exists_standardRepr [Field R] (M : VectorMatroid α R) :
     ∃ S : StandardRepr α R, S.toMatroid = M.toMatroid := by
-  have hM : M.toMatroid.RankFinite := sorry
-  obtain ⟨G, hMG, hG⟩ := hM.exists_finite_isBase
-  have : Finite G.Elem := hG
-  obtain ⟨S, -, hS⟩ := M.exists_standardRepr_isBase hMG
-  exact ⟨S, hS⟩
+  peel M.exists_standardRepr_isBase M.toMatroid.exists_isBase.choose_spec with hS
+  exact hS.right
 
 /-- The identity matrix has linearly independent rows. -/
 lemma Matrix.one_linearIndependent [Ring R] : LinearIndependent R (1 : Matrix α α R) := by
