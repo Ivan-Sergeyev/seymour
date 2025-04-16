@@ -11,7 +11,7 @@ lemma in_submoduleSpan_range {O : Type} [Semiring R] [AddCommMonoid O] [Module R
   · apply Submodule.subset_span
   · simp
 
-variable [Field R] {X Y G I : Set α} {A : Matrix X Y R}
+variable [DivisionRing R] {X Y G I : Set α} {A : Matrix X Y R}
 
 lemma todo_left_aux {hIX : I ⊆ X} (B : Basis G R (Submodule.span R A.range)) (hAI : LinearIndepOn R A hIX.elem.range) :
     LinearIndepOn R (fun x : X => fun g : G => B.repr ⟨A x, in_submoduleSpan_range A x⟩ g) hIX.elem.range := by

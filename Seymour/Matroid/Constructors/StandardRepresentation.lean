@@ -214,7 +214,7 @@ lemma StandardRepr.toMatroid_indep' [DivisionRing R] (S : StandardRepr α R) :
     S.toMatroid.Indep = (∃ hI : · ⊆ S.X ∪ S.Y, LinearIndepOn R (S.Bᵀ.uppendId ∘ Subtype.toSum) hI.elem.range) := by
   simp
 
-lemma VectorMatroid.isFinitary [Field R] (M : VectorMatroid α R) : M.toMatroid.Finitary := by
+lemma VectorMatroid.isFinitary [DivisionRing R] (M : VectorMatroid α R) : M.toMatroid.Finitary := by
   constructor
   intro I hI
   simp
@@ -234,7 +234,7 @@ lemma VectorMatroid.isFinitary [Field R] (M : VectorMatroid α R) : M.toMatroid.
   exact hI s (fun a ha => ⟨⟨a.val, Set.mem_image_of_mem Subtype.val ha⟩, by simp⟩) hAs
 
 /-- Every vector matroid has a standard representation whose rows are a given base. -/
-lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
+lemma VectorMatroid.exists_standardRepr_isBase [DivisionRing R] {G : Set α}
     (M : VectorMatroid α R) (hMG : M.toMatroid.IsBase G) :
     ∃ S : StandardRepr α R, S.X = G ∧ S.toMatroid = M.toMatroid := by
   have hGY : G ⊆ M.Y := hMG.subset_ground
