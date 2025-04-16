@@ -131,6 +131,8 @@
 \newpage
 \section{3-Sum of Regular Matroids Is Regular}
 
+\subsection{Definition of 3-Sum}
+
 \begin{definition}\label{def:three_sum}
     Let $B_{1}^{(0)} \in \mathbb{Z}_{2}^{(X_{1} \cup \{x_{0}, x_{1}\}) \times (Y_{1} \cup \{y_{2}\})}, B_{2}^{(0)} \in \mathbb{Z}_{2}^{(X_{2} \cup \{x_{2}\}) \times (Y_{2} \cup \{y_{0}, y_{1}\})}$ be matrices of the form
     \[
@@ -165,7 +167,7 @@
              & & & & \Block[draw]{1-1}{1} \\
             \Block[draw]{2-2}{D_{12}^{(0)}} & & \Block[draw]{2-2}{D_{2}^{(0)}} \\
             \\
-        \end{NiceArray} \in \mathbb{Z}_{2}^{(X_{1} \cup X_{2}) \times (Y_{1} \times Y_{2})}.
+        \end{NiceArray} \in \mathbb{Z}_{2}^{(X_{1} \cup X_{2}) \times (Y_{1} \cup Y_{2})}.
     \]
     Here $x_{2} \in X_{1}$, $x_{0}, x_{1} \in X_{2}$, $y_{0}, y_{1} \in Y_{1}$, $y_{2} \in Y_{2}$, $A_{1}^{(0)} \in \mathbb{Z}_{2}^{X_{1} \times Y_{1}}$, $A_{2}^{(0)} \in \mathbb{Z}_{2}^{X_{2} \times Y_{2}}$, $D_{1}^{(0)} \in \mathbb{Z}_{2}^{\{x_{0}, x_{1}\} \times (Y_{1} \setminus \{y_{0}, y_{1}\})}$, $D_{2}^{(0)} \in \mathbb{Z}_{2}^{(X_{2} \setminus \{x_{0}, x_{1}\}) \times \{y_{0}, y_{1}\}}$, $D_{0}^{(0)} \in \mathbb{Z}_{2}^{\{x_{0}, x_{1}\} \times \{y_{0}, y_{1}\}}$, $D_{12}^{(0)} \in \mathbb{Z}_{2}^{(X_{2} \setminus \{x_{0}, x_{1}\}) \times (Y_{1} \setminus \{y_{0}, y_{1}\})}$. The indexing is kept consistent between $B_{1}^{(0)}$, $B_{2}^{(0)}$, and $B^{(0)}$. To simplify notation, we use the following shorthands:
     \[
@@ -177,7 +179,7 @@
     \]
 \end{definition}
 
-The following lemma justifies the additional assumption on the entries of $D_{0}^{(0)}$.
+The following lemma justifies the additional assumption on the entries of $D_{0}^{(0)}$.\todo{can omit}
 
 \begin{lemma}\label{lem:matrix_z2_2_2_rank_2}
     Let $D_{0}^{(0)} \in \mathbb{Z}_{2}^{2 \times 2}$ be non-singular. Then (up to row and column indices)
@@ -191,6 +193,8 @@ The following lemma justifies the additional assumption on the entries of $D_{0}
 \begin{proof}
     Verify by complete enumeration.\todo{need details?}
 \end{proof}
+
+\subsection{Construction of Canonical Signing}
 
 \begin{definition}\label{def:three_sum_canonical_signing}
     We call $B_{1}$ and $B_{2}$ canonical signings of $B_{1}^{(0)}$ and $B_{2}^{(0)}$, respectively, if they have the form
@@ -216,8 +220,10 @@ The following lemma justifies the additional assumption on the entries of $D_{0}
     \]
     where every block in $B_{1}$ and $B_{2}$ is a signing of the corresponding block in $B_{1}^{(0)}$ and $B_{2}^{(0)}$, and $D_{0}$ is the canonical signing of $D_{0}^{(0)}$, which is defined as follows:
     \[
-        \text{if } D_{0}^{(0)} = \begin{NiceArray}{cc}[hvlines] 1 & 0 \\ 0 & 1 \\ \end{NiceArray} \text{ then } D_{0} = \begin{NiceArray}{cc}[hvlines] 1 & 0 \\ 0 & -1 \\ \end{NiceArray}, \quad
-        \text{if } D_{0}^{(0)} = \begin{NiceArray}{cc}[hvlines] 1 & 1 \\ 0 & 1 \\ \end{NiceArray} \text{ then } D_{0} = \begin{NiceArray}{cc}[hvlines] 1 & 1 \\ 0 & 1 \\ \end{NiceArray}.
+        \text{if } D_{0}^{(0)} = \begin{NiceArray}{cc}[hvlines] 1 & 0 \\ 0 & 1 \\ \end{NiceArray}
+        \text{ then } D_{0} = \begin{NiceArray}{cc}[hvlines] 1 & 0 \\ 0 & -1 \\ \end{NiceArray}, \quad
+        \text{if } D_{0}^{(0)} = \begin{NiceArray}{cc}[hvlines] 1 & 1 \\ 0 & 1 \\ \end{NiceArray}
+        \text{ then } D_{0} = \begin{NiceArray}{cc}[hvlines] 1 & 1 \\ 0 & 1 \\ \end{NiceArray}.
     \]
     Given canonical signings $B_{1}$ and $B_{2}$, the corresponding canonical signing of $B^{(0)}$ is defined as
     \[
@@ -247,8 +253,7 @@ The following lemma helps construct canonical signings from arbitrary initial TU
              & & 1 \\
         \end{NiceArray} \in \mathbb{Z}_{2}^{(x_{0}, x_{1}, x_{2}) \times (y_{0}, y_{1}, y_{2})}
     \]
-    where $D_{0}^{(0)} (x_{0}, x_{0}) = 1$, $D_{0}^{(0)} (x_{0}, x_{1}) \in \{0, 1\}$, $D_{0}^{(0)} (x_{1}, x_{0}) = 0$, and $D_{0}^{(0)} (x_{1}, x_{1}) = 1$. Let $u \in \{0, \pm 1\}^{(x_{0}, x_{1}, x_{2})}$, $v \in \{0, \pm 1\}^{(y_{0}, y_{1}, y_{2})}$, %$D_{0}$,
-    and $Q$ be the following vectors and matrices:
+    where $D_{0}^{(0)} (x_{0}, y_{0}) = 1$, $D_{0}^{(0)} (x_{0}, y_{1}) \in \{0, 1\}$, $D_{0}^{(0)} (x_{1}, y_{0}) = 0$, and $D_{0}^{(0)} (x_{1}, y_{1}) = 1$. Define $u \in \{0, \pm 1\}^{\{x_{0}, x_{1}, x_{2}\}}$, $v \in \{0, \pm 1\}^{\{y_{0}, y_{1}, y_{2}\}}$, and $Q$ as follows:
     \begin{gather*}
         u(x_{0}) = Q' (x_{2}, y_{0}) \cdot Q' (x_{0}, y_{0}), \quad
         u(x_{1}) = Q' (x_{2}, y_{0}) \cdot Q' (x_{0}, y_{0}) \cdot Q' (x_{0}, y_{2}) \cdot Q' (x_{1}, y_{2}), \quad
@@ -256,13 +261,12 @@ The following lemma helps construct canonical signings from arbitrary initial TU
         v(y_{0}) = Q' (x_{2}, y_{0}), \quad
         v(y_{1}) = Q' (x_{2}, y_{1}), \quad
         v(y_{2}) = Q' (x_{2}, y_{0}) \cdot Q' (x_{0}, y_{0}) \cdot Q' (x_{0}, y_{2}), \\
-        % D_{0} (i, j) = D_{0}' (i, j) \cdot u(i) \cdot v(j) \quad \forall i \in \{x_{0}, x_{1}, \ x_{2}\}, j \in \{y_{0}, y_{1}, y_{2}\}, \\
-        Q (i, j) = Q' (i, j) \cdot u(i) \cdot v(j) \quad \forall i \in \{x_{0}, x_{1}, x_{2}\}, \ j \in \{y_{0}, y_{1}, y_{2}\}.
+        \forall i \in \{x_{0}, x_{1}, x_{2}\}, \ \forall j \in \{y_{0}, y_{1}, y_{2}\}, \quad Q (i, j) = Q' (i, j) \cdot u(i) \cdot v(j).
     \end{gather*}
     Then $Q$ is a TU signing of $T$ and $Q = \begin{NiceArray}{ccc}[hvlines] 1 & 1 & 0 \\ \Block[draw]{2-2}{D_{0}} & & 1 \\ & & 1 \\ \end{NiceArray}$ where $D_{0}$ is the respective canonical signing of $D_{0}^{(0)}$.
 \end{lemma}
 
-\begin{proof}[Direct proof of Lemma~\ref{lem:three_sum_signing_helper}.]
+\begin{proof}
     Since $Q'$ is a TU signing of $T$ and $Q$ is obtained from $Q'$ by multiplying rows and columns by $\pm 1$ factors, $Q$ is also a TU signing of $T$. By construction, we have
     \begin{align*}
         Q (x_{2}, y_{0}) &= Q' (x_{2}, y_{0}) \cdot 1 \cdot Q' (x_{2}, y_{0}) = 1, \\
@@ -306,6 +310,7 @@ The following lemma helps construct canonical signings from arbitrary initial TU
     \end{enumerate}
 \end{proof}
 
+% % The proof commented out below explains the origins of the formula for $u$ and $v$.
 % \begin{proof}[Alternative proof of Lemma~\ref{lem:three_sum_signing_helper}.]
 %     First, we modify $Q'$ by multiplying column $y_{0}$ by $Q(x_{2}, y_{0})$, column $y_{1}$ by $Q' (x_{2}, y_{1})$, row $x_{0}$ by $Q' (x_{0}, y_{2})$, and row $x_{1}$ by $Q' (x_{1}, y_{2})$. As a result, $Q'$ is transformed into
 %     \[
@@ -362,7 +367,25 @@ The following lemma helps construct canonical signings from arbitrary initial TU
 % \end{proof}
 
 \begin{lemma}\label{lem:canonical_signing_construction}
-    Let $B_{1}'$ and $B_{2}'$ be TU signings of $B_{1}^{(0)}$ and $B_{2}^{(0)}$, respectively. Let $B_{1}$ and $B_{2}$ be obtained from $B_{1}'$ and $B_{2}'$, respectively, by multiplying their rows and columns by $\pm 1$ factors from Lemma~\ref{lem:three_sum_signing_helper}. Then $B_{1}$ and $B_{2}$ are TU canonical signings.
+    Let $B_{1}'$ be a TU signing of $B_{1}^{(0)}$. Let $u \in \{0, \pm 1\}^{X_{1} \cup \{x_{2}\}}$, $v \in \{0, \pm 1\}^{Y_{1} \cup \{y_{2}\}}$, and $B_{1}$ be:
+    \begin{gather*}
+        u(i) = \begin{cases}
+            B_{1}' (x_{2}, y_{0}) \cdot B_{1}' (x_{0}, y_{0}), & i = x_{0}, \\
+            B_{1}' (x_{2}, y_{0}) \cdot B_{1}' (x_{0}, y_{0}) \cdot B_{1}' (x_{0}, y_{2}) \cdot B_{1}' (x_{1}, y_{2}), & i = x_{1}, \\
+            1, & i = x_{2}, \\
+            1, & i \in X_{1},
+        \end{cases} \\
+        v(j) = \begin{cases}
+            B_{1}' (x_{2}, y_{0}), & j = y_{0}, \\
+            B_{1}' (x_{2}, y_{1}), & j = y_{1}, \\
+            B_{1}' (x_{2}, y_{0}) \cdot B_{1}' (x_{0}, y_{0}) \cdot B_{1}' (x_{0}, y_{2}), & j = y_{2}, \\
+            1, & j \in Y_{1}, \\
+        \end{cases} \\
+        \forall i \in X_{1} \cup \{x_{2}\}, \ \forall j \in Y_{1} \cup \{y_{2}\}, \quad B_{1} (i, j) = B_{1}' (i, j) \cdot u(i) \cdot v(j).
+    \end{gather*}
+    Then $B_{1}$ is a canonical signing of $B_{1}^{(0)}$ and is TU. We will refer to $B_{1}$ as TU canonical signing for short.
+
+    The TU canonical signing $B_{2}$ of $B_{2}^{(0)}$ is defined similarly by replacing $B_{1}'$, $B_{1}^{(0)}$, and $B_{1}$ by $B_{2}'$, $B_{2}^{(0)}$, and $B_{2}$, respectively.
 \end{lemma}
 
 \begin{proof}
@@ -378,18 +401,18 @@ The following lemma helps construct canonical signings from arbitrary initial TU
 \end{lemma}
 
 \begin{proof}
-    Recall that pivoting in matrix $A$ on entry $a_{rc} \neq 0$ transforms the matrix as follows:
-    \[
-        \begin{NiceMatrix}[hvlines]
-            a_{rc} & a_{rj} \\
-            a_{ic} & a_{ij} \\
-        \end{NiceMatrix}
-        \quad \to \quad
-        \begin{NiceMatrix}[hvlines,cell-space-limits=2pt]
-            \frac{1}{a_{rc}} & \frac{a_{rj}}{a_{rc}} \\
-            -\frac{a_{ic}}{a_{rc}} & a_{ij} - \frac{a_{rj} a_{ic}}{a_{rc}} \\
-        \end{NiceMatrix}
-    \]
+    % Recall that pivoting in matrix $A$ on entry $a_{rc} \neq 0$ transforms the matrix as follows:
+    % \[
+    %     \begin{NiceMatrix}[hvlines]
+    %         a_{rc} & a_{rj} \\
+    %         a_{ic} & a_{ij} \\
+    %     \end{NiceMatrix}
+    %     \quad \to \quad
+    %     \begin{NiceMatrix}[hvlines,cell-space-limits=2pt]
+    %         \frac{1}{a_{rc}} & \frac{a_{rj}}{a_{rc}} \\
+    %         -\frac{a_{ic}}{a_{rc}} & a_{ij} - \frac{a_{rj} a_{ic}}{a_{rc}} \\
+    %     \end{NiceMatrix}
+    % \]
     Pivoting in $B_{2}$ on $(x_{2}, y_{0})$ and $(x_{2}, y_{1})$ yields:
     \[
         B_{2} =
@@ -425,30 +448,17 @@ The following lemma helps construct canonical signings from arbitrary initial TU
 \begin{lemma}\label{lem:A_2_ext_2_TU}
     Let $B_{2}$ be a TU canonical signing of $B_{2}^{(0)}$. Let $c_{0} = D_{0, 2} (\cdot, y_{0})$, $c_{1} = D_{0, 2} (\cdot, y_{1})$, and $c_{2} = c_{0} - c_{1}$. Then the following properties hold.
     \begin{enumerate}
-        \item\label{item:A_2_ext_2_vec_sign} $c_{2}$ is a signing of $D_{0, 2} (\cdot, y_{0}) + D_{0, 2} (\cdot, y_{1})$.
+        \item \label{item:A_2_ext_c01_eq} For every $i \in X_{2}$, we have $[c_{0} (i) \mid c_{1} (i)] \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}} \setminus \{[1 \mid -1] , [-1 \mid 1]\}$.
+        \item\label{item:A_2_ext_2_vec_sign} $c_{2}$ is a signing of $D_{0, 2}^{(0)} (\cdot, y_{0}) + D_{0, 2}^{(0)} (\cdot, y_{1})$.
         \item\label{item:A_2_ext_2_TU} $[A_{2} \mid c_{0} \mid c_{1} \mid c_{2}]$ is TU.
     \end{enumerate}
 \end{lemma}
 
 \begin{proof}
     \begin{enumerate}
-        \item Let $r(i)$ denote a two-element row vector consisting of entries $y_{0}$ and $y_{1}$ in row $i$ of $B_{2}$. Note that $r(x_{2}) = [1 \mid 1]$.
+        \item Let $i \in X_{2}$. If $[c_{0} (i) \mid c_{1} (i)] = [1 \mid -1]$, then the $2 \times 2$ submatrix of $B_{2}$ indexed by $\{x_{2}, i\} \times \{y_{0}, y_{1}\}$ has $\det \begin{bmatrix} 1 & 1 \\ 1 & -1 \\ \end{bmatrix} = -2 \notin \{0, \pm 1\}$, which contradicts TUness of $B_{2}$. Similarly, if $[c_{0} (i) \mid c_{1} (i)] = [-1 \mid 1]$, then the $2 \times 2$ submatrix of $B_{2}$ indexed by $\{x_{2}, i\} \times \{y_{0}, y_{1}\}$ has $\det \begin{bmatrix} 1 & 1 \\ -1 & 1 \\ \end{bmatrix} = 2 \notin \{0, \pm 1\}$, which contradicts TUness of $B_{2}$.
 
-        First, suppose that $r(i) = [1 \mid -1]$ or $r(i) = [-1 \mid 1]$. Then the matrix composed of rows $i$ and $x_{2}$ has
-        \[
-            \det \begin{bmatrix}
-                1 & 1 \\
-                1 & -1 \\
-            \end{bmatrix} = -2
-            \quad \text{ or } \quad
-            \det \begin{bmatrix}
-                1 & 1 \\
-                -1 & 1 \\
-            \end{bmatrix} = 2,
-        \]
-        which is impossible as $B_{2}$ is a TU signing. Thus, these cases are not realized.
-
-        Now, suppose that $r(i)$ is one of the following: $[0 \mid 0]$, $[0 \mid 1]$, $[1 \mid 0]$, $[1 \mid 1]$, $[0 \mid -1]$, $[-1 \mid 0]$, $[-1 \mid -1]$. In all of these cases, a direct calculation shows that $c_{2}(i) \in \{0, \pm 1\}$ and $|c_{2}(i)| = D_{0, 2} (\cdot, y_{0}) + D_{0, 2} (\cdot, y_{1})$.
+        \item By item~\ref{item:A_2_ext_c01_eq}, we know that $[c_{0} (i) \mid c_{1} (i)] \neq [1 \mid -1]$ and $[c_{0} (i) \mid c_{1} (i)] \neq [-1 \mid 1]$. In all other cases, a direct calculation shows that $c_{2} (i) \in \{0, \pm 1\}$ and $|c_{2}(i)| = D_{0, 2}^{(0)} (\cdot, y_{0}) + D_{0, 2}^{(0)} (\cdot, y_{1})$.
 
         \item Let $V$ be a square submatrix of $[A_{2} \mid c_{0} \mid c_{1} \mid c_{2}]$. We will show that $\det V \in \{0, \pm 1\}$.
 
@@ -469,13 +479,14 @@ The following lemma helps construct canonical signings from arbitrary initial TU
 \begin{lemma}\label{lem:A_1_ext_2_TU}
     Let $B_{1}$ be a TU canonical signing of $B_{1}^{(0)}$. Let $d_{0} = D_{1, 0} (x_{0}, \cdot)$, $d_{1} = D_{1, 0} (x_{1}, \cdot)$, and $d_{2} = d_{0} - d_{1}$. Then the following properties hold.
     \begin{enumerate}
-        \item\label{item:A_1_ext_2_vec_sign} $d_{2}$ is a signing of $D_{1, 0} (x_{0}, \cdot) + D_{1, 0} (x_{1}, \cdot)$.
+        \item \label{item:A_2_ext_c01_eq} For every $j \in Y_{2}$, we have $[d_{0} (i) / d_{1} (i)] \in \{0, \pm 1\}^{\{x_{0}, x_{1}\}} \setminus \{[1 / -1] , [-1 / 1]\}$.
+        \item\label{item:A_1_ext_2_vec_sign} $d_{2}$ is a signing of $D_{1, 0}^{(0)} (x_{0}, \cdot) + D_{1, 0}^{(0)} (x_{1}, \cdot)$.
         \item\label{item:A_1_ext_2_TU} $[A_{1} / d_{0} / d_{1} / d_{2}]$ is TU.
     \end{enumerate}
 \end{lemma}
 
 \begin{proof}
-    Apply Lemma~\ref{lem:A_2_ext_2_TU} to $B_{1}^{T}$. Transposing preserves TUness.\todo{need details?}
+    Apply Lemma~\ref{lem:A_2_ext_2_TU} to $B_{1}^{T}$, or repeat the same argument up to interchanging rows and columns.
 \end{proof}
 
 \begin{lemma}\label{lem:canonical_signing_properties}
@@ -488,34 +499,32 @@ The following lemma helps construct canonical signings from arbitrary initial TU
     \end{itemize}
     Then the following properties hold.
     \begin{enumerate}
-        \item $D = c_{0} \cdot r_{0} + c_{1} \cdot r_{1}$.
-        \item Rows of $D$ are in $[\pm r_{0} / \pm r_{1} / \pm r_{2} / 0]$.
-        \item Columns of $D$ are in $[\pm c_{0} \mid \pm c_{1} \mid \pm c_{2} \mid 0]$.
-        % \item $c_{2}$ is a signing of $(D_{0, 2})_{\cdot, y_{0}} + (D_{0, 2})_{\cdot, y_{0}}$.
-        \item $[A_{2} \mid c_{0} \mid c_{1} \mid c_{2}]$ is TU.
-        \item $[A_{2} \mid D]$ is TU.
-        % \item $d_{2}$ is a signing of $(D_{1, 0})_{x_{0}, \cdot} + (D_{1, 0})_{x_{1}, \cdot}$.
-        \item $[A_{1} / r_{0} / r_{1} / r_{2}]$ is TU.
-        \item $[A_{1} / D]$ is TU.
+        \item\label{item:canonical_signing_D_eq} $D = c_{0} \cdot r_{0} + c_{1} \cdot r_{1}$.
+        \item\label{item:canonical_signing_D_rows} Rows of $D$ are in $[\pm r_{0} / \pm r_{1} / \pm r_{2} / 0]$.
+        \item\label{item:canonical_signing_D_cols} Columns of $D$ are in $[\pm c_{0} \mid \pm c_{1} \mid \pm c_{2} \mid 0]$.
+        \item\label{item:canonical_signing_TU_A_2_cs} $[A_{2} \mid c_{0} \mid c_{1} \mid c_{2}]$ is TU.
+        \item\label{item:canonical_signing_TU_A_2_D} $[A_{2} \mid D]$ is TU.
+        \item\label{item:canonical_signing_TU_A_1_rs} $[A_{1} / r_{0} / r_{1} / r_{2}]$ is TU.
+        \item\label{item:canonical_signing_TU_A_1_D} $[A_{1} / D]$ is TU.
+        \item $[c_{0} \mid c_{1}]$ contains $D_{0}$ (the canonical signing of $D_{0}^{(0)}$) as a submatrix.
     \end{enumerate}
 \end{lemma}
 
 \begin{proof}
     \begin{enumerate}
         \item Follows via a direct calculation.\todo{need details?}
-        \item In the proof of Lemma~\ref{lem:A_2_ext_2_TU} we showed that rows of $[c_{0} \mid c_{1}]$ can only be of the following forms: $[0 \mid 0]$, $[0 \mid 1]$, $[1 \mid 0]$, $[1 \mid 1]$, $[0 \mid -1]$, $[-1 \mid 0]$, $[-1 \mid -1]$. Therefore, every row of $D$ is equal to either $0$, $\pm r_{0}$, $\pm r_{1}$, or $\pm (r_{0} + r_{1}) = \pm r_{2}$.
-        \item Similar to the argument for rows,\todo{need details?} every column of $D$ is in $[\pm d_{0} / \pm d_{1} / \pm d_{2} / 0]$, which has the same columns as $[\pm r_{0} / \pm r_{1} / \pm r_{2} / 0]$ (up to reindexing).
-        % \item Holds by Lemma~\ref{lem:A_2_ext_2_TU}.\ref{item:A_2_ext_2_vec_sign}.
-        \item Holds, because columns of $[A_{2} \mid D]$ are in $[A_{2} \mid c_{0} \mid c_{1} \mid c_{2}]$, which is TU.
+        \item By item~\ref{item:canonical_signing_D_eq}, for every $i \in X_{2}$ we have $D (i, \cdot) = c_{0} (i) \cdot r_{0} + c_{1} (i) \cdot r_{1}$. By Lemma~\ref{lem:A_2_ext_1_TU}.\ref{item:A_2_ext_c01_eq}, we know that $[c_{0} (i) \mid c_{1} (i)] \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}} \setminus \{[1 \mid -1] , [-1 \mid 1]\}$. Therefore, $D (i, \cdot)$ is equal to either $0$, $\pm r_{0}$, $\pm r_{1}$, or $\pm (r_{0} + r_{1}) = \pm r_{2}$.
+        \item Holds by the same argument as item~\ref{item:canonical_signing_D_rows} up to interchanging rows and columns.
         \item Holds by Lemma~\ref{lem:A_2_ext_2_TU}.\ref{item:A_2_ext_2_TU}.
-        % \item Holds by Lemma~\ref{lem:A_1_ext_2_TU}.\ref{item:A_1_ext_2_vec_sign}.
-        \item Follows from Lemma~\ref{lem:A_1_ext_2_TU}.\ref{item:A_1_ext_2_TU}, as TUness is preserved by multiplying rows by $\pm 1$ factors (and changing row order).
-        \item Holds, because rows of $[A_{1} / D]$ are in $[A_{1} / r_{0} / r_{1} / r_{2}]$, which is TU.
+        \item By item~\ref{item:canonical_signing_D_cols}, columns of $[A_{2} \mid D]$ are in $[A_{2} \mid \pm c_{0} \mid \pm c_{1} \mid \pm c_{2} \mid 0]$. Since $[A_{2} \mid c_{0} \mid c_{1} \mid c_{2}]$ is TU and since adding zero columns and copies of columns multiplied by $\pm 1$ factors preserves TUness, $[A_{2} \mid D]$ is also TU.
+        \item By Lemma~\ref{lem:A_1_ext_2_TU}.\ref{item:A_1_ext_2_TU} (or by the same argument as item~\ref{item:canonical_signing_TU_A_2_cs} up to interchanging rows and columns), $[A_{1} / d_{0} / d_{1} / d_{2}]$ is TU. Since TUness is preserved under multiplication of rows by $\pm 1$ factors (and changing row order), $[A_{1} / r_{0} / r_{1} / r_{2}]$ is also TU.
+        \item Holds by the same argument as item~\ref{item:canonical_signing_TU_A_2_D} up to interchanging rows and columns.
+        \item Holds by construction.
     \end{enumerate}
 \end{proof}
 
 \begin{definition}\label{def:alt_sum_constr}
-    Let $A_{1} \in \mathbb{Q}^{X_{1} \cup Y_{1}}$, $A_{2} \in \mathbb{Q}^{X_{2} \cup Y_{2}}$, $c_{0}, c_{1} \in \mathbb{Q}^{X_{2}}$, $r_{0}, r_{1} \in \mathbb{Q}^{Y_{1}}$. Let $D = c_{0} \cdot r_{0} + c_{1} \cdot r_{1}$. Suppose that properties 2--7 from the statement of Lemma~\ref{lem:canonical_signing_properties} are satisfied for $A_{1}$, $A_{2}$, $c_{0}$, $c_{1}$, $r_{0}$, $r_{1}$.\todo{refactor} Given $k \in \mathbb{Z}_{\geq 1}$, define $\mathrm{Proposition}(A_{1}, A_{2}, c_{0}, c_{1}, r_{0}, r_{1}, k)$ to mean ``$C = \begin{NiceArray}{cc}[hvlines] A_{1} & 0 \\ D & A_{2} \\ \end{NiceArray}$ is $k$-TU".
+    Let $A_{1} \in \mathbb{Q}^{X_{1} \cup Y_{1}}$, $A_{2} \in \mathbb{Q}^{X_{2} \cup Y_{2}}$, $c_{0}, c_{1} \in \mathbb{Q}^{X_{2}}$, $r_{0}, r_{1} \in \mathbb{Q}^{Y_{1}}$. Let $D = c_{0} \cdot r_{0} + c_{1} \cdot r_{1}$. Suppose that properties 2--8 from the statement of Lemma~\ref{lem:canonical_signing_properties} are satisfied for $A_{1}$, $A_{2}$, $c_{0}$, $c_{1}$, $r_{0}$, $r_{1}$.\todo{refactor} Given $k \in \mathbb{Z}_{\geq 1}$, define $\mathrm{Proposition}(A_{1}, A_{2}, c_{0}, c_{1}, r_{0}, r_{1}, k)$ to mean ``$C = \begin{NiceArray}{cc}[hvlines] A_{1} & 0 \\ D & A_{2} \\ \end{NiceArray}$ is $k$-TU".
 \end{definition}
 
 \begin{lemma}\label{lem:alt_1_TU}
@@ -527,15 +536,15 @@ The following lemma helps construct canonical signings from arbitrary initial TU
 \end{proof}
 
 \begin{lemma}\label{lem:alt_three_sum_pivot}
-    Let $a \in \mathbb{Q}^{Y_{1}}$, $c_{0}, c_{1} \in \mathbb{Q}^{X_{2}}$, and $D \in \mathbb{Q}^{X_{2} \times Y_{1}}$. Suppose $[c_{0} \mid c_{1}]$ contains a canonical signing of $D_{0}^{(0)}$ as a submatrix.\todo{refactor} Suppose that columns of $D$ are in $[\pm c_{0} \mid \pm c_{1} \mid \pm (c_{0} - c_{1}) \mid 0]$ and that $T = [a / D]$ is TU. Suppose we pivot on entry $a_{j} \in \{\pm 1\}$ in $T$ and obtain matrix $T' = [a' \mid D']$. Then columns of $D'$ are in $[\pm c_{0} \mid \pm c_{1} \mid \pm (c_{0} - c_{1}) \mid 0]$.
+    Assume the notation of Definition~\ref{def:alt_sum_constr}. Let $i \in X_{1}$, let $T = [A_{1} (i, \cdot) / D]$. Suppose we pivot on entry $T (i, j) \in \{\pm 1\}$ in $T$ and obtain matrix $T' = [a' / D']$. Then columns of $D'$ are in $[\pm c_{0} \mid \pm c_{1} \mid \pm (c_{0} - c_{1}) \mid 0]$.
 \end{lemma}
 
 \begin{proof}
-    Perform an exhaustive case distinction on what pivot column $p$ in $T$ could be and what another column $q$ in $T$ could be. After pivoting, $T'$ must be TU. Every combination of $p$ and $q$ is either incompatible with TUness, or produces a column in $T'$ with the desired property (i.e., its restriction to $X_{2}$ is in $[\pm c_{0} \mid \pm c_{1} \mid \pm (c_{0} - c_{1}) \mid 0]$). This is tedious, but not difficult. \todo{need details?}
+    Since $T$ is a submatrix of $[A_{1} / D]$, which is TU by assumptions of Definition~\ref{def:alt_sum_constr}, we have that $T$ is TU. Since pivoting preserves TUness, $T'$ is also TU. To prove the claim, perform an exhaustive case distinction on what pivot column $p$ in $T$ could be and what another column $q$ in $T$ could be. This uniquely determines the resulting columns $p'$ and $q'$ in $T'$ by the pivot formula. In every case, either $[p' \mid q']$ contains a submatrix with determinant not in $\{0, \pm 1\}$, which contradicts TUness of $T'$, or the restriction of $p'$ and $q'$ to $X_{2}$ is in $[\pm c_{0} \mid \pm c_{1} \mid \pm (c_{0} - c_{1}) \mid 0]$).\todo{need details?}
 \end{proof}
 
 \begin{lemma}\label{lem:alt_k_TU_induction}
-    Assume the notation of Definition~\ref{def:alt_sum_constr}. Let $k \in \mathbb{Z}_{\geq 2}$. Suppose $\mathrm{Proposition}(A_{1}', A_{2}, c_{0}, c_{1}, r_{0}', r_{1}', k - 1)$ holds for all $A_{1}'$, $r_{0}'$, and $r_{1}'$ satisfying the assumptions of Definition~\ref{def:alt_sum_constr}. Then $\mathrm{Proposition}(A_{1}, A_{2}, c_{0}, c_{1}, r_{0}, r_{1}, k)$ holds.
+    Assume the notation of Definition~\ref{def:alt_sum_constr}. Let $k \in \mathbb{Z}_{\geq 2}$. Suppose $\mathrm{Proposition}(A_{1}', A_{2}, c_{0}, c_{1}, r_{0}', r_{1}', k - 1)$ holds for all $A_{1}'$, $r_{0}'$, and $r_{1}'$ satisfying the assumptions of Definition~\ref{def:alt_sum_constr} (together with $A_{2}$, $c_{0}$, and $c_{1}$). Then $\mathrm{Proposition}(A_{1}, A_{2}, c_{0}, c_{1}, r_{0}, r_{1}, k)$ holds.
 \end{lemma}
 
 \begin{proof}
@@ -559,14 +568,6 @@ The following lemma helps construct canonical signings from arbitrary initial TU
     To sum up, after pivoting we obtain a matrix $C'$ (which can be obtained in the manner of Definition~\ref{def:alt_sum_constr}) that is $(k - 1)$-TU and contains a $(k - 1) \times (k - 1)$ submatrix $V'$ with $\det V' \notin \{0, \pm 1\}$. This contradiction proves the lemma.
 \end{proof}
 
-\begin{lemma}\label{lem:three_sum_k_TU_induction}
-    Let $B_{1}$ and $B_{2}$ be TU canonical signings. Let $k \in \mathbb{Z}_{\geq 1}$. Then the corresponding canonical signing $B$ is $k$-TU.
-\end{lemma}
-
-\begin{proof}
-    Follows from Lemma~\ref{lem:alt_k_TU_induction}.\todo{need details?}
-\end{proof}
-
 \begin{lemma}\label{lem:three_sum_canonical_signing_TU}
     Let $B_{1}$ and $B_{2}$ be TU canonical signings. Then the corresponding canonical signing $B$ is TU.
 \end{lemma}
@@ -582,7 +583,9 @@ The following lemma helps construct canonical signings from arbitrary initial TU
 
     Step: If the Proposition holds for some $k$, then it also holds for $k + 1$ by Lemma~\ref{lem:alt_k_TU_induction}.
 
-    Conclusion: $\mathrm{Proposition}(A_{1}', A_{2}, c_{0}, c_{1}, r_{0}', r_{1}', k)$ holds for all $k \in \mathbb{Z}_{\geq 1}$. In particular, canonical signing $B$ is $k$-TU for every $k \in \mathbb{Z}_{\geq 1}$. Thus, $B$ is TU.
+    Conclusion: $\mathrm{Proposition}(A_{1}', A_{2}, c_{0}, c_{1}, r_{0}', r_{1}', k)$ holds for all $k \in \mathbb{Z}_{\geq 1}$.
+
+    Specializing the conclusion to $A_{1}$, $A_{2}$, $c_{0}$, $c_{1}$, $r_{0}$, $r_{1}$ (obtained from $B_{1}$ and $B_{2}$ as described in the statement of Lemma~\ref{lem:canonical_signing_properties}) shows that canonical signing $B$ is $k$-TU for every $k \in \mathbb{Z}_{\geq 1}$. Thus, $B$ is TU.
 \end{proof}
 
 \begin{corollary}
