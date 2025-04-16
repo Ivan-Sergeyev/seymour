@@ -5,10 +5,12 @@ open scoped Matrix
 
 variable {α : Type}
 
+/-- Add the identity matrix to the left of given matrix (important "definition" -- use it with standard representations). -/
 @[simp low]
 abbrev Matrix.prependId [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) : Matrix m (m ⊕ n) α :=
   Matrix.fromCols 1 A
 
+/-- Add the identity matrix on top of given matrix (auxiliary "definition" -- use it only in small lemmas). -/
 @[simp low]
 abbrev Matrix.uppendId [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) : Matrix (n ⊕ m) n α :=
   Matrix.fromRows 1 A
@@ -30,9 +32,12 @@ lemma Matrix.uppendId_transpose [Zero α] [One α] {m n : Type} [DecidableEq m] 
     A.uppendIdᵀ = Aᵀ.prependId := by
   rw [←Matrix.transpose_transpose A.transpose.prependId, Matrix.prependId_transpose, Matrix.transpose_transpose]
 
+/-- Two matrices are equal if they agree on all columns. -/
 lemma Matrix.ext_col {m n : Type} {A B : Matrix m n α} (hAB : ∀ i : m, A i = B i) : A = B :=
   Matrix.ext (congr_fun <| hAB ·)
 
+/-- Computing the determinant of a square integer matrix and then converting it to a general field gives the same result as
+    converting all elements to given field and computing the determinant afterwards. -/
 lemma Matrix.det_int_coe [DecidableEq α] [Fintype α] (A : Matrix α α ℤ) (F : Type) [Field F] :
     ((A.det : ℤ) : F) = ((A.map Int.cast).det : F) := by
   simp only [Matrix.det_apply, Int.cast_sum, Matrix.map_apply]
@@ -43,6 +48,8 @@ lemma Matrix.det_int_coe [DecidableEq α] [Fintype α] (A : Matrix α α ℤ) (F
   else
     simp [Int.units_ne_iff_eq_neg.→ h1]
 
+/-- Computing the determinant of a square rational matrix and then converting it to a `CharZero` field gives the same result as
+    converting all elements to given field and computing the determinant afterwards. -/
 lemma Matrix.det_rat_coe [DecidableEq α] [Fintype α] (A : Matrix α α ℚ) (F : Type) [Field F] [CharZero F] :
     ((A.det : ℚ) : F) = ((A.map Rat.cast).det : F) := by
   simp only [Matrix.det_apply, Rat.cast_sum, Matrix.map_apply]
@@ -53,6 +60,7 @@ lemma Matrix.det_rat_coe [DecidableEq α] [Fintype α] (A : Matrix α α ℚ) (F
   else
     simp [Int.units_ne_iff_eq_neg.→ h1]
 
+/-- Every invertible matrix has linearly independent rows (unapplied version). -/
 lemma IsUnit.linearIndependent_matrix [DecidableEq α] [Fintype α] {R : Type} [CommRing R] {A : Matrix α α R} (hA : IsUnit A) :
     LinearIndependent R A :=
   A.linearIndependent_rows_of_isUnit hA

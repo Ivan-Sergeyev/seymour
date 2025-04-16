@@ -2,7 +2,6 @@ import Seymour.Basic.Sets
 import Seymour.Matrix.LinearIndependence
 import Seymour.Matroid.Constructors.BinaryMatroid
 import Seymour.Matroid.Elementary.Basic
-import Seymour.Matroid.Constructors.TODOs
 
 open scoped Matrix Set.Notation
 
@@ -233,6 +232,76 @@ lemma VectorMatroid.isFinitary [DivisionRing R] (M : VectorMatroid α R) : M.toM
   rw [linearIndepOn_iff] at hI
   exact hI s (fun a ha => ⟨⟨a.val, Set.mem_image_of_mem Subtype.val ha⟩, by simp⟩) hAs
 
+private lemma exists_standardRepr_isBase_aux_left {X Y G I : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ G)]
+    [DivisionRing R] {A : Matrix X Y R} {B : Basis G R (Submodule.span R A.range)}
+    (hGX : G ⊆ X) (hXGX : X \ G ⊆ X) -- tautological but keep
+    (hIX : I ⊆ X) (hIGX : I ⊆ G ∪ (X \ G)) -- redundant but keep
+    (hB : ∀ i : α, ∀ g : G, ∀ hiX : i ∈ X, ∀ hiG : i ∈ G, ∀ hiR : A ⟨i, hiX⟩ ∈ Submodule.span R A.range,
+      B.repr ⟨A ⟨i, hiX⟩, hiR⟩ g = B.repr (B ⟨i, hiG⟩) g)
+    (hAI : LinearIndepOn R A hIX.elem.range) :
+    LinearIndepOn R
+      (((Matrix.of (fun x : X => fun g : G => B.repr ⟨A x, in_submoduleSpan_range A x⟩ g)).submatrix hXGX.elem id).uppendId
+        ∘ Subtype.toSum)
+      hIGX.elem.range := by
+  have hX : G ∪ (X \ G) = X := Set.union_diff_cancel' (by tauto) hGX
+  let e : hIGX.elem.range → hIX.elem.range := fun ⟨⟨i, hi⟩, hhi⟩ => ⟨⟨i, hX ▸ hi⟩, by simpa using hhi⟩
+  unfold LinearIndepOn
+  convert (B.linearIndepOn_in_submodule hAI).comp e (fun _ _ hee => by ext; simpa [e] using hee) with ⟨⟨i, hi⟩, -⟩
+  ext ⟨j, hj⟩
+  if hiG : i ∈ G then
+    have hBij := B.repr_self_apply ⟨i, hiG⟩ ⟨j, hj⟩
+    if hij : i = j then
+      convert Eq.refl (1 : R)
+      · simpa [Matrix.one_apply, hiG] using hij
+      · simp_rw [hij]
+        simp only [hij, if_true] at hBij
+        convert hBij
+        ext
+        apply hB
+    else
+      convert Eq.refl (0 : R)
+      · simpa [Matrix.one_apply, hiG] using hij
+      · convert hBij
+        · ext
+          apply hB
+        · symm
+          simpa using hij
+  else
+    have hiX : i ∈ X := hX ▸ hi
+    simp [Matrix.submatrix, Subtype.toSum, hiX, hiG, e]
+
+private lemma exists_standardRepr_isBase_aux_right {X Y G I : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ G)]
+    [DivisionRing R] {A : Matrix X Y R} {B : Basis G R (Submodule.span R A.range)}
+    (hGX : G ⊆ X) (hXGX : X \ G ⊆ X) -- tautological but keep
+    (hIX : I ⊆ X) (hIGX : I ⊆ G ∪ (X \ G)) -- redundant but keep
+    (hB : ∀ i : α, ∀ g : G, ∀ hiX : i ∈ X, ∀ hiG : i ∈ G, ∀ hiR : A ⟨i, hiX⟩ ∈ Submodule.span R A.range,
+      B.repr ⟨A ⟨i, hiX⟩, hiR⟩ g = B.repr (B ⟨i, hiG⟩) g)
+    (hBI : LinearIndepOn R
+      (((Matrix.of (fun x : X => fun g : G => B.repr ⟨A x, in_submoduleSpan_range A x⟩ g)).submatrix hXGX.elem id).uppendId
+        ∘ Subtype.toSum) hIGX.elem.range) :
+    LinearIndepOn R A hIX.elem.range := by
+  apply B.linearIndepOn_of_in_submodule
+  have hX : X = G ∪ (X \ G) := (Set.union_diff_cancel' (by tauto) hGX).symm
+  let e : hIX.elem.range → hIGX.elem.range := fun ⟨⟨i, hi⟩, hhi⟩ => ⟨⟨i, hX ▸ hi⟩, by simpa using hhi⟩
+  unfold LinearIndepOn
+  convert hBI.comp e (fun _ _ hee => by ext; simpa [e] using hee) with ⟨⟨i, hi⟩, -⟩
+  ext ⟨j, hj⟩
+  if hiG : i ∈ G then
+    have hBij := B.repr_self_apply ⟨i, hiG⟩ ⟨j, hj⟩
+    if hij : i = j then
+      convert Eq.refl (1 : R)
+      · simp [*]
+      · simp [Matrix.submatrix, Subtype.toSum, e, hiG]
+        simpa [Matrix.one_apply] using hij
+    else
+      convert Eq.refl (0 : R)
+      · simp [*]
+      · simp [Matrix.submatrix, Subtype.toSum, e, hiG]
+        simpa [Matrix.one_apply] using hij
+  else
+    have hiX : i ∈ X := hX ▸ hi
+    simp [Matrix.submatrix, Subtype.toSum, hiX, hiG, e]
+
 /-- Every vector matroid has a standard representation whose rows are a given base. -/
 lemma VectorMatroid.exists_standardRepr_isBase [DivisionRing R] {G : Set α}
     (M : VectorMatroid α R) (hMG : M.toMatroid.IsBase G) :
@@ -309,12 +378,12 @@ lemma VectorMatroid.exists_standardRepr_isBase [DivisionRing R] {G : Set α}
   · intro ⟨hI, hRCI⟩
     use hGYY ▸ hI
     classical
-    apply todo_right hGY hYGY (hGYY ▸ hI) hIGY hB
+    apply exists_standardRepr_isBase_aux_right hGY hYGY (hGYY ▸ hI) hIGY hB
     convert hRCI
   · intro ⟨hI, hRAI⟩
     use hGYY.symm ▸ hI
     classical
-    convert todo_left hGY hYGY hI hIGY hB hRAI
+    convert exists_standardRepr_isBase_aux_left hGY hYGY hI hIGY hB hRAI
 
 /-- Every vector matroid has a standard representation. -/
 lemma VectorMatroid.exists_standardRepr [Field R] (M : VectorMatroid α R) :

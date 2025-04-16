@@ -1,32 +1,17 @@
+import Seymour.Basic.SubmoduleSpans
 import Seymour.Matrix.Basic
 import Mathlib.Data.Matrix.Rank
 
 
 section fromPeterNelson
 
-section
-variable {ι R O : Type} [DivisionRing R] [AddCommGroup O] [Module R O] {t : Set ι} {v : ι → O}
-
-private lemma LinearIndepOn.exists_maximal {s₀ : Set ι} (hli : LinearIndepOn R v s₀) (hs₀t : s₀ ⊆ t) :
-    ∃ s : Set ι, s₀ ⊆ s ∧ Maximal (fun r => r ⊆ t ∧ LinearIndepOn R v r) s :=
-  zorn_subset_nonempty {r | r ⊆ t ∧ LinearIndepOn R v r}
+private lemma LinearIndepOn.exists_maximal {ι R O : Type} [DivisionRing R] [AddCommGroup O] [Module R O] {t : Set ι}
+    {v : ι → O} {s₀ : Set ι} (hRv : LinearIndepOn R v s₀) (ht : s₀ ⊆ t) :
+    ∃ s : Set ι, s₀ ⊆ s ∧ Maximal (fun r : Set ι => r ⊆ t ∧ LinearIndepOn R v r) s :=
+  zorn_subset_nonempty { r : Set ι | r ⊆ t ∧ LinearIndepOn R v r }
     (fun c hcss cchain _ => ⟨⋃₀ c, ⟨Set.sUnion_subset fun _ hxc => (hcss hxc).left,
       linearIndepOn_sUnion_of_directed cchain.directedOn fun _ hxc => (hcss hxc).right⟩,
-      fun _ hs => Set.subset_sUnion_of_mem hs⟩) s₀ ⟨hs₀t, hli⟩
-
-private lemma LinearIndepOn.span_eq_of_maximal_subset {s : Set ι}
-    (hs : Maximal (fun r : Set ι => r ⊆ t ∧ LinearIndepOn R v r) s) :
-    Submodule.span R (v '' s) = Submodule.span R (v '' t) := by
-  apply le_antisymm (Submodule.span_mono (Set.image_mono hs.prop.left))
-  rw [Submodule.span_le]
-  rintro _ ⟨x, hx, rfl⟩
-  exact hs.prop.right.mem_span_iff.← (hs.mem_of_prop_insert ⟨Set.insert_subset hx hs.prop.left, ·⟩)
-
-private lemma LinearIndepOn.span_eq_top_of_maximal {s : Set ι} (hs : Maximal (LinearIndepOn R v ·) s) :
-    Submodule.span R (v '' s) = Submodule.span R v.range := by
-  simp [LinearIndepOn.span_eq_of_maximal_subset (t := Set.univ) (by simpa)]
-
-end
+      fun _ hs => Set.subset_sUnion_of_mem hs⟩) s₀ ⟨ht, hRv⟩
 
 namespace Matrix
 
@@ -58,7 +43,7 @@ private def IsColBasis (R : Type) [Semiring R] (A : Matrix m n R) (t : Set n) : 
 
 private lemma IsRowBasis.span_eq [DivisionRing R] {s : Set m} {A : Matrix m n R} (hs : A.IsRowBasis R s) :
     Submodule.span R (A.rowFun '' s) = Submodule.span R A.rowFun.range :=
-  LinearIndepOn.span_eq_top_of_maximal hs
+  span_eq_top_of_maximal_linearIndepOn hs
 
 /-- If `A.IsRowBasis R s` then `s` naturally indexes an `R`-`Basis` for the row space of `A`. -/
 private noncomputable def IsRowBasis.basis [DivisionRing R] {s : Set m} {A : Matrix m n R} (hs : A.IsRowBasis R s) :
