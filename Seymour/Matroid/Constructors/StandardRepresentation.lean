@@ -214,8 +214,27 @@ lemma StandardRepr.toMatroid_indep' [DivisionRing R] (S : StandardRepr α R) :
     S.toMatroid.Indep = (∃ hI : · ⊆ S.X ∪ S.Y, LinearIndepOn R (S.Bᵀ.uppendId ∘ Subtype.toSum) hI.elem.range) := by
   simp
 
+lemma VectorMatroid.isFinitary [Field R] (M : VectorMatroid α R) : M.toMatroid.Finitary := by
+  constructor
+  intro I hI
+  simp
+  wlog hIY : I ⊆ M.toMatroid.E
+  · exfalso
+    rw [Set.not_subset_iff_exists_mem_not_mem] at hIY
+    obtain ⟨x, hx, hxE⟩ := hIY
+    specialize hI { x } (Set.singleton_subset_iff.← hx) (Set.finite_singleton x)
+    exact hxE (hI.subset_ground rfl)
+  use hIY
+  rw [linearIndepOn_iff]
+  intro s hs hAs
+  rw [Finsupp.mem_supported] at hs
+  specialize hI s.support.toSet (by rw [Set.image_subset_iff]; convert hs; aesop) (Subtype.val '' s.support).toFinite
+  simp [VectorMatroid.toMatroid_indep_iff_elem] at hI
+  rw [linearIndepOn_iff] at hI
+  exact hI s (fun a ha => ⟨⟨a.val, Set.mem_image_of_mem Subtype.val ha⟩, by simp⟩) hAs
+
 /-- Every vector matroid has a standard representation whose rows are a given base. -/
-lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
+lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α} [Finite G]
     (M : VectorMatroid α R) (hMG : M.toMatroid.IsBase G) :
     ∃ S : StandardRepr α R, S.X = G ∧ S.toMatroid = M.toMatroid := by
   have hGY : G ⊆ M.Y := hMG.subset_ground
@@ -295,13 +314,16 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
   · intro ⟨hI, hRAI⟩
     use hGYY.symm ▸ hI
     classical
-    convert todo_left lin_indep hGY hYGY hI hIGY hB hRAI
+    convert todo_left hGY hYGY hI hIGY hB hRAI
 
 /-- Every vector matroid has a standard representation. -/
 lemma VectorMatroid.exists_standardRepr [Field R] (M : VectorMatroid α R) :
     ∃ S : StandardRepr α R, S.toMatroid = M.toMatroid := by
-  peel M.exists_standardRepr_isBase M.toMatroid.exists_isBase.choose_spec with hS
-  exact hS.right
+  have hM : M.toMatroid.RankFinite := sorry
+  obtain ⟨G, hMG, hG⟩ := hM.exists_finite_isBase
+  have : Finite G.Elem := hG
+  obtain ⟨S, -, hS⟩ := M.exists_standardRepr_isBase hMG
+  exact ⟨S, hS⟩
 
 /-- The identity matrix has linearly independent rows. -/
 lemma Matrix.one_linearIndependent [Ring R] : LinearIndependent R (1 : Matrix α α R) := by
