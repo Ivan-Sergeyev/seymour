@@ -309,7 +309,7 @@ lemma VectorMatroid.exists_standardRepr_isBase [Field R] {G : Set α}
   · intro ⟨hI, hRCI⟩
     use hGYY ▸ hI
     classical
-    apply todo_right lin_indep hGY hYGY (hGYY ▸ hI) hIGY hB
+    apply todo_right hGY hYGY (hGYY ▸ hI) hIGY hB
     convert hRCI
   · intro ⟨hI, hRAI⟩
     use hGYY.symm ▸ hI
