@@ -1,6 +1,7 @@
 import Seymour.Basic.SignTypeCast
 import Seymour.Matrix.Basic
 
+import Mathlib.LinearAlgebra.Matrix.SchurComplement
 
 variable {X Y F : Type}
 
@@ -44,6 +45,10 @@ lemma Matrix.shortTableauPivot_row_other [DivisionRing F] [DecidableEq X] [Decid
 private def Matrix.mulRow [DecidableEq X] [Mul F] (A : Matrix X Y F) (x : X) (c : F) :
     Matrix X Y F :=
   A.updateRow x (c • A x)
+
+private lemma Matrix.mulRow_det [DecidableEq X] [Fintype X] [CommRing F] (A : Matrix X X F) (x : X) (c : F) :
+    (A.mulRow x c).det = c * A.det := by
+  rw [Matrix.mulRow, det_updateRow_smul, updateRow_eq_self]
 
 private lemma Matrix.IsTotallyUnimodular.mulRow [DecidableEq X] [CommRing F] {A : Matrix X Y F}
     (hA : A.IsTotallyUnimodular) (x : X) {c : F} (hc : c ∈ SignType.cast.range) :
@@ -231,13 +236,61 @@ lemma Matrix.submatrix_shortTableauPivot [DecidableEq X] [DecidableEq Y] {X' Y' 
   unfold Matrix.shortTableauPivot
   aesop
 
+lemma Matrix.shortTableauPivot.submatrix_succAbove_pivot_apply [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F}
+    {r c : Fin k.succ} (a b : Fin k) : (A.shortTableauPivot r c).submatrix r.succAbove c.succAbove a b = (
+        A (r.succAbove a) (c.succAbove b) - A (r.succAbove a) c * A r (c.succAbove b) / A r c) := by
+  simp [shortTableauPivot, c.succAbove_ne b, r.succAbove_ne a]
+
+lemma Matrix.shortTableauPivot.submatrix_eq [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F}
+    {r c : Fin k.succ} : (A.shortTableauPivot r c).submatrix r.succAbove c.succAbove =
+      Matrix.of fun (i j : Fin k) => A (r.succAbove i) (c.succAbove j) - A (r.succAbove i) c * A r (c.succAbove j) / A r c := by
+  ext i j
+  exact Matrix.shortTableauPivot.submatrix_succAbove_pivot_apply i j
+
 lemma lemma1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F} {r c : Fin k.succ} (hArc : A r c ≠ 0) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
       ((A.shortTableauPivot r c).submatrix f g).det = A.det / A r c := by
-  use r.succAbove
-  use c.succAbove
-  use Fin.succAbove_right_injective
-  use Fin.succAbove_right_injective
+  use r.succAbove, c.succAbove
+  use Fin.succAbove_right_injective, Fin.succAbove_right_injective
+  rw [Matrix.shortTableauPivot.submatrix_eq]
+  conv in _ / _ => rw [div_eq_mul_inv _ (A r c)]
+
+  let M₁ := Matrix.of fun (i j : Fin k) => A (r.succAbove i) (c.succAbove j)
+  let M₂ := Matrix.of fun (i : Fin k) (j : Fin 1) => A (r.succAbove i) c
+  let M₃ := Matrix.of fun (i : Fin 1) (j : Fin k) => A r (c.succAbove j)
+  let M₄ := !![A r c]
+
+  have hAM₁ : ∀ i j, A (r.succAbove i) (c.succAbove j) = M₁ i j := fun _ _ => rfl
+  have hAM₂ : ∀ i, A (r.succAbove i) c = M₂ i 0 := fun _ => rfl
+  have hAM₃ : ∀ j, A r (c.succAbove j) = M₃ 0 j := fun _ => rfl
+  have hAM₄ : (A r c) = (M₄ 0 0) := rfl
+
+  have hiAM₄ : M₄⁻¹ = !![(A r c)⁻¹] := by
+    ext i j
+    suffices ¬i = j → 0 = A r c by simpa [M₄, Matrix.diagonal]
+    refine (absurd ?_ ·)
+    rw [Fin.eq_zero i, Fin.eq_zero j]
+
+  conv in _ - _ * _ => rw [hAM₁ i j, hAM₂ i, hAM₃ j, hAM₄]
+
+  have hM : (Matrix.of fun i j => M₁ i j - M₂ i 0 * M₃ 0 j * (M₄ 0 0)⁻¹) = M₁ - (M₂) * (M₄)⁻¹ * M₃ := by
+    ext i j
+    have : A (r.succAbove i) c * M₃ 0 j * (A r c)⁻¹ = A (r.succAbove i) c * (A r c)⁻¹ * M₃ 0 j := by ring
+    simpa [hiAM₄, Matrix.mul_apply, M₂, M₄]
+
+  have : Invertible M₄ := Matrix.invertibleOfLeftInverse M₄ M₄⁻¹ (by
+    rw [hiAM₄]
+    unfold M₄
+    ext i j
+    rw [Fin.eq_zero i, Fin.eq_zero j]
+    simp [IsUnit.inv_mul_cancel (IsUnit.mk0 _ hArc)])
+
+  rw [
+    hM, IsUnit.eq_div_iff hArc.isUnit, mul_comm, hAM₄,
+    show M₄ 0 0 * (M₁ - M₂ * M₄⁻¹ * M₃).det = M₄.det * (M₁ - M₂ * M₄⁻¹ * M₃).det by simp,
+    ← Matrix.invOf_eq_nonsing_inv M₄, ← Matrix.det_fromBlocks₁₁ M₄ M₃ M₂ M₁
+  ]
+
   sorry
 
 lemma corollary1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F}
