@@ -247,6 +247,63 @@ lemma Matrix.shortTableauPivot.submatrix_eq [Field F] {k : ℕ} {A : Matrix (Fin
   ext i j
   exact Matrix.shortTableauPivot.submatrix_succAbove_pivot_apply i j
 
+noncomputable abbrev Fin.reindexingAux {n : ℕ} (i : Fin n.succ) : Fin 1 ⊕ Fin n → Fin n.succ := (·.casesOn i i.succAbove)
+
+lemma Fin.reindexingAux_bijective {n : ℕ} (i : Fin n.succ) : Function.Bijective i.reindexingAux :=
+  ⟨fun a b hab => by
+      cases a with
+      | inl a₁ =>
+        cases b with
+        | inl b₁ =>
+          congr
+          apply Fin1_eq_Fin1
+        | inr bₙ =>
+          symm at hab
+          absurd i.succAbove_ne bₙ
+          simpa using hab
+      | inr aₙ =>
+        cases b with
+        | inl b₁ =>
+          absurd i.succAbove_ne aₙ
+          simpa using hab
+        | inr bₙ =>
+          simpa using hab,
+    fun c => by
+      if hic : i = c then
+        use ◩0
+        simpa using hic
+      else
+        aesop⟩
+
+noncomputable def Fin.reindexing {n : ℕ} (i : Fin n.succ) : Fin 1 ⊕ Fin n ≃ Fin n.succ :=
+  Equiv.ofBijective i.reindexingAux i.reindexingAux_bijective
+
+lemma Fin.reindexing_symm_eq_left {n : ℕ} (i k : Fin n.succ) (j : Fin 1) :
+    i.reindexing.symm k = ◩j ↔ i = k := by
+  unfold Fin.reindexing
+  constructor <;> intro h
+  on_goal 1 =>
+    apply_fun i.reindexingAux at h
+    rw [Equiv.ofBijective_apply_symm_apply i.reindexingAux i.reindexingAux_bijective k] at h
+  on_goal 2 =>
+    apply_fun i.reindexingAux using i.reindexingAux_bijective.1
+    rw [Equiv.ofBijective_apply_symm_apply i.reindexingAux i.reindexingAux_bijective k]
+  all_goals
+    simp [h]
+
+lemma Fin.reindexing_symm_eq_right {n : ℕ} (i k : Fin n.succ) (j : Fin n) :
+    i.reindexing.symm k = ◪j ↔ k = (i.succAbove j) := by
+  unfold Fin.reindexing
+  constructor <;> intro h
+  on_goal 1 =>
+    apply_fun i.reindexingAux at h
+    rw [Equiv.ofBijective_apply_symm_apply i.reindexingAux i.reindexingAux_bijective k] at h
+  on_goal 2 =>
+    apply_fun i.reindexingAux using i.reindexingAux_bijective.1
+    rw [Equiv.ofBijective_apply_symm_apply i.reindexingAux i.reindexingAux_bijective k]
+  all_goals
+    simp [h]
+
 lemma lemma1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F} {r c : Fin k.succ} (hArc : A r c ≠ 0) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
       ((A.shortTableauPivot r c).submatrix f g).det = A.det / A r c := by
@@ -290,6 +347,23 @@ lemma lemma1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F} {r c :
     show M₄ 0 0 * (M₁ - M₂ * M₄⁻¹ * M₃).det = M₄.det * (M₁ - M₂ * M₄⁻¹ * M₃).det by simp,
     ← Matrix.invOf_eq_nonsing_inv M₄, ← Matrix.det_fromBlocks₁₁ M₄ M₃ M₂ M₁
   ]
+
+  have hA : A = (Matrix.fromBlocks M₄ M₃ M₂ M₁).submatrix r.reindexing.symm c.reindexing.symm
+  · ext i j
+    rw [Matrix.submatrix_apply]
+    rcases hr : r.reindexing.symm i with (ri | ri) <;> rcases hc : c.reindexing.symm j with (cj | cj)
+    on_goal 1 => rw [Matrix.fromBlocks_apply₁₁]
+    on_goal 2 => rw [Matrix.fromBlocks_apply₁₂]
+    on_goal 3 => rw [Matrix.fromBlocks_apply₂₁]
+    on_goal 4 => rw [Matrix.fromBlocks_apply₂₂]
+    all_goals
+      try rw [Fin.reindexing_symm_eq_left] at hr
+      try rw [Fin.reindexing_symm_eq_left] at hc
+      try rw [Fin.reindexing_symm_eq_right] at hr
+      try rw [Fin.reindexing_symm_eq_right] at hc
+      subst hr hc
+      simp [M₄, M₃, M₂, M₁]
+  rw [hA]
 
   sorry
 
