@@ -7,11 +7,12 @@
 
 \usepackage{hyperref} % Clickable links
 
-\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
 \theoremstyle{definition}
-\newtheorem{definition}{Definition}
-\newtheorem{corollary}{Corollary}
-\newtheorem{remark}{Remark}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{remark}[theorem]{Remark}
 
 \usepackage[margin=2.5cm]{geometry} % Page margins
 
@@ -20,7 +21,7 @@
 \usepackage{todonotes} % Todos
 
 % Header
-\title{Proof of Regularity of 2- and 3-Sum of Matroids}
+\title{Proof of Regularity of 2-Sum and 3-Sum of Matroids}
 \author{Ivan Sergeev}
 \date{March--April 2025}
 
@@ -28,26 +29,26 @@
 
 \maketitle
 
-\section{2-Sum of Regular Matroids Is Regular}
+\section{The 2-Sum of Regular Matroids Is Regular}
 
 \begin{lemma}\label{lem:pivot_submatrix_det}
     Let $A$ be a $k \times k$ matrix. Let $r, c \in \{1, \dots, k\}$ be a row and column index, respectively, such that $a_{rc} \neq 0$. Let $A'$ denote the matrix obtained from $A$ by performing a real pivot on $a_{rc}$. Then there exists a $(k - 1) \times (k - 1)$ submatrix $A''$ of $A'$ with $|\det A''| = \frac{|\det A|}{|a_{rc}|}$.
 \end{lemma}
 
 \begin{proof}
-    Let $A''$ be the submatrix of $A'$ given by row index set $R = \{1, \dots, k\} \setminus \{r\}$ and column index set $C = \{1, \dots, k\} \setminus \{c\}$. By the explicit formula for pivoting in $A$ on $a_{rc}$, the entries of $A''$ are given by $a_{ij}'' = a_{ij} - \frac{a_{ic} a_{rj}}{a_{rc}}$. Using the linearity of the determinant, we can express $\det A''$ as
+    Let $A''$ be the submatrix of $A'$ given by row index set $R = \{1, \dots, k\} \setminus \{r\}$ and column index set $C = \{1, \dots, k\} \setminus \{c\}$. By the explicit formula for pivoting in $A$ on $a_{rc}$, the entries of $A''$ are given by $a_{ij}'' = a_{ij} - \frac{a_{ic} \cdot a_{rj}}{a_{rc}}$. Using the linearity of the determinant, we can express $\det A''$ as
     \[
-        \det A'' = \det A' - \sum_{k \in C} \frac{a_{rk}}{a_{rc}} \det B_{k}''
+        \det A'' = \det A' - \sum_{k \in C} \frac{a_{rk}}{a_{rc}} \cdot \det B_{k}''
     \]
-    where $B_{k}''$ is a matrix obtained from $A''$ by replacing column $a_{\cdot k}''$ with the pivot column $a_{\cdot c}$ without the pivot element $a_{rc}$.
+    where $B_{k}''$ is a matrix obtained from $A''$ by replacing column $a_{\bullet k}''$ with the pivot column $a_{\bullet c}$ without the pivot element $a_{rc}$.
 
     By the cofactor expansion in $A$ along row $r$, we have
     \[
-        \det A = \sum_{k = 1}^{n} (-1)^{r + k} a_{rk} \det B_{r, k}
+        \det A = \sum_{k = 1}^{n} (-1)^{r + k} \cdot a_{rk} \cdot \det B_{r, k}
     \]
     where $B_{r, k}$ is obtained from $A$ by removing row $r$ and column $k$. By swapping the order of columns in $B_{r, k}$ to match the form of $B_{k}$, we get
     \[
-        \det A = (-1)^{r + c} (a_{rc} \det A' - \sum_{k \in C} a_{rk} \det B_{k}'').
+        \det A = (-1)^{r + c} (a_{rc} \cdot \det A' - \sum_{k \in C} a_{rk} \cdot \det B_{k}'').
     \]
 
     By combining the above results, we get $|\det A''| = \frac{|\det A|}{|a_{rc}|}$.
@@ -62,12 +63,9 @@
 \end{proof}
 
 \begin{definition}\label{def:two_sum}
-    Let $B_{1}, B_{2}$ be matrices with $\{0, \pm 1\}$ entries expressed as $B_{1} = \left[A_{1} / x\right]$ and $B_{2} = \left[y \mid A_{2}\right]$, where $x$ is a row vector, $y$ is a column vector, and $A_{1}, A_{2}$ are matrices of appropriate dimensions. Let $D$ be the outer product of $y$ and $x$. The $2$-sum of $B_{1}$ and $B_{2}$ is defined as
+    Let $B_{1}, B_{2}$ be matrices with $\{0, \pm 1\}$ entries expressed as $B_{1} = \begin{NiceArray}{c}[hvlines] A_{1} \\ x \\ \end{NiceArray}$ and $B_{2} = \begin{NiceArray}{cc}[hvlines] y & A_{2} \\ \end{NiceArray}$, where $x$ is a row vector, $y$ is a column vector, and $A_{1}, A_{2}$ are matrices of appropriate dimensions. Let $D$ be the outer product of $y$ and $x$. The $2$-sum of $B_{1}$ and $B_{2}$ is defined as
     \[
-        B_{1} \oplus_{2, x, y} B_{2} = \begin{bmatrix}
-            A_{1} & 0 \\
-            D & A_{2} \\
-        \end{bmatrix}.
+        B_{1} \oplus_{2, x, y} B_{2} = \begin{NiceArray}{cc}[hvlines] A_{1} & 0 \\ D & A_{2} \\ \end{NiceArray}.
     \]
 \end{definition}
 
@@ -86,7 +84,7 @@
 \begin{proof}
     To see that $B$ is $1$-TU, note that $B$ is a $\{0, \pm 1\}$ matrix by construction.
 
-    To show that $B$ is $2$-TU, let $V$ be a $2 \times 2$ submatrix $V$ of $B$. If $V$ is a submatrix of $\left[A_{1} / D\right]$, $\left[D \mid A_{2}\right]$, $\left[A_{1} \mid 0\right]$, or $\left[0 / A_{2}\right]$, then $\det V \in \{0, \pm 1\}$, as all of those four matrices are TU. Otherwise $V$ shares exactly one row and one column index with both $A_{1}$ and $A_{2}$. Let $i$ be the row shared by $V$ and $A_{1}$ and $j$ be the column shared by $V$ and $A_{2}$. Note that $V_{ij} = 0$. Thus, up to sign, $\det V$ equals the product of the entries on the diagonal not containing $V_{ij}$. Since both of those entries are in $\{0, \pm 1\}$, we have $\det V \in \{0, \pm 1\}$.
+    To show that $B$ is $2$-TU, let $V$ be a $2 \times 2$ submatrix $V$ of $B$. If $V$ is a submatrix of $\begin{NiceArray}{c}[hvlines] A_{1} \\ D \\ \end{NiceArray}$, $\begin{NiceArray}{cc}[hvlines] D & A_2 \end{NiceArray}$, $\begin{NiceArray}{cc}[hvlines] A_{1} & 0 \end{NiceArray}$, or  $\begin{NiceArray}{c}[hvlines] 0 \\ A_2 \\ \end{NiceArray}$, then $\det V \in \{0, \pm 1\}$, as all of those four matrices are TU. Otherwise $V$ shares exactly one row and one column index with both $A_{1}$ and $A_{2}$. Let $i$ be the row shared by $V$ and $A_{1}$ and $j$ be the column shared by $V$ and $A_{2}$. Note that $V_{ij} = 0$. Thus, up to sign, $\det V$ equals the product of the entries on the diagonal not containing $V_{ij}$. Since both of those entries are in $\{0, \pm 1\}$, we have $\det V \in \{0, \pm 1\}$.
 \end{proof}
 
 \begin{lemma}\label{lem:two_sum_k_tu_induction}
@@ -96,17 +94,17 @@
 \begin{proof}
     For the sake of deriving a contradiction, suppose there exist TU matrices $B_{1}$ and $B_{2}$ such that their $2$-sum $B = B_{1} \oplus_{2, x, y} B_{2}$ is not $k$-TU. Then $B$ contains a $k \times k$ submatrix $V$ with $\det V \notin \{0, \pm 1\}$.
 
-    Note that $V$ cannot be a submatrix of $\left[A_{1} / D\right]$, $\left[D \mid A_{2}\right]$, $\left[A_{1} \mid 0\right]$, or $\left[0 / A_{2}\right]$, as all of those four matrices are TU. Thus, $V$ shares at least one row and one column index with $A_{1}$ and $A_{2}$ each.
+    Note that $V$ cannot be a submatrix of $\begin{NiceArray}{c}[hvlines] A_{1} \\ D \\ \end{NiceArray}$, $\begin{NiceArray}{cc}[hvlines] D & A_2 \end{NiceArray}$, $\begin{NiceArray}{cc}[hvlines] A_{1} & 0 \end{NiceArray}$, or  $\begin{NiceArray}{c}[hvlines] 0 \\ A_2 \\ \end{NiceArray}$, then $\det V \in \{0, \pm 1\}$, as all of those four matrices are TU. Thus, $V$ shares at least one row and one column index with $A_{1}$ and $A_{2}$ each.
 
     Consider the row of $V$ whose index appears in $A_{1}$. Note that it cannot consist of only $0$ entries, as otherwise $\det V = 0$. Thus there exists a $\pm 1$ entry shared by $V$ and $A_{1}$. Let $r$ and $c$ denote the row and column index of this entry, respectively.
 
     Perform a rational pivot in $B$ on the element $B_{rc}$. For every object, its modified counterpart after pivoting is denoted by the same symbol with an added tilde; for example, $\tilde{B}$ denotes the entire matrix after the pivot. Note that after pivoting the following statements hold:
     \begin{itemize}
-        \item $\left[\tilde{A}_{1} / \tilde{D}\right]$ is TU, since TUness is preserved by pivoting.
+        \item $\begin{NiceArray}{c}[hvlines] \rule{0pt}{1.15em}\tilde{A}_{1} \\ \rule{0pt}{1.15em}\tilde{D} \\ \end{NiceArray}$ is TU, since TUness is preserved by pivoting.
         \item $\tilde{A}_{2} = A_{2}$, i.e., $A_{2}$ remains unchanged. This holds because of the $0$ block in $B$.
         \item $\tilde{D}$ consists of copies of $y$ scaled by factors in $\{0, \pm 1\}$. This can be verified via a case distinction and a simple calculation.
-        \item $\left[\tilde{D} \mid \tilde{A}_{2}\right]$ is TU, since this matrix consists of $A_{2}$ and copies of $y$ scaled by factors $\{0, \pm 1\}$.
-        \item $\tilde{D}$ can be represented as an outer product of a column vector $\tilde{y}$ and a row vector $\tilde{x}$, and we can define $\tilde{B}_{1} = \left[\tilde{A}_{1} / \tilde{x}\right]$ and $\tilde{B}_{2} = \left[\tilde{y} \mid \tilde{A}_{2}\right]$ similar to $B_{1}$ and $B_{2}$, respectively. Note that $\tilde{B}_{1}$ and $\tilde{B}_{2}$ have the same size as $B_{1}$ and $B_{2}$, respectively, are both TU, and satisfy $\tilde{B} = \tilde{B}_{1} \oplus_{2, \tilde{x}, \tilde{y}} \tilde{B}_{2}$.
+        \item $\begin{NiceArray}{cc}[hvlines] \rule{0pt}{1.15em}\tilde{D} & \rule{0pt}{1.15em}\tilde{A_2} \end{NiceArray}$ is TU, since this matrix consists of $A_{2}$ and copies of $y$ scaled by factors $\{0, \pm 1\}$.
+        \item $\tilde{D}$ can be represented as an outer product of a column vector $\tilde{y}$ and a row vector $\tilde{x}$, and we can define $\tilde{B}_{1} = \begin{NiceArray}{c}[hvlines] \rule{0pt}{1em}\tilde{x} \\ \rule{0pt}{1.15em}\tilde{D} \\ \end{NiceArray}$ and $\tilde{B}_{2} =\begin{NiceArray}{cc}[hvlines] \rule{0pt}{1em}\tilde{y} & \rule{0pt}{1.15em}\tilde{A_2} \end{NiceArray}$ similar to $B_{1}$ and $B_{2}$, respectively. Note that $\tilde{B}_{1}$ and $\tilde{B}_{2}$ have the same size as $B_{1}$ and $B_{2}$, respectively, are both TU, and satisfy $\tilde{B} = \tilde{B}_{1} \oplus_{2, \tilde{x}, \tilde{y}} \tilde{B}_{2}$.
         \item $\tilde{B}$ contains a square submatrix $\tilde{V}$ of size $k - 1$ with $\det \tilde{V} \notin \{0, \pm 1\}$. Indeed, by Corollary~\ref{cor:pivot_submatrix_det} from Lemma~\ref{lem:pivot_submatrix_det}, pivoting in $V$ on the element $B_{rc}$ results in a matrix containing a $(k - 1) \times (k - 1)$ submatrix $V''$ with $\det V'' \in \{0, \pm 1\}$. Since $V$ is a submatrix of $B$, the submatrix $V''$ corresponds to a submatrix $\tilde{V}$ of $\tilde{B}$ with the same property.
     \end{itemize}
     To sum up, after pivoting we obtain a matrix $\tilde{B}$ that represents a $2$-sum of TU matrices $\tilde{B}_{1}$ and $\tilde{B}_{2}$ and contains a square submatrix of size $k - 1$ with determinant not in $\{0, \pm 1\}$. This is a contradiction with $(k - 1)$-TUness of $\tilde{B}$, which proves the lemma.
@@ -128,8 +126,8 @@
     Conclusion: For any TU matrices $B_{1}$ and $B_{2}$, their $2$-sum $B_{1} \oplus_{2, x, y} B_{2}$ is $k$-TU for every $k \in \mathbb{Z}_{\geq 1}$. Thus, $B_{1} \oplus_{2, x, y} B_{2}$ is TU.
 \end{proof}
 
-\newpage
-\section{3-Sum of Regular Matroids Is Regular}
+
+\section{The 3-Sum of Regular Matroids Is Regular}
 
 \subsection{Definition of 3-Sum}
 
@@ -239,7 +237,7 @@ The following lemma justifies the additional assumption on the entries of $D_{0}
             \\
         \end{NiceArray}
     \]
-    where $D_{12} = D_{2} \cdot (D_{0})^{-1} \cdot D_{1}$. (Note that $(D_{0})^{-1}$ is over $\mathbb{Q}$.)
+    where $D_{12} = D_{2} \cdot (D_{0})^{-1} \cdot D_{1}$ (calculated over $\mathbb{Q}$).
 \end{definition}
 
 The following lemma helps construct canonical signings from arbitrary initial TU signings.
@@ -255,11 +253,11 @@ The following lemma helps construct canonical signings from arbitrary initial TU
     \]
     where $D_{0}^{(0)} (x_{0}, y_{0}) = 1$, $D_{0}^{(0)} (x_{0}, y_{1}) \in \{0, 1\}$, $D_{0}^{(0)} (x_{1}, y_{0}) = 0$, and $D_{0}^{(0)} (x_{1}, y_{1}) = 1$. Define $u \in \{0, \pm 1\}^{\{x_{0}, x_{1}, x_{2}\}}$, $v \in \{0, \pm 1\}^{\{y_{0}, y_{1}, y_{2}\}}$, and $Q$ as follows:
     \begin{gather*}
-        u(x_{0}) = Q' (x_{2}, y_{0}) \cdot Q' (x_{0}, y_{0}), \quad
-        u(x_{1}) = Q' (x_{2}, y_{0}) \cdot Q' (x_{0}, y_{0}) \cdot Q' (x_{0}, y_{2}) \cdot Q' (x_{1}, y_{2}), \quad
+        u(x_{0}) = Q' (x_{2}, y_{0}) \cdot Q' (x_{0}, y_{0}), \\
+        u(x_{1}) = Q' (x_{2}, y_{0}) \cdot Q' (x_{0}, y_{0}) \cdot Q' (x_{0}, y_{2}) \cdot Q' (x_{1}, y_{2}), \\
         u(x_{2}) = 1, \\
-        v(y_{0}) = Q' (x_{2}, y_{0}), \quad
-        v(y_{1}) = Q' (x_{2}, y_{1}), \quad
+        v(y_{0}) = Q' (x_{2}, y_{0}), \\
+        v(y_{1}) = Q' (x_{2}, y_{1}), \\
         v(y_{2}) = Q' (x_{2}, y_{0}) \cdot Q' (x_{0}, y_{0}) \cdot Q' (x_{0}, y_{2}), \\
         \forall i \in \{x_{0}, x_{1}, x_{2}\}, \ \forall j \in \{y_{0}, y_{1}, y_{2}\}, \quad Q (i, j) = Q' (i, j) \cdot u(i) \cdot v(j).
     \end{gather*}
@@ -339,10 +337,10 @@ The following lemma helps construct canonical signings from arbitrary initial TU
 \end{proof}
 
 \begin{lemma}\label{lem:three_sum_A_2_ext_1_TU}
-    Let $B_{2}$ be a TU canonical signing of $B_{2}^{(0)}$. Let $c_{0} = (D_{0, 2})_{\cdot, y_{0}}$ and $c_{1} = (D_{0, 2})_{\cdot, y_{1}}$. Then the following matrices are TU:
+    Let $B_{2}$ be a TU canonical signing of $B_{2}^{(0)}$. Let $c_{0} = (D_{0, 2})_{\bullet, y_{0}}$ and $c_{1} = (D_{0, 2})_{\bullet, y_{1}}$. Then the following matrices are TU:
     \[
-        B_{2}^{(a)} = [c_{0} - c_{1} \mid c_{0} \mid A_{2}], \quad
-        B_{2}^{(b)} = [c_{0} - c_{1} \mid c_{1} \mid A_{2}].
+        B_{2}^{(a)} = \begin{NiceArray}{ccc}[hvlines] c_{0} - c_{1} & c_{0} & A_{2} \\ \end{NiceArray}, \quad
+        B_{2}^{(b)} = \begin{NiceArray}{ccc}[hvlines] c_{0} - c_{1} & c_{1} & A_{2} \\ \end{NiceArray}.
     \]
 \end{lemma}
 
@@ -380,21 +378,21 @@ The following lemma helps construct canonical signings from arbitrary initial TU
 \end{proof}
 
 \begin{lemma}\label{lem:three_sum_A_2_ext_2_TU}
-    Let $B_{2}$ be a TU canonical signing of $B_{2}^{(0)}$. Let $c_{0} = D_{0, 2} (\cdot, y_{0})$, $c_{1} = D_{0, 2} (\cdot, y_{1})$, and $c_{2} = c_{0} - c_{1}$. Then the following properties hold.
+    Let $B_{2}$ be a TU canonical signing of $B_{2}^{(0)}$. Let $c_{0} = D_{0, 2} (\bullet, y_{0})$, $c_{1} = D_{0, 2} (\bullet, y_{1})$, and $c_{2} = c_{0} - c_{1}$. Then the following properties hold.
     \begin{enumerate}
-        \item\label{item:three_sum_A_2_ext_d01_eq} For every $i \in X_{2}$, we have $[c_{0} (i) \mid c_{1} (i)] \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}} \setminus \{[1 \mid -1] , [-1 \mid 1]\}$.
+        \item\label{item:three_sum_A_2_ext_d01_eq} For every $i \in X_{2}$, we have $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \\ \end{NiceArray} \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}} \setminus \{\begin{NiceArray}{cc}[hvlines] 1 & -1 \\ \end{NiceArray} , \begin{NiceArray}{cc}[hvlines] -1 & 1 \\ \end{NiceArray} \}$.
         % \item\label{item:three_sum_A_2_ext_2_vec_sign} $c_{2}$ is a signing of $D_{0, 2}^{(0)} (\cdot, y_{0}) + D_{0, 2}^{(0)} (\cdot, y_{1})$.
-        \item\label{item:three_sum_A_2_ext_2_TU} $[A_{2} \mid c_{0} \mid c_{1} \mid c_{2}]$ is TU.
+        \item\label{item:three_sum_A_2_ext_2_TU} $\begin{NiceArray}{cccc}[hvlines] A_{2} & c_{0} & c_{1} & c_{2} \\ \end{NiceArray}$ is TU.
     \end{enumerate}
 \end{lemma}
 
 \begin{proof}
     \begin{enumerate}
-        \item Let $i \in X_{2}$. If $[c_{0} (i) \mid c_{1} (i)] = [1 \mid -1]$, then the $2 \times 2$ submatrix of $B_{2}$ indexed by $\{x_{2}, i\} \times \{y_{0}, y_{1}\}$ has $\det \begin{bmatrix} 1 & 1 \\ 1 & -1 \\ \end{bmatrix} = -2 \notin \{0, \pm 1\}$, which contradicts TUness of $B_{2}$ (which holds by Lemma~\ref{lem:three_sum_canonical_signing_construction}). Similarly, if $[c_{0} (i) \mid c_{1} (i)] = [-1 \mid 1]$, then the $2 \times 2$ submatrix of $B_{2}$ indexed by $\{x_{2}, i\} \times \{y_{0}, y_{1}\}$ has $\det \begin{bmatrix} 1 & 1 \\ -1 & 1 \\ \end{bmatrix} = 2 \notin \{0, \pm 1\}$, which contradicts TUness of $B_{2}$.
+        \item Let $i \in X_{2}$. If $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \\ \end{NiceArray} = \begin{NiceArray}{cc}[hvlines] 1 & -1 \\ \end{NiceArray}$, then the $2 \times 2$ submatrix of $B_{2}$ indexed by $\{x_{2}, i\} \times \{y_{0}, y_{1}\}$ has $\det \begin{NiceArray}{cc}[hvlines] 1 & 1 \\ 1 & -1 \\ \end{NiceArray} = -2 \notin \{0, \pm 1\}$, which contradicts TUness of $B_{2}$ (which holds by Lemma~\ref{lem:three_sum_canonical_signing_construction}). Similarly, if $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \\ \end{NiceArray} = \begin{NiceArray}{cc}[hvlines] -1 & 1 \\ \end{NiceArray} $, then the $2 \times 2$ submatrix of $B_{2}$ indexed by $\{x_{2}, i\} \times \{y_{0}, y_{1}\}$ has $\det \begin{NiceArray}{cc}[hvlines] 1 & 1 \\ -1 & 1 \\ \end{NiceArray} = 2 \notin \{0, \pm 1\}$, which contradicts TUness of $B_{2}$.
 
-        % \item By item~\ref{item:three_sum_A_2_ext_d01_eq}, we know that $[c_{0} (i) \mid c_{1} (i)] \neq [1 \mid -1]$ and $[c_{0} (i) \mid c_{1} (i)] \neq [-1 \mid 1]$. In all other cases, a direct calculation shows that $c_{2} (i) \in \{0, \pm 1\}$ and $|c_{2}(i)| = D_{0, 2}^{(0)} (\cdot, y_{0}) + D_{0, 2}^{(0)} (\cdot, y_{1})$.
+        % \item By item~\ref{item:three_sum_A_2_ext_d01_eq}, we know that $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \end{NiceArray} \neq \begin{NiceArray}{cc}[hvlines] 1 & -1 \end{NiceArray}$ and $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \end{NiceArray} \neq \begin{NiceArray}{cc}[hvlines] -1 & 1 \end{NiceArray}$. In all other cases, a direct calculation shows that $c_{2} (i) \in \{0, \pm 1\}$ and $|c_{2}(i)| = D_{0, 2}^{(0)} (\cdot, y_{0}) + D_{0, 2}^{(0)} (\cdot, y_{1})$.
 
-        \item Let $V$ be a square submatrix of $[A_{2} \mid c_{0} \mid c_{1} \mid c_{2}]$. We will show that $\det V \in \{0, \pm 1\}$.
+        \item Let $V$ be a square submatrix of $\begin{NiceArray}{cccc}[hvlines] A_{2} & c_{0} & c_{1} & c_{2} \\ \end{NiceArray}$. We will show that $\det V \in \{0, \pm 1\}$.
 
         Let $z$ denote the index of the appended column $c_{2}$. Suppose that column $z$ is not in $V$. Then $V$ is a submatrix of $B_{2}$, which is TU by Lemma~\ref{lem:three_sum_canonical_signing_construction}. Thus, $\det V \in \{0, \pm 1\}$. Going forward we assume that column $z$ is in $V$.
 
@@ -411,47 +409,47 @@ The following lemma helps construct canonical signings from arbitrary initial TU
 \end{remark}
 
 \begin{lemma}\label{lem:three_sum_A_1_ext_2_TU}
-    Let $B_{1}$ be a TU canonical signing of $B_{1}^{(0)}$. Let $d_{0} = D_{1, 0} (x_{0}, \cdot)$, $d_{1} = D_{1, 0} (x_{1}, \cdot)$, and $d_{2} = d_{0} - d_{1}$. Then the following properties hold.
+    Let $B_{1}$ be a TU canonical signing of $B_{1}^{(0)}$. Let $d_{0} = D_{1, 0} (x_{0}, \bullet)$, $d_{1} = D_{1, 0} (x_{1}, \bullet)$, and $d_{2} = d_{0} - d_{1}$. Then the following properties hold.
     \begin{enumerate}
-        \item\label{item:three_sum_A_1_ext_d01_eq} For every $j \in Y_{2}$, we have $[d_{0} (i) / d_{1} (i)] \in \{0, \pm 1\}^{\{x_{0}, x_{1}\}} \setminus \{[1 / -1] , [-1 / 1]\}$.
+        \item\label{item:three_sum_A_1_ext_d01_eq} For every $j \in Y_{2}$, we have $\begin{NiceArray}{c}[hvlines] d_{0} (i) \\ d_{1} (i) \\ \end{NiceArray} \in \{0, \pm 1\}^{\{x_{0}, x_{1}\}} \setminus \{\begin{NiceArray}{c}[hvlines] 1 \\ -1 \\ \end{NiceArray} , \begin{NiceArray}{c}[hvlines] -1 \\ 1 \\ \end{NiceArray}\}$.
         % \item\label{item:three_sum_A_1_ext_2_vec_sign} $d_{2}$ is a signing of $D_{1, 0}^{(0)} (x_{0}, \cdot) + D_{1, 0}^{(0)} (x_{1}, \cdot)$.
-        \item\label{item:three_sum_A_1_ext_2_TU} $[A_{1} / d_{0} / d_{1} / d_{2}]$ is TU.
+        \item\label{item:three_sum_A_1_ext_2_TU} $\begin{NiceArray}{c}[hvlines] A_{1} \\ d_{0} \\ d_{1} \\ d_{2} \\ \end{NiceArray}$ is TU.
     \end{enumerate}
 \end{lemma}
 
 \begin{proof}
-    Apply Lemma~\ref{lem:three_sum_A_2_ext_2_TU} to $B_{1}^{T}$, or repeat the same argument up to interchanging rows and columns.
+    Apply Lemma~\ref{lem:three_sum_A_2_ext_2_TU} to $B_{1}^{\top}$, or repeat the same argument up to interchanging rows and columns.
 \end{proof}
 
 \begin{lemma}\label{lem:three_sum_canonical_signing_properties}
     Let $B_{1}$ and $B_{2}$ be TU canonical signings of $B_{1}^{(0)}$ and $B_{2}^{(0)}$, respectively.
     \begin{itemize}
-        \item Let $c_{0} = D_{0, 2} (\cdot, y_{0})$, $c_{1} = D_{0, 2} (\cdot, y_{1})$, and $c_{2} = c_{0} - c_{1}$.
-        \item Let $d_{0} = D_{1, 0} (x_{0}, \cdot)$, $d_{1} = D_{1, 0} (x_{1}, \cdot)$, and $d_{2} = d_{0} - d_{1}$.
+        \item Let $c_{0} = D_{0, 2} (\bullet, y_{0})$, $c_{1} = D_{0, 2} (\bullet, y_{1})$, and $c_{2} = c_{0} - c_{1}$.
+        \item Let $d_{0} = D_{1, 0} (x_{0}, \bullet)$, $d_{1} = D_{1, 0} (x_{1}, \bullet)$, and $d_{2} = d_{0} - d_{1}$.
         \item If $D_{0}^{(0)} = \begin{NiceArray}{cc}[hvlines] 1 & 0 \\ 0 & 1 \\ \end{NiceArray}$, let $r_{0} = d_{0}$, $r_{1} = -d_{1}$, $r_{2} = d_{2}$. If $D_{0}^{(0)} = \begin{NiceArray}{cc}[hvlines] 1 & 1 \\ 0 & 1 \\ \end{NiceArray}$, let $r_{0} = d_{2}$, $r_{1} = d_{1}$, $r_{2} = d_{0}$.
         \item Let $D$ be the bottom-left block in the canonical signing $B$ of $B^{(0)}$ corresponding to $B_{1}$ and $B_{2}$
     \end{itemize}
     Then the following properties hold.
     \begin{enumerate}
         \item\label{item:three_sum_canonical_signing_D_eq} $D = c_{0} \cdot r_{0} + c_{1} \cdot r_{1}$.
-        \item\label{item:three_sum_canonical_signing_D_rows} Rows of $D$ are in $[\pm r_{0} / \pm r_{1} / \pm r_{2} / 0]$.
-        \item\label{item:three_sum_canonical_signing_D_cols} Columns of $D$ are in $[\pm c_{0} \mid \pm c_{1} \mid \pm c_{2} \mid 0]$.
-        \item\label{item:three_sum_canonical_signing_TU_A_2_cs} $[A_{2} \mid c_{0} \mid c_{1} \mid c_{2}]$ is TU.
-        \item\label{item:three_sum_canonical_signing_TU_A_2_D} $[A_{2} \mid D]$ is TU.
-        \item\label{item:three_sum_canonical_signing_TU_A_1_rs} $[A_{1} / r_{0} / r_{1} / r_{2}]$ is TU.
-        \item\label{item:three_sum_canonical_signing_TU_A_1_D} $[A_{1} / D]$ is TU.
-        \item $[c_{0} \mid c_{1}]$ contains $D_{0}$ (the canonical signing of $D_{0}^{(0)}$) as a submatrix.
+        \item\label{item:three_sum_canonical_signing_D_rows} Rows of $D$ are in $\begin{NiceArray}{c}[hvlines] \pm r_{0} \\ \pm r_{1} \\ \pm r_{2} \\ 0 \\ \end{NiceArray}$.
+        \item\label{item:three_sum_canonical_signing_D_cols} Columns of $D$ are in $\begin{NiceArray}{cccc}[hvlines] \pm c_{0} & \pm c_{1} & \pm c_{2} & 0 \\ \end{NiceArray}$.
+        \item\label{item:three_sum_canonical_signing_TU_A_2_cs} $\begin{NiceArray}{cccc}[hvlines] A_{2} & c_{0} & c_{1} & c_{2} \\ \end{NiceArray}$ is TU.
+        \item\label{item:three_sum_canonical_signing_TU_A_2_D} $\begin{NiceArray}{cc}[hvlines] A_{2} & D \end{NiceArray}$ is TU.
+        \item\label{item:three_sum_canonical_signing_TU_A_1_rs} $\begin{NiceArray}{c}[hvlines] A_{1} \\ r_{0} \\ r_{1} \\ r_{2} \\ \end{NiceArray}$ is TU.
+        \item\label{item:three_sum_canonical_signing_TU_A_1_D} $\begin{NiceArray}{c}[hvlines] A_{1} \\ D \\ \end{NiceArray}$ is TU.
+        \item $\begin{NiceArray}{cc}[hvlines] c_{0} & c_{1} \end{NiceArray}$ contains $D_{0}$ (the canonical signing of $D_{0}^{(0)}$) as a submatrix.
     \end{enumerate}
 \end{lemma}
 
 \begin{proof}
     \begin{enumerate}
         \item Follows via a direct calculation.\todo{need details?}
-        \item By item~\ref{item:three_sum_canonical_signing_D_eq}, for every $i \in X_{2}$ we have $D (i, \cdot) = c_{0} (i) \cdot r_{0} + c_{1} (i) \cdot r_{1}$. By Lemma~\ref{lem:three_sum_A_2_ext_1_TU}.\ref{item:three_sum_A_1_ext_d01_eq}, we know that $[c_{0} (i) \mid c_{1} (i)] \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}} \setminus \{[1 \mid -1] , [-1 \mid 1]\}$. Therefore, $D (i, \cdot)$ is equal to either $0$, $\pm r_{0}$, $\pm r_{1}$, or $\pm (r_{0} + r_{1}) = \pm r_{2}$.
+        \item By item~\ref{item:three_sum_canonical_signing_D_eq}, for every $i \in X_{2}$ we have $D (i, \bullet) = c_{0} (i) \cdot r_{0} + c_{1} (i) \cdot r_{1}$. By Lemma~\ref{lem:three_sum_A_2_ext_1_TU}.\ref{item:three_sum_A_1_ext_d01_eq}, we know that $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \end{NiceArray} \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}} \setminus \{\begin{NiceArray}{cc}[hvlines] 1 & -1 \end{NiceArray} , \begin{NiceArray}{cc}[hvlines] -1 & 1 \end{NiceArray}\}$. Therefore, $D (i, \bullet)$ is equal to either $0$, $\pm r_{0}$, $\pm r_{1}$, or $\pm (r_{0} + r_{1}) = \pm r_{2}$.
         \item Holds by the same argument as item~\ref{item:three_sum_canonical_signing_D_rows} up to interchanging rows and columns.
         \item Holds by Lemma~\ref{lem:three_sum_A_2_ext_2_TU}.\ref{item:three_sum_A_2_ext_2_TU}.
-        \item By item~\ref{item:three_sum_canonical_signing_D_cols}, columns of $[A_{2} \mid D]$ are in $[A_{2} \mid \pm c_{0} \mid \pm c_{1} \mid \pm c_{2} \mid 0]$. Since $[A_{2} \mid c_{0} \mid c_{1} \mid c_{2}]$ is TU and since adding zero columns and copies of columns multiplied by $\pm 1$ factors preserves TUness, $[A_{2} \mid D]$ is also TU.
-        \item By Lemma~\ref{lem:three_sum_A_1_ext_2_TU}.\ref{item:three_sum_A_1_ext_2_TU} (or by the same argument as item~\ref{item:three_sum_canonical_signing_TU_A_2_cs} up to interchanging rows and columns), $[A_{1} / d_{0} / d_{1} / d_{2}]$ is TU. Since TUness is preserved under multiplication of rows by $\pm 1$ factors (and changing row order), $[A_{1} / r_{0} / r_{1} / r_{2}]$ is also TU.
+        \item By item~\ref{item:three_sum_canonical_signing_D_cols}, columns of $\begin{NiceArray}{cc}[hvlines] A_{2} & D \end{NiceArray}$ are in $\begin{NiceArray}{cccc}[hvlines] A_{2} & \pm c_{0} & \pm c_{1} & \pm c_{2} \\ \end{NiceArray}$. Since $\begin{NiceArray}{cccc}[hvlines] A_{2} & c_{0} & c_{1} & c_{2} \\ \end{NiceArray}$ is TU and since adding zero columns and copies of columns multiplied by $\pm 1$ factors preserves TUness, $\begin{NiceArray}{cc}[hvlines] A_{2} & D \end{NiceArray}$ is also TU.
+        \item By Lemma~\ref{lem:three_sum_A_1_ext_2_TU}.\ref{item:three_sum_A_1_ext_2_TU} (or by the same argument as item~\ref{item:three_sum_canonical_signing_TU_A_2_cs} up to interchanging rows and columns),\\ $\begin{NiceArray}{c}[hvlines] A_{1} \\ d_{0} \\ d_{1} \\ d_{2} \\ \end{NiceArray}$ is TU. Since TUness is preserved under multiplication of rows by $\pm 1$ and exchanging rows, $\begin{NiceArray}{c}[hvlines] A_{1} \\ r_{0} \\ r_{1} \\ r_{2} \\ \end{NiceArray}$ is also TU.
         \item Holds by the same argument as item~\ref{item:three_sum_canonical_signing_TU_A_2_D} up to interchanging rows and columns.
         \item Holds by construction.
     \end{enumerate}
@@ -470,11 +468,11 @@ The following lemma helps construct canonical signings from arbitrary initial TU
 \end{proof}
 
 \begin{lemma}\label{lem:three_sum_alt_form_pivot}
-    Assume the notation of Definition~\ref{def:three_sum_alt_form}. Let $i \in X_{1}$, let $T = [A_{1} (i, \cdot) / D]$. Suppose we pivot on entry $T (i, j) \in \{\pm 1\}$ in $T$ and obtain matrix $T' = [a' / D']$. Then columns of $D'$ are in $[\pm c_{0} \mid \pm c_{1} \mid \pm (c_{0} - c_{1}) \mid 0]$.
+    Assume the notation of Definition~\ref{def:three_sum_alt_form}. Let $i \in X_{1}$, let $T = \begin{NiceArray}{c}[hvlines] A_{1} (i, \bullet) \\ D \\ \end{NiceArray}$. Suppose we pivot on entry $T (i, j) \in \{\pm 1\}$ in $T$ and obtain matrix $T' = \begin{NiceArray}{c}[hvlines] a' \\ D' \\ \end{NiceArray}$. Then columns of $D'$ are in $\begin{NiceArray}{cccc}[hvlines] \pm c_{0} & \pm c_{1} & \pm (c_{0} - c_{1}) & 0 \\ \end{NiceArray}$.
 \end{lemma}
 
 \begin{proof}
-    Since $T$ is a submatrix of $[A_{1} / D]$, which is TU by assumptions of Definition~\ref{def:three_sum_alt_form}, we have that $T$ is TU. Since pivoting preserves TUness, $T'$ is also TU. To prove the claim, perform an exhaustive case distinction on what pivot column $p$ in $T$ could be and what another column $q$ in $T$ could be. This uniquely determines the resulting columns $p'$ and $q'$ in $T'$ by the pivot formula. In every case, either $[p' \mid q']$ contains a submatrix with determinant not in $\{0, \pm 1\}$, which contradicts TUness of $T'$, or the restriction of $p'$ and $q'$ to $X_{2}$ is in $[\pm c_{0} \mid \pm c_{1} \mid \pm (c_{0} - c_{1}) \mid 0]$).\todo{need details?}
+    Since $T$ is a submatrix of $\begin{NiceArray}{c}[hvlines] A_{1} \\ D \\ \end{NiceArray}$, which is TU by assumptions of Definition~\ref{def:three_sum_alt_form}, we have that $T$ is TU. Since pivoting preserves TUness, $T'$ is also TU. To prove the claim, perform an exhaustive case distinction on what pivot column $p$ in $T$ could be and what another column $q$ in $T$ could be. This uniquely determines the resulting columns $p'$ and $q'$ in $T'$ by the pivot formula. In every case, either $\begin{NiceArray}{cc}[hvlines] p' & q' \end{NiceArray}$ contains a submatrix with determinant not in $\{0, \pm 1\}$, which contradicts TUness of $T'$, or the restriction of $p'$ and $q'$ to $X_{2}$ is in $\begin{NiceArray}{cccc}[hvlines] \pm c_{0} & \pm c_{1} & \pm (c_{0} - c_{1}) & 0 \\ \end{NiceArray}$).\todo{need details?}
 \end{proof}
 
 \begin{lemma}\label{lem:three_sum_alt_form_k_TU_induction}
@@ -484,7 +482,7 @@ The following lemma helps construct canonical signings from arbitrary initial TU
 \begin{proof}
     Let $V$ be a $k \times k$ submatrix of $C$. For the sake of deriving a contradiction assume that $\det V \notin \{0, \pm 1\}$.
 
-    Suppose that $V$ is a submatrix of $[A_{1} / D]$, $[A_{1} \mid 0]$, $[D \mid A_{2}]$, or $[0 / A_{2}]$. Since all of those four matrices are TU by the assumptions of Definition~\ref{def:three_sum_alt_form}, we have $\det V \in \{0, \pm 1\}$. Thus, $V$ shares at least one row and one column index with $A_{1}$ and $A_{2}$ each.
+    Suppose that $V$ is a submatrix of $\begin{NiceArray}{c}[hvlines] A_{1} \\ D \\ \end{NiceArray}$, $\begin{NiceArray}{cc}[hvlines] A_{1} & 0 \end{NiceArray}$, $\begin{NiceArray}{cc}[hvlines] D & A_2 \end{NiceArray}$, or $\begin{NiceArray}{c}[hvlines] 0 \\ A_2 \\ \end{NiceArray}$. Since all of those four matrices are TU by the assumptions of Definition~\ref{def:three_sum_alt_form}, we have $\det V \in \{0, \pm 1\}$. Thus, $V$ shares at least one row and one column index with $A_{1}$ and $A_{2}$ each.
 
     Consider the row index shared by $V$ and $A_{1}$. Note that this row in $V$ cannot consist of only $0$ entries, as otherwise $\det V = 0$. Thus, there exists a $\pm 1$ entry shared by $V$ and $A_{1}$. Let $i$ and $j$ denote the row and the column index of this entry, respectively.
 
@@ -493,8 +491,8 @@ The following lemma helps construct canonical signings from arbitrary initial TU
     \begin{itemize}
         \item $C'$ contains a $(k - 1) \times (k - 1)$ submatrix $V'$ with $\det V' \notin \{0, \pm 1\}$. This holds by the same argument as for the $2$-sum: look at the submatrix $V'$ of $C'$ with the same row and column index sets as $V$ minus the pivot row $i$ and pivot column $j$.
         \item $C' = \begin{NiceArray}{cc}[hvlines] A_{1}' & 0 \\ D' & A_{2} \\ \end{NiceArray}$, i.e., the $0$ and the $A_{2}$ blocks remain unchanged. This holds by the same argument as for the $2$-sum: the pivot row is in the $0$ block.
-        \item $[A_{1}' / D']$ is TU. This holds by the same argument as for the $2$-sum: TUness is preserved under pivoting.
-        \item The columns of $D'$ are in $[0 \mid \pm c_{0} \mid \pm c_{1} \mid \pm (c_{0} - c_{1})]$. This holds by Lemma~\ref{lem:three_sum_alt_form_pivot}.
+        \item $\begin{NiceArray}{c}[hvlines] A_{1}' \\ D' \\ \end{NiceArray}$ is TU. This holds by the same argument as for the $2$-sum: TUness is preserved under pivoting.
+        \item The columns of $D'$ are in $\begin{NiceArray}{cccc}[hvlines] 0 & \pm c_{0} & \pm c_{1} & \pm (c_{0} - c_{1}) \\ \end{NiceArray}$. This holds by Lemma~\ref{lem:three_sum_alt_form_pivot}.
         \item There exist $r_{0}'$ and $r_{1}'$ such that $D' = c_{0} \cdot r_{0}' + c_{1} \cdot r_{1}'$ and the assumptions of Definition~\ref{def:three_sum_alt_form} are satisfied for $A_{1}'$, $A_{2}$, $c_{0}$, $c_{1}$, $r_{0}'$, $r_{1}'$. This follows from the previous bullet point by carefully checking assumptions.\todo{need details?}
         \item $C'$ is $(k - 1)$-TU. This follows from the hypothesis: $\mathrm{Proposition}(A_{1}', A_{2}, c_{0}, c_{1}, r_{0}', r_{1}', k - 1)$ holds.
     \end{itemize}
