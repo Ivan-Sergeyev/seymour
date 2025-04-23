@@ -305,7 +305,7 @@ lemma Fin.reindexing_symm_eq_right {n : ℕ} (i k : Fin n.succ) (j : Fin n) :
   all_goals
     simp [h]
 
-lemma lemma1_aux [Group F] [LinearOrderedField F] {k : ℕ}
+lemma lemma1_aux [LinearOrderedField F] {k : ℕ}
     {A : Matrix (Fin k.succ) (Fin k.succ) F} {r c : Fin k.succ} (hArc : A r c ≠ 0) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
       |((A.shortTableauPivot r c).submatrix f g).det| = |A.det / A r c| := by
@@ -371,7 +371,7 @@ lemma lemma1_aux [Group F] [LinearOrderedField F] {k : ℕ}
 
   exact (Matrix.abs_det_submatrix_equiv_equiv ..).symm
 
-lemma lemma1 [Group F] [LinearOrderedField F] {k : ℕ}
+lemma lemma1 [LinearOrderedField F] {k : ℕ}
     {A : Matrix (Fin k.succ) (Fin k.succ) F} {r c : Fin k.succ} (hArc : A r c ≠ 0) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
       ((A.shortTableauPivot r c).submatrix f g).det = A.det / A r c := by
@@ -392,9 +392,6 @@ lemma lemma1 [Group F] [LinearOrderedField F] {k : ℕ}
     wlog hk : k ≠ 1 -- can't mutably swap in a 1 × 1 matrix!
     · simp only [ne_eq, Decidable.not_not] at hk
       subst hk
-      obtain ⟨r₁, hr₁⟩ : ∃ (r₁ : Fin (Nat.succ 1)), r₁ ≠ r := by fin_cases r <;> [use 1; use 0] <;> simp
-      obtain ⟨c₁, hc₁⟩ : ∃ (c₁ : Fin (Nat.succ 1)), c₁ ≠ c := by fin_cases c <;> [use 1; use 0] <;> simp
-      use fun _ => r₁, fun _ => c₁, (Function.injective_of_subsingleton _), (Function.injective_of_subsingleton _)
       sorry
     let s : Equiv.Perm (Fin k) := Equiv.swap
       (⟨k.pred.pred, (Nat.pred_le k.pred).trans_lt (Nat.pred_lt (Ne.symm (NeZero.ne' k)))⟩)
@@ -419,7 +416,7 @@ lemma lemma1 [Group F] [LinearOrderedField F] {k : ℕ}
       Matrix.det_permute s, Matrix.submatrix_id_id, hMs₁, ← Matrix.det_mul
     ]
 
-lemma corollary1 [Group F] [LinearOrderedField F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F}
+lemma corollary1 [LinearOrderedField F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F}
     (hA : A.det ∉ SignType.cast.range) (i j : Fin k.succ) (hAij : A i j = 1 ∨ A i j = -1) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
       ((A.shortTableauPivot i j).submatrix f g).det ∉ SignType.cast.range := by
