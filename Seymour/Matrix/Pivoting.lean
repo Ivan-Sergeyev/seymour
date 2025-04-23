@@ -2,6 +2,7 @@ import Seymour.Basic.SignTypeCast
 import Seymour.Matrix.Basic
 
 import Mathlib.LinearAlgebra.Matrix.SchurComplement
+import Mathlib.LinearAlgebra.Matrix.Permutation
 
 variable {X Y F : Type}
 
@@ -304,9 +305,10 @@ lemma Fin.reindexing_symm_eq_right {n : ℕ} (i k : Fin n.succ) (j : Fin n) :
   all_goals
     simp [h]
 
-lemma lemma1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F} {r c : Fin k.succ} (hArc : A r c ≠ 0) :
+lemma lemma1_aux [Group F] [LinearOrderedField F] {k : ℕ}
+    {A : Matrix (Fin k.succ) (Fin k.succ) F} {r c : Fin k.succ} (hArc : A r c ≠ 0) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
-      ((A.shortTableauPivot r c).submatrix f g).det = A.det / A r c := by
+      |((A.shortTableauPivot r c).submatrix f g).det| = |A.det / A r c| := by
   use r.succAbove, c.succAbove
   use Fin.succAbove_right_injective, Fin.succAbove_right_injective
   rw [Matrix.shortTableauPivot.submatrix_eq]
@@ -322,6 +324,8 @@ lemma lemma1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F} {r c :
   have hAM₃ : ∀ j, A r (c.succAbove j) = M₃ 0 j := fun _ => rfl
   have hAM₄ : (A r c) = (M₄ 0 0) := rfl
 
+  have hAM₄d : (A r c) = M₄.det := by unfold M₄; simp
+
   have hiAM₄ : M₄⁻¹ = !![(A r c)⁻¹] := by
     ext i j
     suffices ¬i = j → 0 = A r c by simpa [M₄, Matrix.diagonal]
@@ -332,7 +336,7 @@ lemma lemma1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F} {r c :
 
   have hM : (Matrix.of fun i j => M₁ i j - M₂ i 0 * M₃ 0 j * (M₄ 0 0)⁻¹) = M₁ - (M₂) * (M₄)⁻¹ * M₃ := by
     ext i j
-    have : A (r.succAbove i) c * M₃ 0 j * (A r c)⁻¹ = A (r.succAbove i) c * (A r c)⁻¹ * M₃ 0 j := by ring
+    have : A (r.succAbove i) c * M₃ 0 j * (A r c)⁻¹ = A (r.succAbove i) c * (A r c)⁻¹ * M₃ 0 j := mul_right_comm ..
     simpa [hiAM₄, Matrix.mul_apply, M₂, M₄]
 
   have : Invertible M₄ := Matrix.invertibleOfLeftInverse M₄ M₄⁻¹ (by
@@ -343,8 +347,8 @@ lemma lemma1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F} {r c :
     simp [IsUnit.inv_mul_cancel (IsUnit.mk0 _ hArc)])
 
   rw [
-    hM, IsUnit.eq_div_iff hArc.isUnit, mul_comm, hAM₄,
-    show M₄ 0 0 * (M₁ - M₂ * M₄⁻¹ * M₃).det = M₄.det * (M₁ - M₂ * M₄⁻¹ * M₃).det by simp,
+    hM, abs_div, eq_div_iff_mul_eq (abs_ne_zero.← hArc), mul_comm, hAM₄d,
+    show |M₄.det| * |(M₁ - M₂ * M₄⁻¹ * M₃).det| = |M₄.det * (M₁ - M₂ * M₄⁻¹ * M₃).det| from (abs_mul ..).symm,
     ← Matrix.invOf_eq_nonsing_inv M₄, ← Matrix.det_fromBlocks₁₁ M₄ M₃ M₂ M₁
   ]
 
@@ -365,9 +369,57 @@ lemma lemma1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F} {r c :
       simp [M₄, M₃, M₂, M₁]
   rw [hA]
 
-  sorry
+  exact (Matrix.abs_det_submatrix_equiv_equiv ..).symm
 
-lemma corollary1 [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F}
+lemma lemma1 [Group F] [LinearOrderedField F] {k : ℕ}
+    {A : Matrix (Fin k.succ) (Fin k.succ) F} {r c : Fin k.succ} (hArc : A r c ≠ 0) :
+    ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
+      ((A.shortTableauPivot r c).submatrix f g).det = A.det / A r c := by
+  obtain ⟨f, g, hf, hg, h⟩ := lemma1_aux hArc
+  rw [abs_eq_abs] at h
+  cases h with
+  | inl h => exact ⟨f, g, hf, hg, h⟩
+  | inr h =>
+    wlog hk : NeZero k
+    · rw [not_neZero] at hk
+      subst hk
+      use fun _ => ⊤, fun _ => ⊤, (Function.injective_of_subsingleton _), (Function.injective_of_subsingleton _)
+      simp_all only [Nat.succ_eq_add_one, ne_eq, exists_and_left, Matrix.submatrix_empty, Matrix.det_fin_zero]
+      have : ∀ (a b : Fin (Nat.succ 0)), a = b := by omega
+      have : A.det = A r c := by rw [Matrix.det_fin_one, this r 0, this c 0]
+      rw [← h, this]
+      exact ((fun hb => (div_eq_one_iff_eq hb).←) hArc rfl).symm
+    wlog hk : k ≠ 1 -- can't mutably swap in a 1 × 1 matrix!
+    · simp only [ne_eq, Decidable.not_not] at hk
+      subst hk
+      obtain ⟨r₁, hr₁⟩ : ∃ (r₁ : Fin (Nat.succ 1)), r₁ ≠ r := by fin_cases r <;> [use 1; use 0] <;> simp
+      obtain ⟨c₁, hc₁⟩ : ∃ (c₁ : Fin (Nat.succ 1)), c₁ ≠ c := by fin_cases c <;> [use 1; use 0] <;> simp
+      use fun _ => r₁, fun _ => c₁, (Function.injective_of_subsingleton _), (Function.injective_of_subsingleton _)
+      sorry
+    let s : Equiv.Perm (Fin k) := Equiv.swap
+      (⟨k.pred.pred, (Nat.pred_le k.pred).trans_lt (Nat.pred_lt (Ne.symm (NeZero.ne' k)))⟩)
+      (⟨k.pred, Nat.pred_lt (Ne.symm (NeZero.ne' k))⟩)
+    let Ms : Matrix (Fin k) (Fin k) F := @Equiv.Perm.permMatrix (Fin k) F _ s _ _
+    have hMs₁ : s.sign = Ms.det := (Matrix.det_permutation s).symm
+    have hMs : Ms.det = -1 := by
+      rw [Matrix.det_permutation, Equiv.Perm.sign_swap (by
+        simp_rw [Nat.pred_eq_sub_one, ne_eq, Fin.mk.injEq]
+        by_contra h
+        have this : k ≠ 0 := Ne.symm (NeZero.ne' k)
+        omega)]; simp
+    have hf' : Function.Injective (f ∘ s) := (Equiv.injective_comp s f).← hf
+    use f ∘ s, g
+    use hf', hg
+    rw [
+      show f = f ∘ id from rfl, show g = g ∘ id from rfl,
+      ← Matrix.submatrix_submatrix (A.shortTableauPivot r c), ← neg_eq_iff_eq_neg
+    ] at h
+    rw [
+      show g = g ∘ id from rfl, ← Matrix.submatrix_submatrix (A.shortTableauPivot r c), ← h, neg_eq_neg_one_mul, ← hMs,
+      Matrix.det_permute s, Matrix.submatrix_id_id, hMs₁, ← Matrix.det_mul
+    ]
+
+lemma corollary1 [Group F] [LinearOrderedField F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F}
     (hA : A.det ∉ SignType.cast.range) (i j : Fin k.succ) (hAij : A i j = 1 ∨ A i j = -1) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
       ((A.shortTableauPivot i j).submatrix f g).det ∉ SignType.cast.range := by
