@@ -391,15 +391,32 @@ lemma lemma1 [LinearOrderedField F] {k : ℕ}
     wlog hk : k ≠ 1 -- can't mutably swap in a 1 × 1 matrix!
     · simp only [ne_eq, Decidable.not_not] at hk
       subst hk
-      -- This section of proof (modified without abs) is inlined from above `lemma1_aux`
+      -- This section of proof is modified from above `lemma1_aux`
       have := Matrix.fin1_invertible_ne_zero (show A.block₁₁ 1 r c r c ≠ 0 by simpa)
       use r.succAbove, c.succAbove, Fin.succAbove_right_injective, Fin.succAbove_right_injective
-      rw [Matrix.shortTableauPivot.submatrix_eq_blockish, eq_div_iff_mul_eq hArc, mul_comm,
-        ← show (A.block₁₁ 1 r c).det = A r c from Matrix.det_fin_one_of _, ← Matrix.invOf_eq_nonsing_inv (A.block₁₁ 1 r c),
-        ← Matrix.det_fromBlocks₁₁]
+      rw [Matrix.shortTableauPivot.submatrix_eq_blockish] at h ⊢
       nth_rw 5 [A.succAboveAt_block r c]
-
-      sorry -- follows either immediately if sign r = sign c or using `h` if sign r ≠ sign c
+      rcases eq_or_ne r c with (rfl | hrc)
+      · rw [eq_div_iff_mul_eq hArc, mul_comm, ← show (A.block₁₁ 1 r r).det = A r r from Matrix.det_fin_one_of _,
+          ← Matrix.invOf_eq_nonsing_inv (A.block₁₁ 1 r r), ← Matrix.det_fromBlocks₁₁]
+        simp
+      · rw [h, div_eq_mul_inv, div_eq_mul_inv, ← neg_mul, mul_eq_mul_right_iff]
+        -- using a trick from Matrix.abs_det_submatrix_equiv_equiv
+        rw [show c.reindexing.symm = r.reindexing.symm.trans (r.reindexing.trans c.reindexing.symm) by ext; simp]
+        left
+        show -A.det = (((Matrix.fromBlocks (Matrix.block₁₁ 1 r c A) (Matrix.block₁₂ 1 r c A) (Matrix.block₂₁ 1 r c A)
+            (Matrix.block₂₂ 1 r c A)).submatrix id (r.reindexing.trans c.reindexing.symm)).submatrix
+              r.reindexing.symm r.reindexing.symm).det
+        rw [Matrix.det_submatrix_equiv_self, Matrix.det_permute', Matrix.det_fromBlocks₁₁, Matrix.invOf_eq_nonsing_inv, h,
+          show (A.block₁₁ 1 r c).det = A r c from Matrix.det_fin_one_of _, mul_neg, mul_neg, neg_inj, mul_div_cancel₀ _ hArc]
+        by_cases hAd : A.det = 0
+        · rw [hAd, mul_zero]
+        · symm
+          rw [mul_comm, mul_eq_left₀ hAd]
+          suffices (r.reindexing.trans c.reindexing.symm) = Equiv.refl _ by simp [this, Equiv.Perm.sign_refl]
+          ext i
+          simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Equiv.trans_apply, Equiv.refl_apply]
+          sorry -- c.reindexing.symm (r.reindexing i) = i
     let s : Equiv.Perm (Fin k) := Equiv.swap
       (⟨k.pred.pred, (Nat.pred_le k.pred).trans_lt (Nat.pred_lt (Ne.symm (NeZero.ne' k)))⟩)
       (⟨k.pred, Nat.pred_lt (Ne.symm (NeZero.ne' k))⟩)
