@@ -78,6 +78,8 @@ lemma sum_elem_matrix_row_of_nmem [DecidableEq α] {β : Type} [AddCommMonoidWit
   intro y _
   exact Matrix.one_apply_ne' (ne_of_mem_of_not_mem y.property hxS)
 
+def Matrix.abs [LinearOrderedAddCommGroup α] {m n : Type} (A : Matrix m n α) : Matrix m n α := Matrix.of (fun i j => |A i j|)
+
 
 variable {T₁ T₂ S₁ S₂ : Set α} {β : Type}
   [∀ a, Decidable (a ∈ T₁)]
