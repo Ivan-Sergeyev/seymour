@@ -357,10 +357,10 @@ noncomputable def Matrix.fin1_invertible_ne_zero [Field F] {A : Matrix (Fin 1) (
 
 lemma lemma1_aux [LinearOrderedField F] {k : ℕ}
     {A : Matrix (Fin k.succ) (Fin k.succ) F} {r c : Fin k.succ} (hArc : A r c ≠ 0) :
-    |((A.shortTableauPivot r c).submatrix r.succAbove c.succAbove).det| = |A.det / A r c| := by
+    |((A.shortTableauPivot r c).submatrix r.succAbove c.succAbove).det| = |A.det| / |A r c| := by
   have := Matrix.fin1_invertible_ne_zero (show A.block₁₁ k r c r c ≠ 0 by simpa)
   rw [
-    Matrix.shortTableauPivot.submatrix_eq_blockish, abs_div, eq_div_iff_mul_eq (abs_ne_zero.← hArc), mul_comm,
+    Matrix.shortTableauPivot.submatrix_eq_blockish, eq_div_iff_mul_eq (abs_ne_zero.← hArc), mul_comm,
     ← show (A.block₁₁ k r c).det = A r c from Matrix.det_fin_one_of _, ← abs_mul,
     ← Matrix.invOf_eq_nonsing_inv (A.block₁₁ k r c), ← Matrix.det_fromBlocks₁₁]
   nth_rw 5 [A.succAboveAt_block r c]
@@ -369,66 +369,9 @@ lemma lemma1_aux [LinearOrderedField F] {k : ℕ}
 lemma lemma1 [LinearOrderedField F] {k : ℕ}
     {A : Matrix (Fin k.succ) (Fin k.succ) F} {r c : Fin k.succ} (hArc : A r c ≠ 0) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
-      ((A.shortTableauPivot r c).submatrix f g).det = A.det / A r c := by
+      |((A.shortTableauPivot r c).submatrix f g).det| = |A.det| / |A r c| := by
   have h := lemma1_aux hArc
-  rw [abs_eq_abs] at h
-  cases h with
-  | inl h => exact ⟨r.succAbove, c.succAbove, Fin.succAbove_right_injective, Fin.succAbove_right_injective, h⟩
-  | inr h =>
-    wlog hk : NeZero k
-    · rw [not_neZero] at hk
-      subst hk
-      use fun _ => ⊤, fun _ => ⊤, (Function.injective_of_subsingleton _), (Function.injective_of_subsingleton _)
-      rw [Matrix.det_fin_zero] at h
-      simp_all only [Nat.succ_eq_add_one, ne_eq, exists_and_left, Matrix.submatrix_empty, Matrix.det_fin_zero]
-      rw [← h, show A.det = A r c by rw [Matrix.det_fin_one, show r = 0 by omega, show c = 0 by omega]]
-      exact ((fun hb => (div_eq_one_iff_eq hb).←) hArc rfl).symm
-    wlog hk : k ≠ 1 -- can't mutably swap in a 1 × 1 matrix!
-    · simp only [ne_eq, Decidable.not_not] at hk
-      subst hk
-      simp_rw [Matrix.shortTableauPivot.submatrix_eq_blockish] at h ⊢
-      simp [Matrix.diagonal, Matrix.mul_apply] at h ⊢
-      fin_cases r <;> fin_cases c
-      all_goals
-        simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.zero_eta, Fin.isValue, Fin.mk_one,
-          Function.injective_of_subsingleton, true_and,
-          Fin.zero_succAbove, Fin.succ_zero_eq_one, ne_eq, one_ne_zero, not_false_eq_true, Fin.succAbove_ne_zero_zero] at h ⊢
-        rw [Matrix.det_fin_two, div_eq_mul_inv, sub_mul] at h ⊢
-      · use (0 : Fin (Nat.succ 1)).succAbove, (0 : Fin (Nat.succ 1)).succAbove
-        field_simp [Matrix.shortTableauPivot_elem_of_ne_ne,
-          show A 0 0 * A 1 1 / A 0 0 = A 1 1 from mul_div_cancel_left₀ (A 1 1) hArc, mul_comm]
-      · use (0 : Fin (Nat.succ 1)).succAbove, (1 : Fin (Nat.succ 1)).succAbove
-        simp [Matrix.shortTableauPivot_elem_of_ne_ne]
-        rw [mul_right_comm (A 0 1) (A 1 0) (A 0 1)⁻¹, IsUnit.mul_inv_cancel (by exact hArc.isUnit), one_mul] at ⊢ h
-        sorry
-      · use (0 : Fin (Nat.succ 1)).succAbove, (1 : Fin (Nat.succ 1)).succAbove
-        simp [Matrix.shortTableauPivot_elem_of_eq_eq]
-        rw [mul_rotate (A 0 1) (A 1 0) (A 1 0)⁻¹, IsUnit.mul_inv_cancel (by exact hArc.isUnit), one_mul] at ⊢ h
-        sorry
-      · use (1 : Fin (Nat.succ 1)).succAbove, (1 : Fin (Nat.succ 1)).succAbove
-        field_simp [Matrix.shortTableauPivot_elem_of_ne_ne,
-          show A 0 0 * A 1 1 / A 1 1 = A 0 0 from mul_div_cancel_right₀ (A 0 0) hArc]
-    let s : Equiv.Perm (Fin k) := Equiv.swap
-      (⟨k.pred.pred, (Nat.pred_le k.pred).trans_lt (Nat.pred_lt (Ne.symm (NeZero.ne' k)))⟩)
-      (⟨k.pred, Nat.pred_lt (Ne.symm (NeZero.ne' k))⟩)
-    let Ms : Matrix (Fin k) (Fin k) F := @Equiv.Perm.permMatrix (Fin k) F _ s _ _
-    have hMs₁ : s.sign = Ms.det := (Matrix.det_permutation s).symm
-    have hMs : Ms.det = -1 := by
-      rw [Matrix.det_permutation, Equiv.Perm.sign_swap (by
-        simp_rw [Nat.pred_eq_sub_one, ne_eq, Fin.mk.injEq]
-        have : k ≠ 0 := Ne.symm (NeZero.ne' k)
-        omega)]; simp
-    have hf' : Function.Injective (r.succAbove ∘ s) := (Equiv.injective_comp s r.succAbove).← Fin.succAbove_right_injective
-    use r.succAbove ∘ s, c.succAbove
-    use hf', Fin.succAbove_right_injective
-    rw [
-      show r.succAbove = r.succAbove ∘ id from rfl, show c.succAbove = c.succAbove ∘ id from rfl,
-      ← Matrix.submatrix_submatrix, ← neg_eq_iff_eq_neg
-    ] at h
-    rw [
-      show c.succAbove = c.succAbove ∘ id from rfl, ← Matrix.submatrix_submatrix,
-      ← h, neg_eq_neg_one_mul, ← hMs, Matrix.det_permute s, Matrix.submatrix_id_id, hMs₁, ← Matrix.det_mul
-    ]
+  exact ⟨r.succAbove, c.succAbove, Fin.succAbove_right_injective, Fin.succAbove_right_injective, lemma1_aux hArc⟩
 
 lemma corollary1 [LinearOrderedField F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F}
     (hA : A.det ∉ SignType.cast.range) (i j : Fin k.succ) (hAij : A i j = 1 ∨ A i j = -1) :
@@ -437,14 +380,12 @@ lemma corollary1 [LinearOrderedField F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin 
   have hArc0 : A i j ≠ 0 := by rcases hAij with h | h <;> rw [h] <;> norm_num
   obtain ⟨f, g, hf, hg, hAfg⟩ := lemma1 hArc0
   use f, g, hf, hg
-  rw [hAfg]
-  cases hAij with
-  | inl h1 =>
-    rw [h1, div_one]
-    exact hA
-  | inr h9 =>
-    rw [h9, div_neg, div_one]
-    exact (hA <| in_signTypeCastRange_of_neg ·)
+  rw [in_signTypeCastRange_iff_abs, hAfg]
+  rcases hAij with h | h
+  all_goals
+    rw [h]
+    try rw [abs_neg]
+    rwa [abs_one, div_one, ← in_signTypeCastRange_iff_abs]
 
 lemma Matrix.shortTableauPivot_zero {X' Y' : Type} [DecidableEq X] [DecidableEq Y] [DecidableEq X'] [DivisionRing F]
     (B : Matrix X Y F) (x : X') (y : Y) (f : X' → X) (g : Y' → Y) (hg : y ∉ g.range) (hBfg : ∀ i j, B (f i) (g j) = 0) :
