@@ -131,11 +131,11 @@ lemma Matrix.toCanonicalSigning_TU {X Y : Set α} {x₀ x₁ x' y₀ y₁ y' : �
 lemma Matrix.toCanonicalSigning_Form_Case1 {X Y : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
     (Q : Matrix X Y ℚ) (hx₀ : x₀ ∈ X) (hx₁ : x₁ ∈ X) (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hy' : y' ∈ Y)
     (hQ : Q.IsTotallyUnimodular)
-    (hQsub : Matrix.abs !![
+    (hQsub : |!![
       Q ⟨x₀, hx₀⟩ ⟨y₀, hy₀⟩, Q ⟨x₀, hx₀⟩ ⟨y₁, hy₁⟩, Q ⟨x₀, hx₀⟩ ⟨y', hy'⟩;
       Q ⟨x₁, hx₁⟩ ⟨y₀, hy₀⟩, Q ⟨x₁, hx₁⟩ ⟨y₁, hy₁⟩, Q ⟨x₁, hx₁⟩ ⟨y', hy'⟩;
       Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩, Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩, Q ⟨x', hx'⟩ ⟨y', hy'⟩
-    ] = !![1, 0, 1; 0, 1, 1; 1, 1, 0]) :
+    ]| = !![1, 0, 1; 0, 1, 1; 1, 1, 0]) :
     let Q' := Q.toCanonicalSigning hx₀ hx₁ hx' hy₀ hy₁ hy'
     !![
       Q' ⟨x₀, hx₀⟩ ⟨y₀, hy₀⟩, Q' ⟨x₀, hx₀⟩ ⟨y₁, hy₁⟩, Q' ⟨x₀, hx₀⟩ ⟨y', hy'⟩;
@@ -148,11 +148,11 @@ lemma Matrix.toCanonicalSigning_Form_Case1 {X Y : Set α} {x₀ x₁ x' y₀ y�
 lemma Matrix.toCanonicalSigning_Form_Case2 {X Y : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
     (Q : Matrix X Y ℚ) (hx₀ : x₀ ∈ X) (hx₁ : x₁ ∈ X) (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hy' : y' ∈ Y)
     (hQ : Q.IsTotallyUnimodular)
-    (hQsub : Matrix.abs !![
+    (hQsub : |!![
       Q ⟨x₀, hx₀⟩ ⟨y₀, hy₀⟩, Q ⟨x₀, hx₀⟩ ⟨y₁, hy₁⟩, Q ⟨x₀, hx₀⟩ ⟨y', hy'⟩;
       Q ⟨x₁, hx₁⟩ ⟨y₀, hy₀⟩, Q ⟨x₁, hx₁⟩ ⟨y₁, hy₁⟩, Q ⟨x₁, hx₁⟩ ⟨y', hy'⟩;
       Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩, Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩, Q ⟨x', hx'⟩ ⟨y', hy'⟩
-    ] = !![1, 1, 1; 0, 1, 1; 1, 1, 0]) :
+    ]| = !![1, 1, 1; 0, 1, 1; 1, 1, 0]) :
     let Q' := Q.toCanonicalSigning hx₀ hx₁ hx' hy₀ hy₁ hy'
     !![
       Q' ⟨x₀, hx₀⟩ ⟨y₀, hy₀⟩, Q' ⟨x₀, hx₀⟩ ⟨y₁, hy₁⟩, Q' ⟨x₀, hx₀⟩ ⟨y', hy'⟩;
@@ -336,14 +336,14 @@ lemma matrix3sumComposition_CanonicalSigning_D_Eq_SumOuterProducts {Xₗ Yₗ X�
     [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXₗXᵣ : Xₗ ∩ Xᵣ = {x₀, x₁, x'}) (hYₗYᵣ : Yₗ ∩ Yᵣ = {y₀, y₁, y'})
-    (hBₗ'sub : Matrix.abs (Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
-      (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)) = Special3x3Submatrix_Case1_Unsigned ∨
-      Matrix.abs (Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
-      (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)) = Special3x3Submatrix_Case2_Unsigned)
-    (hBᵣ'sub : Matrix.abs (Bᵣ'.special3x3Submatrix (inter_three_mem₀ᵣ hXₗXᵣ) (inter_three_mem₁ᵣ hXₗXᵣ) (inter_three_mem₂ᵣ hXₗXᵣ)
-      (inter_three_mem₀ᵣ hYₗYᵣ) (inter_three_mem₁ᵣ hYₗYᵣ) (inter_three_mem₂ᵣ hYₗYᵣ)) = Special3x3Submatrix_Case1_Unsigned ∨
-      Matrix.abs (Bᵣ'.special3x3Submatrix (inter_three_mem₀ᵣ hXₗXᵣ) (inter_three_mem₁ᵣ hXₗXᵣ) (inter_three_mem₂ᵣ hXₗXᵣ)
-      (inter_three_mem₀ᵣ hYₗYᵣ) (inter_three_mem₁ᵣ hYₗYᵣ) (inter_three_mem₂ᵣ hYₗYᵣ)) = Special3x3Submatrix_Case2_Unsigned) :
+    (hBₗ'sub : |Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
+      (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)| = Special3x3Submatrix_Case1_Unsigned ∨
+      |Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
+      (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)| = Special3x3Submatrix_Case2_Unsigned)
+    (hBᵣ'sub : |Bᵣ'.special3x3Submatrix (inter_three_mem₀ᵣ hXₗXᵣ) (inter_three_mem₁ᵣ hXₗXᵣ) (inter_three_mem₂ᵣ hXₗXᵣ)
+      (inter_three_mem₀ᵣ hYₗYᵣ) (inter_three_mem₁ᵣ hYₗYᵣ) (inter_three_mem₂ᵣ hYₗYᵣ)| = Special3x3Submatrix_Case1_Unsigned ∨
+      |Bᵣ'.special3x3Submatrix (inter_three_mem₀ᵣ hXₗXᵣ) (inter_three_mem₁ᵣ hXₗXᵣ) (inter_three_mem₂ᵣ hXₗXᵣ)
+      (inter_three_mem₀ᵣ hYₗYᵣ) (inter_three_mem₁ᵣ hYₗYᵣ) (inter_three_mem₂ᵣ hYₗYᵣ)| = Special3x3Submatrix_Case2_Unsigned) :
     -- row membership
     have hrXₗ : {x₀, x₁, x'} ⊆ Xₗ := hXₗXᵣ.symm.subset.trans Set.inter_subset_left
     have hrXᵣ : {x₀, x₁, x'} ⊆ Xᵣ := hXₗXᵣ.symm.subset.trans Set.inter_subset_right
@@ -407,9 +407,9 @@ lemma matrix3sumComposition_CanonicalSigning_D_Eq_SumOuterProducts {Xₗ Yₗ X�
     let c₁ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) ⟨y₁, y₁inYᵣ⟩
     let d₀ : (Yₗ \ {y'}).Elem → ℚ := fun i => Bₗ ⟨x₀, x₀inXₗ⟩ (Set.diff_subset.elem i)
     let d₁ : (Yₗ \ {y'}).Elem → ℚ := fun i => Bₗ ⟨x₁, x₁inXₗ⟩ (Set.diff_subset.elem i)
-    let D₀_unsigned :=
-      Matrix.abs (Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
-        (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ))
+    let D₀_unsigned: Matrix (Fin 3) (Fin 3) ℚ :=
+      |Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
+        (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)|
     let r₀ : (Yₗ \ {y'}).Elem → ℚ :=
       if hD₀_case1: D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then d₀ else
       if hD₀_case2: D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₀ - d₁ else
@@ -444,14 +444,14 @@ lemma matrix3sumComposition_CanonicalSigning_D_Rows {Xₗ Yₗ Xᵣ Yᵣ : Set �
     [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXₗXᵣ : Xₗ ∩ Xᵣ = {x₀, x₁, x'}) (hYₗYᵣ : Yₗ ∩ Yᵣ = {y₀, y₁, y'})
-    (hBₗ'sub : Matrix.abs (Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
-      (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)) = Special3x3Submatrix_Case1_Unsigned ∨
-      Matrix.abs (Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
-      (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)) = Special3x3Submatrix_Case2_Unsigned)
-    (hBᵣ'sub : Matrix.abs (Bᵣ'.special3x3Submatrix (inter_three_mem₀ᵣ hXₗXᵣ) (inter_three_mem₁ᵣ hXₗXᵣ) (inter_three_mem₂ᵣ hXₗXᵣ)
-      (inter_three_mem₀ᵣ hYₗYᵣ) (inter_three_mem₁ᵣ hYₗYᵣ) (inter_three_mem₂ᵣ hYₗYᵣ)) = Special3x3Submatrix_Case1_Unsigned ∨
-      Matrix.abs (Bᵣ'.special3x3Submatrix (inter_three_mem₀ᵣ hXₗXᵣ) (inter_three_mem₁ᵣ hXₗXᵣ) (inter_three_mem₂ᵣ hXₗXᵣ)
-      (inter_three_mem₀ᵣ hYₗYᵣ) (inter_three_mem₁ᵣ hYₗYᵣ) (inter_three_mem₂ᵣ hYₗYᵣ)) = Special3x3Submatrix_Case2_Unsigned) :
+    (hBₗ'sub : |Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
+      (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)| = Special3x3Submatrix_Case1_Unsigned ∨
+      |Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
+      (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)| = Special3x3Submatrix_Case2_Unsigned)
+    (hBᵣ'sub : |Bᵣ'.special3x3Submatrix (inter_three_mem₀ᵣ hXₗXᵣ) (inter_three_mem₁ᵣ hXₗXᵣ) (inter_three_mem₂ᵣ hXₗXᵣ)
+      (inter_three_mem₀ᵣ hYₗYᵣ) (inter_three_mem₁ᵣ hYₗYᵣ) (inter_three_mem₂ᵣ hYₗYᵣ)| = Special3x3Submatrix_Case1_Unsigned ∨
+      |Bᵣ'.special3x3Submatrix (inter_three_mem₀ᵣ hXₗXᵣ) (inter_three_mem₁ᵣ hXₗXᵣ) (inter_three_mem₂ᵣ hXₗXᵣ)
+      (inter_three_mem₀ᵣ hYₗYᵣ) (inter_three_mem₁ᵣ hYₗYᵣ) (inter_three_mem₂ᵣ hYₗYᵣ)| = Special3x3Submatrix_Case2_Unsigned) :
     -- row membership
     have hrXₗ : {x₀, x₁, x'} ⊆ Xₗ := hXₗXᵣ.symm.subset.trans Set.inter_subset_left
     have hrXᵣ : {x₀, x₁, x'} ⊆ Xᵣ := hXₗXᵣ.symm.subset.trans Set.inter_subset_right
@@ -515,9 +515,9 @@ lemma matrix3sumComposition_CanonicalSigning_D_Rows {Xₗ Yₗ Xᵣ Yᵣ : Set �
     let c₁ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) ⟨y₁, y₁inYᵣ⟩
     let d₀ : (Yₗ \ {y'}).Elem → ℚ := fun i => Bₗ ⟨x₀, x₀inXₗ⟩ (Set.diff_subset.elem i)
     let d₁ : (Yₗ \ {y'}).Elem → ℚ := fun i => Bₗ ⟨x₁, x₁inXₗ⟩ (Set.diff_subset.elem i)
-    let D₀_unsigned :=
-      Matrix.abs (Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
-        (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ))
+    let D₀_unsigned : Matrix (Fin 3) (Fin 3) ℚ :=
+      |Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
+        (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)|
     let r₀ : (Yₗ \ {y'}).Elem → ℚ :=
       if hD₀_case1 : D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then d₀ else
       if hD₀_case2 : D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₀ - d₁ else
@@ -552,14 +552,14 @@ lemma matrix3sumComposition_CanonicalSigning_D_Cols {Xₗ Yₗ Xᵣ Yᵣ : Set �
     [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXₗXᵣ : Xₗ ∩ Xᵣ = {x₀, x₁, x'}) (hYₗYᵣ : Yₗ ∩ Yᵣ = {y₀, y₁, y'})
-    (hBₗ'sub : Matrix.abs (Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
-      (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)) = Special3x3Submatrix_Case1_Unsigned ∨
-      Matrix.abs (Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
-      (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)) = Special3x3Submatrix_Case2_Unsigned)
-    (hBᵣ'sub : Matrix.abs (Bᵣ'.special3x3Submatrix (inter_three_mem₀ᵣ hXₗXᵣ) (inter_three_mem₁ᵣ hXₗXᵣ) (inter_three_mem₂ᵣ hXₗXᵣ)
-      (inter_three_mem₀ᵣ hYₗYᵣ) (inter_three_mem₁ᵣ hYₗYᵣ) (inter_three_mem₂ᵣ hYₗYᵣ)) = Special3x3Submatrix_Case1_Unsigned ∨
-      Matrix.abs (Bᵣ'.special3x3Submatrix (inter_three_mem₀ᵣ hXₗXᵣ) (inter_three_mem₁ᵣ hXₗXᵣ) (inter_three_mem₂ᵣ hXₗXᵣ)
-      (inter_three_mem₀ᵣ hYₗYᵣ) (inter_three_mem₁ᵣ hYₗYᵣ) (inter_three_mem₂ᵣ hYₗYᵣ)) = Special3x3Submatrix_Case2_Unsigned) :
+    (hBₗ'sub : |Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
+      (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)| = Special3x3Submatrix_Case1_Unsigned ∨
+      |Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
+      (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)| = Special3x3Submatrix_Case2_Unsigned)
+    (hBᵣ'sub : |Bᵣ'.special3x3Submatrix (inter_three_mem₀ᵣ hXₗXᵣ) (inter_three_mem₁ᵣ hXₗXᵣ) (inter_three_mem₂ᵣ hXₗXᵣ)
+      (inter_three_mem₀ᵣ hYₗYᵣ) (inter_three_mem₁ᵣ hYₗYᵣ) (inter_three_mem₂ᵣ hYₗYᵣ)| = Special3x3Submatrix_Case1_Unsigned ∨
+      |Bᵣ'.special3x3Submatrix (inter_three_mem₀ᵣ hXₗXᵣ) (inter_three_mem₁ᵣ hXₗXᵣ) (inter_three_mem₂ᵣ hXₗXᵣ)
+      (inter_three_mem₀ᵣ hYₗYᵣ) (inter_three_mem₁ᵣ hYₗYᵣ) (inter_three_mem₂ᵣ hYₗYᵣ)| = Special3x3Submatrix_Case2_Unsigned) :
     -- row membership
     have hrXₗ : {x₀, x₁, x'} ⊆ Xₗ := hXₗXᵣ.symm.subset.trans Set.inter_subset_left
     have hrXᵣ : {x₀, x₁, x'} ⊆ Xᵣ := hXₗXᵣ.symm.subset.trans Set.inter_subset_right
@@ -623,9 +623,9 @@ lemma matrix3sumComposition_CanonicalSigning_D_Cols {Xₗ Yₗ Xᵣ Yᵣ : Set �
     let c₁ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) ⟨y₁, y₁inYᵣ⟩
     let d₀ : (Yₗ \ {y'}).Elem → ℚ := fun i => Bₗ ⟨x₀, x₀inXₗ⟩ (Set.diff_subset.elem i)
     let d₁ : (Yₗ \ {y'}).Elem → ℚ := fun i => Bₗ ⟨x₁, x₁inXₗ⟩ (Set.diff_subset.elem i)
-    let D₀_unsigned :=
-      Matrix.abs (Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
-        (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ))
+    let D₀_unsigned : Matrix (Fin 3) (Fin 3) ℚ :=
+      |Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
+        (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)|
     let r₀ : (Yₗ \ {y'}).Elem → ℚ :=
       if hD₀_case1: D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then d₀ else
       if hD₀_case2: D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₀ - d₁ else
@@ -660,14 +660,14 @@ lemma matrix3sumComposition_CanonicalSigning_Aᵣ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Se
     [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXₗXᵣ : Xₗ ∩ Xᵣ = {x₀, x₁, x'}) (hYₗYᵣ : Yₗ ∩ Yᵣ = {y₀, y₁, y'})
-    (hBₗ'sub : Matrix.abs (Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
-      (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)) = Special3x3Submatrix_Case1_Unsigned ∨
-      Matrix.abs (Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
-      (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)) = Special3x3Submatrix_Case2_Unsigned)
-    (hBᵣ'sub : Matrix.abs (Bᵣ'.special3x3Submatrix (inter_three_mem₀ᵣ hXₗXᵣ) (inter_three_mem₁ᵣ hXₗXᵣ) (inter_three_mem₂ᵣ hXₗXᵣ)
-      (inter_three_mem₀ᵣ hYₗYᵣ) (inter_three_mem₁ᵣ hYₗYᵣ) (inter_three_mem₂ᵣ hYₗYᵣ)) = Special3x3Submatrix_Case1_Unsigned ∨
-      Matrix.abs (Bᵣ'.special3x3Submatrix (inter_three_mem₀ᵣ hXₗXᵣ) (inter_three_mem₁ᵣ hXₗXᵣ) (inter_three_mem₂ᵣ hXₗXᵣ)
-      (inter_three_mem₀ᵣ hYₗYᵣ) (inter_three_mem₁ᵣ hYₗYᵣ) (inter_three_mem₂ᵣ hYₗYᵣ)) = Special3x3Submatrix_Case2_Unsigned) :
+    (hBₗ'sub : |Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
+      (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)| = Special3x3Submatrix_Case1_Unsigned ∨
+      |Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
+      (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)| = Special3x3Submatrix_Case2_Unsigned)
+    (hBᵣ'sub : |Bᵣ'.special3x3Submatrix (inter_three_mem₀ᵣ hXₗXᵣ) (inter_three_mem₁ᵣ hXₗXᵣ) (inter_three_mem₂ᵣ hXₗXᵣ)
+      (inter_three_mem₀ᵣ hYₗYᵣ) (inter_three_mem₁ᵣ hYₗYᵣ) (inter_three_mem₂ᵣ hYₗYᵣ)| = Special3x3Submatrix_Case1_Unsigned ∨
+      |Bᵣ'.special3x3Submatrix (inter_three_mem₀ᵣ hXₗXᵣ) (inter_three_mem₁ᵣ hXₗXᵣ) (inter_three_mem₂ᵣ hXₗXᵣ)
+      (inter_three_mem₀ᵣ hYₗYᵣ) (inter_three_mem₁ᵣ hYₗYᵣ) (inter_three_mem₂ᵣ hYₗYᵣ)| = Special3x3Submatrix_Case2_Unsigned) :
     -- row membership
     have hrXₗ : {x₀, x₁, x'} ⊆ Xₗ := hXₗXᵣ.symm.subset.trans Set.inter_subset_left
     have hrXᵣ : {x₀, x₁, x'} ⊆ Xᵣ := hXₗXᵣ.symm.subset.trans Set.inter_subset_right
@@ -731,9 +731,9 @@ lemma matrix3sumComposition_CanonicalSigning_Aᵣ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Se
     let c₁ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) ⟨y₁, y₁inYᵣ⟩
     let d₀ : (Yₗ \ {y'}).Elem → ℚ := fun i => Bₗ ⟨x₀, x₀inXₗ⟩ (Set.diff_subset.elem i)
     let d₁ : (Yₗ \ {y'}).Elem → ℚ := fun i => Bₗ ⟨x₁, x₁inXₗ⟩ (Set.diff_subset.elem i)
-    let D₀_unsigned :=
-      Matrix.abs (Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
-        (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ))
+    let D₀_unsigned : Matrix (Fin 3) (Fin 3) ℚ :=
+      |Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
+        (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)|
     let r₀ : (Yₗ \ {y'}).Elem → ℚ :=
       if hD₀_case1: D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then d₀ else
       if hD₀_case2: D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₀ - d₁ else
@@ -768,14 +768,14 @@ lemma matrix3sumComposition_CanonicalSigning_Aₗ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Se
     [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXₗXᵣ : Xₗ ∩ Xᵣ = {x₀, x₁, x'}) (hYₗYᵣ : Yₗ ∩ Yᵣ = {y₀, y₁, y'})
-    (hBₗ'sub : Matrix.abs (Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
-      (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)) = Special3x3Submatrix_Case1_Unsigned ∨
-      Matrix.abs (Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
-      (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)) = Special3x3Submatrix_Case2_Unsigned)
-    (hBᵣ'sub : Matrix.abs (Bᵣ'.special3x3Submatrix (inter_three_mem₀ᵣ hXₗXᵣ) (inter_three_mem₁ᵣ hXₗXᵣ) (inter_three_mem₂ᵣ hXₗXᵣ)
-      (inter_three_mem₀ᵣ hYₗYᵣ) (inter_three_mem₁ᵣ hYₗYᵣ) (inter_three_mem₂ᵣ hYₗYᵣ)) = Special3x3Submatrix_Case1_Unsigned ∨
-      Matrix.abs (Bᵣ'.special3x3Submatrix (inter_three_mem₀ᵣ hXₗXᵣ) (inter_three_mem₁ᵣ hXₗXᵣ) (inter_three_mem₂ᵣ hXₗXᵣ)
-      (inter_three_mem₀ᵣ hYₗYᵣ) (inter_three_mem₁ᵣ hYₗYᵣ) (inter_three_mem₂ᵣ hYₗYᵣ)) = Special3x3Submatrix_Case2_Unsigned) :
+    (hBₗ'sub : |Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
+      (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)| = Special3x3Submatrix_Case1_Unsigned ∨
+      |Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
+      (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)| = Special3x3Submatrix_Case2_Unsigned)
+    (hBᵣ'sub : |Bᵣ'.special3x3Submatrix (inter_three_mem₀ᵣ hXₗXᵣ) (inter_three_mem₁ᵣ hXₗXᵣ) (inter_three_mem₂ᵣ hXₗXᵣ)
+      (inter_three_mem₀ᵣ hYₗYᵣ) (inter_three_mem₁ᵣ hYₗYᵣ) (inter_three_mem₂ᵣ hYₗYᵣ)| = Special3x3Submatrix_Case1_Unsigned ∨
+      |Bᵣ'.special3x3Submatrix (inter_three_mem₀ᵣ hXₗXᵣ) (inter_three_mem₁ᵣ hXₗXᵣ) (inter_three_mem₂ᵣ hXₗXᵣ)
+      (inter_three_mem₀ᵣ hYₗYᵣ) (inter_three_mem₁ᵣ hYₗYᵣ) (inter_three_mem₂ᵣ hYₗYᵣ)| = Special3x3Submatrix_Case2_Unsigned) :
     -- row membership
     have hrXₗ : {x₀, x₁, x'} ⊆ Xₗ := hXₗXᵣ.symm.subset.trans Set.inter_subset_left
     have hrXᵣ : {x₀, x₁, x'} ⊆ Xᵣ := hXₗXᵣ.symm.subset.trans Set.inter_subset_right
@@ -839,9 +839,9 @@ lemma matrix3sumComposition_CanonicalSigning_Aₗ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Se
     let c₁ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) ⟨y₁, y₁inYᵣ⟩
     let d₀ : (Yₗ \ {y'}).Elem → ℚ := fun i => Bₗ ⟨x₀, x₀inXₗ⟩ (Set.diff_subset.elem i)
     let d₁ : (Yₗ \ {y'}).Elem → ℚ := fun i => Bₗ ⟨x₁, x₁inXₗ⟩ (Set.diff_subset.elem i)
-    let D₀_unsigned :=
-      Matrix.abs (Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
-        (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ))
+    let D₀_unsigned : Matrix (Fin 3) (Fin 3) ℚ :=
+      |Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
+        (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ)|
     let r₀ : (Yₗ \ {y'}).Elem → ℚ :=
       if hD₀_case1: D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then d₀ else
       if hD₀_case2: D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₀ - d₁ else

@@ -78,7 +78,12 @@ lemma sum_elem_matrix_row_of_nmem [DecidableEq α] {β : Type} [AddCommMonoidWit
   intro y _
   exact Matrix.one_apply_ne' (ne_of_mem_of_not_mem y.property hxS)
 
-def Matrix.abs [LinearOrderedAddCommGroup α] {m n : Type} (A : Matrix m n α) : Matrix m n α := Matrix.of (fun i j => |A i j|)
+/-- The absolute value of a matrix is a matrix made of absolute values of respective elements. -/
+def Matrix.abs [LinearOrderedAddCommGroup α] {m n : Type} (A : Matrix m n α) : Matrix m n α :=
+  Matrix.of (|A · ·|)
+
+-- We redeclare `|·|` instead of using the existing notation because the official `abs` requires a lattice.
+macro:max atomic("|" noWs) a:term noWs "|" : term => `(Matrix.abs $a)
 
 
 variable {T₁ T₂ S₁ S₂ : Set α} {β : Type}
