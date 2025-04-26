@@ -13,9 +13,9 @@ inductive Matroid.IsGood : Matroid α → Prop
 | cographic {M : Matroid α} (hM : M.IsCographic) : M.IsGood
 | isomorphicR10 {M : Matroid α} {e : α ≃ Fin 10} (hM : M.mapEquiv e = matroidR10.toMatroid) : M.IsGood
 -- fork constructors
-| is1sum {M M₁ M₂ : Matroid α} (hM : M.Is1sumOf M₁ M₂) (hM₁ : M₁.IsGood) (hM₂ : M₂.IsGood) : M.IsGood
-| is2sum {M M₁ M₂ : Matroid α} (hM : M.Is2sumOf M₁ M₂) (hM₁ : M₁.IsGood) (hM₂ : M₂.IsGood) : M.IsGood
-| is3sum {M M₁ M₂ : Matroid α} (hM : M.Is3sumOf M₁ M₂) (hM₁ : M₁.IsGood) (hM₂ : M₂.IsGood) : M.IsGood
+| is1sum {M Mₗ Mᵣ : Matroid α} (hM : M.Is1sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsGood) (hMᵣ : Mᵣ.IsGood) : M.IsGood
+| is2sum {M Mₗ Mᵣ : Matroid α} (hM : M.Is2sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsGood) (hMᵣ : Mᵣ.IsGood) : M.IsGood
+| is3sum {M Mₗ Mᵣ : Matroid α} (hM : M.Is3sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsGood) (hMᵣ : Mᵣ.IsGood) : M.IsGood
 
 /-- Corollary of the easy direction of the Seymour's theorem. -/
 theorem Matroid.IsGood.isRegular {M : Matroid α} (hM : M.IsGood) : M.IsRegular := by
@@ -23,6 +23,6 @@ theorem Matroid.IsGood.isRegular {M : Matroid α} (hM : M.IsGood) : M.IsRegular 
   | graphic hM => exact hM.isRegular
   | cographic hM => exact hM.isRegular
   | @isomorphicR10 M e hM => simp [←M.isRegular_mapEquiv_iff e, hM]
-  | is1sum hM _ _ ih₁ ih₂ => exact hM.isRegular ih₁ ih₂
-  | is2sum hM _ _ ih₁ ih₂ => exact hM.isRegular ih₁ ih₂
-  | is3sum hM _ _ ih₁ ih₂ => exact hM.isRegular ih₁ ih₂
+  | is1sum hM _ _ ihₗ ihᵣ => exact hM.isRegular ihₗ ihᵣ
+  | is2sum hM _ _ ihₗ ihᵣ => exact hM.isRegular ihₗ ihᵣ
+  | is3sum hM _ _ ihₗ ihᵣ => exact hM.isRegular ihₗ ihᵣ

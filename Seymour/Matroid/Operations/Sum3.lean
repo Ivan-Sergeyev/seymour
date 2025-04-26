@@ -47,7 +47,7 @@ noncomputable def matrix3sumComposition_standard {β : Type} [Field β] {Xₗ Y�
   -- initial bottom left submatrix
   let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) β := Matrix.fromBlocks Dₗ D₀ₗ Dₗᵣ Dᵣ
   -- reindexing for bottom left submatrix
-  have fXᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
+  have fᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
     if hi₀ : i.val = x₀ then ◩0 else
     if hi₁ : i.val = x₁ then ◩1 else
     if hi : i.val ∈ Xᵣ \ {x₀, x₁, x'} then ◪⟨i, hi⟩ else
@@ -56,7 +56,7 @@ noncomputable def matrix3sumComposition_standard {β : Type} [Field β] {Xₗ Y�
       obtain ⟨_, _⟩ := i
       simp_all only
       simp_all only [Set.mem_diff, Set.mem_singleton_iff, imp_false, not_true_eq_false]))
-  have fYₗ : (Yₗ \ {y'}).Elem → (Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2 := fun j => (
+  have fₗ : (Yₗ \ {y'}).Elem → (Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2 := fun j => (
     if hj₀ : j.val = y₀ then ◪0 else
     if hj₁ : j.val = y₁ then ◪1 else
     if hj : j.val ∈ Yₗ \ {y₀, y₁, y'} then ◩⟨j, hj⟩ else
@@ -66,13 +66,13 @@ noncomputable def matrix3sumComposition_standard {β : Type} [Field β] {Xₗ Y�
       simp_all only
       simp_all only [Set.mem_diff, Set.mem_singleton_iff, imp_false, not_true_eq_false]))
   -- final bottom left submatrix
-  let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem β := Matrix.of (fun i j => D' (fXᵣ i) (fYₗ j))
+  let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem β := Matrix.of (fun i j => D' (fᵣ i) (fₗ j))
   -- actual definition
   ⟨
     -- 3-sum defined as a block matrix
     Matrix.fromBlocks Aₗ 0 D Aᵣ,
     -- the special elements are all distinct
-    (x₀ ≠ x₁ ∧ x₀ ≠ x' ∧ x₁ ≠ x' ∧ y₀ ≠ y₁ ∧ y₀ ≠ y' ∧ y₁ ≠ y')
+    ((x₀ ≠ x₁ ∧ x₀ ≠ x' ∧ x₁ ≠ x') ∧ (y₀ ≠ y₁ ∧ y₀ ≠ y' ∧ y₁ ≠ y'))
     -- index sets of rows and columns do not overlap
     ∧ (Xₗ ⫗ Yₗ ∧ Xₗ ⫗ Yᵣ ∧ Xᵣ ⫗ Yₗ ∧ Xᵣ ⫗ Yᵣ)
     -- `D₀` is the same in `Bₗ` and `Bᵣ`
@@ -142,7 +142,7 @@ lemma Matrix.toCanonicalSigning_Form_Case1 {X Y : Set α} {x₀ x₁ x' y₀ y�
       Q' ⟨x₁, hx₁⟩ ⟨y₀, hy₀⟩, Q' ⟨x₁, hx₁⟩ ⟨y₁, hy₁⟩, Q' ⟨x₁, hx₁⟩ ⟨y', hy'⟩;
       Q' ⟨x', hx'⟩ ⟨y₀, hy₀⟩, Q' ⟨x', hx'⟩ ⟨y₁, hy₁⟩, Q' ⟨x', hx'⟩ ⟨y', hy'⟩
     ] = !![1, 0, 1; 0, -1, 1; 1, 1, 0] :=
-  -- see proof of Lemma 12 in the write-up on 3-sum, the case where D₀ is 1
+  -- see proof of Lemma 12 in the write-up on 3-sum, the case where `D₀` is `1`
   sorry
 
 lemma Matrix.toCanonicalSigning_Form_Case2 {X Y : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
@@ -159,7 +159,7 @@ lemma Matrix.toCanonicalSigning_Form_Case2 {X Y : Set α} {x₀ x₁ x' y₀ y�
       Q' ⟨x₁, hx₁⟩ ⟨y₀, hy₀⟩, Q' ⟨x₁, hx₁⟩ ⟨y₁, hy₁⟩, Q' ⟨x₁, hx₁⟩ ⟨y', hy'⟩;
       Q' ⟨x', hx'⟩ ⟨y₀, hy₀⟩, Q' ⟨x', hx'⟩ ⟨y₁, hy₁⟩, Q' ⟨x', hx'⟩ ⟨y', hy'⟩
     ] = !![1, 1, 1; 0, 1, 1; 1, 1, 0] :=
-  -- see proof of Lemma 12 in the write-up on 3-sum, the case where D₀ is !![1, 1; 0, 1] (up to indices)
+  -- see proof of Lemma 12 in the write-up on 3-sum, the case where `D₀` is `!![1, 1; 0, 1]` (up to indices)
   sorry
 
 -- lemma 15.a
@@ -275,7 +275,7 @@ noncomputable def matrix3sumComposition_CanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : 
       obtain ⟨_, _⟩ := i
       simp_all only
       simp_all only [Set.mem_diff, Set.mem_singleton_iff, imp_false, not_true_eq_false]))
-  have fYₗ : (Yₗ \ {y'}).Elem → (Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2 := fun j => (
+  have fₗ : (Yₗ \ {y'}).Elem → (Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2 := fun j => (
     if hj₀ : j.val = y₀ then ◪0 else
     if hj₁ : j.val = y₁ then ◪1 else
     if hj : j.val ∈ Yₗ \ {y₀, y₁, y'} then ◩⟨j, hj⟩ else
@@ -285,7 +285,7 @@ noncomputable def matrix3sumComposition_CanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : 
       simp_all only
       simp_all only [Set.mem_diff, Set.mem_singleton_iff, imp_false, not_true_eq_false]))
   -- final bottom left submatrix
-  let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := Matrix.of (fun i j => D' (fXᵣ i) (fYₗ j))
+  let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := Matrix.of (fun i j => D' (fXᵣ i) (fₗ j))
   -- actual definition
   Matrix.fromBlocks Aₗ 0 D Aᵣ
 
@@ -519,24 +519,24 @@ lemma matrix3sumComposition_CanonicalSigning_D_Rows {Xₗ Yₗ Xᵣ Yᵣ : Set �
       Matrix.abs (Bₗ'.special3x3Submatrix (inter_three_mem₀ₗ hXₗXᵣ) (inter_three_mem₁ₗ hXₗXᵣ) (inter_three_mem₂ₗ hXₗXᵣ)
         (inter_three_mem₀ₗ hYₗYᵣ) (inter_three_mem₁ₗ hYₗYᵣ) (inter_three_mem₂ₗ hYₗYᵣ))
     let r₀ : (Yₗ \ {y'}).Elem → ℚ :=
-      if hD₀_case1: D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then d₀ else
-      if hD₀_case2: D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₀ - d₁ else
+      if hD₀_case1 : D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then d₀ else
+      if hD₀_case2 : D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₀ - d₁ else
       (False.elim (by
         simp_all only [D₀_unsigned]
         cases hBₗ'sub with
         | inl h => simp_all only [not_true_eq_false, D₀_unsigned]
         | inr h_1 => simp_all only [not_true_eq_false, D₀_unsigned]))
     let r₁ : (Yₗ \ {y'}).Elem → ℚ :=
-      if hD₀_case1: D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then -d₁ else
-      if hD₀_case2: D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₁ else
+      if hD₀_case1 : D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then -d₁ else
+      if hD₀_case2 : D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₁ else
       (False.elim (by
         simp_all only [D₀_unsigned]
         cases hBₗ'sub with
         | inl h => simp_all only [not_true_eq_false, D₀_unsigned]
         | inr h_1 => simp_all only [not_true_eq_false, D₀_unsigned]))
     let r₂ : (Yₗ \ {y'}).Elem → ℚ :=
-      if hD₀_case1: D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then d₀ - d₁ else
-      if hD₀_case2: D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₀ else
+      if hD₀_case1 : D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then d₀ - d₁ else
+      if hD₀_case2 : D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₀ else
       (False.elim (by
         simp_all only [D₀_unsigned]
         cases hBₗ'sub with
@@ -598,7 +598,7 @@ lemma matrix3sumComposition_CanonicalSigning_D_Cols {Xₗ Yₗ Xᵣ Yᵣ : Set �
     -- initial bottom left submatrix
     let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := Matrix.fromBlocks Dₗ D₀ₗ Dₗᵣ Dᵣ
     -- reindexing for bottom left submatrix
-    have fXᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
+    have fᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
       if hi₀ : i.val = x₀ then ◩0 else
       if hi₁ : i.val = x₁ then ◩1 else
       if hi : i.val ∈ Xᵣ \ {x₀, x₁, x'} then ◪⟨i, hi⟩ else
@@ -617,7 +617,7 @@ lemma matrix3sumComposition_CanonicalSigning_D_Cols {Xₗ Yₗ Xᵣ Yᵣ : Set �
         simp_all only
         simp_all only [Set.mem_diff, Set.mem_singleton_iff, imp_false, not_true_eq_false]))
     -- final bottom left submatrix
-    let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := Matrix.of (fun i j => D' (fXᵣ i) (fYₗ j))
+    let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := Matrix.of (fun i j => D' (fᵣ i) (fYₗ j))
     -- special rows and columns
     let c₀ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) ⟨y₀, y₀inYᵣ⟩
     let c₁ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) ⟨y₁, y₁inYᵣ⟩
@@ -706,7 +706,7 @@ lemma matrix3sumComposition_CanonicalSigning_Aᵣ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Se
     -- initial bottom left submatrix
     let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := Matrix.fromBlocks Dₗ D₀ₗ Dₗᵣ Dᵣ
     -- reindexing for bottom left submatrix
-    have fXᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
+    have fᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
       if hi₀ : i.val = x₀ then ◩0 else
       if hi₁ : i.val = x₁ then ◩1 else
       if hi : i.val ∈ Xᵣ \ {x₀, x₁, x'} then ◪⟨i, hi⟩ else
@@ -725,7 +725,7 @@ lemma matrix3sumComposition_CanonicalSigning_Aᵣ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Se
         simp_all only
         simp_all only [Set.mem_diff, Set.mem_singleton_iff, imp_false, not_true_eq_false]))
     -- final bottom left submatrix
-    let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := Matrix.of (fun i j => D' (fXᵣ i) (fYₗ j))
+    let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := Matrix.of (fun i j => D' (fᵣ i) (fYₗ j))
     -- special rows and columns
     let c₀ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) ⟨y₀, y₀inYᵣ⟩
     let c₁ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) ⟨y₁, y₁inYᵣ⟩
@@ -814,7 +814,7 @@ lemma matrix3sumComposition_CanonicalSigning_Aₗ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Se
     -- initial bottom left submatrix
     let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := Matrix.fromBlocks Dₗ D₀ₗ Dₗᵣ Dᵣ
     -- reindexing for bottom left submatrix
-    have fXᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
+    have fᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
       if hi₀ : i.val = x₀ then ◩0 else
       if hi₁ : i.val = x₁ then ◩1 else
       if hi : i.val ∈ Xᵣ \ {x₀, x₁, x'} then ◪⟨i, hi⟩ else
@@ -833,7 +833,7 @@ lemma matrix3sumComposition_CanonicalSigning_Aₗ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Se
         simp_all only
         simp_all only [Set.mem_diff, Set.mem_singleton_iff, imp_false, not_true_eq_false]))
     -- final bottom left submatrix
-    let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := Matrix.of (fun i j => D' (fXᵣ i) (fYₗ j))
+    let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := Matrix.of (fun i j => D' (fᵣ i) (fYₗ j))
     -- special rows and columns
     let c₀ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) ⟨y₀, y₀inYᵣ⟩
     let c₁ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) ⟨y₁, y₁inYᵣ⟩
@@ -942,17 +942,17 @@ private lemma matrix3sumCompositionAlt_bottom_isTotallyUnimodular {Xₗ Yₗ X�
         (fun y' =>
           match hs₀ : (hAₗ.apply ◩◩() y').choose with
           | .zero =>
-            match hs₁ : (hAₗ.apply ◩◪() y').choose with
+            match hsₗ : (hAₗ.apply ◩◪() y').choose with
             | .zero => ◩◩◩◩◩◩◩◩◩()
             | .pos => ◩◪()
             | .neg => ◩◩◩◪()
           | .pos =>
-            match hs₁ : (hAₗ.apply ◩◪() y').choose with
+            match hsₗ : (hAₗ.apply ◩◪() y').choose with
             | .zero => ◩◩◪()
             | .pos => ◩◩◩◩◩◪()
             | .neg => ◩◩◩◩◩◩◩◪()
           | .neg =>
-            match hs₁ : (hAₗ.apply ◩◪() y').choose with
+            match hsₗ : (hAₗ.apply ◩◪() y').choose with
             | .zero => ◩◩◩◩◪()
             | .pos => ◩◩◩◩◩◩◪()
             | .neg => ◩◩◩◩◩◩◩◩◪()
@@ -964,64 +964,64 @@ private lemma matrix3sumCompositionAlt_bottom_isTotallyUnimodular {Xₗ Yₗ X�
   | inl j' =>
     cases hs₀ : (hAₗ.apply ◩◩() j').choose with
     | zero =>
-      cases hs₁ : (hAₗ.apply ◩◪() j').choose with
+      cases hsₗ : (hAₗ.apply ◩◪() j').choose with
       | zero =>
         have hr₀ : r₀ j' = 0
         · simpa [hs₀] using (hAₗ.apply ◩◩() j').choose_spec.symm
         have hr₁ : r₁ j' = 0
-        · simpa [hs₁] using (hAₗ.apply ◩◪() j').choose_spec.symm
+        · simpa [hsₗ] using (hAₗ.apply ◩◪() j').choose_spec.symm
         aesop
       | pos =>
         have hr₀ : r₀ j' = 0
         · simpa [hs₀] using (hAₗ.apply ◩◩() j').choose_spec.symm
         have hr₁ : r₁ j' = 1
-        · simpa [hs₁] using (hAₗ.apply ◩◪() j').choose_spec.symm
+        · simpa [hsₗ] using (hAₗ.apply ◩◪() j').choose_spec.symm
         aesop
       | neg =>
         have hr₀ : r₀ j' = 0
         · simpa [hs₀] using (hAₗ.apply ◩◩() j').choose_spec.symm
         have hr₁ : r₁ j' = -1
-        · simpa [hs₁] using (hAₗ.apply ◩◪() j').choose_spec.symm
+        · simpa [hsₗ] using (hAₗ.apply ◩◪() j').choose_spec.symm
         aesop
     | pos =>
-      cases hs₁ : (hAₗ.apply ◩◪() j').choose with
+      cases hsₗ : (hAₗ.apply ◩◪() j').choose with
       | zero =>
         have hr₀ : r₀ j' = 1
         · simpa [hs₀] using (hAₗ.apply ◩◩() j').choose_spec.symm
         have hr₁ : r₁ j' = 0
-        · simpa [hs₁] using (hAₗ.apply ◩◪() j').choose_spec.symm
+        · simpa [hsₗ] using (hAₗ.apply ◩◪() j').choose_spec.symm
         aesop
       | pos =>
         have hr₀ : r₀ j' = 1
         · simpa [hs₀] using (hAₗ.apply ◩◩() j').choose_spec.symm
         have hr₁ : r₁ j' = 1
-        · simpa [hs₁] using (hAₗ.apply ◩◪() j').choose_spec.symm
+        · simpa [hsₗ] using (hAₗ.apply ◩◪() j').choose_spec.symm
         aesop
       | neg =>
         have hr₀ : r₀ j' = 1
         · simpa [hs₀] using (hAₗ.apply ◩◩() j').choose_spec.symm
         have hr₁ : r₁ j' = -1
-        · simpa [hs₁] using (hAₗ.apply ◩◪() j').choose_spec.symm
+        · simpa [hsₗ] using (hAₗ.apply ◩◪() j').choose_spec.symm
         aesop
     | neg =>
-      cases hs₁ : (hAₗ.apply ◩◪() j').choose with
+      cases hsₗ : (hAₗ.apply ◩◪() j').choose with
       | zero =>
         have hr₀ : r₀ j' = -1
         · simpa [hs₀] using (hAₗ.apply ◩◩() j').choose_spec.symm
         have hr₁ : r₁ j' = 0
-        · simpa [hs₁] using (hAₗ.apply ◩◪() j').choose_spec.symm
+        · simpa [hsₗ] using (hAₗ.apply ◩◪() j').choose_spec.symm
         aesop
       | pos =>
         have hr₀ : r₀ j' = -1
         · simpa [hs₀] using (hAₗ.apply ◩◩() j').choose_spec.symm
         have hr₁ : r₁ j' = 1
-        · simpa [hs₁] using (hAₗ.apply ◩◪() j').choose_spec.symm
+        · simpa [hsₗ] using (hAₗ.apply ◩◪() j').choose_spec.symm
         aesop
       | neg =>
         have hr₀ : r₀ j' = -1
         · simpa [hs₀] using (hAₗ.apply ◩◩() j').choose_spec.symm
         have hr₁ : r₁ j' = -1
-        · simpa [hs₁] using (hAₗ.apply ◩◪() j').choose_spec.symm
+        · simpa [hsₗ] using (hAₗ.apply ◩◪() j').choose_spec.symm
         aesop
   | inr => simp
 
@@ -1158,13 +1158,13 @@ lemma matrix3sumComposition_standard_toAlt_eq {β : Type} [Field β] {Xₗ Yₗ 
     have y₀inYᵣ : y₀ ∈ Yᵣ := hcYᵣ (Set.mem_insert y₀ {y₁, y'})
     have y₁inYₗ : y₁ ∈ Yₗ := hcYₗ (Set.insert_comm y₀ y₁ {y'} ▸ Set.mem_insert y₁ {y₀, y'})
     have y₁inYᵣ : y₁ ∈ Yᵣ := hcYᵣ (Set.insert_comm y₀ y₁ {y'} ▸ Set.mem_insert y₁ {y₀, y'})
-    -- take submatrices of Bₗ and Bᵣ
+    -- take submatrices of `Bₗ` and `Bᵣ`
     let Aₗ : Matrix (Xₗ \ {x₀, x₁}).Elem (Yₗ \ {y'}).Elem β := Bₗ.submatrix Set.diff_subset.elem Set.diff_subset.elem
     let Aᵣ : Matrix (Xᵣ \ {x'}).Elem (Yᵣ \ {y₀, y₁}).Elem β := Bᵣ.submatrix Set.diff_subset.elem Set.diff_subset.elem
-    -- take columns from Bᵣ
+    -- take columns from `Bᵣ`
     let c₀ : (Xᵣ \ {x'}).Elem → β := fun i => Bᵣ (Set.diff_subset.elem i) ⟨y₀, y₀inYᵣ⟩
     let c₁ : (Xᵣ \ {x'}).Elem → β := fun i => Bᵣ (Set.diff_subset.elem i) ⟨y₁, y₁inYᵣ⟩
-    -- take rows of Bₗ, but multiplied by `D₀⁻¹` on the left
+    -- take rows of `Bₗ` but multiplied by `D₀⁻¹` on the left
     let v₀ : (Yₗ \ {y'}).Elem → β := Bₗ ⟨x₀, x₀inXₗ⟩ ∘ Set.diff_subset.elem
     let v₁ : (Yₗ \ {y'}).Elem → β := Bₗ ⟨x₁, x₁inXₗ⟩ ∘ Set.diff_subset.elem
     let D₀ₗ : Matrix (Fin 2) (Fin 2) β :=
@@ -1175,12 +1175,12 @@ lemma matrix3sumComposition_standard_toAlt_eq {β : Type} [Field β] {Xₗ Yₗ 
     B.fst = matrix3sumCompositionAlt Aₗ Aᵣ r₀ r₁ c₀ c₁ := by
   intro _ _ _ _ _ _ _ _ _ Aₗ Aᵣ c₀ c₁ v₀ v₁ D₀ₗ r₀ r₁
 
-  have hBₗ₁ : B.fst.toBlocks₁₁ = Aₗ := hB ▸ rfl
-  have hBₗ₂ : B.fst.toBlocks₁₂ = 0 := hB ▸ rfl
-  have hBᵣ₂ : B.fst.toBlocks₂₂ = Aᵣ := hB ▸ rfl
+  have hBₗₗ : B.fst.toBlocks₁₁ = Aₗ := hB ▸ rfl
+  have hBₗᵣ : B.fst.toBlocks₁₂ = 0 := hB ▸ rfl
+  have hBᵣᵣ : B.fst.toBlocks₂₂ = Aᵣ := hB ▸ rfl
 
-  have hBᵣ₁ : B.fst.toBlocks₂₁ = (c₀ · * r₀ ·) + (c₁ · * r₁ ·) := by
-    rw [hB]
+  have hBᵣₗ : B.fst.toBlocks₂₁ = (c₀ · * r₀ ·) + (c₁ · * r₁ ·)
+  · rw [hB]
     unfold matrix3sumComposition_standard
     simp_all only [HasSubset.Subset.elem, Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff,
       false_or, Matrix.toBlocks_fromBlocks₂₁]
@@ -1197,7 +1197,7 @@ lemma matrix3sumComposition_standard_toAlt_eq {β : Type} [Field β] {Xₗ Yₗ 
     else
       sorry
 
-  rw [←B.fst.fromBlocks_toBlocks, hBₗ₁, hBₗ₂, hBᵣ₁, hBᵣ₂]
+  rw [←B.fst.fromBlocks_toBlocks, hBₗₗ, hBₗᵣ, hBᵣₗ, hBᵣᵣ]
   rfl
 
 end ConversionStandardAlternative
@@ -1207,77 +1207,77 @@ end ConversionStandardAlternative
 section MatroidThreeSum
 
 /-- The 3-sum composition of two binary matroids given by their stanard representations. -/
-noncomputable def standardRepr3sumComposition_standard {S₁ S₂ : StandardRepr α Z2} {x₀ x₁ x' y₀ y₁ y' : α}
-    (hXX : S₁.X ∩ S₂.X = {x₀, x₁, x'}) (hYY : S₁.Y ∩ S₂.Y = {y₀, y₁, y'}) (hXY : S₁.X ⫗ S₂.Y) (hYX : S₁.Y ⫗ S₂.X) :
+noncomputable def standardRepr3sumComposition_standard {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x' y₀ y₁ y' : α}
+    (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x'}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y'}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
     StandardRepr α Z2 × Prop :=
   ⟨
     ⟨
-      (S₁.X \ {x₀, x₁}) ∪ (S₂.X \ {x'}),
-      (S₁.Y \ {y'}) ∪ (S₂.Y \ {y₀, y₁}),
+      (Sₗ.X \ {x₀, x₁}) ∪ (Sᵣ.X \ {x'}),
+      (Sₗ.Y \ {y'}) ∪ (Sᵣ.Y \ {y₀, y₁}),
       by
         rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
         exact
-          ⟨⟨S₁.hXY.disjoint_sdiff_left.disjoint_sdiff_right, hYX.symm.disjoint_sdiff_left.disjoint_sdiff_right⟩,
-          ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right, S₂.hXY.disjoint_sdiff_left.disjoint_sdiff_right⟩⟩,
-      (matrix3sumComposition_standard S₁.B S₂.B hXX hYY).fst.toMatrixUnionUnion,
+          ⟨⟨Sₗ.hXY.disjoint_sdiff_left.disjoint_sdiff_right, hYX.symm.disjoint_sdiff_left.disjoint_sdiff_right⟩,
+          ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right, Sᵣ.hXY.disjoint_sdiff_left.disjoint_sdiff_right⟩⟩,
+      (matrix3sumComposition_standard Sₗ.B Sᵣ.B hXX hYY).fst.toMatrixUnionUnion,
       inferInstance,
       inferInstance,
     ⟩,
-    (matrix3sumComposition_standard S₁.B S₂.B hXX hYY).snd
+    (matrix3sumComposition_standard Sₗ.B Sᵣ.B hXX hYY).snd
   ⟩
 
-lemma standardRepr3sumComposition_standard_X {S₁ S₂ : StandardRepr α Z2} {x₀ x₁ x' y₀ y₁ y' : α}
-    (hXX : S₁.X ∩ S₂.X = {x₀, x₁, x'}) (hYY : S₁.Y ∩ S₂.Y = {y₀, y₁, y'}) (hXY : S₁.X ⫗ S₂.Y) (hYX : S₁.Y ⫗ S₂.X) :
-    (standardRepr3sumComposition_standard hXX hYY hXY hYX).fst.X = (S₁.X \ {x₀, x₁}) ∪ (S₂.X \ {x'}) :=
+lemma standardRepr3sumComposition_standard_X {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x' y₀ y₁ y' : α}
+    (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x'}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y'}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
+    (standardRepr3sumComposition_standard hXX hYY hXY hYX).fst.X = (Sₗ.X \ {x₀, x₁}) ∪ (Sᵣ.X \ {x'}) :=
   rfl
 
-lemma standardRepr3sumComposition_standard_Y {S₁ S₂ : StandardRepr α Z2} {x₀ x₁ x' y₀ y₁ y' : α}
-    (hXX : S₁.X ∩ S₂.X = {x₀, x₁, x'}) (hYY : S₁.Y ∩ S₂.Y = {y₀, y₁, y'}) (hXY : S₁.X ⫗ S₂.Y) (hYX : S₁.Y ⫗ S₂.X) :
-    (standardRepr3sumComposition_standard hXX hYY hXY hYX).fst.Y = (S₁.Y \ {y'}) ∪ (S₂.Y \ {y₀, y₁}) :=
+lemma standardRepr3sumComposition_standard_Y {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x' y₀ y₁ y' : α}
+    (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x'}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y'}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
+    (standardRepr3sumComposition_standard hXX hYY hXY hYX).fst.Y = (Sₗ.Y \ {y'}) ∪ (Sᵣ.Y \ {y₀, y₁}) :=
   rfl
 
-/-- Decomposition of (binary) matroid `M` as a 3-sum of (binary) matroids `M₁` and `M₂`. -/
-structure Matroid.Is3sumOf (M : Matroid α) (M₁ M₂ : Matroid α) where
+/-- Decomposition of (binary) matroid `M` as a 3-sum of (binary) matroids `Mₗ` and `Mᵣ`. -/
+structure Matroid.Is3sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) where
   S : StandardRepr α Z2
-  S₁ : StandardRepr α Z2
-  S₂ : StandardRepr α Z2
-  hS₁ : Finite S₁.X
-  hS₂ : Finite S₂.X
+  Sₗ : StandardRepr α Z2
+  Sᵣ : StandardRepr α Z2
+  hSₗ : Finite Sₗ.X
+  hSᵣ : Finite Sᵣ.X
   hM : S.toMatroid = M
-  hM₁ : S₁.toMatroid = M₁
-  hM₂ : S₂.toMatroid = M₂
+  hMₗ : Sₗ.toMatroid = Mₗ
+  hMᵣ : Sᵣ.toMatroid = Mᵣ
   (x₁ x₂ x₃ y₁ y₂ y₃ : α)
-  hXX : S₁.X ∩ S₂.X = {x₁, x₂, x₃}
-  hYY : S₁.Y ∩ S₂.Y = {y₁, y₂, y₃}
-  hXY : S₁.X ⫗ S₂.Y
-  hYX : S₁.Y ⫗ S₂.X
+  hXX : Sₗ.X ∩ Sᵣ.X = {x₁, x₂, x₃}
+  hYY : Sₗ.Y ∩ Sᵣ.Y = {y₁, y₂, y₃}
+  hXY : Sₗ.X ⫗ Sᵣ.Y
+  hYX : Sₗ.Y ⫗ Sᵣ.X
   IsSum : (standardRepr3sumComposition_standard hXX hYY hXY hYX).fst = S
   IsValid : (standardRepr3sumComposition_standard hXX hYY hXY hYX).snd
 
-instance Matroid.Is3sumOf.finS {M M₁ M₂ : Matroid α} (hM : M.Is3sumOf M₁ M₂) : Finite hM.S.X := by
+instance Matroid.Is3sumOf.finS {M Mₗ Mᵣ : Matroid α} (hM : M.Is3sumOf Mₗ Mᵣ) : Finite hM.S.X := by
   obtain ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, rfl, _⟩ := hM
   rw [standardRepr3sumComposition_standard_X]
   apply Finite.Set.finite_union
 
-lemma standardRepr3sumComposition_hasTuSigning {α : Type} [DecidableEq α] {S₁ S₂ : StandardRepr α Z2} {x₀ x₁ x' y₀ y₁ y' : α}
-    (hXX : S₁.X ∩ S₂.X = {x₀, x₁, x'}) (hYY : S₁.Y ∩ S₂.Y = {y₀, y₁, y'}) (hXY : S₁.X ⫗ S₂.Y) (hYX : S₁.Y ⫗ S₂.X)
-    (hS₁ : S₁.HasTuSigning) (hS₂ : S₂.HasTuSigning) :
+lemma standardRepr3sumComposition_hasTuSigning {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x' y₀ y₁ y' : α}
+    (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x'}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y'}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X)
+    (hSₗ : Sₗ.HasTuSigning) (hSᵣ : Sᵣ.HasTuSigning) :
     ((standardRepr3sumComposition_standard hXX hYY hXY hYX).fst).HasTuSigning := by
-  obtain ⟨Bₗ, hBₗ, hBBₗ⟩ := hS₁
-  obtain ⟨Bᵣ, hBᵣ, hBBᵣ⟩ := hS₂
+  obtain ⟨Bₗ, hBₗ, hBBₗ⟩ := hSₗ
+  obtain ⟨Bᵣ, hBᵣ, hBBᵣ⟩ := hSᵣ
   -- use matrix3sumComposition_toCanonicalSigning
   sorry
 
 /-- Any 3-sum of regular matroids is a regular matroid.
     This is the final of the three parts of the easy direction of the Seymour's theorem. -/
-theorem Matroid.Is3sumOf.isRegular {M M₁ M₂ : Matroid α}
-    (hM : M.Is3sumOf M₁ M₂) (hM₁ : M₁.IsRegular) (hM₂ : M₂.IsRegular) :
+theorem Matroid.Is3sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
+    (hM : M.Is3sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
   have := hM.finS
   obtain ⟨_, _, _, _, _, rfl, rfl, rfl, _, _, _, _, _, _, _, _, _, _, rfl, _⟩ := hM
-  rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hM₁ hM₂ ⊢
+  rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
   apply standardRepr3sumComposition_hasTuSigning
-  · exact hM₁
-  · exact hM₂
+  · exact hMₗ
+  · exact hMᵣ
 
 end MatroidThreeSum
