@@ -22,6 +22,11 @@ def Matrix.shortTableauPivot [DivisionRing F] [DecidableEq X] [DecidableEq Y] (A
       else
         A i j - A i y * A x j / A x y
 
+lemma Matrix.shortTableauPivot_elem_of_eq_eq [DivisionRing F] [DecidableEq X] [DecidableEq Y]
+    (A : Matrix X Y F) {x : X} {y : Y} {i : X} {j : Y} (hix : i = x) (hjx : j = y) :
+    A.shortTableauPivot x y i j = 1 / A x y := by
+  simp [Matrix.shortTableauPivot, hix, hjx]
+
 lemma Matrix.shortTableauPivot_elem_of_ne_ne [DivisionRing F] [DecidableEq X] [DecidableEq Y]
     (A : Matrix X Y F) {x : X} {y : Y} {i : X} {j : Y} (hix : i ≠ x) (hjx : j ≠ y) :
     A.shortTableauPivot x y i j = A i j - A i y * A x j / A x y := by
@@ -338,37 +343,27 @@ lemma Matrix.shortTableauPivot.submatrix_eq_blockish [Field F] {k : ℕ} {A : Ma
       (A.block₂₂ k r c) - (A.block₂₁ k r c) * (A.block₁₁ k r c)⁻¹ * (A.block₁₂ k r c) := by
   rw [Matrix.shortTableauPivot.submatrix_eq]
   conv in _ / _ => rw [div_eq_mul_inv _ (A r c)]
-
-  conv in _ - _ * _ => rw [
-    show A r c = (A.block₁₁ k r c) 0 0 from rfl,
-    show A r (c.succAbove j) = (A.block₁₂ k r c) 0 j from rfl,
-    show A (r.succAbove i) c = (A.block₂₁ k r c) i 0 from rfl,
-    show A (r.succAbove i) (c.succAbove j) = (A.block₂₂ k r c) i j from rfl
-  ]
-
-  have hiAB₁₁ : (A.block₁₁ k r c)⁻¹ = !![(A r c)⁻¹] := Matrix.ext (by simp [Matrix.diagonal, Fin.eq_zero ·, Fin.eq_zero ·])
+  rw [show (A.block₁₁ k r c)⁻¹ = !![(A r c)⁻¹] from Matrix.ext (by simp [·.eq_zero, ·.eq_zero])]
   ext i j
-  simp [hiAB₁₁, Matrix.mul_apply, mul_right_comm]
+  simp [Matrix.mul_apply, mul_right_comm]
 
 noncomputable def Matrix.fin1_invertible_ne_zero [Field F] {A : Matrix (Fin 1) (Fin 1) F} {r c : Fin 1} (hArc : A r c ≠ 0) :
     Invertible A :=
   Matrix.invertibleOfLeftInverse A A⁻¹ (by
     ext i j
-    rw [Fin.eq_zero i, Fin.eq_zero j]
-    rw [Fin.eq_zero r, Fin.eq_zero c] at hArc
+    rw [i.eq_zero, j.eq_zero]
+    rw [r.eq_zero, c.eq_zero] at hArc
     simp [IsUnit.inv_mul_cancel (IsUnit.mk0 _ hArc)])
 
 lemma lemma1_aux [LinearOrderedField F] {k : ℕ}
     {A : Matrix (Fin k.succ) (Fin k.succ) F} {r c : Fin k.succ} (hArc : A r c ≠ 0) :
     |((A.shortTableauPivot r c).submatrix r.succAbove c.succAbove).det| = |A.det / A r c| := by
   have := Matrix.fin1_invertible_ne_zero (show A.block₁₁ k r c r c ≠ 0 by simpa)
-
   rw [
     Matrix.shortTableauPivot.submatrix_eq_blockish, abs_div, eq_div_iff_mul_eq (abs_ne_zero.← hArc), mul_comm,
     ← show (A.block₁₁ k r c).det = A r c from Matrix.det_fin_one_of _, ← abs_mul,
     ← Matrix.invOf_eq_nonsing_inv (A.block₁₁ k r c), ← Matrix.det_fromBlocks₁₁]
   nth_rw 5 [A.succAboveAt_block r c]
-
   exact (Matrix.abs_det_submatrix_equiv_equiv ..).symm
 
 lemma lemma1 [LinearOrderedField F] {k : ℕ}
@@ -384,39 +379,35 @@ lemma lemma1 [LinearOrderedField F] {k : ℕ}
     · rw [not_neZero] at hk
       subst hk
       use fun _ => ⊤, fun _ => ⊤, (Function.injective_of_subsingleton _), (Function.injective_of_subsingleton _)
+      rw [Matrix.det_fin_zero] at h
       simp_all only [Nat.succ_eq_add_one, ne_eq, exists_and_left, Matrix.submatrix_empty, Matrix.det_fin_zero]
-      have : A.det = A r c := by rw [Matrix.det_fin_one, show r = 0 by omega, show c = 0 by omega]
-      rw [← h, this]
+      rw [← h, show A.det = A r c by rw [Matrix.det_fin_one, show r = 0 by omega, show c = 0 by omega]]
       exact ((fun hb => (div_eq_one_iff_eq hb).←) hArc rfl).symm
     wlog hk : k ≠ 1 -- can't mutably swap in a 1 × 1 matrix!
     · simp only [ne_eq, Decidable.not_not] at hk
       subst hk
-      -- This section of proof is modified from above `lemma1_aux`
-      have := Matrix.fin1_invertible_ne_zero (show A.block₁₁ 1 r c r c ≠ 0 by simpa)
-      use r.succAbove, c.succAbove, Fin.succAbove_right_injective, Fin.succAbove_right_injective
-      rw [Matrix.shortTableauPivot.submatrix_eq_blockish] at h ⊢
-      nth_rw 5 [A.succAboveAt_block r c]
-      rcases eq_or_ne r c with (rfl | hrc)
-      · rw [eq_div_iff_mul_eq hArc, mul_comm, ← show (A.block₁₁ 1 r r).det = A r r from Matrix.det_fin_one_of _,
-          ← Matrix.invOf_eq_nonsing_inv (A.block₁₁ 1 r r), ← Matrix.det_fromBlocks₁₁]
-        simp
-      · rw [h, div_eq_mul_inv, div_eq_mul_inv, ← neg_mul, mul_eq_mul_right_iff]
-        -- using a trick from Matrix.abs_det_submatrix_equiv_equiv
-        rw [show c.reindexing.symm = r.reindexing.symm.trans (r.reindexing.trans c.reindexing.symm) by ext; simp]
-        left
-        show -A.det = (((Matrix.fromBlocks (Matrix.block₁₁ 1 r c A) (Matrix.block₁₂ 1 r c A) (Matrix.block₂₁ 1 r c A)
-            (Matrix.block₂₂ 1 r c A)).submatrix id (r.reindexing.trans c.reindexing.symm)).submatrix
-              r.reindexing.symm r.reindexing.symm).det
-        rw [Matrix.det_submatrix_equiv_self, Matrix.det_permute', Matrix.det_fromBlocks₁₁, Matrix.invOf_eq_nonsing_inv, h,
-          show (A.block₁₁ 1 r c).det = A r c from Matrix.det_fin_one_of _, mul_neg, mul_neg, neg_inj, mul_div_cancel₀ _ hArc]
-        by_cases hAd : A.det = 0
-        · rw [hAd, mul_zero]
-        · symm
-          rw [mul_comm, mul_eq_left₀ hAd]
-          suffices (r.reindexing.trans c.reindexing.symm) = Equiv.refl _ by simp [this, Equiv.Perm.sign_refl]
-          ext i
-          simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Equiv.trans_apply, Equiv.refl_apply]
-          sorry -- c.reindexing.symm (r.reindexing i) = i
+      simp_rw [Matrix.shortTableauPivot.submatrix_eq_blockish] at h ⊢
+      simp [Matrix.diagonal, Matrix.mul_apply] at h ⊢
+      fin_cases r <;> fin_cases c
+      all_goals
+        simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.zero_eta, Fin.isValue, Fin.mk_one,
+          Function.injective_of_subsingleton, true_and,
+          Fin.zero_succAbove, Fin.succ_zero_eq_one, ne_eq, one_ne_zero, not_false_eq_true, Fin.succAbove_ne_zero_zero] at h ⊢
+        rw [Matrix.det_fin_two, div_eq_mul_inv, sub_mul] at h ⊢
+      · use (0 : Fin (Nat.succ 1)).succAbove, (0 : Fin (Nat.succ 1)).succAbove
+        field_simp [Matrix.shortTableauPivot_elem_of_ne_ne,
+          show A 0 0 * A 1 1 / A 0 0 = A 1 1 from mul_div_cancel_left₀ (A 1 1) hArc, mul_comm]
+      · use (0 : Fin (Nat.succ 1)).succAbove, (1 : Fin (Nat.succ 1)).succAbove
+        simp [Matrix.shortTableauPivot_elem_of_ne_ne]
+        rw [mul_right_comm (A 0 1) (A 1 0) (A 0 1)⁻¹, IsUnit.mul_inv_cancel (by exact hArc.isUnit), one_mul] at ⊢ h
+        sorry
+      · use (0 : Fin (Nat.succ 1)).succAbove, (1 : Fin (Nat.succ 1)).succAbove
+        simp [Matrix.shortTableauPivot_elem_of_eq_eq]
+        rw [mul_rotate (A 0 1) (A 1 0) (A 1 0)⁻¹, IsUnit.mul_inv_cancel (by exact hArc.isUnit), one_mul] at ⊢ h
+        sorry
+      · use (1 : Fin (Nat.succ 1)).succAbove, (1 : Fin (Nat.succ 1)).succAbove
+        field_simp [Matrix.shortTableauPivot_elem_of_ne_ne,
+          show A 0 0 * A 1 1 / A 1 1 = A 0 0 from mul_div_cancel_right₀ (A 0 0) hArc]
     let s : Equiv.Perm (Fin k) := Equiv.swap
       (⟨k.pred.pred, (Nat.pred_le k.pred).trans_lt (Nat.pred_lt (Ne.symm (NeZero.ne' k)))⟩)
       (⟨k.pred, Nat.pred_lt (Ne.symm (NeZero.ne' k))⟩)
@@ -425,7 +416,6 @@ lemma lemma1 [LinearOrderedField F] {k : ℕ}
     have hMs : Ms.det = -1 := by
       rw [Matrix.det_permutation, Equiv.Perm.sign_swap (by
         simp_rw [Nat.pred_eq_sub_one, ne_eq, Fin.mk.injEq]
-        by_contra h
         have : k ≠ 0 := Ne.symm (NeZero.ne' k)
         omega)]; simp
     have hf' : Function.Injective (r.succAbove ∘ s) := (Equiv.injective_comp s r.succAbove).← Fin.succAbove_right_injective
@@ -444,14 +434,7 @@ lemma corollary1 [LinearOrderedField F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin 
     (hA : A.det ∉ SignType.cast.range) (i j : Fin k.succ) (hAij : A i j = 1 ∨ A i j = -1) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
       ((A.shortTableauPivot i j).submatrix f g).det ∉ SignType.cast.range := by
-  have hArc0 : A i j ≠ 0
-  · cases hAij with
-    | inl h1 =>
-      rw [h1]
-      norm_num
-    | inr h9 =>
-      rw [h9]
-      norm_num
+  have hArc0 : A i j ≠ 0 := by rcases hAij with h | h <;> rw [h] <;> norm_num
   obtain ⟨f, g, hf, hg, hAfg⟩ := lemma1 hArc0
   use f, g, hf, hg
   rw [hAfg]
