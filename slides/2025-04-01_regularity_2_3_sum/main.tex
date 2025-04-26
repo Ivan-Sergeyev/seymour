@@ -63,9 +63,9 @@
 \end{proof}
 
 \begin{definition}\label{def:two_sum}
-    Let $B_{1}, B_{2}$ be matrices with $\{0, \pm 1\}$ entries expressed as $B_{1} = \begin{NiceArray}{c}[hvlines] A_{1} \\ x \\ \end{NiceArray}$ and $B_{2} = \begin{NiceArray}{cc}[hvlines] y & A_{2} \\ \end{NiceArray}$, where $x$ is a row vector, $y$ is a column vector, and $A_{1}, A_{2}$ are matrices of appropriate dimensions. Let $D$ be the outer product of $y$ and $x$. The $2$-sum of $B_{1}$ and $B_{2}$ is defined as
+    Let $B_{l}, B_{r}$ be matrices with $\{0, \pm 1\}$ entries expressed as $B_{l} = \begin{NiceArray}{c}[hvlines] A_{l} \\ x \\ \end{NiceArray}$ and $B_{r} = \begin{NiceArray}{cc}[hvlines] y & A_{r} \\ \end{NiceArray}$, where $x$ is a row vector, $y$ is a column vector, and $A_{l}, A_{r}$ are matrices of appropriate dimensions. Let $D$ be the outer product of $y$ and $x$. The $2$-sum of $B_{l}$ and $B_{r}$ is defined as
     \[
-        B_{1} \oplus_{2, x, y} B_{2} = \begin{NiceArray}{cc}[hvlines] A_{1} & 0 \\ D & A_{2} \\ \end{NiceArray}.
+        B_{l} \oplus_{2, x, y} B_{r} = \begin{NiceArray}{cc}[hvlines] A_{l} & 0 \\ D & A_{r} \\ \end{NiceArray}.
     \]
 \end{definition}
 
@@ -78,52 +78,52 @@
 \end{remark}
 
 \begin{lemma}\label{lem:two_sum_1_2_tu}
-    Let $B_{1}$ and $B_{2}$ be TU matrices and let $B = B_{1} \oplus_{2, x, y} B_{2}$. Then $B$ is $1$-TU and $2$-TU.
+    Let $B_{l}$ and $B_{r}$ be TU matrices and let $B = B_{l} \oplus_{2, x, y} B_{r}$. Then $B$ is $1$-TU and $2$-TU.
 \end{lemma}
 
 \begin{proof}
     To see that $B$ is $1$-TU, note that $B$ is a $\{0, \pm 1\}$ matrix by construction.
 
-    To show that $B$ is $2$-TU, let $V$ be a $2 \times 2$ submatrix $V$ of $B$. If $V$ is a submatrix of $\begin{NiceArray}{c}[hvlines] A_{1} \\ D \\ \end{NiceArray}$, $\begin{NiceArray}{cc}[hvlines] D & A_2 \end{NiceArray}$, $\begin{NiceArray}{cc}[hvlines] A_{1} & 0 \end{NiceArray}$, or  $\begin{NiceArray}{c}[hvlines] 0 \\ A_2 \\ \end{NiceArray}$, then $\det V \in \{0, \pm 1\}$, as all of those four matrices are TU. Otherwise $V$ shares exactly one row and one column index with both $A_{1}$ and $A_{2}$. Let $i$ be the row shared by $V$ and $A_{1}$ and $j$ be the column shared by $V$ and $A_{2}$. Note that $V_{ij} = 0$. Thus, up to sign, $\det V$ equals the product of the entries on the diagonal not containing $V_{ij}$. Since both of those entries are in $\{0, \pm 1\}$, we have $\det V \in \{0, \pm 1\}$.
+    To show that $B$ is $2$-TU, let $V$ be a $2 \times 2$ submatrix $V$ of $B$. If $V$ is a submatrix of $\begin{NiceArray}{c}[hvlines] A_{l} \\ D \\ \end{NiceArray}$, $\begin{NiceArray}{cc}[hvlines] D & A_r \end{NiceArray}$, $\begin{NiceArray}{cc}[hvlines] A_{l} & 0 \end{NiceArray}$, or  $\begin{NiceArray}{c}[hvlines] 0 \\ A_r \\ \end{NiceArray}$, then $\det V \in \{0, \pm 1\}$, as all of those four matrices are TU. Otherwise $V$ shares exactly one row and one column index with both $A_{l}$ and $A_{r}$. Let $i$ be the row shared by $V$ and $A_{l}$ and $j$ be the column shared by $V$ and $A_{r}$. Note that $V_{ij} = 0$. Thus, up to sign, $\det V$ equals the product of the entries on the diagonal not containing $V_{ij}$. Since both of those entries are in $\{0, \pm 1\}$, we have $\det V \in \{0, \pm 1\}$.
 \end{proof}
 
 \begin{lemma}\label{lem:two_sum_k_tu_induction}
-    Let $k \in \mathbb{Z}_{\geq 1}$. Suppose that for any TU matrices $B_{1}$ and $B_{2}$ their $2$-sum $B = B_{1} \oplus_{2, x, y} B_{2}$ is $\ell$-TU for every $\ell < k$. Then for any TU matrices $B_{1}$ and $B_{2}$ their $2$-sum $B = B_{1} \oplus_{2, x, y} B_{2}$ is also $k$-TU.
+    Let $k \in \mathbb{Z}_{\geq 1}$. Suppose that for any TU matrices $B_{l}$ and $B_{r}$ their $2$-sum $B = B_{l} \oplus_{2, x, y} B_{r}$ is $\ell$-TU for every $\ell < k$. Then for any TU matrices $B_{l}$ and $B_{r}$ their $2$-sum $B = B_{l} \oplus_{2, x, y} B_{r}$ is also $k$-TU.
 \end{lemma}
 
 \begin{proof}
-    For the sake of deriving a contradiction, suppose there exist TU matrices $B_{1}$ and $B_{2}$ such that their $2$-sum $B = B_{1} \oplus_{2, x, y} B_{2}$ is not $k$-TU. Then $B$ contains a $k \times k$ submatrix $V$ with $\det V \notin \{0, \pm 1\}$.
+    For the sake of deriving a contradiction, suppose there exist TU matrices $B_{l}$ and $B_{r}$ such that their $2$-sum $B = B_{l} \oplus_{2, x, y} B_{r}$ is not $k$-TU. Then $B$ contains a $k \times k$ submatrix $V$ with $\det V \notin \{0, \pm 1\}$.
 
-    Note that $V$ cannot be a submatrix of $\begin{NiceArray}{c}[hvlines] A_{1} \\ D \\ \end{NiceArray}$, $\begin{NiceArray}{cc}[hvlines] D & A_2 \end{NiceArray}$, $\begin{NiceArray}{cc}[hvlines] A_{1} & 0 \end{NiceArray}$, or  $\begin{NiceArray}{c}[hvlines] 0 \\ A_2 \\ \end{NiceArray}$, as all of those four matrices are TU. Thus, $V$ shares at least one row and one column index with $A_{1}$ and $A_{2}$ each.
+    Note that $V$ cannot be a submatrix of $\begin{NiceArray}{c}[hvlines] A_{l} \\ D \\ \end{NiceArray}$, $\begin{NiceArray}{cc}[hvlines] D & A_r \end{NiceArray}$, $\begin{NiceArray}{cc}[hvlines] A_{l} & 0 \end{NiceArray}$, or  $\begin{NiceArray}{c}[hvlines] 0 \\ A_r \\ \end{NiceArray}$, as all of those four matrices are TU. Thus, $V$ shares at least one row and one column index with $A_{l}$ and $A_{r}$ each.
 
-    Consider the row of $V$ whose index appears in $A_{1}$. Note that it cannot consist of only $0$ entries, as otherwise $\det V = 0$. Thus there exists a $\pm 1$ entry shared by $V$ and $A_{1}$. Let $r$ and $c$ denote the row and column index of this entry, respectively.
+    Consider the row of $V$ whose index appears in $A_{l}$. Note that it cannot consist of only $0$ entries, as otherwise $\det V = 0$. Thus there exists a $\pm 1$ entry shared by $V$ and $A_{l}$. Let $r$ and $c$ denote the row and column index of this entry, respectively.
 
     Perform a rational pivot in $B$ on the element $B_{rc}$. For every object, its modified counterpart after pivoting is denoted by the same symbol with an added tilde; for example, $\tilde{B}$ denotes the entire matrix after the pivot. Note that after pivoting the following statements hold:
     \begin{itemize}
-        \item $\begin{NiceArray}{c}[hvlines] \rule{0pt}{1.15em}\tilde{A}_{1} \\ \rule{0pt}{1.15em}\tilde{D} \\ \end{NiceArray}$ is TU, since TUness is preserved by pivoting.
-        \item $\tilde{A}_{2} = A_{2}$, i.e., $A_{2}$ remains unchanged. This holds because of the $0$ block in $B$.
+        \item $\begin{NiceArray}{c}[hvlines] \rule{0pt}{1.15em}\tilde{A}_{l} \\ \rule{0pt}{1.15em}\tilde{D} \\ \end{NiceArray}$ is TU, since TUness is preserved by pivoting.
+        \item $\tilde{A}_{2} = A_{r}$, i.e., $A_{r}$ remains unchanged. This holds because of the $0$ block in $B$.
         \item $\tilde{D}$ consists of copies of $y$ scaled by factors in $\{0, \pm 1\}$. This can be verified via a case distinction and a simple calculation.
-        \item $\begin{NiceArray}{cc}[hvlines] \rule{0pt}{1.15em}\tilde{D} & \rule{0pt}{1.15em}\tilde{A_2} \end{NiceArray}$ is TU, since this matrix consists of $A_{2}$ and copies of $y$ scaled by factors $\{0, \pm 1\}$.
-        \item $\tilde{D}$ can be represented as an outer product of a column vector $\tilde{y}$ and a row vector $\tilde{x}$, and we can define $\tilde{B}_{1} = \begin{NiceArray}{c}[hvlines] \rule{0pt}{1em}\tilde{A_1} \\ \rule{0pt}{1.15em}\tilde{x} \\ \end{NiceArray}$ and $\tilde{B}_{2} =\begin{NiceArray}{cc}[hvlines] \rule{0pt}{1em}\tilde{y} & \rule{0pt}{1.15em}\tilde{A_2} \end{NiceArray}$ similar to $B_{1}$ and $B_{2}$, respectively. Note that $\tilde{B}_{1}$ and $\tilde{B}_{2}$ have the same size as $B_{1}$ and $B_{2}$, respectively, are both TU, and satisfy $\tilde{B} = \tilde{B}_{1} \oplus_{2, \tilde{x}, \tilde{y}} \tilde{B}_{2}$.
+        \item $\begin{NiceArray}{cc}[hvlines] \rule{0pt}{1.15em}\tilde{D} & \rule{0pt}{1.15em}\tilde{A_r} \end{NiceArray}$ is TU, since this matrix consists of $A_{r}$ and copies of $y$ scaled by factors $\{0, \pm 1\}$.
+        \item $\tilde{D}$ can be represented as an outer product of a column vector $\tilde{y}$ and a row vector $\tilde{x}$, and we can define $\tilde{B}_{1} = \begin{NiceArray}{c}[hvlines] \rule{0pt}{1em}\tilde{A_l} \\ \rule{0pt}{1.15em}\tilde{x} \\ \end{NiceArray}$ and $\tilde{B}_{2} =\begin{NiceArray}{cc}[hvlines] \rule{0pt}{1em}\tilde{y} & \rule{0pt}{1.15em}\tilde{A_r} \end{NiceArray}$ similar to $B_{l}$ and $B_{r}$, respectively. Note that $\tilde{B}_{1}$ and $\tilde{B}_{2}$ have the same size as $B_{l}$ and $B_{r}$, respectively, are both TU, and satisfy $\tilde{B} = \tilde{B}_{1} \oplus_{2, \tilde{x}, \tilde{y}} \tilde{B}_{2}$.
         \item $\tilde{B}$ contains a square submatrix $\tilde{V}$ of size $k - 1$ with $\det \tilde{V} \notin \{0, \pm 1\}$. Indeed, by Corollary~\ref{cor:pivot_submatrix_det} from Lemma~\ref{lem:pivot_submatrix_det}, pivoting in $V$ on the element $B_{rc}$ results in a matrix containing a $(k - 1) \times (k - 1)$ submatrix $V''$ with $\det V'' \in \{0, \pm 1\}$. Since $V$ is a submatrix of $B$, the submatrix $V''$ corresponds to a submatrix $\tilde{V}$ of $\tilde{B}$ with the same property.
     \end{itemize}
     To sum up, after pivoting we obtain a matrix $\tilde{B}$ that represents a $2$-sum of TU matrices $\tilde{B}_{1}$ and $\tilde{B}_{2}$ and contains a square submatrix of size $k - 1$ with determinant not in $\{0, \pm 1\}$. This is a contradiction with $(k - 1)$-TUness of $\tilde{B}$, which proves the lemma.
 \end{proof}
 
 \begin{lemma}\label{lem:two_sum_tu}
-    Let $B_{1}$ and $B_{2}$ be TU matrices. Then $B_{1} \oplus_{2, x, y} B_{2}$ is also TU.
+    Let $B_{l}$ and $B_{r}$ be TU matrices. Then $B_{l} \oplus_{2, x, y} B_{r}$ is also TU.
 \end{lemma}
 
 \begin{proof}
     Proof by induction.
 
-    Proposition for any $k \in \mathbb{Z}_{\geq 1}$: For any TU matrices $B_{1}$ and $B_{2}$, their $2$-sum $B = B_{1} \oplus_{2, x, y} B_{2}$ is $\ell$-TU for every $\ell \leq k$.
+    Proposition for any $k \in \mathbb{Z}_{\geq 1}$: For any TU matrices $B_{l}$ and $B_{r}$, their $2$-sum $B = B_{l} \oplus_{2, x, y} B_{r}$ is $\ell$-TU for every $\ell \leq k$.
 
     Base: The Proposition holds for $k = 1$ and $k = 2$ by Lemma~\ref{lem:two_sum_1_2_tu}.
 
     Step: If the Proposition holds for some $k$, then it also holds for $k + 1$ by Lemma~\ref{lem:two_sum_k_tu_induction}.
 
-    Conclusion: For any TU matrices $B_{1}$ and $B_{2}$, their $2$-sum $B_{1} \oplus_{2, x, y} B_{2}$ is $k$-TU for every $k \in \mathbb{Z}_{\geq 1}$. Thus, $B_{1} \oplus_{2, x, y} B_{2}$ is TU.
+    Conclusion: For any TU matrices $B_{l}$ and $B_{r}$, their $2$-sum $B_{l} \oplus_{2, x, y} B_{r}$ is $k$-TU for every $k \in \mathbb{Z}_{\geq 1}$. Thus, $B_{l} \oplus_{2, x, y} B_{r}$ is TU.
 \end{proof}
 
 
@@ -132,48 +132,48 @@
 \subsection{Definition of 3-Sum}
 
 \begin{definition}\label{def:three_sum}
-    Let $B_{1}^{(0)} \in \mathbb{Z}_{2}^{(X_{1} \cup \{x_{0}, x_{1}\}) \times (Y_{1} \cup \{y_{2}\})}, B_{2}^{(0)} \in \mathbb{Z}_{2}^{(X_{2} \cup \{x_{2}\}) \times (Y_{2} \cup \{y_{0}, y_{1}\})}$ be matrices of the form
+    Let $B_{l}^{(0)} \in \mathbb{Z}_{2}^{(X_{l} \cup \{x_{0}, x_{1}\}) \times (Y_{l} \cup \{y_{2}\})}, B_{r}^{(0)} \in \mathbb{Z}_{2}^{(X_{r} \cup \{x_{2}\}) \times (Y_{r} \cup \{y_{0}, y_{1}\})}$ be matrices of the form
     \[
-        B_{1}^{(0)} =
+        B_{l}^{(0)} =
         \begin{NiceArray}{ccccc}[hvlines,right-margin=1em,left-margin=1em]
-            \Block[draw]{4-4}{A_{1}^{(0)}} & & & & \Block[draw]{4-1}{0} \\
+            \Block[draw]{4-4}{A_{l}^{(0)}} & & & & \Block[draw]{4-1}{0} \\
             \\
             \\
             & & \Block[draw]{1-1}{1} & \Block[draw]{1-1}{1} & \Block[draw]{1-1}{0} \\
-            \Block[draw]{2-2}{D_{1}^{(0)}} & & \Block[draw]{2-2}{D_{0}^{(0)}} & & \Block[draw]{1-1}{1} \\
+            \Block[draw]{2-2}{D_{l}^{(0)}} & & \Block[draw]{2-2}{D_{0}^{(0)}} & & \Block[draw]{1-1}{1} \\
              & & & & \Block[draw]{1-1}{1} \\
         \end{NiceArray}
         , \quad
-        B_{2}^{(0)} =
+        B_{r}^{(0)} =
         \begin{NiceArray}{cccccc}[hvlines,right-margin=1em,left-margin=1em]
             \Block[draw]{1-1}{1} & \Block[draw]{1-1}{1} & \Block[draw]{1-1}{0} \Block[draw]{1-4}{0} & & & \\
-            \Block[draw]{2-2}{D_{0}^{(0)}} & & \Block[draw]{1-1}{1} \Block[draw]{4-4}{A_{2}^{(0)}} \\
+            \Block[draw]{2-2}{D_{0}^{(0)}} & & \Block[draw]{1-1}{1} \Block[draw]{4-4}{A_{r}^{(0)}} \\
              & & \Block[draw]{1-1}{1} \\
-            \Block[draw]{2-2}{D_{2}^{(0)}} \\
+            \Block[draw]{2-2}{D_{r}^{(0)}} \\
             \\
         \end{NiceArray},
     \]
-    where $D_{0}^{(0)} (x_{0}, y_{0}) = 1$, $D_{0}^{(0)} (x_{0}, y_{1}) \in \{0, 1\}$, $D_{0}^{(0)} (x_{1}, y_{0}) = 0$, and $D_{0}^{(0)} (x_{1}, y_{1}) = 1$. Let $D_{12}^{(0)} = D_{2}^{(0)} \cdot (D_{0}^{(0)})^{-1} \cdot D_{1}^{(0)}$ (note that $D_{0}^{(0)}$ is invertible by construction). Then the $3$-sum of $B_{1}^{(0)}$ and $B_{2}^{(0)}$ is
+    where $D_{0}^{(0)} (x_{0}, y_{0}) = 1$, $D_{0}^{(0)} (x_{0}, y_{1}) \in \{0, 1\}$, $D_{0}^{(0)} (x_{1}, y_{0}) = 0$, and $D_{0}^{(0)} (x_{1}, y_{1}) = 1$. Let $D_{lr}^{(0)} = D_{r}^{(0)} \cdot (D_{0}^{(0)})^{-1} \cdot D_{l}^{(0)}$ (note that $D_{0}^{(0)}$ is invertible by construction). Then the $3$-sum of $B_{l}^{(0)}$ and $B_{r}^{(0)}$ is
     \[
-        B^{(0)} = B_{1}^{(0)} \oplus_{3} B_{2}^{(0)} =
+        B^{(0)} = B_{l}^{(0)} \oplus_{3} B_{r}^{(0)} =
         \begin{NiceArray}{cccccccc}[hvlines,right-margin=1em,left-margin=1em]
-            \Block[draw]{4-4}{A_{1}^{(0)}} & & & & \Block[draw]{4-4}{0} & & & \\
+            \Block[draw]{4-4}{A_{l}^{(0)}} & & & & \Block[draw]{4-4}{0} & & & \\
             \\
             \\
             & & \Block[draw]{1-1}{1} & \Block[draw]{1-1}{1} & \Block[draw]{1-1}{0} \\
-            \Block[draw]{2-2}{D_{1}^{(0)}} & & \Block[draw]{2-2}{D_{0}^{(0)}} & & \Block[draw]{1-1}{1} \Block[draw]{4-4}{A_{2}^{(0)}} \\
+            \Block[draw]{2-2}{D_{l}^{(0)}} & & \Block[draw]{2-2}{D_{0}^{(0)}} & & \Block[draw]{1-1}{1} \Block[draw]{4-4}{A_{r}^{(0)}} \\
              & & & & \Block[draw]{1-1}{1} \\
-            \Block[draw]{2-2}{D_{12}^{(0)}} & & \Block[draw]{2-2}{D_{2}^{(0)}} \\
+            \Block[draw]{2-2}{D_{lr}^{(0)}} & & \Block[draw]{2-2}{D_{r}^{(0)}} \\
             \\
-        \end{NiceArray} \in \mathbb{Z}_{2}^{(X_{1} \cup X_{2}) \times (Y_{1} \cup Y_{2})}.
+        \end{NiceArray} \in \mathbb{Z}_{2}^{(X_{l} \cup X_{r}) \times (Y_{l} \cup Y_{r})}.
     \]
-    Here $x_{2} \in X_{1}$, $x_{0}, x_{1} \in X_{2}$, $y_{0}, y_{1} \in Y_{1}$, $y_{2} \in Y_{2}$, $A_{1}^{(0)} \in \mathbb{Z}_{2}^{X_{1} \times Y_{1}}$, $A_{2}^{(0)} \in \mathbb{Z}_{2}^{X_{2} \times Y_{2}}$, $D_{1}^{(0)} \in \mathbb{Z}_{2}^{\{x_{0}, x_{1}\} \times (Y_{1} \setminus \{y_{0}, y_{1}\})}$, $D_{2}^{(0)} \in \mathbb{Z}_{2}^{(X_{2} \setminus \{x_{0}, x_{1}\}) \times \{y_{0}, y_{1}\}}$, $D_{0}^{(0)} \in \mathbb{Z}_{2}^{\{x_{0}, x_{1}\} \times \{y_{0}, y_{1}\}}$, $D_{12}^{(0)} \in \mathbb{Z}_{2}^{(X_{2} \setminus \{x_{0}, x_{1}\}) \times (Y_{1} \setminus \{y_{0}, y_{1}\})}$. The indexing is kept consistent between $B_{1}^{(0)}$, $B_{2}^{(0)}$, and $B^{(0)}$. To simplify notation, we use the following shorthands:
+    Here $x_{2} \in X_{l}$, $x_{0}, x_{1} \in X_{r}$, $y_{0}, y_{1} \in Y_{l}$, $y_{2} \in Y_{r}$, $A_{l}^{(0)} \in \mathbb{Z}_{2}^{X_{l} \times Y_{l}}$, $A_{r}^{(0)} \in \mathbb{Z}_{2}^{X_{r} \times Y_{r}}$, $D_{l}^{(0)} \in \mathbb{Z}_{2}^{\{x_{0}, x_{1}\} \times (Y_{l} \setminus \{y_{0}, y_{1}\})}$, $D_{r}^{(0)} \in \mathbb{Z}_{2}^{(X_{r} \setminus \{x_{0}, x_{1}\}) \times \{y_{0}, y_{1}\}}$, $D_{0}^{(0)} \in \mathbb{Z}_{2}^{\{x_{0}, x_{1}\} \times \{y_{0}, y_{1}\}}$, $D_{lr}^{(0)} \in \mathbb{Z}_{2}^{(X_{r} \setminus \{x_{0}, x_{1}\}) \times (Y_{l} \setminus \{y_{0}, y_{1}\})}$. The indexing is kept consistent between $B_{l}^{(0)}$, $B_{r}^{(0)}$, and $B^{(0)}$. To simplify notation, we use the following shorthands:
     \[
-        D_{1, 12}^{(0)} = \begin{NiceArray}{c}[hvlines] D_{1}^{(0)} \\ D_{12}^{(0)} \\ \end{NiceArray}, \quad
-        D_{0, 2}^{(0)} = \begin{NiceArray}{c}[hvlines] D_{0}^{(0)} \\ D_{2}^{(0)} \\ \end{NiceArray}, \quad
-        D_{1, 0}^{(0)} = \begin{NiceArray}{cc}[hvlines] D_{1}^{(0)} & D_{0}^{(0)} \\ \end{NiceArray}, \quad
-        D_{12, 2}^{(0)} = \begin{NiceArray}{cc}[hvlines] D_{12}^{(0)} & D_{2}^{(0)} \\ \end{NiceArray}, \quad
-        D^{(0)} = \begin{NiceArray}{cc}[hvlines] D_{1}^{(0)} & D_{0}^{(0)} \\ D_{12}^{(0)} & D_{2}^{(0)} \\ \end{NiceArray}.
+        D_{l, lr}^{(0)} = \begin{NiceArray}{c}[hvlines] D_{l}^{(0)} \\ D_{lr}^{(0)} \\ \end{NiceArray}, \quad
+        D_{0, r}^{(0)} = \begin{NiceArray}{c}[hvlines] D_{0}^{(0)} \\ D_{r}^{(0)} \\ \end{NiceArray}, \quad
+        D_{l, 0}^{(0)} = \begin{NiceArray}{cc}[hvlines] D_{l}^{(0)} & D_{0}^{(0)} \\ \end{NiceArray}, \quad
+        D_{lr, r}^{(0)} = \begin{NiceArray}{cc}[hvlines] D_{lr}^{(0)} & D_{r}^{(0)} \\ \end{NiceArray}, \quad
+        D^{(0)} = \begin{NiceArray}{cc}[hvlines] D_{l}^{(0)} & D_{0}^{(0)} \\ D_{lr}^{(0)} & D_{r}^{(0)} \\ \end{NiceArray}.
     \]
 \end{definition}
 
@@ -195,49 +195,49 @@ The following lemma justifies the additional assumption on the entries of $D_{0}
 \subsection{Construction of Canonical Signing}
 
 \begin{definition}\label{def:three_sum_canonical_signing}
-    We call $B_{1}$ and $B_{2}$ canonical signings of $B_{1}^{(0)}$ and $B_{2}^{(0)}$, respectively, if they have the form
+    We call $B_{l}$ and $B_{r}$ canonical signings of $B_{l}^{(0)}$ and $B_{r}^{(0)}$, respectively, if they have the form
     \[
-        B_{1} =
+        B_{l} =
         \begin{NiceArray}{ccccc}[hvlines,right-margin=1em,left-margin=1em]
-            \Block[draw]{4-4}{A_{1}} & & & & \Block[draw]{4-1}{0} \\
+            \Block[draw]{4-4}{A_{l}} & & & & \Block[draw]{4-1}{0} \\
             \\
             \\
             & & \Block[draw]{1-1}{1} & \Block[draw]{1-1}{1} & \Block[draw]{1-1}{0} \\
-            \Block[draw]{2-2}{D_{1}} & & \Block[draw]{2-2}{D_{0}} & & \Block[draw]{1-1}{1} \\
+            \Block[draw]{2-2}{D_{l}} & & \Block[draw]{2-2}{D_{0}} & & \Block[draw]{1-1}{1} \\
              & & & & \Block[draw]{1-1}{1} \\
         \end{NiceArray}
         , \quad
-        B_{2} =
+        B_{r} =
         \begin{NiceArray}{cccccc}[hvlines,right-margin=1em,left-margin=1em]
             \Block[draw]{1-1}{1} & \Block[draw]{1-1}{1} & \Block[draw]{1-1}{0} \Block[draw]{1-4}{0} & & & \\
-            \Block[draw]{2-2}{D_{0}} & & \Block[draw]{1-1}{1} \Block[draw]{4-4}{A_{2}} \\
+            \Block[draw]{2-2}{D_{0}} & & \Block[draw]{1-1}{1} \Block[draw]{4-4}{A_{r}} \\
              & & \Block[draw]{1-1}{1} \\
-            \Block[draw]{2-2}{D_{2}} \\
+            \Block[draw]{2-2}{D_{r}} \\
             \\
         \end{NiceArray}
     \]
-    where every block in $B_{1}$ and $B_{2}$ is a signing of the corresponding block in $B_{1}^{(0)}$ and $B_{2}^{(0)}$, and $D_{0}$ is the canonical signing of $D_{0}^{(0)}$, which is defined as follows:
+    where every block in $B_{l}$ and $B_{r}$ is a signing of the corresponding block in $B_{l}^{(0)}$ and $B_{r}^{(0)}$, and $D_{0}$ is the canonical signing of $D_{0}^{(0)}$, which is defined as follows:
     \[
         \text{if } D_{0}^{(0)} = \begin{NiceArray}{cc}[hvlines] 1 & 0 \\ 0 & 1 \\ \end{NiceArray}
         \text{ then } D_{0} = \begin{NiceArray}{cc}[hvlines] 1 & 0 \\ 0 & -1 \\ \end{NiceArray}, \quad
         \text{if } D_{0}^{(0)} = \begin{NiceArray}{cc}[hvlines] 1 & 1 \\ 0 & 1 \\ \end{NiceArray}
         \text{ then } D_{0} = \begin{NiceArray}{cc}[hvlines] 1 & 1 \\ 0 & 1 \\ \end{NiceArray}.
     \]
-    Given canonical signings $B_{1}$ and $B_{2}$, the corresponding canonical signing of $B^{(0)}$ is defined as
+    Given canonical signings $B_{l}$ and $B_{r}$, the corresponding canonical signing of $B^{(0)}$ is defined as
     \[
         B =
         \begin{NiceArray}{cccccccc}[hvlines,right-margin=1em,left-margin=1em]
-            \Block[draw]{4-4}{A_{1}} & & & & \Block[draw]{4-4}{0} & & & \\
+            \Block[draw]{4-4}{A_{l}} & & & & \Block[draw]{4-4}{0} & & & \\
             \\
             \\
             & & \Block[draw]{1-1}{1} & \Block[draw]{1-1}{1} & \Block[draw]{1-1}{0} \\
-            \Block[draw]{2-2}{D_{1}} & & \Block[draw]{2-2}{D_{0}} & & \Block[draw]{1-1}{1} \Block[draw]{4-4}{A_{2}} \\
+            \Block[draw]{2-2}{D_{l}} & & \Block[draw]{2-2}{D_{0}} & & \Block[draw]{1-1}{1} \Block[draw]{4-4}{A_{r}} \\
              & & & & \Block[draw]{1-1}{1} \\
-            \Block[draw]{2-2}{D_{12}} & & \Block[draw]{2-2}{D_{2}} \\
+            \Block[draw]{2-2}{D_{lr}} & & \Block[draw]{2-2}{D_{r}} \\
             \\
         \end{NiceArray}
     \]
-    where $D_{12} = D_{2} \cdot (D_{0})^{-1} \cdot D_{1}$ (calculated over $\mathbb{Q}$).
+    where $D_{lr} = D_{r} \cdot (D_{0})^{-1} \cdot D_{l}$ (calculated over $\mathbb{Q}$).
 \end{definition}
 
 The following lemma helps construct canonical signings from arbitrary initial TU signings.
@@ -329,115 +329,115 @@ The following lemma helps construct canonical signings from arbitrary initial TU
 \end{definition}
 
 \begin{lemma}\label{lem:three_sum_canonical_signing_construction}
-    Let $B_{1}'$ be a TU signing of $B_{1}^{(0)}$. Let $B_{1}$ be the canonical resigning (constructed following Definition~\ref{def:three_sum_canonical_resigning}) of $B_{1}'$. Then $B_{1}$ is a canonical signing of $B_{1}^{(0)}$ (in the sense of Definition~\ref{def:three_sum_canonical_signing}) and $B_{1}$ is TU. Going forward, we refer to $B_{1}$ as a TU canonical signing for short of $B_{1}^{(0)}$. A TU canonical signing $B_{2}$ of $B_{2}^{(0)}$ is defined similarly (up to replacing subscripts 1 by 2).
+    Let $B_{l}'$ be a TU signing of $B_{l}^{(0)}$. Let $B_{l}$ be the canonical resigning (constructed following Definition~\ref{def:three_sum_canonical_resigning}) of $B_{l}'$. Then $B_{l}$ is a canonical signing of $B_{l}^{(0)}$ (in the sense of Definition~\ref{def:three_sum_canonical_signing}) and $B_{l}$ is TU. Going forward, we refer to $B_{l}$ as a TU canonical signing for short of $B_{l}^{(0)}$. A TU canonical signing $B_{r}$ of $B_{r}^{(0)}$ is defined similarly (up to replacing subscripts 1 by 2).
 \end{lemma}
 
 \begin{proof}
     This follows directly from Lemma~\ref{lem:three_sum_canonical_resigning_helper}.
 \end{proof}
 
-\begin{lemma}\label{lem:three_sum_A_2_ext_1_TU}
-    Let $B_{2}$ be a TU canonical signing of $B_{2}^{(0)}$. Let $c_{0} = (D_{0, 2})_{\bullet, y_{0}}$ and $c_{1} = (D_{0, 2})_{\bullet, y_{1}}$. Then the following matrices are TU:
+\begin{lemma}\label{lem:three_sum_A_r_ext_1_TU}
+    Let $B_{r}$ be a TU canonical signing of $B_{r}^{(0)}$. Let $c_{0} = (D_{0, r})_{\bullet, y_{0}}$ and $c_{1} = (D_{0, r})_{\bullet, y_{1}}$. Then the following matrices are TU:
     \[
-        B_{2}^{(a)} = \begin{NiceArray}{ccc}[hvlines] c_{0} - c_{1} & c_{0} & A_{2} \\ \end{NiceArray}, \quad
-        B_{2}^{(b)} = \begin{NiceArray}{ccc}[hvlines] c_{0} - c_{1} & c_{1} & A_{2} \\ \end{NiceArray}.
+        B_{r}^{(a)} = \begin{NiceArray}{ccc}[hvlines] c_{0} - c_{1} & c_{0} & A_{r} \\ \end{NiceArray}, \quad
+        B_{r}^{(b)} = \begin{NiceArray}{ccc}[hvlines] c_{0} - c_{1} & c_{1} & A_{r} \\ \end{NiceArray}.
     \]
 \end{lemma}
 
 \begin{proof}
-    Pivoting in $B_{2}$ on $(x_{2}, y_{0})$ and $(x_{2}, y_{1})$ yields:
+    Pivoting in $B_{r}$ on $(x_{2}, y_{0})$ and $(x_{2}, y_{1})$ yields:
     \[
-        B_{2} =
+        B_{r} =
         \begin{NiceArray}{cccccc}[hvlines,right-margin=1em,left-margin=1em]
             \Block[draw]{1-1}{1} & \Block[draw]{1-1}{1} & \Block[draw]{1-4}{0} & & & \\
-            \Block[draw]{4-1}{c_{0}} & \Block[draw]{4-1}{c_{1}} & \Block[draw]{4-4}{A_{2}} \\ \\ \\ \\
+            \Block[draw]{4-1}{c_{0}} & \Block[draw]{4-1}{c_{1}} & \Block[draw]{4-4}{A_{r}} \\ \\ \\ \\
         \CodeAfter
             \tikz \draw (1-1) circle (0.2);
         \end{NiceArray}
         \quad \to \quad
         \begin{NiceArray}{cccccc}[hvlines,right-margin=1em,left-margin=1em]
             \Block[draw]{1-1}{1} & \Block[draw]{1-1}{1} & \Block[draw]{1-4}{0} & & & \\
-            \Block[draw]{4-1}{-c_{0}} & \Block[draw]{4-1}{c_{1} - c_{0}} & \Block[draw]{4-4}{A_{2}} \\ \\ \\ \\
+            \Block[draw]{4-1}{-c_{0}} & \Block[draw]{4-1}{c_{1} - c_{0}} & \Block[draw]{4-4}{A_{r}} \\ \\ \\ \\
         \end{NiceArray}
     \]
     \[
-        B_{2} =
+        B_{r} =
         \begin{NiceArray}{cccccc}[hvlines,right-margin=1em,left-margin=1em]
             \Block[draw]{1-1}{1} & \Block[draw]{1-1}{1} & \Block[draw]{1-4}{0} & & & \\
-            \Block[draw]{4-1}{c_{0}} & \Block[draw]{4-1}{c_{1}} & \Block[draw]{4-4}{A_{2}} \\ \\ \\ \\
+            \Block[draw]{4-1}{c_{0}} & \Block[draw]{4-1}{c_{1}} & \Block[draw]{4-4}{A_{r}} \\ \\ \\ \\
         \CodeAfter
             \tikz \draw (1-2) circle (0.2);
         \end{NiceArray}
         \quad \to \quad
         \begin{NiceArray}{cccccc}[hvlines,right-margin=1em,left-margin=1em]
             \Block[draw]{1-1}{1} & \Block[draw]{1-1}{1} & \Block[draw]{1-4}{0} & & & \\
-            \Block[draw]{4-1}{c_{0} - c_{1}} & \Block[draw]{4-1}{-c_{1}} & \Block[draw]{4-4}{A_{2}} \\ \\ \\ \\
+            \Block[draw]{4-1}{c_{0} - c_{1}} & \Block[draw]{4-1}{-c_{1}} & \Block[draw]{4-4}{A_{r}} \\ \\ \\ \\
         \end{NiceArray}
     \]
-    By removing row $x_{2}$ from the resulting matrices and then multiplying columns $y_{0}$ and $y_{1}$ by $\{\pm 1\}$ factors, we obtain $B_{2}^{(a)}$ and $B_{2}^{(b)}$. By Lemma~\ref{lem:three_sum_canonical_signing_construction}, $B_{2}$ is TU. Since TUness is preserved under pivoting, taking submatrices, and multiplying columns by ${\pm 1}$ factors, we conclude that $B_{2}^{(a)}$ and $B_{2}^{(b)}$ are TU.
+    By removing row $x_{2}$ from the resulting matrices and then multiplying columns $y_{0}$ and $y_{1}$ by $\{\pm 1\}$ factors, we obtain $B_{r}^{(a)}$ and $B_{r}^{(b)}$. By Lemma~\ref{lem:three_sum_canonical_signing_construction}, $B_{r}$ is TU. Since TUness is preserved under pivoting, taking submatrices, and multiplying columns by ${\pm 1}$ factors, we conclude that $B_{r}^{(a)}$ and $B_{r}^{(b)}$ are TU.
 \end{proof}
 
-\begin{lemma}\label{lem:three_sum_A_2_ext_2_TU}
-    Let $B_{2}$ be a TU canonical signing of $B_{2}^{(0)}$. Let $c_{0} = D_{0, 2} (\bullet, y_{0})$, $c_{1} = D_{0, 2} (\bullet, y_{1})$, and $c_{2} = c_{0} - c_{1}$. Then the following properties hold.
+\begin{lemma}\label{lem:three_sum_A_r_ext_2_TU}
+    Let $B_{r}$ be a TU canonical signing of $B_{r}^{(0)}$. Let $c_{0} = D_{0, r} (\bullet, y_{0})$, $c_{1} = D_{0, r} (\bullet, y_{1})$, and $c_{2} = c_{0} - c_{1}$. Then the following properties hold.
     \begin{enumerate}
-        \item\label{item:three_sum_A_2_ext_d01_eq} For every $i \in X_{2}$, we have $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \\ \end{NiceArray} \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}} \setminus \{\begin{NiceArray}{cc}[hvlines] 1 & -1 \\ \end{NiceArray} , \begin{NiceArray}{cc}[hvlines] -1 & 1 \\ \end{NiceArray} \}$.
-        % \item\label{item:three_sum_A_2_ext_2_vec_sign} $c_{2}$ is a signing of $D_{0, 2}^{(0)} (\cdot, y_{0}) + D_{0, 2}^{(0)} (\cdot, y_{1})$.
-        \item\label{item:three_sum_A_2_ext_2_TU} $\begin{NiceArray}{cccc}[hvlines] A_{2} & c_{0} & c_{1} & c_{2} \\ \end{NiceArray}$ is TU.
+        \item\label{item:three_sum_A_r_ext_d01_eq} For every $i \in X_{r}$, we have $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \\ \end{NiceArray} \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}} \setminus \{\begin{NiceArray}{cc}[hvlines] 1 & -1 \\ \end{NiceArray} , \begin{NiceArray}{cc}[hvlines] -1 & 1 \\ \end{NiceArray} \}$.
+        % \item\label{item:three_sum_A_r_ext_2_vec_sign} $c_{2}$ is a signing of $D_{0, r}^{(0)} (\cdot, y_{0}) + D_{0, r}^{(0)} (\cdot, y_{1})$.
+        \item\label{item:three_sum_A_r_ext_2_TU} $\begin{NiceArray}{cccc}[hvlines] A_{r} & c_{0} & c_{1} & c_{2} \\ \end{NiceArray}$ is TU.
     \end{enumerate}
 \end{lemma}
 
 \begin{proof}
     \begin{enumerate}
-        \item Let $i \in X_{2}$. If $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \\ \end{NiceArray} = \begin{NiceArray}{cc}[hvlines] 1 & -1 \\ \end{NiceArray}$, then the $2 \times 2$ submatrix of $B_{2}$ indexed by $\{x_{2}, i\} \times \{y_{0}, y_{1}\}$ has $\det \begin{NiceArray}{cc}[hvlines] 1 & 1 \\ 1 & -1 \\ \end{NiceArray} = -2 \notin \{0, \pm 1\}$, which contradicts TUness of $B_{2}$ (which holds by Lemma~\ref{lem:three_sum_canonical_signing_construction}). Similarly, if $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \\ \end{NiceArray} = \begin{NiceArray}{cc}[hvlines] -1 & 1 \\ \end{NiceArray} $, then the $2 \times 2$ submatrix of $B_{2}$ indexed by $\{x_{2}, i\} \times \{y_{0}, y_{1}\}$ has $\det \begin{NiceArray}{cc}[hvlines] 1 & 1 \\ -1 & 1 \\ \end{NiceArray} = 2 \notin \{0, \pm 1\}$, which contradicts TUness of $B_{2}$.
+        \item Let $i \in X_{r}$. If $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \\ \end{NiceArray} = \begin{NiceArray}{cc}[hvlines] 1 & -1 \\ \end{NiceArray}$, then the $2 \times 2$ submatrix of $B_{r}$ indexed by $\{x_{2}, i\} \times \{y_{0}, y_{1}\}$ has $\det \begin{NiceArray}{cc}[hvlines] 1 & 1 \\ 1 & -1 \\ \end{NiceArray} = -2 \notin \{0, \pm 1\}$, which contradicts TUness of $B_{r}$ (which holds by Lemma~\ref{lem:three_sum_canonical_signing_construction}). Similarly, if $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \\ \end{NiceArray} = \begin{NiceArray}{cc}[hvlines] -1 & 1 \\ \end{NiceArray} $, then the $2 \times 2$ submatrix of $B_{r}$ indexed by $\{x_{2}, i\} \times \{y_{0}, y_{1}\}$ has $\det \begin{NiceArray}{cc}[hvlines] 1 & 1 \\ -1 & 1 \\ \end{NiceArray} = 2 \notin \{0, \pm 1\}$, which contradicts TUness of $B_{r}$.
 
-        % \item By item~\ref{item:three_sum_A_2_ext_d01_eq}, we know that $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \end{NiceArray} \neq \begin{NiceArray}{cc}[hvlines] 1 & -1 \end{NiceArray}$ and $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \end{NiceArray} \neq \begin{NiceArray}{cc}[hvlines] -1 & 1 \end{NiceArray}$. In all other cases, a direct calculation shows that $c_{2} (i) \in \{0, \pm 1\}$ and $|c_{2}(i)| = D_{0, 2}^{(0)} (\cdot, y_{0}) + D_{0, 2}^{(0)} (\cdot, y_{1})$.
+        % \item By item~\ref{item:three_sum_A_r_ext_d01_eq}, we know that $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \end{NiceArray} \neq \begin{NiceArray}{cc}[hvlines] 1 & -1 \end{NiceArray}$ and $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \end{NiceArray} \neq \begin{NiceArray}{cc}[hvlines] -1 & 1 \end{NiceArray}$. In all other cases, a direct calculation shows that $c_{2} (i) \in \{0, \pm 1\}$ and $|c_{2}(i)| = D_{0, r}^{(0)} (\cdot, y_{0}) + D_{0, r}^{(0)} (\cdot, y_{1})$.
 
-        \item Let $V$ be a square submatrix of $\begin{NiceArray}{cccc}[hvlines] A_{2} & c_{0} & c_{1} & c_{2} \\ \end{NiceArray}$. We will show that $\det V \in \{0, \pm 1\}$.
+        \item Let $V$ be a square submatrix of $\begin{NiceArray}{cccc}[hvlines] A_{r} & c_{0} & c_{1} & c_{2} \\ \end{NiceArray}$. We will show that $\det V \in \{0, \pm 1\}$.
 
-        Let $z$ denote the index of the appended column $c_{2}$. Suppose that column $z$ is not in $V$. Then $V$ is a submatrix of $B_{2}$, which is TU by Lemma~\ref{lem:three_sum_canonical_signing_construction}. Thus, $\det V \in \{0, \pm 1\}$. Going forward we assume that column $z$ is in $V$.
+        Let $z$ denote the index of the appended column $c_{2}$. Suppose that column $z$ is not in $V$. Then $V$ is a submatrix of $B_{r}$, which is TU by Lemma~\ref{lem:three_sum_canonical_signing_construction}. Thus, $\det V \in \{0, \pm 1\}$. Going forward we assume that column $z$ is in $V$.
 
         Suppose that columns $y_{0}$ and $y_{1}$ are both in $V$. Then $V$ contains columns $z$, $y_{0}$, and $y_{1}$, which are linearly dependent by construction of $c_{2}$. Thus, $\det V = 0$. Going forward we assume that at most one of the columns $y_{0}$ and $y_{2}$ is in $V$.
 
-        Suppose that column $y_{0}$ is in $V$. Then $V$ is a submatrix of $B_{2}^{(b)}$ from Lemma~\ref{lem:three_sum_A_2_ext_1_TU}, and thus $\det V \in \{0, \pm 1\}$. Otherwise, $V$ is a submatrix of $B_{2}^{(a)}$ from Lemma~\ref{lem:three_sum_A_2_ext_1_TU}, and so $\det V \in \{0, \pm 1\}$.
+        Suppose that column $y_{0}$ is in $V$. Then $V$ is a submatrix of $B_{r}^{(b)}$ from Lemma~\ref{lem:three_sum_A_r_ext_1_TU}, and thus $\det V \in \{0, \pm 1\}$. Otherwise, $V$ is a submatrix of $B_{r}^{(a)}$ from Lemma~\ref{lem:three_sum_A_r_ext_1_TU}, and so $\det V \in \{0, \pm 1\}$.
 
         Thus, every square submatrix $V$ of $\tilde{T}$ has $\det V \in \{0, \pm 1\}$, and hence $\tilde{T}$ is TU.
     \end{enumerate}
 \end{proof}
 
 \begin{remark}
-    Vectors $c_{0}$, $c_{1}$, and $c_{2}$ can be defined directly in terms of entries of $B_{2}$, e.g., $c_{2}$ consists of entries of $B_{2}$ indexed by $(X_{2} \setminus \{x_{2}\}) \times \{y_{0}\}$.
+    Vectors $c_{0}$, $c_{1}$, and $c_{2}$ can be defined directly in terms of entries of $B_{r}$, e.g., $c_{2}$ consists of entries of $B_{r}$ indexed by $(X_{r} \setminus \{x_{2}\}) \times \{y_{0}\}$.
 \end{remark}
 
-\begin{lemma}\label{lem:three_sum_A_1_ext_2_TU}
-    Let $B_{1}$ be a TU canonical signing of $B_{1}^{(0)}$. Let $d_{0} = D_{1, 0} (x_{0}, \bullet)$, $d_{1} = D_{1, 0} (x_{1}, \bullet)$, and $d_{2} = d_{0} - d_{1}$. Then the following properties hold.
+\begin{lemma}\label{lem:three_sum_A_l_ext_2_TU}
+    Let $B_{l}$ be a TU canonical signing of $B_{l}^{(0)}$. Let $d_{0} = D_{l, 0} (x_{0}, \bullet)$, $d_{1} = D_{l, 0} (x_{1}, \bullet)$, and $d_{2} = d_{0} - d_{1}$. Then the following properties hold.
     \begin{enumerate}
-        \item\label{item:three_sum_A_1_ext_d01_eq} For every $j \in Y_{2}$, we have $\begin{NiceArray}{c}[hvlines] d_{0} (i) \\ d_{1} (i) \\ \end{NiceArray} \in \{0, \pm 1\}^{\{x_{0}, x_{1}\}} \setminus \{\begin{NiceArray}{c}[hvlines] 1 \\ -1 \\ \end{NiceArray} , \begin{NiceArray}{c}[hvlines] -1 \\ 1 \\ \end{NiceArray}\}$.
-        % \item\label{item:three_sum_A_1_ext_2_vec_sign} $d_{2}$ is a signing of $D_{1, 0}^{(0)} (x_{0}, \cdot) + D_{1, 0}^{(0)} (x_{1}, \cdot)$.
-        \item\label{item:three_sum_A_1_ext_2_TU} $\begin{NiceArray}{c}[hvlines] A_{1} \\ d_{0} \\ d_{1} \\ d_{2} \\ \end{NiceArray}$ is TU.
+        \item\label{item:three_sum_A_l_ext_d01_eq} For every $j \in Y_{r}$, we have $\begin{NiceArray}{c}[hvlines] d_{0} (i) \\ d_{1} (i) \\ \end{NiceArray} \in \{0, \pm 1\}^{\{x_{0}, x_{1}\}} \setminus \{\begin{NiceArray}{c}[hvlines] 1 \\ -1 \\ \end{NiceArray} , \begin{NiceArray}{c}[hvlines] -1 \\ 1 \\ \end{NiceArray}\}$.
+        % \item\label{item:three_sum_A_l_ext_2_vec_sign} $d_{2}$ is a signing of $D_{l, 0}^{(0)} (x_{0}, \cdot) + D_{l, 0}^{(0)} (x_{1}, \cdot)$.
+        \item\label{item:three_sum_A_l_ext_2_TU} $\begin{NiceArray}{c}[hvlines] A_{l} \\ d_{0} \\ d_{1} \\ d_{2} \\ \end{NiceArray}$ is TU.
     \end{enumerate}
 \end{lemma}
 
 \begin{proof}
-    Apply Lemma~\ref{lem:three_sum_A_2_ext_2_TU} to $B_{1}^{\top}$, or repeat the same argument up to interchanging rows and columns.
+    Apply Lemma~\ref{lem:three_sum_A_r_ext_2_TU} to $B_{l}^{\top}$, or repeat the same argument up to interchanging rows and columns.
 \end{proof}
 
 \begin{lemma}\label{lem:three_sum_canonical_signing_properties}
-    Let $B_{1}$ and $B_{2}$ be TU canonical signings of $B_{1}^{(0)}$ and $B_{2}^{(0)}$, respectively.
+    Let $B_{l}$ and $B_{r}$ be TU canonical signings of $B_{l}^{(0)}$ and $B_{r}^{(0)}$, respectively.
     \begin{itemize}
-        \item Let $c_{0} = D_{0, 2} (\bullet, y_{0})$, $c_{1} = D_{0, 2} (\bullet, y_{1})$, and $c_{2} = c_{0} - c_{1}$.
-        \item Let $d_{0} = D_{1, 0} (x_{0}, \bullet)$, $d_{1} = D_{1, 0} (x_{1}, \bullet)$, and $d_{2} = d_{0} - d_{1}$.
+        \item Let $c_{0} = D_{0, r} (\bullet, y_{0})$, $c_{1} = D_{0, r} (\bullet, y_{1})$, and $c_{2} = c_{0} - c_{1}$.
+        \item Let $d_{0} = D_{l, 0} (x_{0}, \bullet)$, $d_{1} = D_{l, 0} (x_{1}, \bullet)$, and $d_{2} = d_{0} - d_{1}$.
         \item If $D_{0}^{(0)} = \begin{NiceArray}{cc}[hvlines] 1 & 0 \\ 0 & 1 \\ \end{NiceArray}$, let $r_{0} = d_{0}$, $r_{1} = -d_{1}$, $r_{2} = d_{2}$. If $D_{0}^{(0)} = \begin{NiceArray}{cc}[hvlines] 1 & 1 \\ 0 & 1 \\ \end{NiceArray}$, let $r_{0} = d_{2}$, $r_{1} = d_{1}$, $r_{2} = d_{0}$.
-        \item Let $D$ be the bottom-left block in the canonical signing $B$ of $B^{(0)}$ corresponding to $B_{1}$ and $B_{2}$
+        \item Let $D$ be the bottom-left block in the canonical signing $B$ of $B^{(0)}$ corresponding to $B_{l}$ and $B_{r}$
     \end{itemize}
     Then the following properties hold.
     \begin{enumerate}
         \item\label{item:three_sum_canonical_signing_D_eq} $D = c_{0} \cdot r_{0} + c_{1} \cdot r_{1}$.
         \item\label{item:three_sum_canonical_signing_D_rows} Rows of $D$ are in $\begin{NiceArray}{c}[hvlines] \pm r_{0} \\ \pm r_{1} \\ \pm r_{2} \\ 0 \\ \end{NiceArray}$.
         \item\label{item:three_sum_canonical_signing_D_cols} Columns of $D$ are in $\begin{NiceArray}{cccc}[hvlines] \pm c_{0} & \pm c_{1} & \pm c_{2} & 0 \\ \end{NiceArray}$.
-        \item\label{item:three_sum_canonical_signing_TU_A_2_cs} $\begin{NiceArray}{cccc}[hvlines] A_{2} & c_{0} & c_{1} & c_{2} \\ \end{NiceArray}$ is TU.
-        \item\label{item:three_sum_canonical_signing_TU_A_2_D} $\begin{NiceArray}{cc}[hvlines] A_{2} & D \end{NiceArray}$ is TU.
-        \item\label{item:three_sum_canonical_signing_TU_A_1_rs} $\begin{NiceArray}{c}[hvlines] A_{1} \\ r_{0} \\ r_{1} \\ r_{2} \\ \end{NiceArray}$ is TU.
-        \item\label{item:three_sum_canonical_signing_TU_A_1_D} $\begin{NiceArray}{c}[hvlines] A_{1} \\ D \\ \end{NiceArray}$ is TU.
+        \item\label{item:three_sum_canonical_signing_TU_A_r_cs} $\begin{NiceArray}{cccc}[hvlines] A_{r} & c_{0} & c_{1} & c_{2} \\ \end{NiceArray}$ is TU.
+        \item\label{item:three_sum_canonical_signing_TU_A_r_D} $\begin{NiceArray}{cc}[hvlines] A_{r} & D \end{NiceArray}$ is TU.
+        \item\label{item:three_sum_canonical_signing_TU_A_l_rs} $\begin{NiceArray}{c}[hvlines] A_{l} \\ r_{0} \\ r_{1} \\ r_{2} \\ \end{NiceArray}$ is TU.
+        \item\label{item:three_sum_canonical_signing_TU_A_l_D} $\begin{NiceArray}{c}[hvlines] A_{l} \\ D \\ \end{NiceArray}$ is TU.
         \item $\begin{NiceArray}{cc}[hvlines] c_{0} & c_{1} \end{NiceArray}$ contains $D_{0}$ (the canonical signing of $D_{0}^{(0)}$) as a submatrix.
     \end{enumerate}
 \end{lemma}
@@ -445,83 +445,83 @@ The following lemma helps construct canonical signings from arbitrary initial TU
 \begin{proof}
     \begin{enumerate}
         \item Follows via a direct calculation.\todo{need details?}
-        \item By item~\ref{item:three_sum_canonical_signing_D_eq}, for every $i \in X_{2}$ we have $D (i, \bullet) = c_{0} (i) \cdot r_{0} + c_{1} (i) \cdot r_{1}$. By Lemma~\ref{lem:three_sum_A_2_ext_1_TU}.\ref{item:three_sum_A_1_ext_d01_eq}, we know that $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \end{NiceArray} \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}} \setminus \{\begin{NiceArray}{cc}[hvlines] 1 & -1 \end{NiceArray} , \begin{NiceArray}{cc}[hvlines] -1 & 1 \end{NiceArray}\}$. Therefore, $D (i, \bullet)$ is equal to either $0$, $\pm r_{0}$, $\pm r_{1}$, or $\pm (r_{0} + r_{1}) = \pm r_{2}$.
+        \item By item~\ref{item:three_sum_canonical_signing_D_eq}, for every $i \in X_{r}$ we have $D (i, \bullet) = c_{0} (i) \cdot r_{0} + c_{1} (i) \cdot r_{1}$. By Lemma~\ref{lem:three_sum_A_r_ext_1_TU}.\ref{item:three_sum_A_l_ext_d01_eq}, we know that $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \end{NiceArray} \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}} \setminus \{\begin{NiceArray}{cc}[hvlines] 1 & -1 \end{NiceArray} , \begin{NiceArray}{cc}[hvlines] -1 & 1 \end{NiceArray}\}$. Therefore, $D (i, \bullet)$ is equal to either $0$, $\pm r_{0}$, $\pm r_{1}$, or $\pm (r_{0} + r_{1}) = \pm r_{2}$.
         \item Holds by the same argument as item~\ref{item:three_sum_canonical_signing_D_rows} up to interchanging rows and columns.
-        \item Holds by Lemma~\ref{lem:three_sum_A_2_ext_2_TU}.\ref{item:three_sum_A_2_ext_2_TU}.
-        \item By item~\ref{item:three_sum_canonical_signing_D_cols}, columns of $\begin{NiceArray}{cc}[hvlines] A_{2} & D \end{NiceArray}$ are in $\begin{NiceArray}{ccccc}[hvlines] A_{2} & \pm c_{0} & \pm c_{1} & \pm c_{2} & 0 \\ \end{NiceArray}$. Since $\begin{NiceArray}{cccc}[hvlines] A_{2} & c_{0} & c_{1} & c_{2} \\ \end{NiceArray}$ is TU and since adding zero columns and copies of columns multiplied by $\pm 1$ factors preserves TUness, $\begin{NiceArray}{cc}[hvlines] A_{2} & D \end{NiceArray}$ is also TU.
-        \item By Lemma~\ref{lem:three_sum_A_1_ext_2_TU}.\ref{item:three_sum_A_1_ext_2_TU} (or by the same argument as item~\ref{item:three_sum_canonical_signing_TU_A_2_cs} up to interchanging rows and columns),\\ $\begin{NiceArray}{c}[hvlines] A_{1} \\ d_{0} \\ d_{1} \\ d_{2} \\ \end{NiceArray}$ is TU. Since TUness is preserved under multiplication of rows by $\pm 1$ and exchanging rows, $\begin{NiceArray}{c}[hvlines] A_{1} \\ r_{0} \\ r_{1} \\ r_{2} \\ \end{NiceArray}$ is also TU.
-        \item Holds by the same argument as item~\ref{item:three_sum_canonical_signing_TU_A_2_D} up to interchanging rows and columns.
+        \item Holds by Lemma~\ref{lem:three_sum_A_r_ext_2_TU}.\ref{item:three_sum_A_r_ext_2_TU}.
+        \item By item~\ref{item:three_sum_canonical_signing_D_cols}, columns of $\begin{NiceArray}{cc}[hvlines] A_{r} & D \end{NiceArray}$ are in $\begin{NiceArray}{ccccc}[hvlines] A_{r} & \pm c_{0} & \pm c_{1} & \pm c_{2} & 0 \\ \end{NiceArray}$. Since $\begin{NiceArray}{cccc}[hvlines] A_{r} & c_{0} & c_{1} & c_{2} \\ \end{NiceArray}$ is TU and since adding zero columns and copies of columns multiplied by $\pm 1$ factors preserves TUness, $\begin{NiceArray}{cc}[hvlines] A_{r} & D \end{NiceArray}$ is also TU.
+        \item By Lemma~\ref{lem:three_sum_A_l_ext_2_TU}.\ref{item:three_sum_A_l_ext_2_TU} (or by the same argument as item~\ref{item:three_sum_canonical_signing_TU_A_r_cs} up to interchanging rows and columns),\\ $\begin{NiceArray}{c}[hvlines] A_{l} \\ d_{0} \\ d_{1} \\ d_{2} \\ \end{NiceArray}$ is TU. Since TUness is preserved under multiplication of rows by $\pm 1$ and exchanging rows, $\begin{NiceArray}{c}[hvlines] A_{l} \\ r_{0} \\ r_{1} \\ r_{2} \\ \end{NiceArray}$ is also TU.
+        \item Holds by the same argument as item~\ref{item:three_sum_canonical_signing_TU_A_r_D} up to interchanging rows and columns.
         \item Holds by construction.
     \end{enumerate}
 \end{proof}
 
 \begin{definition}\label{def:three_sum_alt_form}
-    Let $A_{1} \in \mathbb{Q}^{X_{1} \cup Y_{1}}$, $A_{2} \in \mathbb{Q}^{X_{2} \cup Y_{2}}$, $c_{0}, c_{1} \in \mathbb{Q}^{X_{2}}$, $r_{0}, r_{1} \in \mathbb{Q}^{Y_{1}}$. Let $D = c_{0} \cdot r_{0} + c_{1} \cdot r_{1}$. Suppose that properties 2--8 from the statement of Lemma~\ref{lem:three_sum_canonical_signing_properties} are satisfied for $A_{1}$, $A_{2}$, $c_{0}$, $c_{1}$, $r_{0}$, $r_{1}$. Given $k \in \mathbb{Z}_{\geq 1}$, define $\mathrm{Proposition}(A_{1}, A_{2}, c_{0}, c_{1}, r_{0}, r_{1}, k)$ to mean ``$C = \begin{NiceArray}{cc}[hvlines] A_{1} & 0 \\ D & A_{2} \\ \end{NiceArray}$ is $k$-TU".
+    Let $A_{l} \in \mathbb{Q}^{X_{l} \cup Y_{l}}$, $A_{r} \in \mathbb{Q}^{X_{r} \cup Y_{r}}$, $c_{0}, c_{1} \in \mathbb{Q}^{X_{r}}$, $r_{0}, r_{1} \in \mathbb{Q}^{Y_{l}}$. Let $D = c_{0} \cdot r_{0} + c_{1} \cdot r_{1}$. Suppose that properties 2--8 from the statement of Lemma~\ref{lem:three_sum_canonical_signing_properties} are satisfied for $A_{l}$, $A_{r}$, $c_{0}$, $c_{1}$, $r_{0}$, $r_{1}$. Given $k \in \mathbb{Z}_{\geq 1}$, define $\mathrm{Proposition}(A_{l}, A_{r}, c_{0}, c_{1}, r_{0}, r_{1}, k)$ to mean ``$C = \begin{NiceArray}{cc}[hvlines] A_{l} & 0 \\ D & A_{r} \\ \end{NiceArray}$ is $k$-TU".
 \end{definition}
 
 \begin{lemma}\label{lem:three_sum_alt_form_1_TU}
-    Assume the notation of Definition~\ref{def:three_sum_alt_form}. Then $\mathrm{Proposition}(A_{1}, A_{2}, c_{0}, c_{1}, r_{0}, r_{1}, 1)$ holds.
+    Assume the notation of Definition~\ref{def:three_sum_alt_form}. Then $\mathrm{Proposition}(A_{l}, A_{r}, c_{0}, c_{1}, r_{0}, r_{1}, 1)$ holds.
 \end{lemma}
 
-\begin{proof}
-    Every entry of $C$ is in one of four blocks: $0$, $A_{1}$, $D$, $A_{2}$. By the assumptions of Definition~\ref{def:three_sum_alt_form}, all of these blocks are TU. Thus, $C$ is $1$-TU.
+\begin{proof}++
+    Every entry of $C$ is in one of four blocks: $0$, $A_{l}$, $D$, $A_{r}$. By the assumptions of Definition~\ref{def:three_sum_alt_form}, all of these blocks are TU. Thus, $C$ is $1$-TU.
 \end{proof}
 
 \begin{lemma}\label{lem:three_sum_alt_form_pivot}
-    Assume the notation of Definition~\ref{def:three_sum_alt_form}. Let $i \in X_{1}$, let $T = \begin{NiceArray}{c}[hvlines] A_{1} (i, \bullet) \\ D \\ \end{NiceArray}$. Suppose we pivot on entry $T (i, j) \in \{\pm 1\}$ in $T$ and obtain matrix $T' = \begin{NiceArray}{c}[hvlines] a' \\ D' \\ \end{NiceArray}$. Then columns of $D'$ are in $\begin{NiceArray}{cccc}[hvlines] \pm c_{0} & \pm c_{1} & \pm (c_{0} - c_{1}) & 0 \\ \end{NiceArray}$.
+    Assume the notation of Definition~\ref{def:three_sum_alt_form}. Let $i \in X_{l}$, let $T = \begin{NiceArray}{c}[hvlines] A_{l} (i, \bullet) \\ D \\ \end{NiceArray}$. Suppose we pivot on entry $T (i, j) \in \{\pm 1\}$ in $T$ and obtain matrix $T' = \begin{NiceArray}{c}[hvlines] a' \\ D' \\ \end{NiceArray}$. Then columns of $D'$ are in $\begin{NiceArray}{cccc}[hvlines] \pm c_{0} & \pm c_{1} & \pm (c_{0} - c_{1}) & 0 \\ \end{NiceArray}$.
 \end{lemma}
 
 \begin{proof}
-    Since $T$ is a submatrix of $\begin{NiceArray}{c}[hvlines] A_{1} \\ D \\ \end{NiceArray}$, which is TU by assumptions of Definition~\ref{def:three_sum_alt_form}, we have that $T$ is TU. Since pivoting preserves TUness, $T'$ is also TU. To prove the claim, perform an exhaustive case distinction on what pivot column $p$ in $T$ could be and what another column $q$ in $T$ could be. This uniquely determines the resulting columns $p'$ and $q'$ in $T'$ by the pivot formula. In every case, either $\begin{NiceArray}{cc}[hvlines] p' & q' \end{NiceArray}$ contains a submatrix with determinant not in $\{0, \pm 1\}$, which contradicts TUness of $T'$, or the restriction of $p'$ and $q'$ to $X_{2}$ is in $\begin{NiceArray}{cccc}[hvlines] \pm c_{0} & \pm c_{1} & \pm (c_{0} - c_{1}) & 0 \\ \end{NiceArray}$).\todo{need details?}
+    Since $T$ is a submatrix of $\begin{NiceArray}{c}[hvlines] A_{l} \\ D \\ \end{NiceArray}$, which is TU by assumptions of Definition~\ref{def:three_sum_alt_form}, we have that $T$ is TU. Since pivoting preserves TUness, $T'$ is also TU. To prove the claim, perform an exhaustive case distinction on what pivot column $p$ in $T$ could be and what another column $q$ in $T$ could be. This uniquely determines the resulting columns $p'$ and $q'$ in $T'$ by the pivot formula. In every case, either $\begin{NiceArray}{cc}[hvlines] p' & q' \end{NiceArray}$ contains a submatrix with determinant not in $\{0, \pm 1\}$, which contradicts TUness of $T'$, or the restriction of $p'$ and $q'$ to $X_{r}$ is in $\begin{NiceArray}{cccc}[hvlines] \pm c_{0} & \pm c_{1} & \pm (c_{0} - c_{1}) & 0 \\ \end{NiceArray}$).\todo{need details?}
 \end{proof}
 
 \begin{lemma}\label{lem:three_sum_alt_form_k_TU_induction}
-    Assume the notation of Definition~\ref{def:three_sum_alt_form}. Let $k \in \mathbb{Z}_{\geq 2}$. Suppose $\mathrm{Proposition}(A_{1}', A_{2}, c_{0}, c_{1}, r_{0}', r_{1}', k - 1)$ holds for all $A_{1}'$, $r_{0}'$, and $r_{1}'$ satisfying the assumptions of Definition~\ref{def:three_sum_alt_form} (together with $A_{2}$, $c_{0}$, and $c_{1}$). Then $\mathrm{Proposition}(A_{1}, A_{2}, c_{0}, c_{1}, r_{0}, r_{1}, k)$ holds.
+    Assume the notation of Definition~\ref{def:three_sum_alt_form}. Let $k \in \mathbb{Z}_{\geq 2}$. Suppose $\mathrm{Proposition}(A_{l}', A_{r}, c_{0}, c_{1}, r_{0}', r_{1}', k - 1)$ holds for all $A_{l}'$, $r_{0}'$, and $r_{1}'$ satisfying the assumptions of Definition~\ref{def:three_sum_alt_form} (together with $A_{r}$, $c_{0}$, and $c_{1}$). Then $\mathrm{Proposition}(A_{l}, A_{r}, c_{0}, c_{1}, r_{0}, r_{1}, k)$ holds.
 \end{lemma}
 
 \begin{proof}
     Let $V$ be a $k \times k$ submatrix of $C$. For the sake of deriving a contradiction assume that $\det V \notin \{0, \pm 1\}$.
 
-    Suppose that $V$ is a submatrix of $\begin{NiceArray}{c}[hvlines] A_{1} \\ D \\ \end{NiceArray}$, $\begin{NiceArray}{cc}[hvlines] A_{1} & 0 \end{NiceArray}$, $\begin{NiceArray}{cc}[hvlines] D & A_2 \end{NiceArray}$, or $\begin{NiceArray}{c}[hvlines] 0 \\ A_2 \\ \end{NiceArray}$. Since all of those four matrices are TU by the assumptions of Definition~\ref{def:three_sum_alt_form}, we have $\det V \in \{0, \pm 1\}$. Thus, $V$ shares at least one row and one column index with $A_{1}$ and $A_{2}$ each.
+    Suppose that $V$ is a submatrix of $\begin{NiceArray}{c}[hvlines] A_{l} \\ D \\ \end{NiceArray}$, $\begin{NiceArray}{cc}[hvlines] A_{l} & 0 \end{NiceArray}$, $\begin{NiceArray}{cc}[hvlines] D & A_r \end{NiceArray}$, or $\begin{NiceArray}{c}[hvlines] 0 \\ A_r \\ \end{NiceArray}$. Since all of those four matrices are TU by the assumptions of Definition~\ref{def:three_sum_alt_form}, we have $\det V \in \{0, \pm 1\}$. Thus, $V$ shares at least one row and one column index with $A_{l}$ and $A_{r}$ each.
 
-    Consider the row index shared by $V$ and $A_{1}$. Note that this row in $V$ cannot consist of only $0$ entries, as otherwise $\det V = 0$. Thus, there exists a $\pm 1$ entry shared by $V$ and $A_{1}$. Let $i$ and $j$ denote the row and the column index of this entry, respectively.
+    Consider the row index shared by $V$ and $A_{l}$. Note that this row in $V$ cannot consist of only $0$ entries, as otherwise $\det V = 0$. Thus, there exists a $\pm 1$ entry shared by $V$ and $A_{l}$. Let $i$ and $j$ denote the row and the column index of this entry, respectively.
 
     Perform a pivot in $C$ on the element $C (i, j)$. For every object, its modified counterpart after pivoting is denoted by the same symbol with a prime; for example, $B'$ denotes the entire matrix after the pivot. Note that the following statements hold.
 
     \begin{itemize}
         \item $C'$ contains a $(k - 1) \times (k - 1)$ submatrix $V'$ with $\det V' \notin \{0, \pm 1\}$. This holds by the same argument as for the $2$-sum: look at the submatrix $V'$ of $C'$ with the same row and column index sets as $V$ minus the pivot row $i$ and pivot column $j$.
-        \item $C' = \begin{NiceArray}{cc}[hvlines] A_{1}' & 0 \\ D' & A_{2} \\ \end{NiceArray}$, i.e., the $0$ and the $A_{2}$ blocks remain unchanged. This holds by the same argument as for the $2$-sum: the pivot row is in the $0$ block.
-        \item $\begin{NiceArray}{c}[hvlines] A_{1}' \\ D' \\ \end{NiceArray}$ is TU. This holds by the same argument as for the $2$-sum: TUness is preserved under pivoting.
+        \item $C' = \begin{NiceArray}{cc}[hvlines] A_{l}' & 0 \\ D' & A_{r} \\ \end{NiceArray}$, i.e., the $0$ and the $A_{r}$ blocks remain unchanged. This holds by the same argument as for the $2$-sum: the pivot row is in the $0$ block.
+        \item $\begin{NiceArray}{c}[hvlines] A_{l}' \\ D' \\ \end{NiceArray}$ is TU. This holds by the same argument as for the $2$-sum: TUness is preserved under pivoting.
         \item The columns of $D'$ are in $\begin{NiceArray}{cccc}[hvlines] 0 & \pm c_{0} & \pm c_{1} & \pm (c_{0} - c_{1}) \\ \end{NiceArray}$. This holds by Lemma~\ref{lem:three_sum_alt_form_pivot}.
-        \item There exist $r_{0}'$ and $r_{1}'$ such that $D' = c_{0} \cdot r_{0}' + c_{1} \cdot r_{1}'$ and the assumptions of Definition~\ref{def:three_sum_alt_form} are satisfied for $A_{1}'$, $A_{2}$, $c_{0}$, $c_{1}$, $r_{0}'$, $r_{1}'$. This follows from the previous bullet point by carefully checking assumptions.\todo{need details?}
-        \item $C'$ is $(k - 1)$-TU. This follows from the hypothesis: $\mathrm{Proposition}(A_{1}', A_{2}, c_{0}, c_{1}, r_{0}', r_{1}', k - 1)$ holds.
+        \item There exist $r_{0}'$ and $r_{1}'$ such that $D' = c_{0} \cdot r_{0}' + c_{1} \cdot r_{1}'$ and the assumptions of Definition~\ref{def:three_sum_alt_form} are satisfied for $A_{l}'$, $A_{r}$, $c_{0}$, $c_{1}$, $r_{0}'$, $r_{1}'$. This follows from the previous bullet point by carefully checking assumptions.\todo{need details?}
+        \item $C'$ is $(k - 1)$-TU. This follows from the hypothesis: $\mathrm{Proposition}(A_{l}', A_{r}, c_{0}, c_{1}, r_{0}', r_{1}', k - 1)$ holds.
     \end{itemize}
 
     To sum up, after pivoting we obtain a matrix $C'$ (which can be obtained in the manner of Definition~\ref{def:three_sum_alt_form}) that is $(k - 1)$-TU and contains a $(k - 1) \times (k - 1)$ submatrix $V'$ with $\det V' \notin \{0, \pm 1\}$. This contradiction proves the lemma.
 \end{proof}
 
 \begin{lemma}\label{lem:three_sum_canonical_signing_TU}
-    Let $B_{1}$ and $B_{2}$ be TU canonical signings. Then the corresponding canonical signing $B$ is TU.
+    Let $B_{l}$ and $B_{r}$ be TU canonical signings. Then the corresponding canonical signing $B$ is TU.
 \end{lemma}
 
 \begin{proof}
-    Define $A_{1}$, $A_{2}$, $c_{0}$, $c_{1}$, $r_{0}$, $r_{1}$ as in Lemma~\ref{lem:three_sum_canonical_signing_properties}. Note that canonical signing $B$ has the form of $C$ in the notation of Definition~\ref{def:three_sum_alt_form}.
+    Define $A_{l}$, $A_{r}$, $c_{0}$, $c_{1}$, $r_{0}$, $r_{1}$ as in Lemma~\ref{lem:three_sum_canonical_signing_properties}. Note that canonical signing $B$ has the form of $C$ in the notation of Definition~\ref{def:three_sum_alt_form}.
 
     Proof by induction.
 
-    Proposition for any $k \in \mathbb{Z}_{\geq 1}$: $\mathrm{Proposition}(A_{1}', A_{2}, c_{0}, c_{1}, r_{0}', r_{1}', k)$ holds for all $A_{1}'$, $r_{0}'$, and $r_{1}'$ satisfying the assumptions of Definition~\ref{def:three_sum_alt_form}.
+    Proposition for any $k \in \mathbb{Z}_{\geq 1}$: $\mathrm{Proposition}(A_{l}', A_{r}, c_{0}, c_{1}, r_{0}', r_{1}', k)$ holds for all $A_{l}'$, $r_{0}'$, and $r_{1}'$ satisfying the assumptions of Definition~\ref{def:three_sum_alt_form}.
 
     Base: The Proposition holds for $k = 1$ by Lemma~\ref{lem:three_sum_alt_form_1_TU}.
 
     Step: If the Proposition holds for some $k$, then it also holds for $k + 1$ by Lemma~\ref{lem:three_sum_alt_form_k_TU_induction}.
 
-    Conclusion: $\mathrm{Proposition}(A_{1}', A_{2}, c_{0}, c_{1}, r_{0}', r_{1}', k)$ holds for all $k \in \mathbb{Z}_{\geq 1}$.
+    Conclusion: $\mathrm{Proposition}(A_{l}', A_{r}, c_{0}, c_{1}, r_{0}', r_{1}', k)$ holds for all $k \in \mathbb{Z}_{\geq 1}$.
 
-    Specializing the conclusion to $A_{1}$, $A_{2}$, $c_{0}$, $c_{1}$, $r_{0}$, $r_{1}$ (obtained from $B_{1}$ and $B_{2}$ as described in the statement of Lemma~\ref{lem:three_sum_canonical_signing_properties}) shows that canonical signing $B$ is $k$-TU for every $k \in \mathbb{Z}_{\geq 1}$. Thus, $B$ is TU.
+    Specializing the conclusion to $A_{l}$, $A_{r}$, $c_{0}$, $c_{1}$, $r_{0}$, $r_{1}$ (obtained from $B_{l}$ and $B_{r}$ as described in the statement of Lemma~\ref{lem:three_sum_canonical_signing_properties}) shows that canonical signing $B$ is $k$-TU for every $k \in \mathbb{Z}_{\geq 1}$. Thus, $B$ is TU.
 \end{proof}
 
 \begin{corollary}
-    Suppose that $B_{1}^{(0)}$ and $B_{2}^{(0)}$ have TU signings. Then $B_{1} \oplus_{3} B_{2}$ has a TU signing.
+    Suppose that $B_{l}^{(0)}$ and $B_{r}^{(0)}$ have TU signings. Then $B_{l} \oplus_{3} B_{r}$ has a TU signing.
 \end{corollary}
 
 \begin{proof}[Proof sketch.]
