@@ -235,14 +235,10 @@ lemma Matrix.toCanonicalSigning_ExpandColsTU {X Y : Set α} {x₀ x₁ x' y₀ y
 lemma Matrix.toCanonicalSigning_ExpandRowsTU {X Y : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
     (Q : Matrix X Y ℚ) (hx₀ : x₀ ∈ X) (hx₁ : x₁ ∈ X) (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hy' : y' ∈ Y)
     (hQ : Q.IsTotallyUnimodular) :
-    let d₀ : (Y \ {y'}).Elem → ℚ := fun i => Q ⟨x₀, hx₀⟩ (Set.diff_subset.elem i)
-    let d₁ : (Y \ {y'}).Elem → ℚ := fun i => Q ⟨x₁, hx₁⟩ (Set.diff_subset.elem i)
+    let d₀ : (Y \ {y'}).Elem → ℚ := (Q ⟨x₀, hx₀⟩ <| Set.diff_subset.elem ·)
+    let d₁ : (Y \ {y'}).Elem → ℚ := (Q ⟨x₁, hx₁⟩ <| Set.diff_subset.elem ·)
     let Q' : Matrix (X \ {x₀, x₁}).Elem (Y \ {y'}).Elem ℚ := Q.submatrix Set.diff_subset.elem Set.diff_subset.elem
-    (Matrix.fromRows (Matrix.fromRows (Matrix.fromRows
-      (Matrix.fromRows (Matrix.fromRows
-        ((Matrix.fromRows (Matrix.fromRows Q' (▬d₀)) (▬(-d₀))))
-      (▬d₁)) (▬(-d₁)))
-    (▬(d₀ - d₁))) (▬(d₁ - d₀))) (▬0)).IsTotallyUnimodular :=
+    (Q' ⊟ ▬d₀ ⊟ ▬(-d₀) ⊟ ▬d₁ ⊟ ▬(-d₁) ⊟ ▬(d₀ - d₁) ⊟ ▬(d₁ - d₀) ⊟ ▬0).IsTotallyUnimodular :=
   sorry
 
 -- canonical signing of 3-sum constructed from TU signings of summands
@@ -838,7 +834,7 @@ lemma matrix3sumComposition_CanonicalSigning_Aₗ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Se
         | inl h => simp_all only [not_true_eq_false, D₀_unsigned]
         | inr h_1 => simp_all only [not_true_eq_false, D₀_unsigned]))
     -- actual statement
-    (Matrix.fromRows Aₗ D).IsTotallyUnimodular :=
+    (Aₗ ⊟ D).IsTotallyUnimodular := by
   sorry
 
 end CanonicalSigning
