@@ -83,7 +83,7 @@ def Matrix.abs [LinearOrderedAddCommGroup α] {m n : Type} (A : Matrix m n α) :
   Matrix.of (|A · ·|)
 
 -- We redeclare `|·|` instead of using the existing notation because the official `abs` requires a lattice.
-macro:max atomic("|" noWs) a:term noWs "|" : term => `(Matrix.abs $a)
+macro:max atomic("|" noWs) A:term noWs "|" : term => `(Matrix.abs $A)
 
 
 variable {T₁ T₂ S₁ S₂ : Set α} {β : Type}
