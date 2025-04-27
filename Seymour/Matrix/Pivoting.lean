@@ -306,7 +306,7 @@ private lemma Fin.reindexingAux_bijective {n : ℕ} (i : Fin n.succ) : i.reindex
 private noncomputable def Fin.reindexing {n : ℕ} (i : Fin n.succ) : Fin 1 ⊕ Fin n ≃ Fin n.succ :=
   Equiv.ofBijective i.reindexingAux i.reindexingAux_bijective
 
-private lemma Fin.reindexing_symm_eq_left {n : ℕ} (i k : Fin n.succ) (j : Fin 1) :
+private lemma reindexing_symm_eq_left {n : ℕ} (i k : Fin n.succ) (j : Fin 1) :
     i.reindexing.symm k = ◩j ↔ i = k := by
   unfold Fin.reindexing
   constructor <;> intro hk
@@ -319,7 +319,7 @@ private lemma Fin.reindexing_symm_eq_left {n : ℕ} (i k : Fin n.succ) (j : Fin 
   all_goals
     simp [hk]
 
-private lemma Fin.reindexing_symm_eq_right {n : ℕ} (i k : Fin n.succ) (j : Fin n) :
+private lemma reindexing_symm_eq_right {n : ℕ} (i k : Fin n.succ) (j : Fin n) :
     i.reindexing.symm k = ◪j ↔ k = (i.succAbove j) := by
   unfold Fin.reindexing
   constructor <;> intro hkj
@@ -355,10 +355,10 @@ private lemma Matrix.succAboveAt_block [DivisionRing F] {k : ℕ} (A : Matrix (F
   on_goal 3 => rw [Matrix.fromBlocks_apply₂₁]
   on_goal 4 => rw [Matrix.fromBlocks_apply₂₂]
   all_goals
-    try rw [Fin.reindexing_symm_eq_left] at hx
-    try rw [Fin.reindexing_symm_eq_left] at hy
-    try rw [Fin.reindexing_symm_eq_right] at hx
-    try rw [Fin.reindexing_symm_eq_right] at hy
+    try rw [reindexing_symm_eq_left] at hx
+    try rw [reindexing_symm_eq_left] at hy
+    try rw [reindexing_symm_eq_right] at hx
+    try rw [reindexing_symm_eq_right] at hy
     subst hx hy
     simp
 
@@ -372,6 +372,7 @@ private lemma Matrix.shortTableauPivot_submatrix_eq_blockish [Field F] {k : ℕ}
   ext i j
   simp [Matrix.mul_apply, mul_right_comm]
 
+-- TODO can we make it spawn automatically?
 private noncomputable instance invertible_matrix_fin1_of_ne_zero [Field F] {A : Matrix (Fin 1) (Fin 1) F} {x y : Fin 1}
     (hAxy : A x y ≠ 0) :
     Invertible A :=
@@ -389,7 +390,7 @@ private lemma shortTableauPivot_submatrix_succAbove_succAbove_det_abs_eq_div [Li
   rw [
     Matrix.shortTableauPivot_submatrix_eq_blockish, eq_div_iff_mul_eq (abs_ne_zero.← hAxy), mul_comm,
     ←show (A.block₁₁ k x y).det = A x y from Matrix.det_fin_one_of _,
-    ←abs_mul, ←Matrix.invOf_eq_nonsing_inv (A.block₁₁ k x y), ←Matrix.det_fromBlocks₁₁]
+    ←abs_mul, ←(A.block₁₁ k x y).invOf_eq_nonsing_inv, ←Matrix.det_fromBlocks₁₁]
   nth_rw 5 [A.succAboveAt_block x y]
   exact (Matrix.abs_det_submatrix_equiv_equiv ..).symm
 

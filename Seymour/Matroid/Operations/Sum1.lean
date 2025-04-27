@@ -110,5 +110,3 @@ theorem Matroid.Is1sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
   apply standardRepr1sumComposition_hasTuSigning
   · exact hMₗ
   · exact hMᵣ
-
-#print axioms standardRepr1sumComposition_hasTuSigning
