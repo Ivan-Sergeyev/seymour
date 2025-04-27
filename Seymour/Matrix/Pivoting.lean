@@ -372,21 +372,18 @@ private lemma Matrix.shortTableauPivot_submatrix_eq_blockish [Field F] {k : ℕ}
   ext i j
   simp [Matrix.mul_apply, mul_right_comm]
 
--- TODO can we make it spawn automatically?
-private noncomputable instance invertible_matrix_fin1_of_ne_zero [Field F] {A : Matrix (Fin 1) (Fin 1) F} {x y : Fin 1}
-    (hAxy : A x y ≠ 0) :
+private noncomputable instance invertible_matrix_fin1_of_ne_zero [Field F] {A : Matrix (Fin 1) (Fin 1) F}
+    [hAxy : NeZero (A 0 0)] :
     Invertible A :=
   A.invertibleOfLeftInverse A⁻¹ (by
     ext i j
     rw [i.eq_zero, j.eq_zero]
-    rw [x.eq_zero, y.eq_zero] at hAxy
-    simp [IsUnit.inv_mul_cancel (IsUnit.mk0 _ hAxy)])
+    simp [IsUnit.inv_mul_cancel (IsUnit.mk0 _ hAxy.out)])
 
 private lemma shortTableauPivot_submatrix_succAbove_succAbove_det_abs_eq_div [LinearOrderedField F] {k : ℕ}
     {A : Matrix (Fin k.succ) (Fin k.succ) F} {x y : Fin k.succ} (hAxy : A x y ≠ 0) :
     |((A.shortTableauPivot x y).submatrix x.succAbove y.succAbove).det| = |A.det| / |A x y| := by
-  have : Invertible (A.block₁₁ k x y)
-  · exact invertible_matrix_fin1_of_ne_zero (show A.block₁₁ k x y x y ≠ 0 by simpa)
+  have : NeZero (A.block₁₁ k x y 0 0) := ⟨by simpa⟩
   rw [
     Matrix.shortTableauPivot_submatrix_eq_blockish, eq_div_iff_mul_eq (abs_ne_zero.← hAxy), mul_comm,
     ←show (A.block₁₁ k x y).det = A x y from Matrix.det_fin_one_of _,
