@@ -1,4 +1,4 @@
-import Seymour.Matroid.Notions.Regularity
+import Seymour.Matroid.Properties.Regularity
 
 
 variable {α : Type} [DecidableEq α]

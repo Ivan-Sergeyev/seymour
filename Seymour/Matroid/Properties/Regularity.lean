@@ -15,7 +15,7 @@ def Matroid.IsRegular {α : Type} (M : Matroid α) : Prop :=
     the same as entries in `U` on respective positions up to signs.
     Do not ask `U.IsTotallyUnimodular` ... see `Matrix.overZ2_isTotallyUnimodular` for example! -/
 def Matrix.IsTuSigningOf {X Y : Type} (A : Matrix X Y ℚ) {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
-  A.IsTotallyUnimodular ∧ ∀ i j, |A i j| = (U i j).val
+  A.IsTotallyUnimodular ∧ ∀ i : X, ∀ j : Y, |A i j| = (U i j).val
 
 /-- Matrix `U` has a TU signing iff there is a rational TU matrix whose entries are the same as those in `U` up to signs. -/
 def Matrix.HasTuSigning {X Y : Type} {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
@@ -69,17 +69,17 @@ private def Matrix.suppAux_unexpand : Lean.PrettyPrinter.Unexpander
 
 variable {α : Type}
 
-/-- Matroids are regular up to map equivalence -/
+/-- Matroids are regular up to map equivalence. -/
 @[simp]
-lemma Matroid.isRegular_mapEquiv_iff {β : Type} (M : Matroid α) (f : α ≃ β) : (M.mapEquiv f).IsRegular ↔ M.IsRegular := by
-  constructor <;> intro ⟨X, Y, A, hA, hAM⟩
-  on_goal 1 => let f' := f.symm
-  on_goal 2 => let f' := f
+lemma Matroid.isRegular_mapEquiv_iff {β : Type} (M : Matroid α) (e : α ≃ β) : (M.mapEquiv e).IsRegular ↔ M.IsRegular := by
+  constructor
+  <;> intro ⟨X, Y, A, hA, hAM⟩
+  on_goal 1 => let f := e.symm
+  on_goal 2 => let f := e
   all_goals
-    use f' '' X
-    use f' '' Y
-    use A.submatrix (f'.image X).symm (f'.image Y).symm
-    refine ⟨Matrix.IsTotallyUnimodular.submatrix _ _ hA, ?_⟩
+    use f '' X
+    use f '' Y
+    use A.submatrix (f.image X).symm (f.image Y).symm, hA.submatrix _ _
     sorry
 
 variable [DecidableEq α]
@@ -162,8 +162,8 @@ private lemma Matrix.exists_finite_allColsIn {X Y R : Type} [Fintype X] [Decidab
     let e : Y' ↪ C := ⟨fun i => ⟨(A · i), by use i⟩, fun ⟨_, w₁, ⟨y₁, hy₁⟩, _⟩ ⟨_, w₂, ⟨y₂, hy₂⟩, _⟩ hzz => by
       simp_all only [Subtype.mk.injEq, C, Y']
       subst hy₁ hy₂
-      have hack_y₁ := Classical.choose_spec (⟨y₁, rfl⟩ : ∃ y : Y, (A · y) = (A · y₁))
-      have hack_y₂ := Classical.choose_spec (⟨y₂, rfl⟩ : ∃ y : Y, (A · y) = (A · y₂))
+      have := Classical.choose_spec (⟨y₁, rfl⟩ : ∃ y : Y, (A · y) = (A · y₁))
+      have := Classical.choose_spec (⟨y₂, rfl⟩ : ∃ y : Y, (A · y) = (A · y₂))
       simp_all only⟩
     have S_finite : S.Finite := Subtype.finite
     have S'_finite : S'.Finite := S_finite.image (fun i : X => · i |>.val)
@@ -317,7 +317,7 @@ private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatr
     if h0 : V.A i j = 0 then
       simp_all
     else
-      have h1 := Fin2_eq_1_of_ne_0 h0
+      have h1 := fin2_eq_1_of_ne_0 h0
       simp_all
       intro hS0
       rw [hS0, abs_zero, ZMod.cast] at hSV

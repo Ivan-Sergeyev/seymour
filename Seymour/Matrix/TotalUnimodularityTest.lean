@@ -8,7 +8,6 @@ import Seymour.Basic.SignTypeCast
 def Matrix.testTotallyUnimodular {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Bool :=
   ∀ k : ℕ, k ≤ min m n → ∀ x : Fin k → Fin m, ∀ y : Fin k → Fin n, (A.submatrix x y).det ∈ SignType.cast.range
 
-
 lemma Matrix.isTotallyUnimodular_of_aux_le {m n : ℕ} {A : Matrix (Fin m) (Fin n) ℚ}
     (hA : ∀ k : ℕ, k ≤ m → ∀ x : Fin k → Fin m, ∀ y : Fin k → Fin n, (A.submatrix x y).det ∈ SignType.cast.range) :
     A.IsTotallyUnimodular := by
@@ -36,7 +35,7 @@ lemma Matrix.isTotallyUnimodular_of_testTotallyUnimodular {m n : ℕ} (A : Matri
     rw [←Matrix.det_transpose]
     exact hA k (hk.trans_eq hn.symm) g f
 
-theorem Matrix.testTotallyUnimodular_eq_isTotallyUnimodular {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) :
+lemma Matrix.testTotallyUnimodular_eq_isTotallyUnimodular {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) :
     A.testTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   constructor
   · exact A.isTotallyUnimodular_of_testTotallyUnimodular
@@ -49,131 +48,119 @@ theorem Matrix.testTotallyUnimodular_eq_isTotallyUnimodular {m n : ℕ} (A : Mat
 instance {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Decidable A.IsTotallyUnimodular :=
   decidable_of_iff _ A.testTotallyUnimodular_eq_isTotallyUnimodular
 
-theorem filter_in {n : ℕ} {s : Finset (Fin n)} :
-    (List.filter (· ∈ s) (List.finRange n)).length = s.card := by
-  have := (List.filter (· ∈ s) (List.finRange n)).toFinset_card_of_nodup (List.Nodup.filter _ (List.nodup_finRange n))
+lemma filter_length_card {n : ℕ} {s : Finset (Fin n)} : ((List.finRange n).filter (· ∈ s)).length = s.card := by
+  have := ((List.finRange n).filter (· ∈ s)).toFinset_card_of_nodup (List.Nodup.filter _ (List.nodup_finRange n))
   simp_all
 
-abbrev Matrix.square_set_submatrix {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ)
-      (r : Finset (Fin m)) (c : Finset (Fin n)) (h : r.card = c.card) : Matrix (Fin r.card) (Fin r.card) ℚ :=
-  Matrix.submatrix A
-    (fun p : Fin r.card => ((List.finRange m).filter (· ∈ r))[p]'(by convert p.isLt; exact filter_in))
-    (fun p : Fin r.card => ((List.finRange n).filter (· ∈ c))[p]'(by convert p.isLt; rw [h]; exact filter_in))
+def Matrix.squareSetSubmatrix {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ)
+    {X : Finset (Fin m)} {Y : Finset (Fin n)} (hXY : X.card = Y.card) :
+    Matrix (Fin X.card) (Fin X.card) ℚ :=
+  A.submatrix
+    (fun p : Fin X.card => ((List.finRange m).filter (· ∈ X))[p]'(by convert p.isLt; exact filter_length_card))
+    (fun p : Fin X.card => ((List.finRange n).filter (· ∈ Y))[p]'(by convert p.isLt; exact hXY ▸ filter_length_card))
 
 /-- Faster algorithm for testing total unimodularity without permutation with pending formal guarantees. -/
 def Matrix.testTotallyUnimodularFast {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Bool :=
-  ∀ (r : Finset (Fin m)) (c : Finset (Fin n)) (h : r.card = c.card),
-    (A.square_set_submatrix r c h).det ∈ SignType.cast.range
+  ∀ (X : Finset (Fin m)) (Y : Finset (Fin n)) (hXY : X.card = Y.card),
+    (A.squareSetSubmatrix hXY).det ∈ SignType.cast.range
 
-lemma Matrix.abs_det_reindex_self_self {m n : Type} [DecidableEq n] [Fintype n]
-      [DecidableEq m] [Fintype m]
-      {R : Type} [LinearOrderedCommRing R] (e₁ e₂ : m ≃ n) (A : Matrix m m R) :
-    |((reindex e₁ e₂) A).det| = |A.det| :=
-  Matrix.abs_det_submatrix_equiv_equiv e₁.symm e₂.symm A
+lemma Matrix.abs_det_reindex_self_self {m n : Type} [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
+    {R : Type} [LinearOrderedCommRing R] (A : Matrix m m R) (e₁ e₂ : m ≃ n) :
+    |(A.reindex e₁ e₂).det| = |A.det| :=
+  A.abs_det_submatrix_equiv_equiv e₁.symm e₂.symm
 
-lemma Set.range_eq_range_iff_exists_comp_equiv {α β γ : Type}
-      {f : α → γ} {g : β → γ} (hf : f.Injective) (hg : g.Injective) :
-    Set.range f = Set.range g ↔ ∃ (h : α ≃ β), f = g ∘ h := by
+lemma range_eq_range_iff_exists_comp_equiv {α β γ : Type} {f : α → γ} {g : β → γ} (hf : f.Injective) (hg : g.Injective) :
+    f.range = g.range ↔ ∃ e : α ≃ β, f = g ∘ e := by
   constructor
   · classical
     intro hfg
-    let j := fun (a : α) =>
-      have : ∃ (b : β), g b = f a := by
-        simp_rw [range, Set.ext_iff] at hfg
-        exact (hfg (f a)).→ (by simp)
-      this
-    let rj := fun (b : β) =>
-      have : ∃ (a : α), f a = g b := by
-        simp_rw [range, Set.ext_iff] at hfg
-        exact (hfg (g b)).← (by simp)
-      this
-    use Equiv.ofBijective (fun a => (j a).choose) ⟨fun a₁ a₂ haa =>
+    have hf' := fun (a : α) =>
+      show ∃ (b : β), g b = f a by
+      simp_rw [Set.range, Set.ext_iff] at hfg
+      exact (hfg (f a)).→ (by simp)
+    have hg' := fun (b : β) =>
+      show ∃ (a : α), f a = g b by
+      simp_rw [Set.range, Set.ext_iff] at hfg
+      exact (hfg (g b)).← (by simp)
+    use Equiv.ofBijective (fun a => (hf' a).choose) ⟨fun a₁ a₂ haa =>
       by
         simp only at haa
-        have ha₁ := (j a₁).choose_spec
+        have ha₁ := (hf' a₁).choose_spec
         rw [haa] at ha₁
-        have ha₂ := (j a₂).choose_spec
+        have ha₂ := (hf' a₂).choose_spec
         rw [ha₁] at ha₂
         exact hf ha₂,
       by
         rw [Function.surjective_iff_hasRightInverse]
-        use (fun b => (rj b).choose)
+        use (fun b => (hg' b).choose)
         intro b
-        have := (j ((fun b => (rj b).choose) b)).choose_spec
-        simp only [(rj b).choose_spec] at this ⊢
+        have hgf := (hf' ((fun b => (hg' b).choose) b)).choose_spec
+        simp only [(hg' b).choose_spec] at hgf ⊢
         apply hg
-        exact this⟩
+        exact hgf⟩
     simp only [Function.comp_def, Equiv.ofBijective_apply]
-    ext x
-    exact (j x).choose_spec.symm
+    ext a
+    exact (hf' a).choose_spec.symm
   · rintro ⟨e, rfl⟩
-    simp_rw [range]
-    ext x
-    simp_all only [Function.comp_apply, mem_setOf_eq]
-    constructor <;> rintro ⟨w, rfl⟩
+    simp_rw [Set.range]
+    ext
+    simp_all only [Function.comp_apply, Set.mem_setOf_eq]
+    constructor
+    <;> rintro ⟨w, rfl⟩
     · exact exists_apply_eq_apply g (e w)
     · use e.symm w
       rw [Equiv.apply_symm_apply]
 
-lemma Set.range_of_list_get {α : Type} [DecidableEq α] {n : ℕ} {s : List α} (hn : n = s.length) :
+lemma range_of_list_get {α : Type} [DecidableEq α] {n : ℕ} {s : List α} (hn : n = s.length) :
     (fun x : Fin n => s[x]).range = s.toFinset := by
-  ext x
-  simp_rw [Function.range, Fin.getElem_fin, List.coe_toFinset, mem_range, mem_setOf_eq]
-  constructor <;> intro h
-  · obtain ⟨w, rfl⟩ := h
+  ext a
+  simp_rw [Function.range, Fin.getElem_fin, List.coe_toFinset, Set.mem_range, Set.mem_setOf_eq]
+  constructor
+  <;> intro ha
+  · obtain ⟨_, rfl⟩ := ha
     simp_rw [List.getElem_mem]
-  · have ⟨i, hi, hii⟩ := List.getElem_of_mem h
-    use (Fin.mk i (by rw [hn]; exact hi))
+  · have ⟨i, hi, _⟩ := List.getElem_of_mem ha
+    use ⟨i, hn ▸ hi⟩
 
-lemma Matrix.submatrix_eq_submatrix_reindex {r c n o p q : Type}
-      [DecidableEq r] [Fintype r] [DecidableEq c] [Fintype c] [DecidableEq n] [Fintype n]
-      [DecidableEq o] [Fintype o] [DecidableEq p] [Fintype p] [DecidableEq q] [Fintype q]
-      {R : Type} [CommRing R]
-      {nr : n → r} {oc : o → c} {pr : p → r} {qc : q → c}
-      (hnr : nr.Injective) (hoc : oc.Injective) (hpr : pr.Injective) (hqc : qc.Injective)
-      (hnpr : nr.range = pr.range) (hoqc : oc.range = qc.range)
-      (A : Matrix r c R) :
-    ∃ e₁ e₂, (A.submatrix nr oc) = (A.submatrix pr qc).reindex e₁ e₂ := by
-  obtain ⟨e₁, rfl⟩ := (Set.range_eq_range_iff_exists_comp_equiv hnr hpr).→ hnpr
-  obtain ⟨e₂, rfl⟩ := (Set.range_eq_range_iff_exists_comp_equiv hoc hqc).→ hoqc
-  refine ⟨e₁.symm, e₂.symm, ?_⟩
-  simp
+lemma Matrix.submatrix_eq_submatrix_reindex {r c n o p q α : Type}
+    [DecidableEq r] [Fintype r] [DecidableEq c] [Fintype c] [DecidableEq n] [Fintype n]
+    [DecidableEq o] [Fintype o] [DecidableEq p] [Fintype p] [DecidableEq q] [Fintype q]
+    {f₁ : n → r} {g₁ : o → c} {f₂ : p → r} {g₂ : q → c}
+    (A : Matrix r c α) (hf₁ : f₁.Injective) (hg₁ : g₁.Injective) (hf₂ : f₂.Injective) (hg₂ : g₂.Injective)
+    (hff : f₁.range = f₂.range) (hgg : g₁.range = g₂.range) :
+    ∃ e₁ : p ≃ n, ∃ e₂ : q ≃ o, (A.submatrix f₁ g₁) = (A.submatrix f₂ g₂).reindex e₁ e₂ := by
+  obtain ⟨e₁, rfl⟩ := (range_eq_range_iff_exists_comp_equiv hf₁ hf₂).→ hff
+  obtain ⟨e₂, rfl⟩ := (range_eq_range_iff_exists_comp_equiv hg₁ hg₂).→ hgg
+  exact ⟨e₁.symm, e₂.symm, by simp⟩
 
 /-- A fast version of `Matrix.testTotallyUnimodular` which doesn't test every permutation. -/
 lemma Matrix.isTotallyUnimodular_of_testTotallyUnimodularFast {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) :
     A.testTotallyUnimodularFast → A.IsTotallyUnimodular := by
-  rw [testTotallyUnimodularFast]
-  intro a k f g hf hg
-  simp_all only [Fintype.card_coe, Function.range, Fin.getElem_fin,
-    decide_eq_true_eq]
+  rw [Matrix.testTotallyUnimodularFast]
+  intro hA k f g hf hg
+  simp_all only [Fintype.card_coe, Fin.getElem_fin, decide_eq_true_eq]
   simp_rw [(in_signTypeCastRange_iff_abs (A.submatrix f g).det)]
-  have hfg : f.range.toFinset.card = g.range.toFinset.card := (by
-    simp_rw [Function.range, Set.toFinset_card, Set.card_range_of_injective hf, Set.card_range_of_injective hg])
-  obtain ⟨e₁, e₂, hee⟩ := @Matrix.submatrix_eq_submatrix_reindex
-    _ _ (Fin f.range.toFinset.card) (Fin f.range.toFinset.card) _ _
-    _ _ _ _ _ _  _ _ _ _ _ _ _ _
-    (fun p => ((List.finRange m).filter (· ∈ f.range.toFinset))[p]'(by convert p.isLt; exact filter_in))
-    (fun p => ((List.finRange n).filter (· ∈ g.range.toFinset))[p]'(by convert p.isLt; rw [hfg]; exact filter_in))
+  have hfg : f.range.toFinset.card = g.range.toFinset.card
+  · simp_rw [Set.toFinset_card, Set.card_range_of_injective hf, Set.card_range_of_injective hg]
+  obtain ⟨e₁, e₂, hee⟩ := @A.submatrix_eq_submatrix_reindex
+    _ _ (Fin f.range.toFinset.card) (Fin f.range.toFinset.card) _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+    (fun p => ((List.finRange m).filter (· ∈ f.range.toFinset))[p]'(by convert p.isLt; exact filter_length_card))
+    (fun p => ((List.finRange n).filter (· ∈ g.range.toFinset))[p]'(by convert p.isLt; rw [hfg]; exact filter_length_card))
     f g
-    (fun a₁ a₂ haa => by
-      have := (List.nodup_iff_injective_get.→ <| List.Nodup.filter _ (List.nodup_finRange m)) haa
-      simp_rw [Fin.mk.injEq, Fin.val_inj] at this
-      exact this)
-    (fun a₁ a₂ haa => by
-      have := (List.nodup_iff_injective_get.→ <| List.Nodup.filter _ (List.nodup_finRange n)) haa
-      simp_rw [Fin.mk.injEq, Fin.val_inj] at this
-      exact this)
+    (fun a₁ a₂ haa => by simpa [Fin.mk.injEq, Fin.val_inj] using
+        (List.nodup_iff_injective_get.→ ((List.nodup_finRange m).filter _) haa))
+    (fun a₁ a₂ haa => by simpa [Fin.mk.injEq, Fin.val_inj] using
+        (List.nodup_iff_injective_get.→ ((List.nodup_finRange n).filter _) haa))
     hf hg
     (by
-      rw [Set.range_of_list_get (filter_in.symm)]
+      rw [range_of_list_get filter_length_card.symm]
       simp
     )
     (by
-      rw [Set.range_of_list_get (by rw [hfg]; exact filter_in.symm)]
+      rw [range_of_list_get (by rw [hfg]; exact filter_length_card.symm)]
       simp
     )
-    A
-  have := a f.range.toFinset g.range.toFinset hfg
-  rw [square_set_submatrix, hee, in_signTypeCastRange_iff_abs (((reindex e₁ e₂) (A.submatrix f g))).det] at this
-  rw [←Matrix.abs_det_reindex_self_self e₁ e₂ (A.submatrix f g)]
-  exact this
+  have hAfg := hA f.range.toFinset g.range.toFinset hfg
+  rw [Matrix.squareSetSubmatrix, hee, in_signTypeCastRange_iff_abs ((A.submatrix f g).reindex e₁ e₂).det] at hAfg
+  rw [←(A.submatrix f g).abs_det_reindex_self_self e₁ e₂]
+  exact hAfg

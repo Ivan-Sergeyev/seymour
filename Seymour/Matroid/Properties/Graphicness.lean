@@ -4,27 +4,27 @@ import Seymour.Matroid.Operations.Duality
 /-- Column of a node-edge incidence matrix is either all `0`,
     or has exactly one `+1` entry, exactly one `-1` entry, and all other elements `0`. -/
 def IsIncidenceMatrixColumn {m : Type} [DecidableEq m] (v : m → ℚ) : Prop :=
-  (v = 0) ∨ (∃ x₁ x₂ : m, x₁ ≠ x₂ ∧ v x₁ = 1 ∧ v x₂ = -1 ∧ (∀ i : m, i ≠ x₁ → i ≠ x₂ → v i = 0))
+  (v = 0) ∨ (∃ i₁ i₂ : m, i₁ ≠ i₂ ∧ v i₁ = 1 ∧ v i₂ = -1 ∧ (∀ i : m, i ≠ i₁ → i ≠ i₂ → v i = 0))
 
--- under additional assumption that `m` is nonempty, `IsIncidenceMatrixColumn v` is equivalent to:
--- `∃ x₁ x₂ : m, v = Function.update (0 : m → ℚ) x₁ 1 + Function.update (0 : m → ℚ) x₂ (-1)`
+-- Under additional assumption that `m` is nonempty, `IsIncidenceMatrixColumn v` is equivalent to:
+-- `∃ i₁ i₂ : m, v = Function.update (0 : m → ℚ) i₁ 1 + Function.update (0 : m → ℚ) i₂ (-1)`
 
 /-- Matrix is called graphic iff it is a node-edge incidence matrix of a (directed) graph. -/
 def Matrix.IsGraphic {m n : Type} [DecidableEq m] (A : Matrix m n ℚ) : Prop :=
   ∀ y : n, IsIncidenceMatrixColumn (A · y)
 
-/-- The column function can be defined as an if statement with membership. We write it in this form
-to satisfy `Fintype.sum_ite_mem`. -/
+/-- The column function can be defined as an if statement with membership.
+    We write it in this form to satisfy `Fintype.sum_ite_mem`. -/
 lemma IsIncidenceMatrixColumn.eq_if_mem {m : Type} [DecidableEq m] {v : m → ℚ} (hv : IsIncidenceMatrixColumn v) :
-    (v = 0) ∨ (∃ x₁ x₂ : m, x₁ ≠ x₂ ∧ v = (fun x ↦ if x ∈ [x₁, x₂].toFinset then (if x = x₁ then 1 else -1) else 0)) := by
-  refine Or.imp_right (fun hv ↦ ?_) hv
-  peel hv with x₁ x₂ h
-  refine ⟨h.1, ?_⟩
+    v = 0 ∨ ∃ i₁ i₂ : m, i₁ ≠ i₂ ∧ v = (fun i : m => if i ∈ [i₁, i₂].toFinset then (if i = i₁ then 1 else -1) else 0) := by
+  refine Or.imp_right (fun hv => ?_) hv
+  peel hv with i₁ i₂ hii
+  refine ⟨hii.left, ?_⟩
   simp only [List.toFinset_cons, List.toFinset_nil, LawfulSingleton.insert_emptyc_eq, Finset.mem_insert, Finset.mem_singleton]
-  ext x
-  by_cases x = x₁
+  ext i
+  by_cases i = i₁
   · simp_all
-  by_cases x = x₂
+  by_cases i = i₂
   · simp_all
   simp_all
 
@@ -35,12 +35,12 @@ lemma IsIncidenceMatrixColumn.elem_in_signTypeCastRange {m : Type} [DecidableEq 
   cases hv with
   | inl hv => simp [hv]
   | inr hv =>
-    obtain ⟨x₁, x₂, hxx, hvx₁, hvx₂, hvnxx⟩ := hv
-    by_cases hix₁ : i = x₁
-    · simp [hix₁, hvx₁]
-    by_cases hix₂ : i = x₂
-    · simp [hix₂, hvx₂]
-    simp [hvnxx i hix₁ hix₂]
+    obtain ⟨i₁, i₂, hii, hvi₁, hvi₂, hvnii⟩ := hv
+    by_cases hii₁ : i = i₁
+    · simp [hii₁, hvi₁]
+    by_cases hii₂ : i = i₂
+    · simp [hii₂, hvi₂]
+    simp [hvnii i hii₁ hii₂]
 
 /-- The sum of a column of an incidence matrix is `0`. -/
 lemma IsIncidenceMatrixColumn.sum_zero {m : Type} [Fintype m] [DecidableEq m] {v : m → ℚ} (hv : IsIncidenceMatrixColumn v) :
@@ -55,67 +55,66 @@ lemma IsIncidenceMatrixColumn.sum_zero {m : Type} [Fintype m] [DecidableEq m] {v
 
 /-- Every element of a graphic matrix is `1`, `0`, or `-1`. -/
 lemma Matrix.IsGraphic.elem_in_signTypeCastRange {m n : Type} [DecidableEq m] {A : Matrix m n ℚ}
-    (hA : A.IsGraphic) (x : m) (y : n) :
-    A x y ∈ SignType.cast.range :=
-  (hA y).elem_in_signTypeCastRange x
+    (hA : A.IsGraphic) (i : m) (j : n) :
+    A i j ∈ SignType.cast.range :=
+  (hA j).elem_in_signTypeCastRange i
 
 /-- Column of a node-edge incidence matrix has either zero or two non-zero entries. -/
 -- future refactor: it's probably easier to unfold the definition in-place to get this result
 lemma IsIncidenceMatrixColumn.zero_or_two_nonzeros {m : Type} [DecidableEq m] {v : m → ℚ} (hv : IsIncidenceMatrixColumn v) :
-    (v = 0) ∨ (∃ x₁ x₂ : m, x₁ ≠ x₂ ∧ ∀ i, i ≠ x₁ → i ≠ x₂ → v i = 0) :=
-  Or.imp_right (fun ⟨x₁, x₂, hxx, _, _, hvnxx⟩ ↦ ⟨x₁, x₂, hxx, hvnxx⟩) hv
+    (v = 0) ∨ (∃ i₁ i₂ : m, i₁ ≠ i₂ ∧ ∀ i, i ≠ i₁ → i ≠ i₂ → v i = 0) :=
+  Or.imp_right (fun ⟨i₁, i₂, hii, _, _, hvnii⟩ => ⟨i₁, i₂, hii, hvnii⟩) hv
 
 /-- Column of a node-edge incidence matrix has either zero or two non-zero entries. -/
 lemma Matrix.IsGraphic.col_zero_or_two_nonzeros {m n : Type} [DecidableEq m] {A : Matrix m n ℚ} (hA : A.IsGraphic) (y : n) :
-    ((A · y) = 0) ∨ (∃ x₁ x₂ : m, x₁ ≠ x₂ ∧ ∀ i, i ≠ x₁ → i ≠ x₂ → (A · y) i = 0) :=
+    ((A · y) = 0) ∨ (∃ i₁ i₂ : m, i₁ ≠ i₂ ∧ ∀ i : m, i ≠ i₁ → i ≠ i₂ → (A · y) i = 0) :=
   (hA y).zero_or_two_nonzeros
 
 /-- The sum of the columns in a graphic matrix is `0`. -/
-lemma Matrix.IsGraphic.cols_sum_zero {m n : Type} [Fintype n] [Fintype m] [DecidableEq m] {A : Matrix m n ℚ} (hA : A.IsGraphic) :
+lemma Matrix.IsGraphic.cols_sum_zero {m n : Type} [Fintype n] [Fintype m] [DecidableEq m] {A : Matrix m n ℚ}
+    (hA : A.IsGraphic) :
     ∑ x, A x = 0 := by
   ext x
   rw [Pi.zero_apply, Fintype.sum_apply]
-  exact IsIncidenceMatrixColumn.sum_zero <| hA x
+  exact IsIncidenceMatrixColumn.sum_zero (hA x)
 
 /-- A nongraphic submatrix of a graphic matrix is only nongraphic iff there exists a column in it that only has
 one non-zero entry -/
 lemma Matrix.IsGraphic.submatrix_one_if_not_graphic {l m o n : Type} [DecidableEq l] [DecidableEq m]
-      {A : Matrix m n ℚ} (hA : A.IsGraphic)
-      (f : l → m) (g : o → n) (hf : f.Injective)
-      (h : ¬(A.submatrix f g).IsGraphic) :
-    ∃ y x, ((A.submatrix f g x y = 1 ∨ A.submatrix f g x y = -1)) ∧
-      (∀ i : l, i ≠ x → (A.submatrix f g) i y = 0) := by
-  simp_rw [Matrix.IsGraphic, IsIncidenceMatrixColumn, Matrix.submatrix_apply, ne_eq] at h
-  push_neg at h
-  obtain ⟨y, hy⟩ := h
+    {A : Matrix m n ℚ} (hA : A.IsGraphic) {f : l → m} {g : o → n} (hf : f.Injective) (hAfg : ¬(A.submatrix f g).IsGraphic) :
+    ∃ y : o, ∃ x : l,
+      ((A.submatrix f g x y = 1 ∨ A.submatrix f g x y = -1)) ∧ (∀ i : l, i ≠ x → (A.submatrix f g) i y = 0) := by
+  simp_rw [Matrix.IsGraphic, IsIncidenceMatrixColumn, Matrix.submatrix_apply, ne_eq] at hAfg
+  push_neg at hAfg
+  obtain ⟨y, hy⟩ := hAfg
   use y
-  rcases hA (g y) with (h | ⟨x₁, x₂, hxx⟩)
-  · absurd hy.1
-    rw [funext_iff] at h
+  rcases hA (g y) with (hAg | ⟨i₁, i₂, hii⟩)
+  · absurd hy.left
+    rw [funext_iff] at hAg
     ext x
-    simp_all [h (f x)]
-  · by_cases hxq : x₁ ∈ Set.range f ∨ x₂ ∈ Set.range f
+    simp_all [hAg (f x)]
+  · by_cases hxq : i₁ ∈ Set.range f ∨ i₂ ∈ Set.range f
     · simp_rw [Matrix.submatrix_apply, ne_eq]
       rcases hxq with (⟨x, hx⟩ | ⟨x, hx⟩)
       all_goals
         use x
-        simp_rw [ne_eq] at hxx
+        simp_rw [ne_eq] at hii
         simp_rw [hx]
-        refine ⟨by simp_all [hxx.2.1, hxx.2.2.1], fun i hi ↦ ?_⟩
-      · refine hxx.2.2.2 (f i) ((Function.Injective.ne_iff' hf hx).← hi) ?_
-        by_contra!
-        subst hx this
-        obtain ⟨ei, hyei⟩ := hy.2 x i (by symm; exact hi) hxx.2.1 hxx.2.2.1
-        exact absurd (hxx.2.2.2 (f ei) (hf.ne hyei.1) (hf.ne hyei.2.1)) hyei.2.2
-      · refine hxx.2.2.2 (f i) ?_ ((Function.Injective.ne_iff' hf hx).← hi)
-        by_contra!
-        subst hx this
-        obtain ⟨ei, hyei⟩ := hy.2 i x hi hxx.2.1 hxx.2.2.1
-        exact absurd (hxx.2.2.2 (f ei) (hf.ne hyei.1) (hf.ne hyei.2.1)) hyei.2.2
+        refine ⟨by simp [hii.right.left, hii.right.right.left], fun i hi => ?_⟩
+      · refine hii.right.right.right (f i) ((hf.ne_iff' hx).← hi) ?_
+        by_contra! hfi
+        subst hx hfi
+        obtain ⟨i', hyi'⟩ := hy.right x i (Ne.symm hi) hii.right.left hii.right.right.left
+        exact absurd (hii.right.right.right (f i') (hf.ne hyi'.left) (hf.ne hyi'.right.left)) hyi'.right.right
+      · refine hii.right.right.right (f i) ?_ ((hf.ne_iff' hx).← hi)
+        by_contra! hfi
+        subst hx hfi
+        obtain ⟨i', hyi'⟩ := hy.right i x hi hii.right.left hii.right.right.left
+        exact absurd (hii.right.right.right (f i') (hf.ne hyi'.left) (hf.ne hyi'.right.left)) hyi'.right.right
     · rw [not_or] at hxq
-      absurd hy.1
-      ext i
-      have := hxx.2.2.2 (f i) (by simp_all) (by simp_all)
+      absurd hy.left
+      ext j
+      have := hii.right.right.right (f j)
       simp_all
 
 variable {α : Type} [DecidableEq α]
@@ -128,10 +127,10 @@ def Matroid.IsGraphic (M : Matroid α) : Prop :=
 def Matroid.IsCographic (M : Matroid α) : Prop :=
   M✶.IsGraphic
 
--- We follow the proof from https://math.stackexchange.com/a/4801275/1184658
 /-- Node-edge incidence matrix is totally unimodular. -/
 lemma Matrix.IsGraphic.isTotallyUnimodular {X Y : Set α} {A : Matrix X Y ℚ} (hA : A.IsGraphic) :
     A.IsTotallyUnimodular := by
+  -- We follow the proof from https://math.stackexchange.com/a/4801275/1184658
   intro k
   induction k with
   | zero => simp
@@ -143,30 +142,28 @@ lemma Matrix.IsGraphic.isTotallyUnimodular {X Y : Set α} {A : Matrix X Y ℚ} (
       · use SignType.zero
         simp only [SignType.zero_eq_zero, SignType.coe_zero]
         symm
-        -- we enter contradiction since there is no eq (instead of ne) for linearIndependent_cols_of_det_ne_zero
+        -- we enter contradiction since there is no `eq` (instead of `ne`) for `linearIndependent_cols_of_det_ne_zero`
         by_contra hA0
         have hl := Matrix.linearIndependent_rows_of_det_ne_zero hA0
         rw [Fintype.linearIndependent_iff] at hl
         have hl1 := hl (fun _ => 1)
         simp_rw [one_smul, one_ne_zero, forall_const] at hl1
         exact hl1 (Matrix.IsGraphic.cols_sum_zero hAfg)
-    · have ⟨y₁, x₁, hnAg⟩ := hA.submatrix_one_if_not_graphic f g hf hAfg
-      rw [Matrix.det_succ_column (A.submatrix f g) y₁]
+    · have ⟨j₁, i₁, hnAg⟩ := hA.submatrix_one_if_not_graphic hf hAfg
+      rw [(A.submatrix f g).det_succ_column j₁]
       simp_rw [Matrix.submatrix_apply]
-      -- TODO: this `have` is horrifically repetitive and ugly. there a weird hack here
-      -- (the extra 0 added to allow the future simp call to not delve into infinite recursion)
-      -- i would have liked to use `conv` here
-      have : ∀ (x : Fin (k + 1)),
-        (-1 : ℚ) ^ ((x : ℕ) + (y₁ : ℕ)) * A (f x) (g y₁) *
-          ((A.submatrix f g).submatrix x.succAbove y₁.succAbove).det =
-          if x = x₁ then (-1 : ℚ) ^ ((x : ℕ) + (y₁ : ℕ) + 0) * A (f x) (g y₁) *
-          ((A.submatrix f g).submatrix x.succAbove y₁.succAbove).det else 0 := fun x ↦ by
-        by_cases h : x = x₁ <;> simp_all
-      simp_rw [this, Fintype.sum_ite_eq' x₁]
+      have hAxj₁ : ∀ (x : Fin (k + 1)),
+          (-1 : ℚ) ^ (x.val + j₁.val) * A (f x) (g j₁) * ((A.submatrix f g).submatrix x.succAbove j₁.succAbove).det =
+          if x = i₁ then
+            (-1 : ℤ) ^ (x.val + j₁.val + 0) * A (f x) (g j₁) * ((A.submatrix f g).submatrix x.succAbove j₁.succAbove).det
+          else 0
+      · intro i
+        by_cases i = i₁ <;> simp_all
+      simp_rw [hAxj₁, Fintype.sum_ite_eq' i₁]
       repeat apply in_signTypeCastRange_mul_in_signTypeCastRange
-      · exact neg_one_pow_in_signTypeCastRange _
-      · exact Matrix.IsGraphic.elem_in_signTypeCastRange hA (f x₁) (g y₁)
-      · simp_rw [Matrix.submatrix_submatrix]
+      · apply neg_one_pow_in_signTypeCastRange
+      · exact Matrix.IsGraphic.elem_in_signTypeCastRange hA (f i₁) (g j₁)
+      · rw [Matrix.submatrix_submatrix]
         exact ih _ _ (hf.comp Fin.succAbove_right_injective) (hg.comp Fin.succAbove_right_injective)
 
 /-- Graphic matroid is regular. -/

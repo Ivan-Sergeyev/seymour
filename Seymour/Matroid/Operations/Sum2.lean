@@ -1,6 +1,6 @@
 import Seymour.Basic.FunctionToHalfSum
 import Seymour.Matrix.Pivoting
-import Seymour.Matroid.Notions.Regularity
+import Seymour.Matroid.Properties.Regularity
 import Seymour.Matrix.Determinants
 import Seymour.Matrix.PreTUness
 
@@ -395,3 +395,5 @@ theorem Matroid.Is2sumOf.isRegular {α : Type} [DecidableEq α] {M Mₗ Mᵣ : M
   apply standardRepr2sumComposition_hasTuSigning
   · exact hMₗ
   · exact hMᵣ
+
+#print axioms standardRepr2sumComposition_hasTuSigning

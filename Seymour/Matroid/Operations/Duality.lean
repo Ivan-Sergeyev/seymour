@@ -1,4 +1,4 @@
-import Seymour.Matroid.Notions.Regularity
+import Seymour.Matroid.Properties.Regularity
 
 open scoped Matrix
 
@@ -36,7 +36,7 @@ lemma StandardRepr.dual_isBase_iff [DivisionRing R] {S : StandardRepr α R} {G :
 /-- The dual of standard representation gives a dual matroid. -/
 lemma StandardRepr.dual_toMatroid [DivisionRing R] (S : StandardRepr α R) :
     S✶.toMatroid = S.toMatroid✶ := by
-  rw [← Matroid.dual_inj, Matroid.dual_dual, Matroid.ext_iff_isBase]
+  rw [←Matroid.dual_inj, Matroid.dual_dual, Matroid.ext_iff_isBase]
   constructor
   · rw [Matroid.dual_ground, StandardRepr.dual_ground]
   · intro G hG

@@ -419,37 +419,34 @@ lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype
 
 private lemma B_eq_B_of_same_matroid_same_X_aux {X Y : Set α} {B : Matrix Y X Z2} {D : Set X} {y : Y}
     {hX : ∀ a, Decidable (a ∈ X)} {hY : ∀ a, Decidable (a ∈ Y)} (hXXY : X ⊆ X ∪ Y) (hYXY : Y ⊆ X ∪ Y) -- redundant but keep
-    {l : (X ∪ Y).Elem →₀ Z2} (hl : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' D) (hly : l (Set.inclusion hYXY y) = 0)
+    {l : (X ∪ Y).Elem →₀ Z2} (hl : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' D) (hly : l (hYXY.elem y) = 0)
     {i : (X ∪ Y).Elem} (hiX : i.val ∈ X) (hlBi : ∑ a ∈ l.support, l a • B.uppendId a.toSum ⟨i, hiX⟩ = 0) :
     ∑ a ∈ (l.support.image Subtype.val).subtype (· ∈ X),
-      l (hXXY.elem a) • B.uppendId (Set.inclusion hXXY a).toSum ⟨i, hiX⟩ = 0 := by
+      l (hXXY.elem a) • B.uppendId (hXXY.elem a).toSum ⟨i, hiX⟩ = 0 := by
   rw [←Finset.sum_finset_coe] at hlBi
   convert hlBi
   apply Finset.sum_bij (fun a ha => ⟨hXXY.elem a, by simpa using ha⟩)
   · simp
   · simp
-  · intro h p
-    simp only [Finset.coe_sort_coe, HasSubset.Subset.elem, Finset.mem_subtype, Finset.mem_image,
-      Finsupp.mem_support_iff, ne_eq, Subtype.exists, Set.mem_union, exists_and_right,
-      exists_eq_right, Subtype.coe_prop, true_or, exists_true_left]
-    use h
-    simp only [Subtype.coe_eta, exists_prop, and_true]
-    refine ⟨?_, (l.mem_support_toFun h).→ (by simp)⟩
-    have h₁ : ↑h.val ∈ Subtype.val '' D := by
-      rcases hl h (by simp) with (hp | hp)
-      · have : h.val = Set.inclusion hYXY y := by
-          suffices h.val.val = (Set.inclusion hYXY y).val by exact Subtype.coe_inj.→ this
-          rw [Set.coe_inclusion hYXY y]
-          exact hp
-        rw [← this] at hly
+  · intro z _
+    simp only [HasSubset.Subset.elem, Finset.coe_sort_coe, Finset.mem_subtype, Finset.mem_image, Finsupp.mem_support_iff,
+      Subtype.exists, Subtype.coe_prop, Set.mem_union, exists_and_right, exists_true_left, exists_eq_right, true_or]
+    use z
+    simp only [exists_prop, and_true]
+    refine ⟨?_, (l.mem_support_toFun z).→ (by simp)⟩
+    have hzD : z.val.val ∈ Subtype.val '' D
+    · cases hl z (by simp) with
+      | inl hp =>
+        have hzy : z.val = hYXY.elem y := Subtype.coe_inj.→ hp
+        rw [←hzy] at hly
         exact absurd hly (l.mem_support_iff.→ (by simp))
-      · exact hp
-    have h₂ : Subtype.val '' D ⊆ X := by
-      rw [Set.image, Set.setOf_subset]
-      rintro hx ⟨⟨_, ha⟩, ⟨_, rfl⟩⟩
+      | inr hp => exact hp
+    have hDX : Subtype.val '' D ⊆ X
+    · rw [Set.image, Set.setOf_subset]
+      rintro _ ⟨⟨_, ha⟩, ⟨_, rfl⟩⟩
       exact ha
-    exact Set.mem_of_mem_of_subset h₁ h₂
-  · intro _ _
+    exact Set.mem_of_mem_of_subset hzD hDX
+  · intros
     rfl
 
 set_option maxHeartbeats 1000000 in
@@ -473,13 +470,13 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
         simp_rw [D₁, Set.mem_setOf_eq]
         rw [hx₁]
         norm_num
-      rw [hx₁, Fin2_eq_1_of_ne_0 hx₂]
+      rw [hx₁, fin2_eq_1_of_ne_0 hx₂]
     else
       have hx₂ : x ∉ D₂
       · rw [←hDD]
-        simpa [D₁] using Fin2_eq_0_of_ne_1 hx₁
+        simpa [D₁] using fin2_eq_0_of_ne_1 hx₁
       simp only [D₂, Set.mem_setOf_eq, not_not] at hx₂
-      rw [Fin2_eq_0_of_ne_1 hx₁, hx₂]
+      rw [fin2_eq_0_of_ne_1 hx₁, hx₂]
   apply Set.eq_of_subset_of_subset
   on_goal 1 => let D := D₁; let Dₒ := D₂; let B := B₁; let Bₒ := B₂
   on_goal 2 => let D := D₂; let Dₒ := D₁; let B := B₂; let Bₒ := B₁
@@ -523,7 +520,7 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
           simp
       if hx : x ∈ Dₒ then
         convert_to 1 + 1 = (0 : Z2) using 2
-        · apply Fin2_eq_1_of_ne_0
+        · apply fin2_eq_1_of_ne_0
           simpa [Dₒ] using hx
         · exact sum_elem_matrix_row_of_mem hx
         decide
@@ -559,7 +556,7 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
             rwa [
               ((l.support.image Subtype.val).subtype (· ∈ X)).sum_of_single_nonzero
                 (fun a : X.Elem => l (hXXY.elem a) • (1 : Matrix X X Z2) a ⟨i, hiX⟩)
-                ⟨i, hiX⟩ (by simp_all) (fun _ _ _ ↦ by simp_all),
+                ⟨i, hiX⟩ (by simp_all) (fun _ _ _ => by simp_all),
               Matrix.one_apply_eq,
               smul_eq_mul,
               mul_one
@@ -587,8 +584,8 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
         have hyl : hYXY.elem y ∈ l.support
         · rwa [Finsupp.mem_support_iff]
         have hy1 : l (hYXY.elem y) • B.prependId d (hYXY.elem y).toSum = 1
-        · rw [Fin2_eq_1_of_ne_0 hly, one_smul]
-          simpa [hXY.not_mem_of_mem_right y.property] using Fin2_eq_1_of_ne_0 hd
+        · rw [fin2_eq_1_of_ne_0 hly, one_smul]
+          simpa [hXY.not_mem_of_mem_right y.property] using fin2_eq_1_of_ne_0 hd
         have h0 : ∀ a ∈ l.support, a.val ≠ y.val → l a • B.prependId d a.toSum = 0
         · intro a ha hay
           have hal := hl'' a ha
