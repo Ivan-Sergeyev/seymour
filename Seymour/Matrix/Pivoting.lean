@@ -362,8 +362,8 @@ private lemma Matrix.succAboveAt_block [DivisionRing F] {k : ℕ} (A : Matrix (F
     subst hx hy
     simp
 
-private lemma Matrix.shortTableauPivot.submatrix_eq_blockish [Field F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F}
-    {x y : Fin k.succ} :
+private lemma Matrix.shortTableauPivot_submatrix_eq_blockish [Field F] {k : ℕ}
+    (A : Matrix (Fin k.succ) (Fin k.succ) F) (x y : Fin k.succ) :
     (A.shortTableauPivot x y).submatrix x.succAbove y.succAbove =
     (A.block₂₂ k x y) - (A.block₂₁ k x y) * (A.block₁₁ k x y)⁻¹ * (A.block₁₂ k x y) := by
   rw [Matrix.shortTableauPivot_submatrix_eq]
@@ -372,7 +372,7 @@ private lemma Matrix.shortTableauPivot.submatrix_eq_blockish [Field F] {k : ℕ}
   ext i j
   simp [Matrix.mul_apply, mul_right_comm]
 
-private noncomputable instance Matrix.fin1_invertible_ne_zero [Field F] {A : Matrix (Fin 1) (Fin 1) F} {x y : Fin 1}
+private noncomputable instance invertible_matrix_fin1_of_ne_zero [Field F] {A : Matrix (Fin 1) (Fin 1) F} {x y : Fin 1}
     (hAxy : A x y ≠ 0) :
     Invertible A :=
   A.invertibleOfLeftInverse A⁻¹ (by
@@ -381,23 +381,29 @@ private noncomputable instance Matrix.fin1_invertible_ne_zero [Field F] {A : Mat
     rw [x.eq_zero, y.eq_zero] at hAxy
     simp [IsUnit.inv_mul_cancel (IsUnit.mk0 _ hAxy)])
 
-private lemma lemma1_aux [LinearOrderedField F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F} {x y : Fin k.succ}
-    (hAxy : A x y ≠ 0) :
+private lemma shortTableauPivot_submatrix_succAbove_succAbove_det_abs_eq_div [LinearOrderedField F] {k : ℕ}
+    {A : Matrix (Fin k.succ) (Fin k.succ) F} {x y : Fin k.succ} (hAxy : A x y ≠ 0) :
     |((A.shortTableauPivot x y).submatrix x.succAbove y.succAbove).det| = |A.det| / |A x y| := by
-  have := Matrix.fin1_invertible_ne_zero (show A.block₁₁ k x y x y ≠ 0 by simpa)
+  have : Invertible (A.block₁₁ k x y)
+  · exact invertible_matrix_fin1_of_ne_zero (show A.block₁₁ k x y x y ≠ 0 by simpa)
   rw [
-    Matrix.shortTableauPivot.submatrix_eq_blockish, eq_div_iff_mul_eq (abs_ne_zero.← hAxy), mul_comm,
+    Matrix.shortTableauPivot_submatrix_eq_blockish, eq_div_iff_mul_eq (abs_ne_zero.← hAxy), mul_comm,
     ←show (A.block₁₁ k x y).det = A x y from Matrix.det_fin_one_of _,
     ←abs_mul, ←Matrix.invOf_eq_nonsing_inv (A.block₁₁ k x y), ←Matrix.det_fromBlocks₁₁]
   nth_rw 5 [A.succAboveAt_block x y]
   exact (Matrix.abs_det_submatrix_equiv_equiv ..).symm
 
-lemma lemma1 [LinearOrderedField F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F} {x y : Fin k.succ} (hAxy : A x y ≠ 0) :
+/-- Lemma 1. -/
+lemma shortTableauPivot_submatrix_det_abs_eq_div [LinearOrderedField F] {k : ℕ}
+    {A : Matrix (Fin k.succ) (Fin k.succ) F} {x y : Fin k.succ} (hAxy : A x y ≠ 0) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
       |((A.shortTableauPivot x y).submatrix f g).det| = |A.det| / |A x y| :=
-  ⟨x.succAbove, y.succAbove, Fin.succAbove_right_injective, Fin.succAbove_right_injective, lemma1_aux hAxy⟩
+  ⟨x.succAbove, y.succAbove, Fin.succAbove_right_injective, Fin.succAbove_right_injective,
+    shortTableauPivot_submatrix_succAbove_succAbove_det_abs_eq_div hAxy⟩
 
-lemma corollary1 [LinearOrderedField F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F}
+/-- Corollary 1. -/
+lemma shortTableauPivot_submatrix_det_in_signTypeCastRange [LinearOrderedField F] {k : ℕ}
+    {A : Matrix (Fin k.succ) (Fin k.succ) F}
     (hA : A.det ∉ SignType.cast.range) (i j : Fin k.succ) (hAij : A i j = 1 ∨ A i j = -1) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
       ((A.shortTableauPivot i j).submatrix f g).det ∉ SignType.cast.range := by
@@ -409,7 +415,7 @@ lemma corollary1 [LinearOrderedField F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin 
     | inr h9 =>
       rw [h9]
       norm_num
-  obtain ⟨f, g, hf, hg, hAfg⟩ := lemma1 hAij0
+  obtain ⟨f, g, hf, hg, hAfg⟩ := shortTableauPivot_submatrix_det_abs_eq_div hAij0
   use f, g, hf, hg
   rw [in_signTypeCastRange_iff_abs, hAfg]
   cases hAij with
@@ -417,12 +423,7 @@ lemma corollary1 [LinearOrderedField F] {k : ℕ} {A : Matrix (Fin k.succ) (Fin 
   | inr h9 => rwa [h9, abs_neg, abs_one, div_one, ←in_signTypeCastRange_iff_abs]
 
 /-
-TODOs (no urgency)...
-Rename:
-lemma1_aux
-lemma1
-corollary1
-Refactor arguments:
+TODOs refactor arguments in (no urgency):
 Matrix.block₁₁
 Matrix.block₁₂
 Matrix.block₂₁

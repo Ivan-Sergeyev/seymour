@@ -1093,7 +1093,9 @@ private lemma matrix3sumCompositionAlt_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ 
         | neg =>
           right
           exact hs.symm
-      obtain ⟨f', g', -, -, impossible⟩ := corollary1 hAfg i₁ j₀ (by convert hAxy1 <;> simp [matrix3sumCompositionAlt, *])
+      obtain ⟨f', g', -, -, impossible⟩ :=
+        shortTableauPivot_submatrix_det_in_signTypeCastRange hAfg i₁ j₀ (by
+          convert hAxy1 <;> simp [matrix3sumCompositionAlt, *])
       apply impossible
       rw [(matrix3sumCompositionAlt Aₗ Aᵣ r₀ r₁ c₀ c₁).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix,
         hix₁, hjy₀, matrix3sumCompositionAlt_shortTableauPivot Aₗ Aᵣ r₀ r₁ c₀ c₁ hAxy1]

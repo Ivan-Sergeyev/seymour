@@ -294,7 +294,8 @@ lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X�
         | neg =>
           right
           exact hs.symm
-      obtain ⟨_, _, -, -, impossible⟩ := corollary1 hAfg iₗ j₀ (by convert hAxy1 <;> simp [matrix2sumComposition, *])
+      obtain ⟨_, _, -, -, impossible⟩ :=
+        shortTableauPivot_submatrix_det_in_signTypeCastRange hAfg iₗ j₀ (by convert hAxy1 <;> simp [matrix2sumComposition, *])
       apply impossible
       rw [(matrix2sumComposition Aₗ x Aᵣ y).submatrix_shortTableauPivot hf hg, Matrix.submatrix_submatrix,
         hixₗ, hjy₀, matrix2sumComposition_shortTableauPivot Aₗ x Aᵣ y hAxy1]
