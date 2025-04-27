@@ -44,6 +44,18 @@ lemma Fin3_eq_1_of_ne_0_2 {a : Fin 3} (ha0 : a ≠ 0) (ha2 : a ≠ 2) : a = 1 :=
 lemma Fin3_eq_0_of_ne_1_2 {a : Fin 3} (ha1 : a ≠ 1) (ha2 : a ≠ 2) : a = 0 := by
   omega
 
+lemma Fin1_eq_Fin1 (a b : Fin 1) : a = b := by
+  omega
+
+lemma Z2_eq_0_or_1 (a : Z2) : a = 0 ∨ a = 1 := by
+  rw [← ZMod.val_eq_zero]
+  by_cases ha : a.val = 0
+  · exact .inl ha
+  · fin_cases a
+    · absurd ha
+      rfl
+    · exact .inr rfl
+
 lemma Z2val_toRat_mul_Z2val_toRat (a b : Z2) : (a.val : ℚ) * (b.val : ℚ) = ((a*b).val : ℚ) := by
   fin_cases a <;> fin_cases b <;> simp
   apply one_mul
