@@ -1,4 +1,4 @@
-\section{The 3-Sum of Regular Matroids Is Regular}
+\section{Regularity of 3-Sum}
 
 \subsection{Definition of 3-Sum}
 
@@ -62,6 +62,7 @@ The following lemma justifies the additional assumption on the entries of $D_{0}
 \begin{proof}
     Verify by complete enumeration.\todo{need details?}
 \end{proof}
+
 
 \subsection{Construction of Canonical Signing}
 
@@ -206,6 +207,9 @@ The following lemma helps construct canonical signings from arbitrary initial TU
     This follows directly from Lemma~\ref{lem:three_sum_canonical_resigning_helper}.
 \end{proof}
 
+
+\subsection{Properties of Canonical Signing}
+
 \begin{lemma}\label{lem:three_sum_A_r_ext_1_TU}
     Let $B_{r}$ be a TU canonical signing of $B_{r}^{(0)}$. Let $c_{0} = (D_{0, r})_{\bullet, y_{0}}$ and $c_{1} = (D_{0, r})_{\bullet, y_{1}}$. Then the following matrices are TU:
     \[
@@ -324,6 +328,9 @@ The following lemma helps construct canonical signings from arbitrary initial TU
         \item Holds by construction.
     \end{enumerate}
 \end{proof}
+
+
+\subsection{Proof of Regularity}
 
 \begin{definition}\label{def:three_sum_alt_form}
     Let $A_{l} \in \mathbb{Q}^{X_{l} \cup Y_{l}}$, $A_{r} \in \mathbb{Q}^{X_{r} \cup Y_{r}}$, $c_{0}, c_{1} \in \mathbb{Q}^{X_{r}}$, $r_{0}, r_{1} \in \mathbb{Q}^{Y_{l}}$. Let $D = c_{0} \cdot r_{0} + c_{1} \cdot r_{1}$. Suppose that properties 2--8 from the statement of Lemma~\ref{lem:three_sum_canonical_signing_properties} are satisfied for $A_{l}$, $A_{r}$, $c_{0}$, $c_{1}$, $r_{0}$, $r_{1}$. Given $k \in \mathbb{Z}_{\geq 1}$, define $\mathrm{Proposition}(A_{l}, A_{r}, c_{0}, c_{1}, r_{0}, r_{1}, k)$ to mean ``$C = \begin{NiceArray}{cc}[hvlines] A_{l} & 0 \\ D & A_{r} \\ \end{NiceArray}$ is $k$-TU".

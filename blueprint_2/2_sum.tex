@@ -1,4 +1,6 @@
-\section{The 2-Sum of Regular Matroids Is Regular}
+\section{Regularity of 2-Sum}
+
+\subsection{Preliminaries}
 
 \begin{lemma}\label{lem:pivot_submatrix_det}
     Let $A$ be a $k \times k$ matrix. Let $r, c \in \{1, \dots, k\}$ be a row and column index, respectively, such that $a_{rc} \neq 0$. Let $A'$ denote the matrix obtained from $A$ by performing a real pivot on $a_{rc}$. Then there exists a $(k - 1) \times (k - 1)$ submatrix $A''$ of $A'$ with $|\det A''| = \frac{|\det A|}{|a_{rc}|}$.
@@ -31,13 +33,6 @@
     Since $a_{rc} \in \{\pm 1\}$, by Lemma~\ref{lem:pivot_submatrix_det} there exists a $(k - 1) \times (k - 1)$ submatrix $A''$ with $|\det A| = |\det A''|$. Since $\det A \notin \{0, \pm 1\}$, we have $\det A'' \notin \{0, \pm 1\}$.
 \end{proof}
 
-\begin{definition}\label{def:two_sum}
-    Let $B_{l}, B_{r}$ be matrices with $\{0, \pm 1\}$ entries expressed as $B_{l} = \begin{NiceArray}{c}[hvlines] A_{l} \\ x \\ \end{NiceArray}$ and $B_{r} = \begin{NiceArray}{cc}[hvlines] y & A_{r} \\ \end{NiceArray}$, where $x$ is a row vector, $y$ is a column vector, and $A_{l}, A_{r}$ are matrices of appropriate dimensions. Let $D$ be the outer product of $y$ and $x$. The $2$-sum of $B_{l}$ and $B_{r}$ is defined as
-    \[
-        B_{l} \oplus_{2, x, y} B_{r} = \begin{NiceArray}{cc}[hvlines] A_{l} & 0 \\ D & A_{r} \\ \end{NiceArray}.
-    \]
-\end{definition}
-
 \begin{definition}\label{def:k_tu}
     Given $k \in \mathbb{Z}_{\geq 1}$, we say that a matrix $A$ is $k$-TU if every square submatrix of $A$ of size $k$ has determinant in $\{0, \pm 1\}$.
 \end{definition}
@@ -45,6 +40,16 @@
 \begin{remark}
     Note that a matrix is TU if and only if it is $k$-TU for every $k \in \mathbb{Z}_{\geq 1}$.
 \end{remark}
+
+
+\subsection{Proof of Regularity}
+
+\begin{definition}\label{def:two_sum}
+    Let $B_{l}, B_{r}$ be matrices with $\{0, \pm 1\}$ entries expressed as $B_{l} = \begin{NiceArray}{c}[hvlines] A_{l} \\ x \\ \end{NiceArray}$ and $B_{r} = \begin{NiceArray}{cc}[hvlines] y & A_{r} \\ \end{NiceArray}$, where $x$ is a row vector, $y$ is a column vector, and $A_{l}, A_{r}$ are matrices of appropriate dimensions. Let $D$ be the outer product of $y$ and $x$. The $2$-sum of $B_{l}$ and $B_{r}$ is defined as
+    \[
+        B_{l} \oplus_{2, x, y} B_{r} = \begin{NiceArray}{cc}[hvlines] A_{l} & 0 \\ D & A_{r} \\ \end{NiceArray}.
+    \]
+\end{definition}
 
 \begin{lemma}\label{lem:two_sum_1_2_tu}
     Let $B_{l}$ and $B_{r}$ be TU matrices and let $B = B_{l} \oplus_{2, x, y} B_{r}$. Then $B$ is $1$-TU and $2$-TU.
