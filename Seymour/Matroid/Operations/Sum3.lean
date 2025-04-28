@@ -1112,11 +1112,8 @@ lemma matrix3sumComposition_standard_toAlt_eq {β : Type} [Field β] {Xₗ Yₗ 
     -- for example, `Bₗ` and `Bᵣ` have to match on their intersection
 
     -- row and column membership
-    have hrXₗ : {x₀, x₁, x'} ⊆ Xₗ := hXX.symm.subset.trans Set.inter_subset_left
     have x₀inXₗ : x₀ ∈ Xₗ := hXX.mem3₀ₗ
     have x₁inXₗ : x₁ ∈ Xₗ := hXX.mem3₁ₗ
-    have hcYₗ : {y₀, y₁, y'} ⊆ Yₗ := hYY.symm.subset.trans Set.inter_subset_left
-    have hcYᵣ : {y₀, y₁, y'} ⊆ Yᵣ := hYY.symm.subset.trans Set.inter_subset_right
     have y₀inYₗ : y₀ ∈ Yₗ := hYY.mem3₀ₗ
     have y₀inYᵣ : y₀ ∈ Yᵣ := hYY.mem3₀ᵣ
     have y₁inYₗ : y₁ ∈ Yₗ := hYY.mem3₁ₗ
@@ -1136,7 +1133,7 @@ lemma matrix3sumComposition_standard_toAlt_eq {β : Type} [Field β] {Xₗ Yₗ 
     let r₁ : (Yₗ \ {y'}).Elem → β := fun i => (D₀ₗ⁻¹ 1 0) * (v₀ i) + (D₀ₗ⁻¹ 1 1) * (v₁ i)
     -- statement
     B.fst = matrix3sumCompositionAlt Aₗ Aᵣ r₀ r₁ c₀ c₁ := by
-  intro _ _ _ _ _ _ _ _ _ Aₗ Aᵣ c₀ c₁ v₀ v₁ D₀ₗ r₀ r₁
+  intro _ _ _ _ _ _ Aₗ Aᵣ c₀ c₁ v₀ v₁ D₀ₗ r₀ r₁
 
   have hBₗₗ : B.fst.toBlocks₁₁ = Aₗ := hB ▸ rfl
   have hBₗᵣ : B.fst.toBlocks₁₂ = 0 := hB ▸ rfl
