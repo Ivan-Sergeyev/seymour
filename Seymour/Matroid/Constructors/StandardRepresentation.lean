@@ -386,10 +386,18 @@ lemma VectorMatroid.exists_standardRepr_isBase [DivisionRing R] {G : Set α}
     convert exists_standardRepr_isBase_aux_left hGY hYGY hI hIGY hB hRAI
 
 /-- Every vector matroid has a standard representation. -/
-lemma VectorMatroid.exists_standardRepr [Field R] (M : VectorMatroid α R) :
+lemma VectorMatroid.exists_standardRepr [DivisionRing R] (M : VectorMatroid α R) :
     ∃ S : StandardRepr α R, S.toMatroid = M.toMatroid := by
   peel M.exists_standardRepr_isBase M.toMatroid.exists_isBase.choose_spec with hS
   exact hS.right
+
+/-- Every vector matroid whose full representation matrix is totally unimodular has a standard representation whose rows are
+    a given base and the standard representation matrix is totally unimodular. -/
+lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G : Set α}
+    (M : VectorMatroid α R) (hMG : M.toMatroid.IsBase G) (hM : M.A.IsTotallyUnimodular) :
+    ∃ S : StandardRepr α R, S.X = G ∧ S.toMatroid = M.toMatroid ∧ S.B.IsTotallyUnimodular := by
+  -- gonna be difficult
+  sorry
 
 /-- The identity matrix has linearly independent rows. -/
 lemma Matrix.one_linearIndependent [Ring R] : LinearIndependent R (1 : Matrix α α R) := by

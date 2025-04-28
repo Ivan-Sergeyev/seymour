@@ -27,14 +27,14 @@ abbrev StandardRepr.HasTuSigning {α : Type} [DecidableEq α] (S : StandardRepr 
 
 -- ## Auxiliary stuff
 
-def Matrix.support {X Y : Type} (A : Matrix X Y ℚ) : Matrix X Y Z2 :=
+def Matrix.support {X Y R : Type} [Zero R] [DecidableEq R] (A : Matrix X Y R) : Matrix X Y Z2 :=
   Matrix.of (if A · · = 0 then 0 else 1)
 
-lemma Matrix.support_transpose {X Y : Type} (A : Matrix X Y ℚ) :
+lemma Matrix.support_transpose {X Y R : Type} [Zero R] [DecidableEq R] (A : Matrix X Y R) :
     A.support.transpose = A.transpose.support :=
   rfl
 
-lemma Matrix.support_submatrix {X X' Y Y' : Type} (A : Matrix X Y ℚ) (f : X' → X) (g : Y' → Y) :
+lemma Matrix.support_submatrix {X X' Y Y' R : Type} [Zero R] [DecidableEq R] (A : Matrix X Y R) (f : X' → X) (g : Y' → Y) :
     A.support.submatrix f g = (A.submatrix f g).support :=
   rfl
 
@@ -59,6 +59,7 @@ private lemma Matrix.IsTotallyUnimodular.support {X Y : Type} {A : Matrix X Y �
       simp [Matrix.support, hAij]
       rfl
 
+-- TODO deprecate
 private def Matrix.suppAux {X Y : Type} (A : Matrix X Y ℤ) : Matrix X Y Z2 :=
   Matrix.of (if A · · = 0 then 0 else 1)
 
@@ -280,9 +281,14 @@ lemma Matroid.IsRegular.hasBinaryStandardRepr {M : Matroid α} (hM : M.IsRegular
   rw [←hS] at hV
   exact ⟨S, hV⟩
 
-private lemma hasTuSigning_iff_hasTuSigning_of_toMatroid_eq_toMatroid {V W : VectorMatroid α Z2} [Finite V.X]
-    (hVW : V.toMatroid = W.toMatroid) :
-    V.A.HasTuSigning ↔ W.A.HasTuSigning := by
+/-- If two standard representations of the same matroid have the same base, then the standard representation matrices have
+    the same support. -/
+lemma support_eq_support_of_same_matroid_same_X {F₁ F₂ : Type} [Field F₁] [Field F₂] [DecidableEq F₁] [DecidableEq F₂]
+    {S₁ : StandardRepr α F₁} {S₂ : StandardRepr α F₂} [Fintype S₁.X]
+    (hSS : S₁.toMatroid = S₂.toMatroid) (hXX : S₁.X = S₂.X) :
+    let hYY : S₁.Y = S₂.Y := right_eq_right_of_union_eq_union hXX S₁.hXY S₂.hXY (congr_arg Matroid.E hSS)
+    hXX ▸ hYY ▸ S₁.B.support = S₂.B.support := by
+  -- TODO generalize `B_eq_B_of_same_matroid_same_X`
   sorry
 
 /-- Binary matroid constructed from a full representation is regular iff the binary matrix has a TU signing. -/
@@ -292,22 +298,7 @@ private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatr
   · intro ⟨X, Y, A, hA, hAV⟩
     have hV : V.toMatroid = (VectorMatroid.mk X Y A.support).toMatroid
     · rw [←hAV, hA.toMatroid_eq_support_toMatroid]
-    rw [hasTuSigning_iff_hasTuSigning_of_toMatroid_eq_toMatroid hV]
-    use A, hA
-    intro i j
-    simp [Matrix.support]
-    if h0 : A i j = 0 then
-      simp [h0]
-    else if h1 : A i j = 1 then
-      rewrite [h1]
-      rfl
-    else if h9 : A i j = -1 then
-      rewrite [h9]
-      rfl
-    else
-      exfalso
-      obtain ⟨s, hs⟩ := hA.apply i j
-      cases s <;> simp_all
+    sorry
   · intro ⟨S, hS, hSV⟩
     use V.X, V.Y, S, hS
     apply hS.toMatroid_eq_of_support
