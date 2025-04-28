@@ -379,7 +379,7 @@ The following lemma helps construct canonical signings from arbitrary initial TU
 \begin{lemma}\label{lem:three_sum_A_r_ext_2_TU}
     Let $B_{r}$ be a TU canonical signing of $B_{r}^{(0)}$. Let $c_{0} = D_{0, r} (\bullet, y_{0})$, $c_{1} = D_{0, r} (\bullet, y_{1})$, and $c_{2} = c_{0} - c_{1}$. Then the following properties hold.
     \begin{enumerate}
-        \item\label{item:three_sum_A_r_ext_d01_eq} For every $i \in X_{r}$, we have $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \\ \end{NiceArray} \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}} \setminus \{\begin{NiceArray}{cc}[hvlines] 1 & -1 \\ \end{NiceArray} , \begin{NiceArray}{cc}[hvlines] -1 & 1 \\ \end{NiceArray} \}$.
+        \item\label{item:three_sum_A_r_ext_2_c01_eq} For every $i \in X_{r}$, we have $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \\ \end{NiceArray} \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}} \setminus \{\begin{NiceArray}{cc}[hvlines] 1 & -1 \\ \end{NiceArray} , \begin{NiceArray}{cc}[hvlines] -1 & 1 \\ \end{NiceArray} \}$.
         % \item\label{item:three_sum_A_r_ext_2_vec_sign} $c_{2}$ is a signing of $D_{0, r}^{(0)} (\cdot, y_{0}) + D_{0, r}^{(0)} (\cdot, y_{1})$.
         \item\label{item:three_sum_A_r_ext_2_TU} $\begin{NiceArray}{cccc}[hvlines] A_{r} & c_{0} & c_{1} & c_{2} \\ \end{NiceArray}$ is TU.
     \end{enumerate}
@@ -389,7 +389,7 @@ The following lemma helps construct canonical signings from arbitrary initial TU
     \begin{enumerate}
         \item Let $i \in X_{r}$. If $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \\ \end{NiceArray} = \begin{NiceArray}{cc}[hvlines] 1 & -1 \\ \end{NiceArray}$, then the $2 \times 2$ submatrix of $B_{r}$ indexed by $\{x_{2}, i\} \times \{y_{0}, y_{1}\}$ has $\det \begin{NiceArray}{cc}[hvlines] 1 & 1 \\ 1 & -1 \\ \end{NiceArray} = -2 \notin \{0, \pm 1\}$, which contradicts TUness of $B_{r}$ (which holds by Lemma~\ref{lem:three_sum_canonical_signing_construction}). Similarly, if $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \\ \end{NiceArray} = \begin{NiceArray}{cc}[hvlines] -1 & 1 \\ \end{NiceArray} $, then the $2 \times 2$ submatrix of $B_{r}$ indexed by $\{x_{2}, i\} \times \{y_{0}, y_{1}\}$ has $\det \begin{NiceArray}{cc}[hvlines] 1 & 1 \\ -1 & 1 \\ \end{NiceArray} = 2 \notin \{0, \pm 1\}$, which contradicts TUness of $B_{r}$.
 
-        % \item By item~\ref{item:three_sum_A_r_ext_d01_eq}, we know that $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \end{NiceArray} \neq \begin{NiceArray}{cc}[hvlines] 1 & -1 \end{NiceArray}$ and $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \end{NiceArray} \neq \begin{NiceArray}{cc}[hvlines] -1 & 1 \end{NiceArray}$. In all other cases, a direct calculation shows that $c_{2} (i) \in \{0, \pm 1\}$ and $|c_{2}(i)| = D_{0, r}^{(0)} (\cdot, y_{0}) + D_{0, r}^{(0)} (\cdot, y_{1})$.
+        % \item By item~\ref{item:three_sum_A_r_ext_2_c01_eq}, we know that $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \end{NiceArray} \neq \begin{NiceArray}{cc}[hvlines] 1 & -1 \end{NiceArray}$ and $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \end{NiceArray} \neq \begin{NiceArray}{cc}[hvlines] -1 & 1 \end{NiceArray}$. In all other cases, a direct calculation shows that $c_{2} (i) \in \{0, \pm 1\}$ and $|c_{2}(i)| = D_{0, r}^{(0)} (\cdot, y_{0}) + D_{0, r}^{(0)} (\cdot, y_{1})$.
 
         \item Let $V$ be a square submatrix of $\begin{NiceArray}{cccc}[hvlines] A_{r} & c_{0} & c_{1} & c_{2} \\ \end{NiceArray}$. We will show that $\det V \in \{0, \pm 1\}$.
 
@@ -410,7 +410,7 @@ The following lemma helps construct canonical signings from arbitrary initial TU
 \begin{lemma}\label{lem:three_sum_A_l_ext_2_TU}
     Let $B_{l}$ be a TU canonical signing of $B_{l}^{(0)}$. Let $d_{0} = D_{l, 0} (x_{0}, \bullet)$, $d_{1} = D_{l, 0} (x_{1}, \bullet)$, and $d_{2} = d_{0} - d_{1}$. Then the following properties hold.
     \begin{enumerate}
-        \item\label{item:three_sum_A_l_ext_d01_eq} For every $j \in Y_{r}$, we have $\begin{NiceArray}{c}[hvlines] d_{0} (i) \\ d_{1} (i) \\ \end{NiceArray} \in \{0, \pm 1\}^{\{x_{0}, x_{1}\}} \setminus \{\begin{NiceArray}{c}[hvlines] 1 \\ -1 \\ \end{NiceArray} , \begin{NiceArray}{c}[hvlines] -1 \\ 1 \\ \end{NiceArray}\}$.
+        \item\label{item:three_sum_A_l_ext_2_d01_eq} For every $j \in Y_{r}$, we have $\begin{NiceArray}{c}[hvlines] d_{0} (i) \\ d_{1} (i) \\ \end{NiceArray} \in \{0, \pm 1\}^{\{x_{0}, x_{1}\}} \setminus \{\begin{NiceArray}{c}[hvlines] 1 \\ -1 \\ \end{NiceArray} , \begin{NiceArray}{c}[hvlines] -1 \\ 1 \\ \end{NiceArray}\}$.
         % \item\label{item:three_sum_A_l_ext_2_vec_sign} $d_{2}$ is a signing of $D_{l, 0}^{(0)} (x_{0}, \cdot) + D_{l, 0}^{(0)} (x_{1}, \cdot)$.
         \item\label{item:three_sum_A_l_ext_2_TU} $\begin{NiceArray}{c}[hvlines] A_{l} \\ d_{0} \\ d_{1} \\ d_{2} \\ \end{NiceArray}$ is TU.
     \end{enumerate}
@@ -444,7 +444,7 @@ The following lemma helps construct canonical signings from arbitrary initial TU
 \begin{proof}
     \begin{enumerate}
         \item Follows via a direct calculation.\todo{need details?}
-        \item By item~\ref{item:three_sum_canonical_signing_D_eq}, for every $i \in X_{r}$ we have $D (i, \bullet) = c_{0} (i) \cdot r_{0} + c_{1} (i) \cdot r_{1}$. By Lemma~\ref{lem:three_sum_A_r_ext_1_TU}.\ref{item:three_sum_A_l_ext_d01_eq}, we know that $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \end{NiceArray} \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}} \setminus \{\begin{NiceArray}{cc}[hvlines] 1 & -1 \end{NiceArray} , \begin{NiceArray}{cc}[hvlines] -1 & 1 \end{NiceArray}\}$. Therefore, $D (i, \bullet)$ is equal to either $0$, $\pm r_{0}$, $\pm r_{1}$, or $\pm (r_{0} + r_{1}) = \pm r_{2}$.
+        \item By item~\ref{item:three_sum_canonical_signing_D_eq}, for every $i \in X_{r}$ we have $D (i, \bullet) = c_{0} (i) \cdot r_{0} + c_{1} (i) \cdot r_{1}$. By Lemma~\ref{lem:three_sum_A_r_ext_2_TU}.\ref{item:three_sum_A_r_ext_2_c01_eq}, we know that $\begin{NiceArray}{cc}[hvlines] c_{0} (i) & c_{1} (i) \end{NiceArray} \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}} \setminus \{\begin{NiceArray}{cc}[hvlines] 1 & -1 \end{NiceArray} , \begin{NiceArray}{cc}[hvlines] -1 & 1 \end{NiceArray}\}$. Therefore, $D (i, \bullet)$ is equal to either $0$, $\pm r_{0}$, $\pm r_{1}$, or $\pm (r_{0} + r_{1}) = \pm r_{2}$.
         \item Holds by the same argument as item~\ref{item:three_sum_canonical_signing_D_rows} up to interchanging rows and columns.
         \item Holds by Lemma~\ref{lem:three_sum_A_r_ext_2_TU}.\ref{item:three_sum_A_r_ext_2_TU}.
         \item By item~\ref{item:three_sum_canonical_signing_D_cols}, columns of $\begin{NiceArray}{cc}[hvlines] A_{r} & D \end{NiceArray}$ are in $\begin{NiceArray}{ccccc}[hvlines] A_{r} & \pm c_{0} & \pm c_{1} & \pm c_{2} & 0 \\ \end{NiceArray}$. Since $\begin{NiceArray}{cccc}[hvlines] A_{r} & c_{0} & c_{1} & c_{2} \\ \end{NiceArray}$ is TU and since adding zero columns and copies of columns multiplied by $\pm 1$ factors preserves TUness, $\begin{NiceArray}{cc}[hvlines] A_{r} & D \end{NiceArray}$ is also TU.
