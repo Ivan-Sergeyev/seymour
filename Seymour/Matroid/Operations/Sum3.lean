@@ -187,15 +187,13 @@ lemma Matrix.toCanonicalSigning_Form_Case2 {X Y : Set α} {x₀ x₁ x' y₀ y�
   sorry
 
 -- lemma 15.a
--- todo: replace `Matrix.fromCols` with `◫`;
--- curretly `◫` does not work because category theory is imorted somewhere in the project
 lemma Matrix.toCanonicalSigning_ExpandColsTU_a {X Y : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
     (Q : Matrix X Y ℚ) (hx₀ : x₀ ∈ X) (hx₁ : x₁ ∈ X) (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hy' : y' ∈ Y)
     (hQ : Q.IsTotallyUnimodular) :
     let c₀ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₀, hy₀⟩
     let c₁ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
     let Q' : Matrix (X \ {x'}).Elem (Y \ {y₀, y₁}).Elem ℚ := Q.submatrix Set.diff_subset.elem Set.diff_subset.elem
-    (Matrix.fromCols (Matrix.fromCols Q' (▮c₀)) ((▮c₀) - (▮c₁))).IsTotallyUnimodular :=
+    (Q' ◫ ▮c₀ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular :=
   sorry
 
 -- lemma 15.b
@@ -205,7 +203,7 @@ lemma Matrix.toCanonicalSigning_ExpandColsTU_b {X Y : Set α} {x₀ x₁ x' y₀
     let c₀ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₀, hy₀⟩
     let c₁ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
     let Q' : Matrix (X \ {x'}).Elem (Y \ {y₀, y₁}).Elem ℚ := Q.submatrix Set.diff_subset.elem Set.diff_subset.elem
-    (Matrix.fromCols (Matrix.fromCols Q' (▮c₁)) ((▮c₀) - (▮c₁))).IsTotallyUnimodular :=
+    (Q' ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular :=
   sorry
 
 -- lemma 16.1
@@ -224,11 +222,7 @@ lemma Matrix.toCanonicalSigning_ExpandColsTU {X Y : Set α} {x₀ x₁ x' y₀ y
     let c₀ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₀, hy₀⟩
     let c₁ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
     let Q' : Matrix (X \ {x'}).Elem (Y \ {y₀, y₁}).Elem ℚ := Q.submatrix Set.diff_subset.elem Set.diff_subset.elem
-    (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols
-      (Matrix.fromCols (Matrix.fromCols
-        ((Matrix.fromCols (Matrix.fromCols Q' (▮c₀)) (▮(-c₀))))
-      (▮c₁)) (▮(-c₁)))
-    (▮(c₀ - c₁))) (▮(c₁ - c₀))) (▮0)).IsTotallyUnimodular :=
+    (Q' ◫ ▮c₀ ◫ ▮(-c₀) ◫ ▮c₁ ◫ ▮(-c₁) ◫ ▮(c₀ - c₁) ◫ ▮(c₁ - c₀) ◫ ▮0).IsTotallyUnimodular :=
   sorry
 
 -- todo: same lemmas for rows instead of columns, final lemma (18.2) is given below
@@ -730,7 +724,7 @@ lemma matrix3sumComposition_CanonicalSigning_Aᵣ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Se
         | inl h => simp_all only [not_true_eq_false, D₀_unsigned]
         | inr h_1 => simp_all only [not_true_eq_false, D₀_unsigned]))
     -- actual statement
-    (Matrix.fromCols Aᵣ D).IsTotallyUnimodular :=
+    (Aᵣ ◫ D).IsTotallyUnimodular :=
   sorry
 
 -- lemma 19.7
