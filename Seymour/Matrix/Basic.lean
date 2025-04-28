@@ -3,6 +3,7 @@ import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 
 open scoped Matrix
 
+
 variable {α : Type}
 
 /-- Add the identity matrix to the left of given matrix (important "definition" -- use it with standard representations). -/
