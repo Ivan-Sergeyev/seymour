@@ -396,24 +396,24 @@ lemma matrix3sumComposition_CanonicalSigning_D_Eq_SumOuterProducts {Xₗ Yₗ X�
       (False.elim (by
         simp_all only [D₀_unsigned]
         cases hBₗ'sub with
-        | inl h => simp_all only [not_true_eq_false, D₀_unsigned]
-        | inr h_1 => simp_all only [not_true_eq_false, D₀_unsigned]))
+        | inl => simp_all only [not_true_eq_false, D₀_unsigned]
+        | inr => simp_all only [not_true_eq_false, D₀_unsigned]))
     let r₁ : (Yₗ \ {y'}).Elem → ℚ :=
       if hD₀_case1: D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then -d₁ else
       if hD₀_case2: D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₁ else
       (False.elim (by
         simp_all only [D₀_unsigned]
         cases hBₗ'sub with
-        | inl h => simp_all only [not_true_eq_false, D₀_unsigned]
-        | inr h_1 => simp_all only [not_true_eq_false, D₀_unsigned]))
+        | inl => simp_all only [not_true_eq_false, D₀_unsigned]
+        | inr => simp_all only [not_true_eq_false, D₀_unsigned]))
     let r₂ : (Yₗ \ {y'}).Elem → ℚ :=
       if hD₀_case1: D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then d₀ - d₁ else
       if hD₀_case2: D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₀ else
       (False.elim (by
         simp_all only [D₀_unsigned]
         cases hBₗ'sub with
-        | inl h => simp_all only [not_true_eq_false, D₀_unsigned]
-        | inr h_1 => simp_all only [not_true_eq_false, D₀_unsigned]))
+        | inl => simp_all only [not_true_eq_false, D₀_unsigned]
+        | inr => simp_all only [not_true_eq_false, D₀_unsigned]))
     -- actual statement
     D = (c₀ · * r₀ ·) + (c₁ · * r₁ ·) :=
   sorry
@@ -499,24 +499,24 @@ lemma matrix3sumComposition_CanonicalSigning_D_Rows {Xₗ Yₗ Xᵣ Yᵣ : Set �
       (False.elim (by
         simp_all only [D₀_unsigned]
         cases hBₗ'sub with
-        | inl h => simp_all only [not_true_eq_false, D₀_unsigned]
-        | inr h_1 => simp_all only [not_true_eq_false, D₀_unsigned]))
+        | inl => simp_all only [not_true_eq_false, D₀_unsigned]
+        | inr => simp_all only [not_true_eq_false, D₀_unsigned]))
     let r₁ : (Yₗ \ {y'}).Elem → ℚ :=
       if hD₀_case1 : D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then -d₁ else
       if hD₀_case2 : D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₁ else
       (False.elim (by
         simp_all only [D₀_unsigned]
         cases hBₗ'sub with
-        | inl h => simp_all only [not_true_eq_false, D₀_unsigned]
-        | inr h_1 => simp_all only [not_true_eq_false, D₀_unsigned]))
+        | inl => simp_all only [not_true_eq_false, D₀_unsigned]
+        | inr => simp_all only [not_true_eq_false, D₀_unsigned]))
     let r₂ : (Yₗ \ {y'}).Elem → ℚ :=
       if hD₀_case1 : D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then d₀ - d₁ else
       if hD₀_case2 : D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₀ else
       (False.elim (by
         simp_all only [D₀_unsigned]
         cases hBₗ'sub with
-        | inl h => simp_all only [not_true_eq_false, D₀_unsigned]
-        | inr h_1 => simp_all only [not_true_eq_false, D₀_unsigned]))
+        | inl => simp_all only [not_true_eq_false, D₀_unsigned]
+        | inr => simp_all only [not_true_eq_false, D₀_unsigned]))
     -- actual statement
     ∀ i, D i = r₀ ∨ D i = -r₀ ∨ D i = r₁ ∨ D i = -r₁ ∨ D i = r₂ ∨ D i = -r₂ ∨ D i = 0 :=
   sorry
@@ -602,24 +602,24 @@ lemma matrix3sumComposition_CanonicalSigning_D_Cols {Xₗ Yₗ Xᵣ Yᵣ : Set �
       (False.elim (by
         simp_all only [D₀_unsigned]
         cases hBₗ'sub with
-        | inl h => simp_all only [not_true_eq_false, D₀_unsigned]
-        | inr h_1 => simp_all only [not_true_eq_false, D₀_unsigned]))
+        | inl => simp_all only [not_true_eq_false, D₀_unsigned]
+        | inr => simp_all only [not_true_eq_false, D₀_unsigned]))
     let r₁ : (Yₗ \ {y'}).Elem → ℚ :=
       if hD₀_case1: D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then -d₁ else
       if hD₀_case2: D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₁ else
       (False.elim (by
         simp_all only [D₀_unsigned]
         cases hBₗ'sub with
-        | inl h => simp_all only [not_true_eq_false, D₀_unsigned]
-        | inr h_1 => simp_all only [not_true_eq_false, D₀_unsigned]))
+        | inl => simp_all only [not_true_eq_false, D₀_unsigned]
+        | inr => simp_all only [not_true_eq_false, D₀_unsigned]))
     let r₂ : (Yₗ \ {y'}).Elem → ℚ :=
       if hD₀_case1: D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then d₀ - d₁ else
       if hD₀_case2: D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₀ else
       (False.elim (by
         simp_all only [D₀_unsigned]
         cases hBₗ'sub with
-        | inl h => simp_all only [not_true_eq_false, D₀_unsigned]
-        | inr h_1 => simp_all only [not_true_eq_false, D₀_unsigned]))
+        | inl => simp_all only [not_true_eq_false, D₀_unsigned]
+        | inr => simp_all only [not_true_eq_false, D₀_unsigned]))
     -- actual statement
     ∀ j, (D · j) = c₀ ∨ (D · j) = -c₀ ∨ (D · j) = c₁ ∨ (D · j) = -c₁ ∨ (D · j) = c₀ - c₁ ∨ (D · j) = c₁ - c₀ ∨ (D · j) = 0 :=
   sorry
@@ -705,24 +705,24 @@ lemma matrix3sumComposition_CanonicalSigning_Aᵣ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Se
       (False.elim (by
         simp_all only [D₀_unsigned]
         cases hBₗ'sub with
-        | inl h => simp_all only [not_true_eq_false, D₀_unsigned]
-        | inr h_1 => simp_all only [not_true_eq_false, D₀_unsigned]))
+        | inl => simp_all only [not_true_eq_false, D₀_unsigned]
+        | inr => simp_all only [not_true_eq_false, D₀_unsigned]))
     let r₁ : (Yₗ \ {y'}).Elem → ℚ :=
       if hD₀_case1: D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then -d₁ else
       if hD₀_case2: D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₁ else
       (False.elim (by
         simp_all only [D₀_unsigned]
         cases hBₗ'sub with
-        | inl h => simp_all only [not_true_eq_false, D₀_unsigned]
-        | inr h_1 => simp_all only [not_true_eq_false, D₀_unsigned]))
+        | inl => simp_all only [not_true_eq_false, D₀_unsigned]
+        | inr => simp_all only [not_true_eq_false, D₀_unsigned]))
     let r₂ : (Yₗ \ {y'}).Elem → ℚ :=
       if hD₀_case1: D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then d₀ - d₁ else
       if hD₀_case2: D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₀ else
       (False.elim (by
         simp_all only [D₀_unsigned]
         cases hBₗ'sub with
-        | inl h => simp_all only [not_true_eq_false, D₀_unsigned]
-        | inr h_1 => simp_all only [not_true_eq_false, D₀_unsigned]))
+        | inl => simp_all only [not_true_eq_false, D₀_unsigned]
+        | inr => simp_all only [not_true_eq_false, D₀_unsigned]))
     -- actual statement
     (Aᵣ ◫ D).IsTotallyUnimodular :=
   sorry
@@ -809,24 +809,24 @@ lemma matrix3sumComposition_CanonicalSigning_Aₗ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Se
       (False.elim (by
         simp_all only [D₀_unsigned]
         cases hBₗ'sub with
-        | inl h => simp_all only [not_true_eq_false, D₀_unsigned]
-        | inr h_1 => simp_all only [not_true_eq_false, D₀_unsigned]))
+        | inl => simp_all only [not_true_eq_false, D₀_unsigned]
+        | inr => simp_all only [not_true_eq_false, D₀_unsigned]))
     let r₁ : (Yₗ \ {y'}).Elem → ℚ :=
       if hD₀_case1: D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then -d₁ else
       if hD₀_case2: D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₁ else
       (False.elim (by
         simp_all only [D₀_unsigned]
         cases hBₗ'sub with
-        | inl h => simp_all only [not_true_eq_false, D₀_unsigned]
-        | inr h_1 => simp_all only [not_true_eq_false, D₀_unsigned]))
+        | inl => simp_all only [not_true_eq_false, D₀_unsigned]
+        | inr => simp_all only [not_true_eq_false, D₀_unsigned]))
     let r₂ : (Yₗ \ {y'}).Elem → ℚ :=
       if hD₀_case1: D₀_unsigned = Special3x3Submatrix_Case1_Unsigned then d₀ - d₁ else
       if hD₀_case2: D₀_unsigned = Special3x3Submatrix_Case2_Unsigned then d₀ else
       (False.elim (by
         simp_all only [D₀_unsigned]
         cases hBₗ'sub with
-        | inl h => simp_all only [not_true_eq_false, D₀_unsigned]
-        | inr h_1 => simp_all only [not_true_eq_false, D₀_unsigned]))
+        | inl => simp_all only [not_true_eq_false, D₀_unsigned]
+        | inr => simp_all only [not_true_eq_false, D₀_unsigned]))
     -- actual statement
     (Aₗ ⊟ D).IsTotallyUnimodular := by
   sorry
