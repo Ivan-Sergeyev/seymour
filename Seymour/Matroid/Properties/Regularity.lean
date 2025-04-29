@@ -390,11 +390,33 @@ lemma StandardRepr.toMatroid_isBase_X_Finite (S : StandardRepr α Z2) [Finite S.
 
 lemma Matrix.IsTotallyUnimodular.subst_rows {X X' Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) (hXX : X = X') :
     (hXX ▸ A).IsTotallyUnimodular := by
-  sorry
+  intro k f g hf hg
+  let f' : Fin k → X := hXX ▸ f
+  have hf' : Function.Injective f' := by
+    intro a b hab
+    have hfab : f a = f b := by
+      subst hXX
+      simp_all only [f']
+    exact hf hfab
+  specialize hA k f' g hf' hg
+  convert hA
+  subst hXX
+  simp_all only [Set.mem_range, f']
 
 lemma Matrix.IsTotallyUnimodular.subst_cols {X Y' Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) (hYY : Y = Y') :
     (hYY ▸ A).IsTotallyUnimodular := by
-  sorry
+  intro k f g hf hg
+  let g' : Fin k → Y := hYY ▸ g
+  have hg' : Function.Injective g' := by
+    intro a b hab
+    have hgab : g a = g b := by
+      subst hYY
+      simp_all only [g']
+    exact hg hgab
+  specialize hA k f g' hf hg'
+  convert hA
+  subst hYY
+  simp_all only [Set.mem_range, g']
 
 lemma Matroid.IsRegular.standardRepr_hasTuSigning {S : StandardRepr α Z2} [Finite S.X] (hS : S.toMatroid.IsRegular) :
     S.B.HasTuSigning := by
