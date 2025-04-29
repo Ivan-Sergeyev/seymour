@@ -275,10 +275,10 @@ lemma Matrix.shortTableauPivot_submatrix_eq [DivisionRing F] {k : ℕ} (A : Matr
 
 -- ## Lemma 1 of Proof of Regularity of 2-Sum and 3-Sum of Matroids
 
-private abbrev Fin.reindexingAux {n : ℕ} (i : Fin n.succ) : Fin 1 ⊕ Fin n → Fin n.succ :=
+private abbrev Fin.reindexFun {n : ℕ} (i : Fin n.succ) : Fin 1 ⊕ Fin n → Fin n.succ :=
   (·.casesOn i i.succAbove)
 
-private lemma Fin.reindexingAux_bijective {n : ℕ} (i : Fin n.succ) : i.reindexingAux.Bijective :=
+private lemma Fin.reindexFun_bijective {n : ℕ} (i : Fin n.succ) : i.reindexFun.Bijective :=
   ⟨fun a b hab => by
     cases a with
     | inl a₁ =>
@@ -305,18 +305,18 @@ private lemma Fin.reindexingAux_bijective {n : ℕ} (i : Fin n.succ) : i.reindex
         aesop)⟩
 
 private noncomputable def Fin.reindexing {n : ℕ} (i : Fin n.succ) : Fin 1 ⊕ Fin n ≃ Fin n.succ :=
-  Equiv.ofBijective i.reindexingAux i.reindexingAux_bijective
+  Equiv.ofBijective i.reindexFun i.reindexFun_bijective
 
 private lemma reindexing_symm_eq_left {n : ℕ} (i k : Fin n.succ) (j : Fin 1) :
     i.reindexing.symm k = ◩j ↔ i = k := by
   unfold Fin.reindexing
   constructor <;> intro hk
   on_goal 1 =>
-    apply_fun i.reindexingAux at hk
-    rw [Equiv.ofBijective_apply_symm_apply i.reindexingAux i.reindexingAux_bijective k] at hk
+    apply_fun i.reindexFun at hk
+    rw [Equiv.ofBijective_apply_symm_apply i.reindexFun i.reindexFun_bijective k] at hk
   on_goal 2 =>
-    apply_fun i.reindexingAux using i.reindexingAux_bijective.left
-    rw [Equiv.ofBijective_apply_symm_apply i.reindexingAux i.reindexingAux_bijective k]
+    apply_fun i.reindexFun using i.reindexFun_bijective.left
+    rw [Equiv.ofBijective_apply_symm_apply i.reindexFun i.reindexFun_bijective k]
   all_goals
     simp [hk]
 
@@ -325,28 +325,28 @@ private lemma reindexing_symm_eq_right {n : ℕ} (i k : Fin n.succ) (j : Fin n) 
   unfold Fin.reindexing
   constructor <;> intro hkj
   on_goal 1 =>
-    apply_fun i.reindexingAux at hkj
-    rw [Equiv.ofBijective_apply_symm_apply i.reindexingAux i.reindexingAux_bijective k] at hkj
+    apply_fun i.reindexFun at hkj
+    rw [Equiv.ofBijective_apply_symm_apply i.reindexFun i.reindexFun_bijective k] at hkj
   on_goal 2 =>
-    apply_fun i.reindexingAux using i.reindexingAux_bijective.1
-    rw [Equiv.ofBijective_apply_symm_apply i.reindexingAux i.reindexingAux_bijective k]
+    apply_fun i.reindexFun using i.reindexFun_bijective.1
+    rw [Equiv.ofBijective_apply_symm_apply i.reindexFun i.reindexFun_bijective k]
   all_goals
     simp [hkj]
 
-private abbrev Matrix.block₁₁ (k : ℕ) (x y : Fin k.succ) (A : Matrix (Fin k.succ) (Fin k.succ) F) : Matrix (Fin 1) (Fin 1) F :=
+private abbrev Matrix.block₁₁ {k : ℕ} (A : Matrix (Fin k.succ) (Fin k.succ) F) (x y : Fin k.succ) : Matrix (Fin 1) (Fin 1) F :=
   !![A x y]
 
-private abbrev Matrix.block₁₂ (k : ℕ) (x y : Fin k.succ) (A : Matrix (Fin k.succ) (Fin k.succ) F) : Matrix (Fin 1) (Fin k) F :=
+private abbrev Matrix.block₁₂ {k : ℕ} (A : Matrix (Fin k.succ) (Fin k.succ) F) (x y : Fin k.succ) : Matrix (Fin 1) (Fin k) F :=
   Matrix.of (fun _ j => A x (y.succAbove j))
 
-private abbrev Matrix.block₂₁ (k : ℕ) (x y : Fin k.succ) (A : Matrix (Fin k.succ) (Fin k.succ) F) : Matrix (Fin k) (Fin 1) F :=
+private abbrev Matrix.block₂₁ {k : ℕ} (A : Matrix (Fin k.succ) (Fin k.succ) F) (x y : Fin k.succ) : Matrix (Fin k) (Fin 1) F :=
   Matrix.of (fun i _ => A (x.succAbove i) y)
 
-private abbrev Matrix.block₂₂ (k : ℕ) (x y : Fin k.succ) (A : Matrix (Fin k.succ) (Fin k.succ) F) : Matrix (Fin k) (Fin k) F :=
+private abbrev Matrix.block₂₂ {k : ℕ} (A : Matrix (Fin k.succ) (Fin k.succ) F) (x y : Fin k.succ) : Matrix (Fin k) (Fin k) F :=
   Matrix.of (fun i j => A (x.succAbove i) (y.succAbove j))
 
 private lemma Matrix.succAboveAt_block [DivisionRing F] {k : ℕ} (A : Matrix (Fin k.succ) (Fin k.succ) F) (x y : Fin k.succ) :
-    A = (Matrix.fromBlocks (A.block₁₁ k x y) (A.block₁₂ k x y) (A.block₂₁ k x y) (A.block₂₂ k x y)
+    A = (Matrix.fromBlocks (A.block₁₁ x y) (A.block₁₂ x y) (A.block₂₁ x y) (A.block₂₂ x y)
       ).submatrix x.reindexing.symm y.reindexing.symm := by
   ext i j
   rw [Matrix.submatrix_apply]
@@ -366,10 +366,10 @@ private lemma Matrix.succAboveAt_block [DivisionRing F] {k : ℕ} (A : Matrix (F
 private lemma Matrix.shortTableauPivot_submatrix_eq_blockish [Field F] {k : ℕ}
     (A : Matrix (Fin k.succ) (Fin k.succ) F) (x y : Fin k.succ) :
     (A.shortTableauPivot x y).submatrix x.succAbove y.succAbove =
-    (A.block₂₂ k x y) - (A.block₂₁ k x y) * (A.block₁₁ k x y)⁻¹ * (A.block₁₂ k x y) := by
+    (A.block₂₂ x y) - (A.block₂₁ x y) * (A.block₁₁ x y)⁻¹ * (A.block₁₂ x y) := by
   rw [Matrix.shortTableauPivot_submatrix_eq]
   conv in _ / _ => rw [div_eq_mul_inv _ (A x y)]
-  rw [show (A.block₁₁ k x y)⁻¹ = !![(A x y)⁻¹] from Matrix.ext (by simp [·.eq_zero, ·.eq_zero])]
+  rw [show (A.block₁₁ x y)⁻¹ = !![(A x y)⁻¹] from Matrix.ext (by simp [·.eq_zero, ·.eq_zero])]
   ext i j
   simp [Matrix.mul_apply, mul_right_comm]
 
@@ -384,11 +384,11 @@ private noncomputable instance invertible_matrix_fin1_of_ne_zero [Field F] {A : 
 private lemma shortTableauPivot_submatrix_succAbove_succAbove_det_abs_eq_div [LinearOrderedField F] {k : ℕ}
     {A : Matrix (Fin k.succ) (Fin k.succ) F} {x y : Fin k.succ} (hAxy : A x y ≠ 0) :
     |((A.shortTableauPivot x y).submatrix x.succAbove y.succAbove).det| = |A.det| / |A x y| := by
-  have : NeZero (A.block₁₁ k x y 0 0) := ⟨by simpa⟩
+  have : NeZero (A.block₁₁ x y 0 0) := ⟨by simpa⟩
   rw [
     Matrix.shortTableauPivot_submatrix_eq_blockish, eq_div_iff_mul_eq (abs_ne_zero.← hAxy), mul_comm,
-    ←show (A.block₁₁ k x y).det = A x y from Matrix.det_fin_one_of _,
-    ←abs_mul, ←(A.block₁₁ k x y).invOf_eq_nonsing_inv, ←Matrix.det_fromBlocks₁₁]
+    ←show (A.block₁₁ x y).det = A x y from Matrix.det_fin_one_of _,
+    ←abs_mul, ←(A.block₁₁ x y).invOf_eq_nonsing_inv, ←Matrix.det_fromBlocks₁₁]
   nth_rw 5 [A.succAboveAt_block x y]
   exact (Matrix.abs_det_submatrix_equiv_equiv ..).symm
 
@@ -420,11 +420,3 @@ lemma shortTableauPivot_submatrix_det_ni_signTypeCastRange [LinearOrderedField F
   cases hAij with
   | inl h1 => rwa [h1, abs_one, div_one, ←in_signTypeCastRange_iff_abs]
   | inr h9 => rwa [h9, abs_neg, abs_one, div_one, ←in_signTypeCastRange_iff_abs]
-
-/-
-TODOs refactor arguments in (no urgency):
-Matrix.block₁₁
-Matrix.block₁₂
-Matrix.block₂₁
-Matrix.block₂₂
--/
