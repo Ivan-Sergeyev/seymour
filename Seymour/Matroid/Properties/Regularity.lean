@@ -41,26 +41,33 @@ lemma Matrix.support_submatrix {X X' Y Y' R : Type} [Zero R] [DecidableEq R] (A 
 lemma Matrix.support_Z2 {X Y : Type} (A : Matrix X Y Z2) : A.support = A := by
   aesop
 
+lemma Matrix.IsTotallyUnimodular.abs_eq_support_cast {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
+    ∀ i : X, ∀ j : Y, |A i j| = (A.support i j).val := by
+  intro i j
+  obtain ⟨s, hs⟩ := hA.apply i j
+  rw [Matrix.support, of_apply, ZMod.natCast_val, ←hs]
+  cases s <;> rfl
+
+lemma Matrix.IsTotallyUnimodular.abs_cast_eq_support {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
+    ∀ i : X, ∀ j : Y, |A i j|.cast = A.support i j := by
+  intro i j
+  obtain ⟨s, hs⟩ := hA.apply i j
+  rw [Matrix.support, of_apply, ←hs]
+  cases s <;> simp
+
 lemma Matrix.IsTotallyUnimodular.support {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
-    A.IsTuSigningOf A.support := by
-  refine ⟨hA, fun i j => ?_⟩
-  if hAij : A i j = 0 then
-    simp [hAij]
-  else
-    obtain ⟨s, hs⟩ := hA.apply i j
-    cases s with
-    | zero =>
-      simp_all
-    | pos =>
-      rw [SignType.pos_eq_one, SignType.coe_one] at hs
-      rw [←hs]
-      simp [hAij]
-      rfl
-    | neg =>
-      rw [SignType.neg_eq_neg_one, SignType.coe_neg, SignType.coe_one] at hs
-      rw [←hs]
-      simp [hAij]
-      rfl
+    A.IsTuSigningOf A.support :=
+  ⟨hA, abs_eq_support_cast hA⟩
+
+lemma Z2_eq_iff_ZMod_val_eq {a b : Z2} : a = b ↔ ZMod.val a = ZMod.val b := by
+  constructor
+  · intro hab
+    exact congrArg ZMod.val hab
+  · intro hab
+    cases a
+    cases b
+    simp only [ZMod.val, Nat.reduceAdd] at hab
+    simp only [Nat.reduceAdd, hab]
 
 lemma Matrix.isTuSigningOf_iff {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y Z2) :
     A.IsTuSigningOf U ↔ A.IsTotallyUnimodular ∧ A.support = U := by
@@ -70,18 +77,8 @@ lemma Matrix.isTuSigningOf_iff {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y
     · exact hA
     · ext i j
       specialize hAU i j
-      rw [Matrix.support, Matrix.of_apply]
-      if hA0 : A i j = 0 then
-        rw [hA0] at hAU ⊢
-        exact ((ZMod.val_eq_zero (U i j)).→ (Rat.natCast_eq_zero.→ hAU.symm)).symm
-      else
-        cases Z2_eq_0_or_1 (U i j) with
-        | inl hU0 =>
-          rw [hU0, ZMod.val_zero, CharP.cast_eq_zero, abs_eq_zero] at hAU
-          exact False.elim (hA0 hAU)
-        | inr hU1 =>
-          rw [hU1]
-          exact if_neg hA0
+      rw [hA.abs_eq_support_cast] at hAU
+      exact Z2_eq_iff_ZMod_val_eq.← (Rat.natCast_inj.→ hAU)
   · intro ⟨hA, hAU⟩
     exact hAU ▸ hA.support
 
@@ -109,19 +106,9 @@ private lemma Matrix.IsTotallyUnimodular.intCast_det_eq_suppAux_det [Fintype α]
   congr
   ext i j
   simp only [Matrix.support, Matrix.map, Matrix.of_apply]
-  if h0 : A i j = 0 then
-    rewrite [h0]
-    rfl
-  else if h1 : A i j = 1 then
-    rewrite [h1]
-    rfl
-  else if h9 : A i j = -1 then
-    rewrite [h9]
-    rfl
-  else
-    exfalso
-    obtain ⟨s, hs⟩ := hA.apply i j
-    cases s <;> simp_all
+  obtain ⟨s, hs⟩ := hA.apply i j
+  rw [←hs, SignType.intCast_cast]
+  cases s <;> rfl
 
 private lemma Matrix.IsTotallyUnimodular.ratCast_det_eq_support_det [Fintype α] {A : Matrix α α ℚ}
     (hA : A.IsTotallyUnimodular) :
@@ -129,19 +116,9 @@ private lemma Matrix.IsTotallyUnimodular.ratCast_det_eq_support_det [Fintype α]
   rw [hA.det_eq_map_ratFloor_det, Rat.cast_intCast, hA.map_ratFloor.intCast_det_eq_suppAux_det]
   congr
   ext i j
-  if h0 : A i j = 0 then
-    simp [h0]
-    rfl
-  else if h1 : A i j = 1 then
-    simp [h1]
-    exact Int.one_ne_zero
-  else if h9 : A i j = -1 then
-    simp [h9]
-    exact Int.neg_one_ne_zero
-  else
-    exfalso
-    obtain ⟨s, hs⟩ := hA.apply i j
-    cases s <;> simp_all
+  obtain ⟨s, hs⟩ := hA.apply i j
+  rw [Matrix.support, Matrix.support, of_apply, of_apply, map_apply, ←hs]
+  cases s <;> rfl
 
 private lemma Matrix.IsTotallyUnimodular.det_eq_zero_iff_support [Fintype α] {A : Matrix α α ℚ}
     (hA : A.IsTotallyUnimodular) :
