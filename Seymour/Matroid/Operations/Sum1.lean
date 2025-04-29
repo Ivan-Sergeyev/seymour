@@ -71,8 +71,8 @@ lemma standardRepr1sumComposition_comm {Sₗ Sᵣ : StandardRepr α Z2} {hXY : S
     Matroid.disjointSum_comm]
 
 lemma standardRepr1sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2}
-    (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) (hSₗ : Sₗ.HasTuSigning) (hSᵣ : Sᵣ.HasTuSigning) :
-    (standardRepr1sumComposition hXY hYX).fst.HasTuSigning := by
+    (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) :
+    (standardRepr1sumComposition hXY hYX).fst.B.HasTuSigning := by
   obtain ⟨Bₗ, hBₗ, hBBₗ⟩ := hSₗ
   obtain ⟨Bᵣ, hBᵣ, hBBᵣ⟩ := hSᵣ
   have hB : (standardRepr1sumComposition hXY hYX).fst.B = (matrix1sumComposition Sₗ.B Sᵣ.B).toMatrixUnionUnion

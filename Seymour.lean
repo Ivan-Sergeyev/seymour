@@ -14,11 +14,6 @@ recall Matrix.IsTuSigningOf {X Y : Type} (A : Matrix X Y ℚ) {n : ℕ} (U : Mat
 recall Matrix.HasTuSigning {X Y : Type} {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
   ∃ A : Matrix X Y ℚ, A.IsTuSigningOf U
 
-recall Z2 : Type := ZMod 2
-
-recall StandardRepr.HasTuSigning {α : Type} [DecidableEq α] (S : StandardRepr α Z2) : Prop :=
-  S.B.HasTuSigning
-
 
 -- ## Summary of 1-sum
 
@@ -44,7 +39,7 @@ recall standardRepr1sumComposition {α : Type} [DecidableEq α] {Sₗ Sᵣ : Sta
 
 recall standardRepr1sumComposition_hasTuSigning {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2}
     (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
-    Sₗ.HasTuSigning → Sᵣ.HasTuSigning → (standardRepr1sumComposition hXY hYX).fst.HasTuSigning
+    Sₗ.B.HasTuSigning → Sᵣ.B.HasTuSigning → (standardRepr1sumComposition hXY hYX).fst.B.HasTuSigning
 
 #print axioms standardRepr1sumComposition_hasTuSigning
 
@@ -79,6 +74,6 @@ recall standardRepr2sumComposition {α : Type} [DecidableEq α] {a : α} {Sₗ S
 
 recall standardRepr2sumComposition_hasTuSigning {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {a : α}
     (ha : Sₗ.X ∩ Sᵣ.Y = {a}) (hXY : Sᵣ.X ⫗ Sₗ.Y) :
-    Sₗ.HasTuSigning → Sᵣ.HasTuSigning → (standardRepr2sumComposition ha hXY).fst.HasTuSigning
+    Sₗ.B.HasTuSigning → Sᵣ.B.HasTuSigning → (standardRepr2sumComposition ha hXY).fst.B.HasTuSigning
 
 #print axioms standardRepr2sumComposition_hasTuSigning

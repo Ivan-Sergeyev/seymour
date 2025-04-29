@@ -330,8 +330,8 @@ lemma standardRepr2sumComposition_B {α : Type} [DecidableEq α] {Sₗ Sᵣ : St
   ⟨Set.mem_of_mem_inter_left haXY, Set.mem_of_mem_inter_right haXY, rfl⟩
 
 lemma standardRepr2sumComposition_hasTuSigning {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {a : α}
-    (ha : Sₗ.X ∩ Sᵣ.Y = {a}) (hXY : Sᵣ.X ⫗ Sₗ.Y) (hSₗ : Sₗ.HasTuSigning) (hSᵣ : Sᵣ.HasTuSigning) :
-    (standardRepr2sumComposition ha hXY).fst.HasTuSigning := by
+    (ha : Sₗ.X ∩ Sᵣ.Y = {a}) (hXY : Sᵣ.X ⫗ Sₗ.Y) (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) :
+    (standardRepr2sumComposition ha hXY).fst.B.HasTuSigning := by
   obtain ⟨Bₗ, hBₗ, hBBₗ⟩ := hSₗ
   obtain ⟨Bᵣ, hBᵣ, hBBᵣ⟩ := hSᵣ
   obtain ⟨haXₗ, haYᵣ, hB⟩ := standardRepr2sumComposition_B ha hXY

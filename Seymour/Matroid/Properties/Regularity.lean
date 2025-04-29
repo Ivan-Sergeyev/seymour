@@ -9,6 +9,7 @@ import Seymour.Matroid.Constructors.StandardRepresentation
 def Matroid.IsRegular {α : Type} (M : Matroid α) : Prop :=
   ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsTotallyUnimodular ∧ (VectorMatroid.mk X Y A).toMatroid = M
 
+
 -- ## Secondary definition of regularity (LI over Z2 while TU over ℚ)
 
 /-- Rational matrix `A` is a TU signing of `U` (matrix of the same size but different type) iff `A` is TU and its entries are
@@ -21,9 +22,6 @@ def Matrix.IsTuSigningOf {X Y : Type} (A : Matrix X Y ℚ) {n : ℕ} (U : Matrix
 def Matrix.HasTuSigning {X Y : Type} {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
   ∃ A : Matrix X Y ℚ, A.IsTuSigningOf U
 
-/-- Vector matroid given by standard representation that can be represented by a matrix over `Z2` with a TU signing. -/
-abbrev StandardRepr.HasTuSigning {α : Type} [DecidableEq α] (S : StandardRepr α Z2) : Prop :=
-  S.B.HasTuSigning
 
 -- ## Auxiliary stuff
 
@@ -59,15 +57,6 @@ private lemma Matrix.IsTotallyUnimodular.support {X Y : Type} {A : Matrix X Y �
       simp [Matrix.support, hAij]
       rfl
 
--- TODO deprecate
-private def Matrix.suppAux {X Y : Type} (A : Matrix X Y ℤ) : Matrix X Y Z2 :=
-  Matrix.of (if A · · = 0 then 0 else 1)
-
-@[app_unexpander Matrix.suppAux]
-private def Matrix.suppAux_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $x) => `($(x).$(Lean.mkIdent `suppAux))
-  | _ => throw ()
-
 variable {α : Type}
 
 /-- Matroids are regular up to map equivalence. -/
@@ -87,11 +76,11 @@ variable [DecidableEq α]
 
 private lemma Matrix.IsTotallyUnimodular.intCast_det_eq_suppAux_det [Fintype α] {A : Matrix α α ℤ}
     (hA : A.IsTotallyUnimodular) :
-    A.det.cast = A.suppAux.det := by
+    A.det.cast = A.support.det := by
   rw [Matrix.det_int_coe]
   congr
   ext i j
-  simp [Matrix.suppAux]
+  simp only [Matrix.support, Matrix.map, Matrix.of_apply]
   if h0 : A i j = 0 then
     rewrite [h0]
     rfl
@@ -112,7 +101,7 @@ private lemma Matrix.IsTotallyUnimodular.ratCast_det_eq_support_det [Fintype α]
   rw [hA.det_eq_map_ratFloor_det, Rat.cast_intCast, hA.map_ratFloor.intCast_det_eq_suppAux_det]
   congr
   ext i j
-  simp only [Matrix.support, Matrix.suppAux]
+  simp only [Matrix.support]
   if h0 : A i j = 0 then
     simp [h0]
     rfl
@@ -315,11 +304,12 @@ private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatr
       simp only [ZMod.val_one_eq_one_mod] at hSV
       norm_num at hSV
 
+
 -- ## Main result of this file
 
 /-- Binary matroid constructed from a standard representation is regular iff the binary matrix has a TU signing. -/
 lemma StandardRepr.toMatroid_isRegular_iff_hasTuSigning (S : StandardRepr α Z2) [Finite S.X] :
-    S.toMatroid.IsRegular ↔ S.HasTuSigning := by
+    S.toMatroid.IsRegular ↔ S.B.HasTuSigning := by
   refine
     S.toVectorMatroid.toMatroid_isRegular_iff_hasTuSigning.trans ⟨
       fun ⟨A, hA, hAS⟩ => ⟨A.submatrix id (Sum.toUnion ∘ Sum.inr), hA.submatrix id (Sum.toUnion ∘ Sum.inr), fun i j => ?_⟩,
