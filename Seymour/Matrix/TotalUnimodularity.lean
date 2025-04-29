@@ -15,7 +15,7 @@ lemma Matrix.overZ2_isTotallyUnimodular {X Y : Type} (A : Matrix X Y Z2) : A.IsT
     rfl
   else
     use 1
-    rewrite [fin2_eq_1_of_ne_0 h0]
+    rewrite [Z2_eq_1_of_ne_0 h0]
     rfl
 
 /-- Every matrix over `Z3` is TU. -/
@@ -32,7 +32,7 @@ lemma Matrix.overZ3_isTotallyUnimodular {X Y : Type} (A : Matrix X Y Z3) : A.IsT
     rfl
   else
     use -1
-    rewrite [fin3_eq_2_of_ne_0_1 h0 h1]
+    rewrite [Z3_eq_2_of_ne_0_1 h0 h1]
     rfl
 
 -- Not every matrix over `Z4` is TU.

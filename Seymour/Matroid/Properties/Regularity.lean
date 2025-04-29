@@ -75,7 +75,7 @@ lemma Matrix.isTuSigningOf_iff {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y
         rw [hA0] at hAU ⊢
         exact ((ZMod.val_eq_zero (U i j)).→ (Rat.natCast_eq_zero.→ hAU.symm)).symm
       else
-        cases (Z2_eq_0_or_1 (U i j)) with
+        cases Z2_eq_0_or_1 (U i j) with
         | inl hU0 =>
           rw [hU0, ZMod.val_zero, CharP.cast_eq_zero, abs_eq_zero] at hAU
           exact False.elim (hA0 hAU)
@@ -318,7 +318,7 @@ private lemma VectorMatroid.toMatroid_isRegular_if_hasTuSigning (V : VectorMatro
   if h0 : V.A i j = 0 then
     simp_all
   else
-    have h1 := fin2_eq_1_of_ne_0 h0
+    have h1 := Z2_eq_1_of_ne_0 h0
     simp_all
     intro hS0
     rw [hS0, abs_zero, ZMod.cast] at hSV

@@ -479,13 +479,13 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
         simp_rw [D₁, Set.mem_setOf_eq]
         rw [hx₁]
         norm_num
-      rw [hx₁, fin2_eq_1_of_ne_0 hx₂]
+      rw [hx₁, Z2_eq_1_of_ne_0 hx₂]
     else
       have hx₂ : x ∉ D₂
       · rw [←hDD]
-        simpa [D₁] using fin2_eq_0_of_ne_1 hx₁
+        simpa [D₁] using Z2_eq_0_of_ne_1 hx₁
       simp only [D₂, Set.mem_setOf_eq, not_not] at hx₂
-      rw [fin2_eq_0_of_ne_1 hx₁, hx₂]
+      rw [Z2_eq_0_of_ne_1 hx₁, hx₂]
   apply Set.eq_of_subset_of_subset
   on_goal 1 => let D := D₁; let Dₒ := D₂; let B := B₁; let Bₒ := B₂
   on_goal 2 => let D := D₂; let Dₒ := D₁; let B := B₂; let Bₒ := B₁
@@ -529,7 +529,7 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
           simp
       if hx : x ∈ Dₒ then
         convert_to 1 + 1 = (0 : Z2) using 2
-        · apply fin2_eq_1_of_ne_0
+        · apply Z2_eq_1_of_ne_0
           simpa [Dₒ] using hx
         · exact sum_elem_matrix_row_of_mem hx
         decide
@@ -593,8 +593,8 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
         have hyl : hYXY.elem y ∈ l.support
         · rwa [Finsupp.mem_support_iff]
         have hy1 : l (hYXY.elem y) • B.prependId d (hYXY.elem y).toSum = 1
-        · rw [fin2_eq_1_of_ne_0 hly, one_smul]
-          simpa [hXY.not_mem_of_mem_right y.property] using fin2_eq_1_of_ne_0 hd
+        · rw [Z2_eq_1_of_ne_0 hly, one_smul]
+          simpa [hXY.not_mem_of_mem_right y.property] using Z2_eq_1_of_ne_0 hd
         have h0 : ∀ a ∈ l.support, a.val ≠ y.val → l a • B.prependId d a.toSum = 0
         · intro a ha hay
           have hal := hl'' a ha
