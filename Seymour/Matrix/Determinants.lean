@@ -1,3 +1,4 @@
+import Seymour.Basic.Fin
 import Seymour.Matrix.Basic
 
 

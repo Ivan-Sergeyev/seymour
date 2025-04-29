@@ -1,3 +1,4 @@
+import Seymour.Basic.Fin
 import Seymour.Basic.SignTypeCast
 import Seymour.Matrix.Basic
 import Mathlib.LinearAlgebra.Matrix.SchurComplement

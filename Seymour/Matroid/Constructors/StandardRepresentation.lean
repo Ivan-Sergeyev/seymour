@@ -1,3 +1,4 @@
+import Seymour.Basic.Fin
 import Seymour.Basic.Sets
 import Seymour.Matrix.LinearIndependence
 import Seymour.Matroid.Constructors.BinaryMatroid
