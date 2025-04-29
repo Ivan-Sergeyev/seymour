@@ -296,13 +296,38 @@ lemma Matroid.IsRegular.hasBinaryStandardRepr {M : Matroid α} (hM : M.IsRegular
   obtain ⟨S, hSV⟩ := V.exists_standardRepr
   exact ⟨S, hSV ▸ hV⟩
 
+open scoped Matrix in
 private lemma support_eq_support_of_same_matroid_same_X' {F₁ F₂ : Type} [Field F₁] [Field F₂] [DecidableEq F₁] [DecidableEq F₂]
     {X Y : Set α} {hXY : X ⫗ Y} {B₁ : Matrix X Y F₁} {B₂ : Matrix X Y F₂}
     {hX : ∀ a, Decidable (a ∈ X)} {hY : ∀ a, Decidable (a ∈ Y)} [Fintype X]
     (hSS : (StandardRepr.mk X Y hXY B₁ hX hY).toMatroid = (StandardRepr.mk X Y hXY B₂ hX hY).toMatroid) :
     B₁.support = B₂.support := by
   -- TODO generalize `B_eq_B_of_same_matroid_same_X`
-  sorry
+  rw [←Matrix.transpose_inj]
+  apply Matrix.ext_col
+  intro y
+  have hXXY : X ⊆ X ∪ Y := Set.subset_union_left
+  have hYXY : Y ⊆ X ∪ Y := Set.subset_union_right
+  have hSS' := congr_arg Matroid.Indep hSS
+  let D₁ := { x : X | B₁ᵀ y x ≠ 0 }
+  let D₂ := { x : X | B₂ᵀ y x ≠ 0 }
+  suffices hDD : D₁ = D₂
+  · ext x
+    if hx₁ : B₁ᵀ y x = 0 then
+      have hx₂ : x ∉ D₂
+      · rw [←hDD]
+        simp_rw [D₁, Set.mem_setOf_eq, not_not]
+        exact hx₁
+      simp_all [D₂]
+    else
+      have hx₂ : x ∈ D₂
+      · rw [←hDD]
+        simp_rw [D₁, Set.mem_setOf_eq]
+        exact hx₁
+      simp_all [D₂]
+  apply Set.eq_of_subset_of_subset
+  · sorry
+  · sorry
 
 /-- If two standard representations of the same matroid have the same base, then the standard representation matrices have
     the same support. -/
