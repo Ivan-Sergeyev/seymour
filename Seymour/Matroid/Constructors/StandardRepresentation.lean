@@ -394,7 +394,7 @@ lemma VectorMatroid.exists_standardRepr [DivisionRing R] (M : VectorMatroid α R
 /-- Every vector matroid whose full representation matrix is totally unimodular has a standard representation whose rows are
     a given base and the standard representation matrix is totally unimodular. -/
 lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G : Set α}
-    (M : VectorMatroid α R) (hMG : M.toMatroid.IsBase G) (hM : M.A.IsTotallyUnimodular) :
+    (M : VectorMatroid α R) (hMG : M.toMatroid.IsBase G) (hMA : M.A.IsTotallyUnimodular) :
     ∃ S : StandardRepr α R, S.X = G ∧ S.toMatroid = M.toMatroid ∧ S.B.IsTotallyUnimodular := by
   -- gonna be difficult
   sorry

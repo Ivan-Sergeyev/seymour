@@ -25,6 +25,7 @@ def Matrix.HasTuSigning {X Y : Type} (U : Matrix X Y Z2) : Prop :=
 
 -- ## Auxiliary stuff
 
+@[simp]
 def Matrix.support {X Y R : Type} [Zero R] [DecidableEq R] (A : Matrix X Y R) : Matrix X Y Z2 :=
   Matrix.of (if A · · = 0 then 0 else 1)
 
@@ -36,25 +37,29 @@ lemma Matrix.support_submatrix {X X' Y Y' R : Type} [Zero R] [DecidableEq R] (A 
     A.support.submatrix f g = (A.submatrix f g).support :=
   rfl
 
+@[simp]
+lemma Matrix.support_Z2 {X Y : Type} (A : Matrix X Y Z2) : A.support = A := by
+  aesop
+
 lemma Matrix.IsTotallyUnimodular.support {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
     A.IsTuSigningOf A.support := by
   refine ⟨hA, fun i j => ?_⟩
   if hAij : A i j = 0 then
-    simp [Matrix.support, hAij]
+    simp [hAij]
   else
     obtain ⟨s, hs⟩ := hA.apply i j
     cases s with
     | zero =>
-      simp_all [Matrix.support]
+      simp_all
     | pos =>
       rw [SignType.pos_eq_one, SignType.coe_one] at hs
       rw [←hs]
-      simp [Matrix.support, hAij]
+      simp [hAij]
       rfl
     | neg =>
       rw [SignType.neg_eq_neg_one, SignType.coe_neg, SignType.coe_one] at hs
       rw [←hs]
-      simp [Matrix.support, hAij]
+      simp [hAij]
       rfl
 
 lemma Matrix.isTuSigningOf_iff {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y Z2) :
@@ -63,10 +68,9 @@ lemma Matrix.isTuSigningOf_iff {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y
   · intro ⟨hA, hAU⟩
     constructor
     · exact hA
-    · unfold Matrix.support
-      ext i j
+    · ext i j
       specialize hAU i j
-      rw [Matrix.of_apply]
+      rw [Matrix.support, Matrix.of_apply]
       if hA0 : A i j = 0 then
         rw [hA0] at hAU ⊢
         exact ((ZMod.val_eq_zero (U i j)).→ (Rat.natCast_eq_zero.→ hAU.symm)).symm
@@ -125,7 +129,6 @@ private lemma Matrix.IsTotallyUnimodular.ratCast_det_eq_support_det [Fintype α]
   rw [hA.det_eq_map_ratFloor_det, Rat.cast_intCast, hA.map_ratFloor.intCast_det_eq_suppAux_det]
   congr
   ext i j
-  simp only [Matrix.support]
   if h0 : A i j = 0 then
     simp [h0]
     rfl
@@ -290,9 +293,8 @@ lemma Matroid.IsRegular.isBinary {M : Matroid α} (hM : M.IsRegular) :
 lemma Matroid.IsRegular.hasBinaryStandardRepr {M : Matroid α} (hM : M.IsRegular) :
     ∃ S : StandardRepr α Z2, S.toMatroid = M := by
   obtain ⟨V, hV⟩ := hM.isBinary
-  obtain ⟨S, hS⟩ := V.exists_standardRepr
-  rw [←hS] at hV
-  exact ⟨S, hV⟩
+  obtain ⟨S, hSV⟩ := V.exists_standardRepr
+  exact ⟨S, hSV ▸ hV⟩
 
 /-- If two standard representations of the same matroid have the same base, then the standard representation matrices have
     the same support. -/
@@ -304,45 +306,53 @@ lemma support_eq_support_of_same_matroid_same_X {F₁ F₂ : Type} [Field F₁] 
   -- TODO generalize `B_eq_B_of_same_matroid_same_X`
   sorry
 
-/-- Binary matroid constructed from a full representation is regular iff the binary matrix has a TU signing. -/
-private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatroid α Z2) [Finite V.X] :
-    V.toMatroid.IsRegular ↔ V.A.HasTuSigning := by
-  constructor
-  · intro ⟨X, Y, A, hA, hAV⟩
-    have hV : V.toMatroid = (VectorMatroid.mk X Y A.support).toMatroid
-    · rw [←hAV, hA.toMatroid_eq_support_toMatroid]
-    sorry
-  · intro ⟨S, hS, hSV⟩
-    use V.X, V.Y, S, hS
-    apply hS.toMatroid_eq_of_support
-    ext i j
-    specialize hSV i j
-    simp [Matrix.support]
-    if h0 : V.A i j = 0 then
-      simp_all
-    else
-      have h1 := fin2_eq_1_of_ne_0 h0
-      simp_all
-      intro hS0
-      rw [hS0, abs_zero, ZMod.cast] at hSV
-      simp only [ZMod.val_one_eq_one_mod] at hSV
-      norm_num at hSV
-
+/-- Binary matroid constructed from a full representation is regular if the binary matrix has a TU signing. -/
+private lemma VectorMatroid.toMatroid_isRegular_if_hasTuSigning (V : VectorMatroid α Z2) :
+    V.A.HasTuSigning → V.toMatroid.IsRegular := by
+  intro ⟨S, hS, hSV⟩
+  use V.X, V.Y, S, hS
+  apply hS.toMatroid_eq_of_support
+  ext i j
+  specialize hSV i j
+  simp
+  if h0 : V.A i j = 0 then
+    simp_all
+  else
+    have h1 := fin2_eq_1_of_ne_0 h0
+    simp_all
+    intro hS0
+    rw [hS0, abs_zero, ZMod.cast] at hSV
+    simp only [ZMod.val_one_eq_one_mod] at hSV
+    norm_num at hSV
 
 -- ## Main result of this file
 
 /-- Binary matroid constructed from a standard representation is regular iff the binary matrix has a TU signing. -/
 lemma StandardRepr.toMatroid_isRegular_iff_hasTuSigning (S : StandardRepr α Z2) [Finite S.X] :
     S.toMatroid.IsRegular ↔ S.B.HasTuSigning := by
-  refine
-    S.toVectorMatroid.toMatroid_isRegular_iff_hasTuSigning.trans ⟨
-      fun ⟨A, hA, hAS⟩ => ⟨A.submatrix id (Sum.toUnion ∘ Sum.inr), hA.submatrix id (Sum.toUnion ∘ Sum.inr), fun i j => ?_⟩,
-      fun ⟨B, hB, hBS⟩ => ⟨(B.prependId · ∘ Subtype.toSum), (hB.one_fromCols).comp_cols Subtype.toSum, fun i j => ?_⟩⟩
-  · convert hAS i (◪j).toUnion
-    have hjY : ((◪j).toUnion : (S.X ∪ S.Y).Elem).val ∈ S.Y := by simp
-    have hjX : ((◪j).toUnion : (S.X ∪ S.Y).Elem).val ∉ S.X := by simp; have := S.hXY; tauto_set
-    simp_all
-  · cases hj : j.toSum with
+  constructor
+  · have : Fintype S.X
+    · apply Set.Finite.fintype
+      assumption
+    have hX := S.toMatroid_isBase_X
+    obtain ⟨X, Y, hXY, B, _, _⟩ := S
+    dsimp only at hX ⊢
+    intro ⟨X', Y', A, hA, hAB⟩
+    obtain ⟨S', hXX, hSA, hB'⟩ := (VectorMatroid.mk X' Y' A).exists_standardRepr_isBase_isTotallyUnimodular (hAB ▸ hX) hA
+    have : Fintype S'.X
+    · subst hXX
+      assumption
+    have hBB := support_eq_support_of_same_matroid_same_X (hSA.trans hAB) hXX
+    simp only [Matrix.support_Z2] at hBB
+    have hYY : S'.Y = Y := right_eq_right_of_union_eq_union hXX S'.hXY hXY (congr_arg Matroid.E (hSA.trans hAB))
+    use hXX ▸ hYY ▸ S'.B
+    have := hB'.support
+    cc
+  · intro ⟨B, hB, hBS⟩
+    apply S.toVectorMatroid.toMatroid_isRegular_if_hasTuSigning
+    use (B.prependId · ∘ Subtype.toSum), (hB.one_fromCols).comp_cols Subtype.toSum
+    intro i j
+    cases hj : j.toSum with
     | inl x =>
       simp [hj]
       if hi : i = x then
