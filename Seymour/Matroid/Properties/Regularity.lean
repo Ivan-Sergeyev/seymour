@@ -332,23 +332,20 @@ private lemma support_eq_support_of_same_matroid_same_X' {F₁ F₂ : Type} [Fie
 /-- If two standard representations of the same matroid have the same base, then the standard representation matrices have
     the same support. -/
 lemma support_eq_support_of_same_matroid_same_X {F₁ F₂ : Type} [Field F₁] [Field F₂] [DecidableEq F₁] [DecidableEq F₂]
-    {S₁ : StandardRepr α F₁} {S₂ : StandardRepr α F₂} [Fintype S₁.X]
+    {S₁ : StandardRepr α F₁} {S₂ : StandardRepr α F₂} [Fintype S₂.X]
     (hSS : S₁.toMatroid = S₂.toMatroid) (hXX : S₁.X = S₂.X) :
     let hYY : S₁.Y = S₂.Y := right_eq_right_of_union_eq_union hXX S₁.hXY S₂.hXY (congr_arg Matroid.E hSS)
     hXX ▸ hYY ▸ S₁.B.support = S₂.B.support := by
   intro hYY
-  have : Fintype S₂.X
-  · rw [←hXX]
-    assumption
-  obtain ⟨X₁, Y₁, hXY₁, B₁, hX₁, hY₁⟩ := S₁
-  obtain ⟨X₂, Y₂, hXY₂, B₂, hX₂, hY₂⟩ := S₂
+  obtain ⟨X₁, Y₁, _, B₁, _, _⟩ := S₁
+  obtain ⟨X₂, Y₂, _, B₂, _, _⟩ := S₂
   simp only at hXX hYY
   let B₀ := hXX ▸ hYY ▸ B₁
   have hB₀ : B₀ = hXX ▸ hYY ▸ B₁
   · rfl
   convert_to B₀.support = B₂.support
   · cc
-  have hSS' : (StandardRepr.mk X₂ Y₂ hXY₂ B₀ hX₂ hY₂).toMatroid = (StandardRepr.mk X₂ Y₂ hXY₂ B₂ hX₂ hY₂).toMatroid
+  have hSS' : (StandardRepr.mk X₂ Y₂ _ B₀ _ _).toMatroid = (StandardRepr.mk X₂ Y₂ _ B₂ _ _).toMatroid
   · convert hSS <;> cc
   exact support_eq_support_of_same_matroid_same_X' hSS'
 
