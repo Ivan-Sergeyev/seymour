@@ -123,11 +123,15 @@ end StandardMatrixDefinition
 section CanonicalSigning
 
 /-- Lemma 10 (motivates the difference between the definition of 3-sum in our implementation and in Truemper's book). -/
-private lemma Matrix.Z2_2x2_nonsingular_form (Q : Matrix (Fin 2) (Fin 2) Z2) (hQ : IsUnit Q) :
+lemma Matrix.isUnit_2x2 (Q : Matrix (Fin 2) (Fin 2) Z2) (hQ : IsUnit Q) :
     ∃ f : Fin 2 ≃ Fin 2, ∃ g : Fin 2 ≃ Fin 2, Q.submatrix f g = 1 ∨ Q.submatrix f g = !![1, 1; 0, 1] := by
-  rw [Matrix.isUnit_iff_isUnit_det, Matrix.det_fin_two, isUnit_iff_eq_one] at hQ
+  -- identity
   let eᵢ : Fin 2 ≃ Fin 2 := Equiv.refl (Fin 2)
+  -- swap 0<->1
   let eₛ : Fin 2 ≃ Fin 2 := Equiv.ofBijective ![1, 0] (by decide)
+  -- `hQ` via explicit determinant
+  rw [Matrix.isUnit_iff_isUnit_det, Matrix.det_fin_two, isUnit_iff_eq_one] at hQ
+  -- case exhaustion
   by_cases hQ₀₀ : Q 0 0 = 0 <;> by_cases hQ₀₁ : Q 0 1 = 0 <;> by_cases hQ₁₀ : Q 1 0 = 0 <;> by_cases hQ₁₁ : Q 1 1 = 0
   · -- `!![0, 0; 0, 0]`
     exfalso
@@ -151,12 +155,12 @@ private lemma Matrix.Z2_2x2_nonsingular_form (Q : Matrix (Fin 2) (Fin 2) Z2) (hQ
     use eₛ, eᵢ
     left
     ext i j
-    fin_cases i <;> fin_cases j <;> simp [*, eᵢ, eₛ, fin2_eq_1_of_ne_0]
+    fin_cases i <;> fin_cases j <;> simp [hQ₀₀, hQ₀₁, hQ₁₀, hQ₁₁, eᵢ, eₛ, fin2_eq_1_of_ne_0]
   · -- `!![0, 1; 1, 1]`
     use eₛ, eᵢ
     right
     ext i j
-    fin_cases i <;> fin_cases j <;> simp [*, eᵢ, eₛ, fin2_eq_1_of_ne_0]
+    fin_cases i <;> fin_cases j <;> simp [hQ₀₀, hQ₀₁, hQ₁₀, hQ₁₁, eᵢ, eₛ, fin2_eq_1_of_ne_0]
   · -- `!![1, 0; 0, 0]`
     exfalso
     simp_all
@@ -164,7 +168,7 @@ private lemma Matrix.Z2_2x2_nonsingular_form (Q : Matrix (Fin 2) (Fin 2) Z2) (hQ
     use eᵢ, eᵢ
     left
     ext i j
-    fin_cases i <;> fin_cases j <;> simp [*, eᵢ, eₛ, fin2_eq_1_of_ne_0]
+    fin_cases i <;> fin_cases j <;> simp [hQ₀₀, hQ₀₁, hQ₁₀, hQ₁₁, eᵢ, eₛ, fin2_eq_1_of_ne_0]
   · -- `!![1, 0; 1, 0]`
     exfalso
     simp_all
@@ -172,7 +176,7 @@ private lemma Matrix.Z2_2x2_nonsingular_form (Q : Matrix (Fin 2) (Fin 2) Z2) (hQ
     use eₛ, eₛ
     right
     ext i j
-    fin_cases i <;> fin_cases j <;> simp [*, eᵢ, eₛ, fin2_eq_1_of_ne_0]
+    fin_cases i <;> fin_cases j <;> simp [hQ₀₀, hQ₀₁, hQ₁₀, hQ₁₁, eᵢ, eₛ, fin2_eq_1_of_ne_0]
   · -- `!![1, 1; 0, 0]`
     exfalso
     simp_all
@@ -180,12 +184,12 @@ private lemma Matrix.Z2_2x2_nonsingular_form (Q : Matrix (Fin 2) (Fin 2) Z2) (hQ
     use eᵢ, eᵢ
     right
     ext i j
-    fin_cases i <;> fin_cases j <;> simp [*, eᵢ, eₛ, fin2_eq_1_of_ne_0]
+    fin_cases i <;> fin_cases j <;> simp [hQ₀₀, hQ₀₁, hQ₁₀, hQ₁₁, eᵢ, eₛ, fin2_eq_1_of_ne_0]
   · -- `!![1, 1; 1, 0]`
     use eᵢ, eₛ
     right
     ext i j
-    fin_cases i <;> fin_cases j <;> simp [*, eᵢ, eₛ, fin2_eq_1_of_ne_0]
+    fin_cases i <;> fin_cases j <;> simp [hQ₀₀, hQ₀₁, hQ₁₀, hQ₁₁, eᵢ, eₛ, fin2_eq_1_of_ne_0]
   · -- `!![1, 1; 1, 1]`
     exfalso
     simp_all [fin2_eq_1_of_ne_0]
