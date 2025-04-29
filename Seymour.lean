@@ -8,10 +8,10 @@ recall Matrix.IsTotallyUnimodular {X Y R : Type*} [CommRing R] (A : Matrix X Y R
   ∀ k : ℕ, ∀ f : Fin k → X, ∀ g : Fin k → Y, f.Injective → g.Injective →
     (A.submatrix f g).det ∈ Set.range SignType.cast
 
-recall Matrix.IsTuSigningOf {X Y : Type} (A : Matrix X Y ℚ) {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
+recall Matrix.IsTuSigningOf {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y Z2) : Prop :=
   A.IsTotallyUnimodular ∧ ∀ i j, |A i j| = (U i j).val
 
-recall Matrix.HasTuSigning {X Y : Type} {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
+recall Matrix.HasTuSigning {X Y : Type} (U : Matrix X Y Z2) : Prop :=
   ∃ A : Matrix X Y ℚ, A.IsTuSigningOf U
 
 

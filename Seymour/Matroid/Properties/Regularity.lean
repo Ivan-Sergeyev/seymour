@@ -15,11 +15,11 @@ def Matroid.IsRegular {α : Type} (M : Matroid α) : Prop :=
 /-- Rational matrix `A` is a TU signing of `U` (matrix of the same size but different type) iff `A` is TU and its entries are
     the same as entries in `U` on respective positions up to signs.
     Do not ask `U.IsTotallyUnimodular` ... see `Matrix.overZ2_isTotallyUnimodular` for example! -/
-def Matrix.IsTuSigningOf {X Y : Type} (A : Matrix X Y ℚ) {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
+def Matrix.IsTuSigningOf {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y Z2) : Prop :=
   A.IsTotallyUnimodular ∧ ∀ i : X, ∀ j : Y, |A i j| = (U i j).val
 
 /-- Matrix `U` has a TU signing iff there is a rational TU matrix whose entries are the same as those in `U` up to signs. -/
-def Matrix.HasTuSigning {X Y : Type} {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
+def Matrix.HasTuSigning {X Y : Type} (U : Matrix X Y Z2) : Prop :=
   ∃ A : Matrix X Y ℚ, A.IsTuSigningOf U
 
 
@@ -27,6 +27,48 @@ def Matrix.HasTuSigning {X Y : Type} {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop 
 
 def Matrix.support {X Y R : Type} [Zero R] [DecidableEq R] (A : Matrix X Y R) : Matrix X Y Z2 :=
   Matrix.of (if A · · = 0 then 0 else 1)
+
+lemma Matrix.IsTuSigningOf_iff {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y Z2) :
+    A.IsTuSigningOf U ↔ A.IsTotallyUnimodular ∧ A.support = U := by
+  constructor
+  · intro ⟨hA, hAU⟩
+    constructor
+    · exact hA
+    · unfold Matrix.support
+      ext i j
+      specialize hAU i j
+      rw [of_apply]
+      if hA0 : A i j = 0 then
+        rw [hA0, abs_zero, ZMod.natCast_val] at hAU
+        rw [hA0]
+        exact ((ZMod.val_eq_zero (U i j)).mp (Rat.natCast_eq_zero.→ hAU.symm)).symm
+      else
+        cases (Z2_eq_0_or_1 (U i j)) with
+        | inl hU0 =>
+            rw [hU0, ZMod.val_zero, CharP.cast_eq_zero, abs_eq_zero] at hAU
+            exact False.elim (hA0 hAU)
+        | inr hU1 =>
+            rw [hU1]
+            exact if_neg hA0
+  · intro ⟨hA, hAU⟩
+    constructor
+    · exact hA
+    · intro i j
+      apply (congr_fun · i) at hAU
+      apply (congr_fun · j) at hAU
+      unfold Matrix.support at hAU
+      rw [of_apply] at hAU
+      if hA0 : A i j = 0 then
+        rw [←hAU, hA0]
+        rfl
+      else
+        simp only [hA0, ↓reduceIte] at hAU
+        rw [←hAU, ZMod.natCast_val, abs_eq rfl]
+        obtain ⟨v, hv⟩ := hA.apply i j
+        cases v with
+        | zero => exact False.elim (hA0 hv.symm)
+        | neg => exact Or.inr hv.symm
+        | pos => exact Or.inl hv.symm
 
 lemma Matrix.support_transpose {X Y R : Type} [Zero R] [DecidableEq R] (A : Matrix X Y R) :
     A.support.transpose = A.transpose.support :=
