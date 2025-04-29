@@ -93,19 +93,9 @@ private lemma Matrix.IsTotallyUnimodular.intCast_det_eq_suppAux_det [Fintype α]
   congr
   ext i j
   simp [Matrix.suppAux]
-  if h0 : A i j = 0 then
-    rewrite [h0]
-    rfl
-  else if h1 : A i j = 1 then
-    rewrite [h1]
-    rfl
-  else if h9 : A i j = -1 then
-    rewrite [h9]
-    rfl
-  else
-    exfalso
-    obtain ⟨s, hs⟩ := hA.apply i j
-    cases s <;> simp_all
+  obtain ⟨s, hs⟩ := hA.apply i j
+  rewrite [←hs]
+  cases s <;> rfl
 
 private lemma Matrix.IsTotallyUnimodular.ratCast_det_eq_support_det [Fintype α] {A : Matrix α α ℚ}
     (hA : A.IsTotallyUnimodular) :
@@ -114,19 +104,10 @@ private lemma Matrix.IsTotallyUnimodular.ratCast_det_eq_support_det [Fintype α]
   congr
   ext i j
   simp only [Matrix.support, Matrix.suppAux]
-  if h0 : A i j = 0 then
-    simp [h0]
-    rfl
-  else if h1 : A i j = 1 then
-    simp [h1]
-    exact Int.one_ne_zero
-  else if h9 : A i j = -1 then
-    simp [h9]
-    exact Int.neg_one_ne_zero
-  else
-    exfalso
-    obtain ⟨s, hs⟩ := hA.apply i j
-    cases s <;> simp_all
+  simp only [map_apply, of_apply]
+  obtain ⟨s, hs⟩ := hA.apply i j
+  simp [←hs]
+  cases s <;> rfl
 
 private lemma Matrix.IsTotallyUnimodular.det_eq_zero_iff_support [Fintype α] {A : Matrix α α ℚ}
     (hA : A.IsTotallyUnimodular) :
@@ -295,11 +276,6 @@ lemma support_eq_support_of_same_matroid_same_X {F₁ F₂ : Type} [Field F₁] 
 /-- Binary matroid constructed from a full representation is regular iff the binary matrix has a TU signing. -/
 private lemma VectorMatroid.toMatroid_isRegular_iff_hasTuSigning (V : VectorMatroid α Z2) [Finite V.X] :
     V.A.HasTuSigning → V.toMatroid.IsRegular := by
-  -- constructor
-  -- · intro ⟨X, Y, A, hA, hAV⟩
-  --   have hV : V.toMatroid = (VectorMatroid.mk X Y A.support).toMatroid
-  --   · rw [←hAV, hA.toMatroid_eq_support_toMatroid]
-  --   sorry
   intro ⟨S, hS, hSV⟩
   use V.X, V.Y, S, hS
   apply hS.toMatroid_eq_of_support
@@ -322,8 +298,6 @@ lemma StandardRepr.toMatroid_isRegular {S : StandardRepr α Z2} [Finite S.X] (hS
     S.toMatroid.IsRegular := by
   obtain ⟨B', hB', hB'B⟩ := hS
   use S.X, S.X ∪ S.Y, (B'.prependId · ∘ Subtype.toSum), (hB'.one_fromCols).comp_cols Subtype.toSum
-  -- unfold StandardRepr.toMatroid
-  -- congr!
   have t := hB'.toMatroid_eq_support_toMatroid
   have t2 := hB'.support
   have t3 := t2.right
@@ -338,50 +312,9 @@ lemma StandardRepr.toMatroid_isRegular {S : StandardRepr α Z2} [Finite S.X] (hS
     sorry
   sorry
 
-  -- -- rw [t]
-  -- --rw []
-  -- have t := hB'.toMatroid_eq_of_support
-
-
-
-
-
-
-  -- have ⟨t, tt⟩ := hB'.support
-
-  -- -- rw [t.right]
-
-  -- #check Matrix.IsTotallyUnimodular.support
-
-  -- apply congr_arg
-
-  -- -- congr
-
-  -- -- simp only [Matrix.prependId]
-  -- -- ext i j
-
-  -- -- constructor
-  -- -- ext i j
-  -- cases hj : j.toSum with
-  -- | inl x =>
-  --   simp [hj]
-  --   if hi : i = x then
-  --     rewrite [hi, Matrix.one_apply_eq, Matrix.one_apply_eq]
-  --     rfl
-  --   else
-  --     rewrite [Matrix.one_apply_ne hi, Matrix.one_apply_ne hi]
-  --     rfl
-  -- | inr y =>
-  --   have hjX : j.val ∉ S.X := (by simp [·] at hj)
-  --   have hjY : j.val ∈ S.Y := by have : j.val ∈ S.X ∪ S.Y := j.property; tauto_set
-  --   convert hBS i y <;> simp_all
-
-  -- sorry
-  -- the easier direction
-
-lemma StandardRepr.toMatroid_isBase_X_Finite (S : StandardRepr α Z2) [Finite S.X] :
+lemma StandardRepr.toMatroid_isBase_X_Finite (S : StandardRepr α Z2) [hSX : Finite S.X] :
     S.toMatroid.IsBase S.X := by
-  have : Fintype S.X := sorry
+  have : Fintype S.X := Set.Finite.fintype hSX
   exact StandardRepr.toMatroid_isBase_X S
 
 -- other ingredients:
@@ -418,9 +351,9 @@ lemma Matrix.IsTotallyUnimodular.subst_cols {X Y' Y : Type} {A : Matrix X Y ℚ}
   subst hYY
   simp_all only [Set.mem_range, g']
 
-lemma Matroid.IsRegular.standardRepr_hasTuSigning {S : StandardRepr α Z2} [Finite S.X] (hS : S.toMatroid.IsRegular) :
+lemma Matroid.IsRegular.standardRepr_hasTuSigning {S : StandardRepr α Z2} [hSX : Finite S.X] (hS : S.toMatroid.IsRegular) :
     S.B.HasTuSigning := by
-  have : Fintype S.X := sorry
+  have : Fintype S.X := Set.Finite.fintype hSX
   obtain ⟨X, Y, A, hA, hAS⟩ := hS
   obtain ⟨S', hXX, hSS, hB'⟩ := (VectorMatroid.mk X Y A).exists_standardRepr_isBase_isTotallyUnimodular (hAS ▸ S.toMatroid_isBase_X) hA
   unfold Matrix.HasTuSigning
@@ -448,13 +381,3 @@ lemma Matroid.IsRegular.standardRepr_hasTuSigning {S : StandardRepr α Z2} [Fini
 lemma StandardRepr.toMatroid_isRegular_iff_hasTuSigning (S : StandardRepr α Z2) [Finite S.X] :
     S.toMatroid.IsRegular ↔ S.HasTuSigning :=
   ⟨Matroid.IsRegular.standardRepr_hasTuSigning, StandardRepr.toMatroid_isRegular⟩
-
-  -- constructor
-  -- · exact Matroid.IsRegular.standardRepr_hasTuSigning
-
-  --   -- intro hAS
-  --   -- convert hAS i (◪j).toUnion
-  --   -- have hjY : ((◪j).toUnion : (S.X ∪ S.Y).Elem).val ∈ S.Y := by simp
-  --   -- have hjX : ((◪j).toUnion : (S.X ∪ S.Y).Elem).val ∉ S.X := by simp; have := S.hXY; tauto_set
-  --   -- simp_all
-  -- · exact toMatroid_isRegular
