@@ -296,6 +296,14 @@ lemma Matroid.IsRegular.hasBinaryStandardRepr {M : Matroid α} (hM : M.IsRegular
   obtain ⟨S, hSV⟩ := V.exists_standardRepr
   exact ⟨S, hSV ▸ hV⟩
 
+private lemma support_eq_support_of_same_matroid_same_X' {F₁ F₂ : Type} [Field F₁] [Field F₂] [DecidableEq F₁] [DecidableEq F₂]
+    {X Y : Set α} {hXY : X ⫗ Y} {B₁ : Matrix X Y F₁} {B₂ : Matrix X Y F₂}
+    {hX : ∀ a, Decidable (a ∈ X)} {hY : ∀ a, Decidable (a ∈ Y)} [Fintype X]
+    (hSS : (StandardRepr.mk X Y hXY B₁ hX hY).toMatroid = (StandardRepr.mk X Y hXY B₂ hX hY).toMatroid) :
+    B₁.support = B₂.support := by
+  -- TODO generalize `B_eq_B_of_same_matroid_same_X`
+  sorry
+
 /-- If two standard representations of the same matroid have the same base, then the standard representation matrices have
     the same support. -/
 lemma support_eq_support_of_same_matroid_same_X {F₁ F₂ : Type} [Field F₁] [Field F₂] [DecidableEq F₁] [DecidableEq F₂]
@@ -303,8 +311,21 @@ lemma support_eq_support_of_same_matroid_same_X {F₁ F₂ : Type} [Field F₁] 
     (hSS : S₁.toMatroid = S₂.toMatroid) (hXX : S₁.X = S₂.X) :
     let hYY : S₁.Y = S₂.Y := right_eq_right_of_union_eq_union hXX S₁.hXY S₂.hXY (congr_arg Matroid.E hSS)
     hXX ▸ hYY ▸ S₁.B.support = S₂.B.support := by
-  -- TODO generalize `B_eq_B_of_same_matroid_same_X`
-  sorry
+  intro hYY
+  have : Fintype S₂.X
+  · rw [←hXX]
+    assumption
+  obtain ⟨X₁, Y₁, hXY₁, B₁, hX₁, hY₁⟩ := S₁
+  obtain ⟨X₂, Y₂, hXY₂, B₂, hX₂, hY₂⟩ := S₂
+  simp only at hXX hYY
+  let B₀ := hXX ▸ hYY ▸ B₁
+  have hB₀ : B₀ = hXX ▸ hYY ▸ B₁
+  · rfl
+  convert_to B₀.support = B₂.support
+  · cc
+  have hSS' : (StandardRepr.mk X₂ Y₂ hXY₂ B₀ hX₂ hY₂).toMatroid = (StandardRepr.mk X₂ Y₂ hXY₂ B₂ hX₂ hY₂).toMatroid
+  · convert hSS <;> cc
+  exact support_eq_support_of_same_matroid_same_X' hSS'
 
 /-- Binary matroid constructed from a full representation is regular if the binary matrix has a TU signing. -/
 private lemma VectorMatroid.toMatroid_isRegular_if_hasTuSigning (V : VectorMatroid α Z2) :
