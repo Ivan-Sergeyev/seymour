@@ -401,7 +401,7 @@ lemma shortTableauPivot_submatrix_det_abs_eq_div [LinearOrderedField F] {k : ℕ
     shortTableauPivot_submatrix_succAbove_succAbove_det_abs_eq_div hAxy⟩
 
 /-- Corollary 1. -/
-lemma shortTableauPivot_submatrix_det_in_signTypeCastRange [LinearOrderedField F] {k : ℕ}
+lemma shortTableauPivot_submatrix_det_ni_signTypeCastRange [LinearOrderedField F] {k : ℕ}
     {A : Matrix (Fin k.succ) (Fin k.succ) F}
     (hA : A.det ∉ SignType.cast.range) (i j : Fin k.succ) (hAij : A i j = 1 ∨ A i j = -1) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
