@@ -28,48 +28,6 @@ def Matrix.HasTuSigning {X Y : Type} (U : Matrix X Y Z2) : Prop :=
 def Matrix.support {X Y R : Type} [Zero R] [DecidableEq R] (A : Matrix X Y R) : Matrix X Y Z2 :=
   Matrix.of (if A · · = 0 then 0 else 1)
 
-lemma Matrix.IsTuSigningOf_iff {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y Z2) :
-    A.IsTuSigningOf U ↔ A.IsTotallyUnimodular ∧ A.support = U := by
-  constructor
-  · intro ⟨hA, hAU⟩
-    constructor
-    · exact hA
-    · unfold Matrix.support
-      ext i j
-      specialize hAU i j
-      rw [of_apply]
-      if hA0 : A i j = 0 then
-        rw [hA0, abs_zero, ZMod.natCast_val] at hAU
-        rw [hA0]
-        exact ((ZMod.val_eq_zero (U i j)).mp (Rat.natCast_eq_zero.→ hAU.symm)).symm
-      else
-        cases (Z2_eq_0_or_1 (U i j)) with
-        | inl hU0 =>
-            rw [hU0, ZMod.val_zero, CharP.cast_eq_zero, abs_eq_zero] at hAU
-            exact False.elim (hA0 hAU)
-        | inr hU1 =>
-            rw [hU1]
-            exact if_neg hA0
-  · intro ⟨hA, hAU⟩
-    constructor
-    · exact hA
-    · intro i j
-      apply (congr_fun · i) at hAU
-      apply (congr_fun · j) at hAU
-      unfold Matrix.support at hAU
-      rw [of_apply] at hAU
-      if hA0 : A i j = 0 then
-        rw [←hAU, hA0]
-        rfl
-      else
-        simp only [hA0, ↓reduceIte] at hAU
-        rw [←hAU, ZMod.natCast_val, abs_eq rfl]
-        obtain ⟨v, hv⟩ := hA.apply i j
-        cases v with
-        | zero => exact False.elim (hA0 hv.symm)
-        | neg => exact Or.inr hv.symm
-        | pos => exact Or.inl hv.symm
-
 lemma Matrix.support_transpose {X Y R : Type} [Zero R] [DecidableEq R] (A : Matrix X Y R) :
     A.support.transpose = A.transpose.support :=
   rfl
@@ -78,7 +36,7 @@ lemma Matrix.support_submatrix {X X' Y Y' R : Type} [Zero R] [DecidableEq R] (A 
     A.support.submatrix f g = (A.submatrix f g).support :=
   rfl
 
-private lemma Matrix.IsTotallyUnimodular.support {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
+lemma Matrix.IsTotallyUnimodular.support {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
     A.IsTuSigningOf A.support := by
   refine ⟨hA, fun i j => ?_⟩
   if hAij : A i j = 0 then
@@ -98,6 +56,30 @@ private lemma Matrix.IsTotallyUnimodular.support {X Y : Type} {A : Matrix X Y �
       rw [←hs]
       simp [Matrix.support, hAij]
       rfl
+
+lemma Matrix.isTuSigningOf_iff {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y Z2) :
+    A.IsTuSigningOf U ↔ A.IsTotallyUnimodular ∧ A.support = U := by
+  constructor
+  · intro ⟨hA, hAU⟩
+    constructor
+    · exact hA
+    · unfold Matrix.support
+      ext i j
+      specialize hAU i j
+      rw [Matrix.of_apply]
+      if hA0 : A i j = 0 then
+        rw [hA0] at hAU ⊢
+        exact ((ZMod.val_eq_zero (U i j)).→ (Rat.natCast_eq_zero.→ hAU.symm)).symm
+      else
+        cases (Z2_eq_0_or_1 (U i j)) with
+        | inl hU0 =>
+          rw [hU0, ZMod.val_zero, CharP.cast_eq_zero, abs_eq_zero] at hAU
+          exact False.elim (hA0 hAU)
+        | inr hU1 =>
+          rw [hU1]
+          exact if_neg hA0
+  · intro ⟨hA, hAU⟩
+    exact hAU ▸ hA.support
 
 variable {α : Type}
 
