@@ -9,7 +9,7 @@ import Seymour.Matrix.PreTUness
 abbrev matrix2sumComposition {α β : Type} [Semiring β] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
     (Aₗ : Matrix Xₗ Yₗ β) (x : Yₗ → β) (Aᵣ : Matrix Xᵣ Yᵣ β) (y : Xᵣ → β) :
     Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) β :=
-  Matrix.fromBlocks Aₗ 0 (fun i j => y i * x j) Aᵣ
+  Matrix.fromBlocks Aₗ 0 (y · * x ·) Aᵣ
 
 /-- `StandardRepr`-level 2-sum of two matroids.
     The second part checks legitimacy: the ground sets of `Mₗ` and `Mᵣ` are disjoint except for the element `a ∈ Mₗ.X ∩ Mᵣ.Y`,

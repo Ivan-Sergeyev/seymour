@@ -41,7 +41,7 @@ lemma Matrix.support_submatrix {X X' Y Y' R : Type} [Zero R] [DecidableEq R] (A 
 lemma Matrix.support_Z2 {X Y : Type} (A : Matrix X Y Z2) : A.support = A := by
   aesop
 
-lemma Matrix.IsTotallyUnimodular.abs_eq_support_cast {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
+lemma Matrix.IsTotallyUnimodular.abs_eq_support_val {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
     ∀ i : X, ∀ j : Y, |A i j| = (A.support i j).val := by
   intro i j
   obtain ⟨s, hs⟩ := hA.apply i j
@@ -57,16 +57,7 @@ lemma Matrix.IsTotallyUnimodular.abs_cast_eq_support {X Y : Type} {A : Matrix X 
 
 lemma Matrix.IsTotallyUnimodular.support {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
     A.IsTuSigningOf A.support :=
-  ⟨hA, abs_eq_support_cast hA⟩
-
-lemma Z2_eq_iff_ZMod_val_eq {a b : Z2} : a = b ↔ a.val = b.val := by
-  constructor
-  <;> intro hab
-  · exact congr_arg ZMod.val hab
-  · cases a
-    cases b
-    simp only [ZMod.val, Nat.reduceAdd] at hab
-    simp only [hab]
+  ⟨hA, hA.abs_eq_support_val⟩
 
 lemma Matrix.isTuSigningOf_iff {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y Z2) :
     A.IsTuSigningOf U ↔ A.IsTotallyUnimodular ∧ A.support = U := by
@@ -76,8 +67,8 @@ lemma Matrix.isTuSigningOf_iff {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y
     · exact hA
     · ext i j
       specialize hAU i j
-      rw [hA.abs_eq_support_cast] at hAU
-      exact Z2_eq_iff_ZMod_val_eq.← (Rat.natCast_inj.→ hAU)
+      rw [hA.abs_eq_support_val] at hAU
+      exact Z2_ext.← (Rat.natCast_inj.→ hAU)
   · intro ⟨hA, hAU⟩
     exact hAU ▸ hA.support
 

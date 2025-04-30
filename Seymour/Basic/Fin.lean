@@ -47,6 +47,15 @@ lemma Z2_eq_0_or_1 (a : Z2) : a = 0 ∨ a = 1 := by
     · right
       rfl
 
+lemma Z2_ext {a b : Z2} : a = b ↔ a.val = b.val := by
+  constructor
+  <;> intro hab
+  · exact congr_arg ZMod.val hab
+  · cases a
+    cases b
+    simp only [ZMod.val, Nat.reduceAdd] at hab
+    simp only [hab]
+
 lemma Z2val_toRat_mul_Z2val_toRat (a b : Z2) : (a.val : ℚ) * (b.val : ℚ) = ((a*b).val : ℚ) := by
   fin_cases a <;> fin_cases b <;> simp
   apply one_mul
