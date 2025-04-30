@@ -520,7 +520,7 @@ private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁
         · convert_to Bₒ.prependId x ◪y = Bₒ x y
           · congr
             simpa [Subtype.toSum] using hXY.not_mem_of_mem_right y.property
-          simp
+          rfl
         · simp [Dₒ]
           show
             ∑ i ∈ Finset.univ.filter (fun x : X => Bₒ x y ≠ 0), (1 : Matrix X X Z2) x i =
