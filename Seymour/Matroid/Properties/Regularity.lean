@@ -59,15 +59,14 @@ lemma Matrix.IsTotallyUnimodular.support {X Y : Type} {A : Matrix X Y ℚ} (hA :
     A.IsTuSigningOf A.support :=
   ⟨hA, abs_eq_support_cast hA⟩
 
-lemma Z2_eq_iff_ZMod_val_eq {a b : Z2} : a = b ↔ ZMod.val a = ZMod.val b := by
+lemma Z2_eq_iff_ZMod_val_eq {a b : Z2} : a = b ↔ a.val = b.val := by
   constructor
-  · intro hab
-    exact congrArg ZMod.val hab
-  · intro hab
-    cases a
+  <;> intro hab
+  · exact congrArg ZMod.val hab
+  · cases a
     cases b
     simp only [ZMod.val, Nat.reduceAdd] at hab
-    simp only [Nat.reduceAdd, hab]
+    simp only [hab]
 
 lemma Matrix.isTuSigningOf_iff {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y Z2) :
     A.IsTuSigningOf U ↔ A.IsTotallyUnimodular ∧ A.support = U := by
