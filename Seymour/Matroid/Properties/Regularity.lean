@@ -293,7 +293,33 @@ private lemma support_eq_support_of_same_matroid_same_X' {F₁ F₂ : Type} [Fie
         exact hx₁
       simp_all [D₂]
   apply Set.eq_of_subset_of_subset
-  · sorry
+  on_goal 1 => let D := D₁; let Dₒ := D₂; let B := B₁; let Bₒ := B₂
+  on_goal 2 => let D := D₂; let Dₒ := D₁; let B := B₂; let Bₒ := B₁
+  · by_contra hD
+    rw [Set.not_subset_iff_exists_mem_not_mem] at hD
+    -- otherwise `y ᕃ Dₒ` is dependent in `Mₒ` but indep in `M`
+    have hMₒ : ¬ (StandardRepr.mk X Y hXY Bₒ hX hY).toMatroid.Indep (y.val ᕃ Dₒ)
+    · rw [StandardRepr.toMatroid_indep_iff_elem', not_exists]
+      intro hDₒ
+      erw [not_linearIndependent_iff]
+      sorry
+    have hM : (StandardRepr.mk X Y hXY B hX hY).toMatroid.Indep (y.val ᕃ Dₒ)
+    · obtain ⟨d, hd, hdₐ⟩ := hD
+      simp
+      have hDXY : Subtype.val '' Dₒ ⊆ X ∪ Y := (Subtype.coe_image_subset X Dₒ).trans hXXY
+      have hyXY : y.val ∈ X ∪ Y := hYXY y.property
+      have hyDXY : y.val ᕃ Subtype.val '' Dₒ ⊆ X ∪ Y := Set.insert_subset hyXY hDXY
+      use Set.insert_subset hyXY hDXY
+      -- if the coefficient in front of `y` is `0` then all coefficients must be `0`
+      -- if the coefficient in front of `y` is `1` then the sum will always have `1` on `d` position
+      rw [linearIndepOn_iff]
+      intro l hl hlB
+      have hl' : l.support.toSet ⊆ hyDXY.elem.range
+      · rwa [Finsupp.mem_supported] at hl
+      have hl'' : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' Dₒ :=
+        fun e he => (hyDXY.elem_range ▸ hl') he
+      sorry
+    exact hMₒ (hSS' ▸ hM)
   · sorry
 
 /-- If two standard representations of the same matroid have the same base, then the standard representation matrices have
