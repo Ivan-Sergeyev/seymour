@@ -183,17 +183,41 @@ The guideline below is written primarily to assist you in reading the code.
 - `Y` ... set of col indices
 - `Z` ... subset of indices
 
+### Code stability and readability
+
+- Do not open namespaces.
+- Do not utilize automatic opening of a namespace for the declaration's name prefix.
+
+  For example, do not write:
+  ```
+  def List.uppcaseLetters (l : List Char) := map Char.toUpper l
+  ```
+  Either write down the full name of the function:
+  ```
+  def List.uppcaseLetters (l : List Char) := List.map Char.toUpper l
+  ```
+  Or, even better, utilize the dot notation:
+  ```
+  def List.uppcaseLetters (l : List Char) := l.map Char.toUpper
+  ```
+  This way:
+  - reading the code is immediately clear without reading ahead and performing unification inside the reader's mind
+  - the effect of the function will not change when you rename it (and the same applies to proofs)
+
+  You can perform a quick check:
+  The code style is satisfied iff the declaration still compiles after changing the first letter in its name.
+- Annotate types even in situations where they can be inferred automatically.
+
 ### Other
 
 - We currently prefer `Type` over universe-polymorphic types. Generalization to `Type*` will probably be done at the end of the project.
-- Do not open namespaces.
-- We usually annotate types even in situations where they can be inferred automatically.
 - We prefer not to write parentheses after quantifiers.
 - We do not write a space after `¬` but we write redundant parentheses around the negated expression when it contains any infix operator.
 - Orphaning parentheses is allowed.
 - We like to use our custom notation declared at the beginning of the [Basic](https://github.com/Ivan-Sergeyev/seymour/blob/main/Seymour/Basic/Basic.lean) file.
 - We do not write `.1` and `.2` to access fields; write their names instead (with the exception for `Iff.mp` and `Iff.mpr` where we prefer our notation `.→` and `.←` respectively).
-- We prefer Mathlib `have` over Std `have` inside tactic-block proofs.
+- We prefer Mathlib's `have` over Std's `have` inside tactic-block proofs.
+- We prefer Mathlib's `congr_arg` and `congr_fun` over Std's `congrArg` and `congrFun` respectively.
 - If you have a standard representation matrix and need a full representation matrix, use `Matrix.prependId` to put the identity matrix on the left of the standard representation matrix. Do not use `Matrix.uppendId` unless necessary.
 - We do not write a space after `←` in the `rw` syntax.
 - We do not write `↦` as this syntax does not work everywhere. Write `=>` instead.

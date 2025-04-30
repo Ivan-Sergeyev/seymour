@@ -45,14 +45,14 @@ lemma Matrix.IsTotallyUnimodular.abs_eq_support_cast {X Y : Type} {A : Matrix X 
     ∀ i : X, ∀ j : Y, |A i j| = (A.support i j).val := by
   intro i j
   obtain ⟨s, hs⟩ := hA.apply i j
-  rw [Matrix.support, of_apply, ZMod.natCast_val, ←hs]
+  rw [Matrix.support, Matrix.of_apply, ZMod.natCast_val, ←hs]
   cases s <;> rfl
 
 lemma Matrix.IsTotallyUnimodular.abs_cast_eq_support {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
     ∀ i : X, ∀ j : Y, |A i j|.cast = A.support i j := by
   intro i j
   obtain ⟨s, hs⟩ := hA.apply i j
-  rw [Matrix.support, of_apply, ←hs]
+  rw [Matrix.support, Matrix.of_apply, ←hs]
   cases s <;> simp
 
 lemma Matrix.IsTotallyUnimodular.support {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
@@ -62,7 +62,7 @@ lemma Matrix.IsTotallyUnimodular.support {X Y : Type} {A : Matrix X Y ℚ} (hA :
 lemma Z2_eq_iff_ZMod_val_eq {a b : Z2} : a = b ↔ a.val = b.val := by
   constructor
   <;> intro hab
-  · exact congrArg ZMod.val hab
+  · exact congr_arg ZMod.val hab
   · cases a
     cases b
     simp only [ZMod.val, Nat.reduceAdd] at hab
@@ -116,7 +116,7 @@ private lemma Matrix.IsTotallyUnimodular.ratCast_det_eq_support_det [Fintype α]
   congr
   ext i j
   obtain ⟨s, hs⟩ := hA.apply i j
-  rw [Matrix.support, Matrix.support, of_apply, of_apply, map_apply, ←hs]
+  rw [Matrix.support, Matrix.support, Matrix.of_apply, Matrix.of_apply, Matrix.map_apply, ←hs]
   cases s <;> rfl
 
 private lemma Matrix.IsTotallyUnimodular.det_eq_zero_iff_support [Fintype α] {A : Matrix α α ℚ}
