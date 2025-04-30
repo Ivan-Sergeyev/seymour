@@ -79,6 +79,21 @@ lemma sum_elem_matrix_row_of_nmem [DecidableEq α] {β : Type} [AddCommMonoidWit
   intro y _
   exact Matrix.one_apply_ne' (ne_of_mem_of_not_mem y.property hxS)
 
+lemma sum_elem_smul_matrix_row_of_mem [DecidableEq α] {β : Type} [NonAssocSemiring β] {x : α} {S : Set α} [Fintype S]
+    (f : α → β) (hxS : x ∈ S) :
+    ∑ i : S.Elem, f i • (1 : Matrix α α β) x i.val = f x := by
+  convert sum_elem_of_single_nonzero hxS (fun a ha =>
+    show ((f a • (1 : Matrix α α β) x a) = 0) by simp [Matrix.one_apply_ne' ha])
+  rw [Matrix.one_apply_eq x, smul_eq_mul, mul_one]
+
+lemma sum_elem_smul_matrix_row_of_nmem [DecidableEq α] {β : Type} [NonAssocSemiring β] {x : α} {S : Set α} [Fintype S]
+    (f : α → β) (hxS : x ∉ S) :
+    ∑ i : S.Elem, f i • (1 : Matrix α α β) x i.val = 0 := by
+  apply Finset.sum_eq_zero
+  intro y _
+  rw [Matrix.one_apply_ne' (ne_of_mem_of_not_mem y.property hxS)]
+  apply smul_zero
+
 /-- The absolute value of a matrix is a matrix made of absolute values of respective elements. -/
 def Matrix.abs [LinearOrderedAddCommGroup α] {m n : Type} (A : Matrix m n α) : Matrix m n α :=
   Matrix.of (|A · ·|)
