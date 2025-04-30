@@ -1,6 +1,6 @@
-# Contributing to [Seymour]
+# Contributing to Seymour
 
-Thank you for your interest in contributing to [Seymour]!
+Thank you for your interest in contributing to Seymour!
 We welcome all contributions from the community and appreciate your efforts to improve the project.
 
 ## Code style
@@ -189,20 +189,20 @@ The guideline below is written primarily to assist you in reading the code.
 - Do not utilize automatic opening of a namespace for the declaration's name prefix.
 
   For example, do not write:
-  ```
+  ```lean
   def List.uppcaseLetters (l : List Char) := map Char.toUpper l
   ```
   Either write down the full name of the function:
-  ```
+  ```lean
   def List.uppcaseLetters (l : List Char) := List.map Char.toUpper l
   ```
   Or, even better, utilize the dot notation:
-  ```
+  ```lean
   def List.uppcaseLetters (l : List Char) := l.map Char.toUpper
   ```
   This way:
-  - reading the code is immediately clear without reading ahead and performing unification inside the reader's mind
-  - the effect of the function will not change when you rename it (and the same applies to proofs)
+  - Reading the code is immediately clear without reading ahead and performing unification inside the reader's mind.
+  - The effect of the function will not change when you rename it (and the same applies to proofs).
 
   You can perform a quick check:
   The code style is satisfied iff the declaration still compiles after changing the first letter in its name.
