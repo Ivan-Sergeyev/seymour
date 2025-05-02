@@ -95,34 +95,17 @@ theorem VectorMatroid.indepCols_aug [DivisionRing R] (M : VectorMatroid α R) (I
   have Jᵥ_ss_Iₛ : Jᵥ ⊆ Iₛ
   · intro v ⟨x, hxJ, hxv⟩
     by_cases hvI : v ∈ Iᵥ
-    · -- TODO cleanup `aesop?` output
-      subst hxv
-      simp_all only [Set.mem_diff, and_imp, Set.le_eq_subset, Set.mem_setOf_eq, Set.mem_image, Subtype.exists,
-        exists_and_left, SetLike.mem_coe, Jᵥ, J', Iᵥ, I', Iₛ]
-      obtain ⟨_, _⟩ := x
-      obtain ⟨_, hh, _, _⟩ := hvI
-      simp_all only [Jᵥ]
+    · simp_all only [Set.mem_setOf_eq, Set.mem_image, Subtype.exists, exists_and_left, Iᵥ, I', Iₛ]
+      obtain ⟨_, hI', _⟩ := hvI
       apply SetLike.mem_of_subset
       · apply Submodule.subset_span
-      · simp_all only [Set.mem_image, Set.mem_setOf_eq, Subtype.exists, exists_and_left, Jᵥ]
-        apply Exists.intro
-        · apply And.intro
-          · exact hh
-          · simp_all only [exists_const, Jᵥ]
+      · simp only [Set.mem_image, Set.mem_setOf_eq, Subtype.exists, exists_and_left]
+        exact ⟨_, hI', by simp_all only⟩
     · have x_in_J : ↑x ∈ J := hxJ
       have x_ni_I : ↑x ∉ I
-      · -- TODO cleanup `aesop?` output
-        subst hxv
-        simp_all only [Set.mem_diff, and_imp, Set.le_eq_subset, Set.mem_setOf_eq, Set.mem_image, Subtype.exists,
-          exists_and_left, not_exists, not_and, J', I', Jᵥ, Iₛ, Iᵥ]
-        obtain ⟨val, property⟩ := x
-        simp_all only [J', I', Jᵥ, Iₛ, Iᵥ]
-        apply Aesop.BuiltinRules.not_intro
-        intro a
-        apply hvI
-        · exact a
-        · rfl
-        · simp_all only [J', I', Jᵥ, Iₛ, Iᵥ]
+      · simp_all only [Set.mem_setOf_eq, Set.mem_image, Subtype.exists, exists_and_left, not_exists, not_and, I', Iₛ, Iᵥ]
+        intro hI'
+        exact hvI _ hI' (hI hI') hxv
       have x_in_JwoI : ↑x ∈ J \ I := Set.mem_diff_of_mem x_in_J x_ni_I
       have hMxI : ¬M.IndepCols (↑x ᕃ I) := non_aug ↑x x_in_JwoI
       rw [VectorMatroid.IndepCols] at hMxI

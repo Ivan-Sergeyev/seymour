@@ -56,6 +56,12 @@ def implicitNamespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let oldState ← get
   let s ← getScope
   let newId := ((stx1.find? (·.isOfKind ``Parser.Command.declId)).getD default)[0]
+  -- do not test declarations with "atomic" names
+  if isMonolytic newId.getId then
+    return
+  -- do not test declarations of inductive types
+  if ((stx1.getArg 1).getArg 0).getAtomVal == "inductive" then
+    return
   let report : Bool ←
     withScope (fun _ =>
       {(default : Scope) with
@@ -70,11 +76,6 @@ def implicitNamespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
         omittedVars := s.omittedVars
         isNoncomputable := s.isNoncomputable
         }) do
-      -- do not test declarations with "atomic" names
-      if isMonolytic newId.getId then return false
-      -- do not test declarations of inductive types
-      if ((stx1.getArg 1).getArg 0).getAtomVal == "inductive" then return false
-
       elabCommand stx1
       return (← get).messages.hasErrors
       -- debug command, to see what errors the linter is finding.  Should be unknown identifier
