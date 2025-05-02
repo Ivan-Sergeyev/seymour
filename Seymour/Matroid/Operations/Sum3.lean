@@ -137,11 +137,70 @@ private def Matrix.toCanonicalSigning {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ 
     1)
   Matrix.of (fun i j => Q i j * u i * v j)
 
+-- TODO is duplicate (Pivoting.lean)
+/-- Multiply the `x`th row of `A` by `q` and keep the rest of `A` unchanged. -/
+private def Matrix.mulRow {X Y F : Type} [DecidableEq X] [Mul F] (A : Matrix X Y F) (x : X) (q : F) :
+    Matrix X Y F :=
+  A.updateRow x (q • A x)
+
+-- TODO is duplicate (Pivoting.lean)
+private lemma Matrix.mulRow_det {X F : Type} [DecidableEq X] [Fintype X] [CommRing F] (A : Matrix X X F) (x : X) (q : F) :
+    (A.mulRow x q).det = q * A.det := by
+  rw [Matrix.mulRow, Matrix.det_updateRow_smul, Matrix.updateRow_eq_self]
+
+-- TODO is duplicate (Pivoting.lean)
+private lemma Matrix.IsTotallyUnimodular.mulRow {X Y F : Type} [DecidableEq X] [CommRing F] {A : Matrix X Y F}
+    (hA : A.IsTotallyUnimodular) (x : X) {q : F} (hq : q ∈ SignType.cast.range) :
+    (A.mulRow x q).IsTotallyUnimodular := by
+  intro k f g hf hg
+  if hi : ∃ i : Fin k, f i = x then
+    obtain ⟨i, rfl⟩ := hi
+    convert_to ((A.submatrix f g).updateRow i (q • (A.submatrix id g) (f i))).det ∈ SignType.cast.range
+    · congr
+      ext i' j'
+      if hii : i' = i then
+        simp [Matrix.mulRow, hii]
+      else
+        have hfii : f i' ≠ f i := (hii <| hf ·)
+        simp [Matrix.mulRow, hii, hfii]
+    rw [Matrix.det_updateRow_smul]
+    apply in_signTypeCastRange_mul_in_signTypeCastRange hq
+    have hAf := hA.submatrix f id
+    rw [Matrix.isTotallyUnimodular_iff] at hAf
+    convert hAf k id g
+    rw [Matrix.submatrix_submatrix, Function.comp_id, Function.id_comp]
+    exact (A.submatrix f g).updateRow_eq_self i
+  else
+    convert hA k f g hf hg using 2
+    simp_all [Matrix.submatrix, Matrix.mulRow]
+
+-- TODO induction on `X` and utilize `Matrix.IsTotallyUnimodular.mulRow`
+private lemma Matrix.IsTotallyUnimodular.todo_horizontal {X Y F : Type} [DecidableEq X] [CommRing F] {A : Matrix X Y F}
+    (hA : A.IsTotallyUnimodular) {q : X → F} (hq : ∀ i : X, q i ∈ SignType.cast.range) :
+    (Matrix.of (fun i j => A i j * q i)).IsTotallyUnimodular := by
+  sorry
+
+-- TODO transpose and utilize `Matrix.IsTotallyUnimodular.todo_horizontal`
+private lemma Matrix.IsTotallyUnimodular.todo_vertical {X Y F : Type} [DecidableEq X] [CommRing F] {A : Matrix X Y F}
+    (hA : A.IsTotallyUnimodular) {q : Y → F} (hq : ∀ j : Y, q j ∈ SignType.cast.range) :
+    (Matrix.of (fun i j => A i j * q j)).IsTotallyUnimodular := by
+  sorry
+
 lemma Matrix.toCanonicalSigning_TU {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y)
     (hQ : Q.IsTotallyUnimodular) :
-    (Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y').IsTotallyUnimodular :=
-  -- multiplying rows and columns by ±1 factors preserves TUness
-  sorry
+    (Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y').IsTotallyUnimodular := by
+  unfold Matrix.toCanonicalSigning
+  let u : X → ℚ := (fun i =>
+    if i = x₀ then Q x₀ y₀ * Q x' y₀ else
+    if i = x₁ then Q x₀ y₀ * Q x₀ y' * Q x₁ y' * Q x' y₀ else
+    if i = x' then 1 else
+    1)
+  let v : Y → ℚ := (fun j =>
+    if j = y₀ then Q x' y₀ else
+    if j = y₁ then Q x' y₁ else
+    if j = y' then Q x₀ y₀ * Q x₀ y' * Q x' y₀ else
+    1)
+  exact (hQ.todo_horizontal (q := u) sorry).todo_vertical (q := v) sorry
 
 lemma Matrix.toCanonicalSigning_Form_Case1 {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y)
     (hQ : Q.IsTotallyUnimodular)
