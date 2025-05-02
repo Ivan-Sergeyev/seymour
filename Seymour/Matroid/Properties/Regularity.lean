@@ -12,11 +12,16 @@ def Matroid.IsRegular {α : Type} (M : Matroid α) : Prop :=
 
 -- ## Secondary definition of regularity (LI over Z2 while TU over ℚ)
 
+/-- `LinearOrderedRing`-valued matrix `A` is a signing of `U` (matrix of the same size but different type) iff `A` has
+    the same as entries in `U` on respective positions up to signs. -/
+def Matrix.IsSigningOf {X Y R : Type} [LinearOrderedRing R] (A : Matrix X Y R) {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
+  ∀ i : X, ∀ j : Y, |A i j| = (U i j).val
+
 /-- Rational matrix `A` is a TU signing of `U` (matrix of the same size but different type) iff `A` is TU and its entries are
     the same as entries in `U` on respective positions up to signs.
     Do not ask `U.IsTotallyUnimodular` ... see `Matrix.overZ2_isTotallyUnimodular` for example! -/
 def Matrix.IsTuSigningOf {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y Z2) : Prop :=
-  A.IsTotallyUnimodular ∧ ∀ i : X, ∀ j : Y, |A i j| = (U i j).val
+  A.IsTotallyUnimodular ∧ A.IsSigningOf U
 
 /-- Matrix `U` has a TU signing iff there is a rational TU matrix whose entries are the same as those in `U` up to signs. -/
 def Matrix.HasTuSigning {X Y : Type} (U : Matrix X Y Z2) : Prop :=

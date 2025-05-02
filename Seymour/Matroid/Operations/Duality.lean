@@ -58,7 +58,7 @@ lemma Matroid.IsRegular.dual {M : Matroid α} (hM : M.IsRegular) : M✶.IsRegula
   rw [←S.dual_toMatroid]
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hM ⊢
   obtain ⟨A, hA, hAS⟩ := hM
-  exact ⟨-Aᵀ, hA.transpose.neg, by simp [StandardRepr.dual, *]⟩
+  exact ⟨-Aᵀ, hA.transpose.neg, by simp_all [StandardRepr.dual, Matrix.IsSigningOf]⟩
 
 lemma Matroid.IsRegular.of_dual {M : Matroid α} (hM : M✶.IsRegular) : M.IsRegular :=
   M.dual_dual ▸ hM.dual

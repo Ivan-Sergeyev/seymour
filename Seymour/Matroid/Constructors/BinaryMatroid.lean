@@ -2,7 +2,6 @@ import Mathlib.Data.Matroid.IndepAxioms
 import Mathlib.Data.Matroid.Dual
 import Mathlib.Data.Matroid.Map
 import Mathlib.Data.Matroid.Sum
-
 import Seymour.Basic.Basic
 
 open scoped Matrix Set.Notation
@@ -50,7 +49,7 @@ lemma VectorMatroid.indepCols_iff_submatrix' [Semiring R] (M : VectorMatroid α 
   M.indepCols_eq_indepColsOld ▸ Iff.rfl
 
 
-/-- Empty set is independent. -/
+/-- Empty set is independent (old version). -/
 private theorem VectorMatroid.indepColsOld_empty [Semiring R] (M : VectorMatroid α R) :
     M.IndepColsOld ∅ :=
   ⟨M.Y.empty_subset, linearIndependent_empty_type⟩
@@ -60,7 +59,7 @@ theorem VectorMatroid.indepCols_empty [Semiring R] (M : VectorMatroid α R) :
     M.IndepCols ∅ :=
   M.indepCols_eq_indepColsOld ▸ M.indepColsOld_empty
 
-/-- A subset of a independent set of columns is independent. -/
+/-- A subset of a independent set of columns is independent (old version). -/
 private theorem VectorMatroid.indepColsOld_subset [Semiring R] (M : VectorMatroid α R) (I J : Set α)
     (hMJ : M.IndepColsOld J) (hIJ : I ⊆ J) :
     M.IndepColsOld I :=
@@ -111,13 +110,15 @@ theorem VectorMatroid.indepCols_aug [DivisionRing R] (M : VectorMatroid α R) (I
       rw [VectorMatroid.IndepCols] at hMxI
       push_neg at hMxI
       have hnMxI : ¬LinearIndepOn R M.Aᵀ (M.Y ↓∩ (↑x ᕃ I)) := hMxI (Set.insert_subset (hJ hxJ) hI)
-      have hYxI : M.Y ↓∩ (↑x ᕃ I) = x ᕃ I' := by aesop
+      have hYxI : M.Y ↓∩ (↑x ᕃ I) = x ᕃ I'
+      · aesop
       rw [hYxI] at hnMxI
       have I'_indep : LinearIndepOn R M.Aᵀ I' := I_indep
       by_contra! v_ni_Iₛ
       have : v ∉ Submodule.span R Iᵥ := v_ni_Iₛ
       have hx_ni_I : x ∉ I' := x_ni_I
-      have Mx_ni_span_I : M.Aᵀ x ∉ Submodule.span R (M.Aᵀ '' I') := by aesop
+      have Mx_ni_span_I : M.Aᵀ x ∉ Submodule.span R (M.Aᵀ '' I')
+      · simp [*, I', J', Iₛ, Iᵥ, Jᵥ]
       have xI_indep : LinearIndepOn R M.Aᵀ (x ᕃ I') := (linearIndepOn_insert hx_ni_I).← ⟨I'_indep, Mx_ni_span_I⟩
       exact hnMxI xI_indep
   have Iᵥ_ss_Jₛ : Iᵥ ⊆ Jₛ
@@ -135,7 +136,8 @@ theorem VectorMatroid.indepCols_aug [DivisionRing R] (M : VectorMatroid α R) (I
     · rw [VectorMatroid.IndepCols]
       constructor
       · exact Set.insert_subset (hI hxI) hJ
-      · have hxJ' : M.Y ↓∩ (↑x ᕃ J) = x ᕃ J' := by aesop
+      · have hxJ' : M.Y ↓∩ (↑x ᕃ J) = x ᕃ J'
+        · aesop
         rw [hxJ']
         exact xJ'_indep
     have xJ_ss_J : ↑x ᕃ J ⊆ J := by simp_all
@@ -150,7 +152,8 @@ theorem VectorMatroid.indepCols_aug [DivisionRing R] (M : VectorMatroid α R) (I
   by_cases hkJ' : k' ∈ J'
   · have k_in_JwoI : k ∈ J \ I := Set.mem_diff_of_mem hkJ' k_ni_I
     exact non_aug k k_in_JwoI M_indep_kI
-  . have hkI' : M.Y ↓∩ (k ᕃ I) = ↑k' ᕃ I' := by aesop
+  . have hkI' : M.Y ↓∩ (k ᕃ I) = ↑k' ᕃ I'
+    · aesop
     have k'_ni_I' : k' ∉ I' := k_ni_I
     rw [VectorMatroid.IndepCols, hkI'] at M_indep_kI
     obtain ⟨_, M_indep_kI⟩ := M_indep_kI
@@ -165,7 +168,8 @@ theorem VectorMatroid.indepCols_aug [DivisionRing R] (M : VectorMatroid α R) (I
     · rw [VectorMatroid.IndepCols]
       constructor
       · exact Set.insert_subset k_in_Y hJ
-      · have hkJ : M.Y ↓∩ (k ᕃ J) = k' ᕃ J' := by aesop
+      · have hkJ : M.Y ↓∩ (k ᕃ J) = k' ᕃ J'
+        · aesop
         rw [hkJ]
         exact kJ'_indep
     have kJ_ss_J : k ᕃ J ⊆ J := by simp_all
@@ -176,7 +180,8 @@ lemma linearIndepOn_sUnion_of_directedOn [Semiring R] {X Y : Set α} {A : Matrix
     (hA : ∀ a ∈ s, LinearIndepOn R A (Y ↓∩ a)) :
     LinearIndepOn R A (Y ↓∩ (⋃₀ s)) := by
   let s' : Set (Set Y.Elem) := (fun t : s => Y ↓∩ t).range
-  have hss' : Y ↓∩ ⋃₀ s = s'.sUnion := by aesop
+  have hss' : Y ↓∩ ⋃₀ s = s'.sUnion
+  · simp [s']
   rw [hss']
   apply linearIndepOn_sUnion_of_directed
   · intro x' hx' y' hy'
@@ -201,7 +206,7 @@ theorem VectorMatroid.indepCols_maximal [Semiring R] (M : VectorMatroid α R) (I
       J ⟨hMJ, hJI⟩
 
 /-- `VectorMatroid` expressed as `IndepMatroid`. -/
-private def VectorMatroid.toIndepMatroid [DivisionRing R] (M : VectorMatroid α R) : IndepMatroid α where
+def VectorMatroid.toIndepMatroid [DivisionRing R] (M : VectorMatroid α R) : IndepMatroid α where
   E := M.Y
   Indep := M.IndepCols
   indep_empty := M.indepCols_empty

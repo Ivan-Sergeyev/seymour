@@ -1,4 +1,4 @@
-import Seymour.Basic.Linter
+import Seymour.Basic.Linters.ImplicitNamespace
 
 
 /-- The finite field on 2 elements; write `Z2` for "value" type but `Fin 2` for "indexing" type. -/

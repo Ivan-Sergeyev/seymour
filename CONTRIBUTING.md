@@ -183,7 +183,7 @@ The guideline below is written primarily to assist you in reading the code.
 - `Y` ... set of col indices
 - `Z` ... subset of indices
 
-### Code stability and readability
+### Stability and readability
 
 - Do not open namespaces.
 - Do not utilize automatic opening of a namespace for the declaration's name prefix.
@@ -204,9 +204,11 @@ The guideline below is written primarily to assist you in reading the code.
   - Reading the code is immediately clear without reading ahead and performing unification inside the reader's mind.
   - The effect of the function will not change when you rename it (and the same applies to proofs).
 
-  You can perform a quick check:
-  The code style is satisfied iff the declaration still compiles after changing the first letter in its name.
-- Annotate types even in situations where they can be inferred automatically.
+  Since deviation from the recommended style can be hard to spot here, we use the `implicitNamespace` linter by Damiano Testa to check that the automatically opened namespace hasn't been exploited.
+- Annotate types even in situations where they can be inferred automatically, for example:
+  ```lean
+  def List.uppcaseLetters (l : List Char) : List Char := l.map Char.toUpper
+  ```
 
 ### Other
 

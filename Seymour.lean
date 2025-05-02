@@ -17,7 +17,7 @@ recall Matrix.HasTuSigning {X Y : Type} (U : Matrix X Y Z2) : Prop :=
 recall StandardRepr.X {α R : Type} [DecidableEq α] : StandardRepr α R → Set α
 recall StandardRepr.Y {α R : Type} [DecidableEq α] : StandardRepr α R → Set α
 recall StandardRepr.B {α R : Type} [DecidableEq α] (S : StandardRepr α R) : Matrix S.X S.Y R
-recall StandardRepr.hXY {α R : Type} [DecidableEq α] (S : StandardRepr α R) : S.X ⫗ S.Y
+recall StandardRepr.hXY {α R : Type} [DecidableEq α] (S : StandardRepr α R) : Disjoint S.X S.Y
 
 recall Subtype.toSum {α : Type} {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)]
     (i : (X ∪ Y).Elem) :
