@@ -38,7 +38,7 @@ private lemma VectorMatroid.indepCols_eq_indepColsOld [Semiring R] (M : VectorMa
 
 lemma VectorMatroid.indepCols_iff_elem [Semiring R] (M : VectorMatroid α R) (I : Set α) :
     M.IndepCols I ↔ ∃ hI : I ⊆ M.Y, LinearIndepOn R M.Aᵀ hI.elem.range := by
-  unfold IndepCols HasSubset.Subset.elem
+  unfold VectorMatroid.IndepCols HasSubset.Subset.elem
   aesop
 
 lemma VectorMatroid.indepCols_iff_submatrix [Semiring R] (M : VectorMatroid α R) (I : Set α) :
@@ -72,7 +72,6 @@ theorem VectorMatroid.indepCols_subset [Semiring R] (M : VectorMatroid α R) (I 
     M.IndepCols I :=
   M.indepCols_eq_indepColsOld ▸ M.indepColsOld_subset I J (M.indepCols_eq_indepColsOld ▸ hMJ) hIJ
 
-set_option maxHeartbeats 400000 in
 /-- A non-maximal independent set of columns can be augmented with another independent column. To see why `DivisionRing` is
     necessary, consider `(!![0, 1, 2, 3; 1, 0, 3, 2] : Matrix (Fin 2) (Fin 4) (ZMod 6))` as a counterexample.
     The set `{0}` is nonmaximal independent.
@@ -96,9 +95,34 @@ theorem VectorMatroid.indepCols_aug [DivisionRing R] (M : VectorMatroid α R) (I
   have Jᵥ_ss_Iₛ : Jᵥ ⊆ Iₛ
   · intro v ⟨x, hxJ, hxv⟩
     by_cases hvI : v ∈ Iᵥ
-    · aesop
+    · -- TODO cleanup `aesop?` output
+      subst hxv
+      simp_all only [Set.mem_diff, and_imp, Set.le_eq_subset, Set.mem_setOf_eq, Set.mem_image, Subtype.exists,
+        exists_and_left, SetLike.mem_coe, Jᵥ, J', Iᵥ, I', Iₛ]
+      obtain ⟨_, _⟩ := x
+      obtain ⟨_, hh, _, _⟩ := hvI
+      simp_all only [Jᵥ]
+      apply SetLike.mem_of_subset
+      · apply Submodule.subset_span
+      · simp_all only [Set.mem_image, Set.mem_setOf_eq, Subtype.exists, exists_and_left, Jᵥ]
+        apply Exists.intro
+        · apply And.intro
+          · exact hh
+          · simp_all only [exists_const, Jᵥ]
     · have x_in_J : ↑x ∈ J := hxJ
-      have x_ni_I : ↑x ∉ I := by aesop
+      have x_ni_I : ↑x ∉ I
+      · -- TODO cleanup `aesop?` output
+        subst hxv
+        simp_all only [Set.mem_diff, and_imp, Set.le_eq_subset, Set.mem_setOf_eq, Set.mem_image, Subtype.exists,
+          exists_and_left, not_exists, not_and, J', I', Jᵥ, Iₛ, Iᵥ]
+        obtain ⟨val, property⟩ := x
+        simp_all only [J', I', Jᵥ, Iₛ, Iᵥ]
+        apply Aesop.BuiltinRules.not_intro
+        intro a
+        apply hvI
+        · exact a
+        · rfl
+        · simp_all only [J', I', Jᵥ, Iₛ, Iᵥ]
       have x_in_JwoI : ↑x ∈ J \ I := Set.mem_diff_of_mem x_in_J x_ni_I
       have hMxI : ¬M.IndepCols (↑x ᕃ I) := non_aug ↑x x_in_JwoI
       rw [VectorMatroid.IndepCols] at hMxI

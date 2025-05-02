@@ -200,7 +200,7 @@ private lemma Matrix.shortTableauPivot_outer {X Y X' Y' R : Type} [DecidableEq X
       (B.shortTableauPivot i (g j)) (f i') (g j') =
       y i' * shortTableauPivotOuterRow (B i) j g v j' := by
   intro i' j'
-  unfold shortTableauPivot shortTableauPivotOuterRow
+  unfold Matrix.shortTableauPivot shortTableauPivotOuterRow
   cases hBij with
   | inl h1 =>
     if hj : j' = j then

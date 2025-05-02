@@ -53,13 +53,13 @@ lemma Matrix.shortTableauPivot_row_other [One F] [Mul F] [Div F] [Sub F] [Neg F]
 -- ## Short-tableau pivoting preserves total unimodularity
 
 /-- Multiply the `x`th row of `A` by `c` and keep the rest of `A` unchanged. -/
-private def Matrix.mulRow [DecidableEq X] [Mul F] (A : Matrix X Y F) (x : X) (c : F) :
+private def Matrix.mulRow [DecidableEq X] [Mul F] (A : Matrix X Y F) (x : X) (q : F) :
     Matrix X Y F :=
-  A.updateRow x (c • A x)
+  A.updateRow x (q • A x)
 
-private lemma Matrix.mulRow_det [DecidableEq X] [Fintype X] [CommRing F] (A : Matrix X X F) (x : X) (c : F) :
-    (A.mulRow x c).det = c * A.det := by
-  rw [Matrix.mulRow, det_updateRow_smul, updateRow_eq_self]
+private lemma Matrix.mulRow_det [DecidableEq X] [Fintype X] [CommRing F] (A : Matrix X X F) (x : X) (q : F) :
+    (A.mulRow x q).det = q * A.det := by
+  rw [Matrix.mulRow, Matrix.det_updateRow_smul, Matrix.updateRow_eq_self]
 
 private lemma Matrix.IsTotallyUnimodular.mulRow [DecidableEq X] [CommRing F] {A : Matrix X Y F}
     (hA : A.IsTotallyUnimodular) (x : X) {c : F} (hc : c ∈ SignType.cast.range) :
@@ -247,7 +247,7 @@ lemma Matrix.shortTableauPivot_zero {X' Y' : Type} [DecidableEq X] [DecidableEq 
 lemma Matrix.shortTableauPivot_submatrix_zero_external_row [DivisionRing F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F)
     (x : X) (y : Y) {X' Y' : Type} (f : X' → X) (g : Y' → Y) (hf : x ∉ f.range) (hg : y ∉ g.range) (hAg : ∀ j, A x (g j) = 0) :
     (A.shortTableauPivot x y).submatrix f g = A.submatrix f g := by
-  unfold shortTableauPivot
+  unfold Matrix.shortTableauPivot
   aesop
 
 lemma Matrix.submatrix_shortTableauPivot [DecidableEq X] [DecidableEq Y] {X' Y' : Type} [DecidableEq X'] [DecidableEq Y']
@@ -264,7 +264,7 @@ lemma Matrix.shortTableauPivot_submatrix_succAbove_pivot_apply [DivisionRing F] 
     {x y : Fin k.succ} (i j : Fin k) :
     (A.shortTableauPivot x y).submatrix x.succAbove y.succAbove i j =
     A (x.succAbove i) (y.succAbove j) - A (x.succAbove i) y * A x (y.succAbove j) / A x y := by
-  simp [shortTableauPivot, y.succAbove_ne j, x.succAbove_ne i]
+  simp [Matrix.shortTableauPivot, y.succAbove_ne j, x.succAbove_ne i]
 
 lemma Matrix.shortTableauPivot_submatrix_eq [DivisionRing F] {k : ℕ} (A : Matrix (Fin k.succ) (Fin k.succ) F)
     {x y : Fin k.succ} :

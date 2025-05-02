@@ -137,43 +137,6 @@ private def Matrix.toCanonicalSigning {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ 
     1)
   Matrix.of (fun i j => Q i j * u i * v j)
 
--- TODO is duplicate (Pivoting.lean)
-/-- Multiply the `x`th row of `A` by `q` and keep the rest of `A` unchanged. -/
-private def Matrix.mulRow {X Y F : Type} [DecidableEq X] [Mul F] (A : Matrix X Y F) (x : X) (q : F) :
-    Matrix X Y F :=
-  A.updateRow x (q • A x)
-
--- TODO is duplicate (Pivoting.lean)
-private lemma Matrix.mulRow_det {X F : Type} [DecidableEq X] [Fintype X] [CommRing F] (A : Matrix X X F) (x : X) (q : F) :
-    (A.mulRow x q).det = q * A.det := by
-  rw [Matrix.mulRow, Matrix.det_updateRow_smul, Matrix.updateRow_eq_self]
-
--- TODO is duplicate (Pivoting.lean)
-private lemma Matrix.IsTotallyUnimodular.mulRow {X Y F : Type} [DecidableEq X] [CommRing F] {A : Matrix X Y F}
-    (hA : A.IsTotallyUnimodular) (x : X) {q : F} (hq : q ∈ SignType.cast.range) :
-    (A.mulRow x q).IsTotallyUnimodular := by
-  intro k f g hf hg
-  if hi : ∃ i : Fin k, f i = x then
-    obtain ⟨i, rfl⟩ := hi
-    convert_to ((A.submatrix f g).updateRow i (q • (A.submatrix id g) (f i))).det ∈ SignType.cast.range
-    · congr
-      ext i' j'
-      if hii : i' = i then
-        simp [Matrix.mulRow, hii]
-      else
-        have hfii : f i' ≠ f i := (hii <| hf ·)
-        simp [Matrix.mulRow, hii, hfii]
-    rw [Matrix.det_updateRow_smul]
-    apply in_signTypeCastRange_mul_in_signTypeCastRange hq
-    have hAf := hA.submatrix f id
-    rw [Matrix.isTotallyUnimodular_iff] at hAf
-    convert hAf k id g
-    rw [Matrix.submatrix_submatrix, Function.comp_id, Function.id_comp]
-    exact (A.submatrix f g).updateRow_eq_self i
-  else
-    convert hA k f g hf hg using 2
-    simp_all [Matrix.submatrix, Matrix.mulRow]
-
 -- TODO induction on `X` and utilize `Matrix.IsTotallyUnimodular.mulRow`
 private lemma Matrix.IsTotallyUnimodular.todo_horizontal {X Y F : Type} [DecidableEq X] [CommRing F] {A : Matrix X Y F}
     (hA : A.IsTotallyUnimodular) {q : X → F} (hq : ∀ i : X, q i ∈ SignType.cast.range) :

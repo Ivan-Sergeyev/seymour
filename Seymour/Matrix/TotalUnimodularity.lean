@@ -156,8 +156,8 @@ variable {X₁ X₂ Y₁ Y₂ R : Type}
 /-- `Matrix.fromBlocks_isTotallyUnimodular` preprocessing. -/
 private lemma Matrix.fromBlocks_submatrix {Z : Type} [Zero R] (A₁ : Matrix X₁ Y₁ R) (A₂ : Matrix X₂ Y₂ R)
     (f : Z → X₁ ⊕ X₂) (g : Z → Y₁ ⊕ Y₂) :
-    (fromBlocks A₁ 0 0 A₂).submatrix f g =
-    (fromBlocks
+    (Matrix.fromBlocks A₁ 0 0 A₂).submatrix f g =
+    (Matrix.fromBlocks
       (A₁.submatrix
         ((·.val.snd) : { x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } → X₁)
         ((·.val.snd) : { y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd } → Y₁)
@@ -199,7 +199,7 @@ private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_isTotallyU
     {Z : Type} [Fintype Z] [DecidableEq Z] {f : Z → X₁ ⊕ X₂} {g : Z → Y₁ ⊕ Y₂}
     (hfg₁ : #{ x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } = #{ y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd })
     (hfg₂ : #{ x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd } = #{ y₂ : Z × Y₂ // g y₂.fst = ◪y₂.snd }) :
-    ((fromBlocks A₁ 0 0 A₂).submatrix f g).det ∈
+    ((Matrix.fromBlocks A₁ 0 0 A₂).submatrix f g).det ∈
       SignType.cast.range := by
   rw [Matrix.isTotallyUnimodular_iff_fintype] at hA₁ hA₂
   rw [Matrix.fromBlocks_submatrix]
@@ -229,7 +229,7 @@ private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_isTotallyU
   ` (g₁ ∘ e₁) | (g₂ ∘ e₂) :  Z -> Y₁ ⊕ Y₂ `   (note that `f` has the same type)
 -/
   have hAfg : -- make the outer submatrix bijective
-    (fromBlocks
+    (Matrix.fromBlocks
       (A₁.submatrix
         ((·.val.snd) : { x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } → X₁)
         ((·.val.snd) : { y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd } → Y₁)
@@ -240,7 +240,7 @@ private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_isTotallyU
       )
     ).submatrix f.decomposeSum g.decomposeSum
     =
-    (fromBlocks
+    (Matrix.fromBlocks
       (A₁.submatrix (·.val.snd) ((·.val.snd) ∘ e₁)) 0 0
       (A₂.submatrix (·.val.snd) ((·.val.snd) ∘ e₂))
     ).submatrix f.decomposeSum (g.decomposeSum.trans (Equiv.sumCongr e₁.symm e₂.symm))
@@ -263,7 +263,7 @@ private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_card_lt
     {Z : Type} [Fintype Z] [DecidableEq Z] {f : Z → X₁ ⊕ X₂} {g : Z → Y₁ ⊕ Y₂}
     (A₁ : Matrix X₁ Y₁ R) (A₂ : Matrix X₂ Y₂ R)
     (hfg : #{ x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } < #{ y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd }) :
-    ((fromBlocks A₁ 0 0 A₂).submatrix f g).det ∈ SignType.cast.range := by
+    ((Matrix.fromBlocks A₁ 0 0 A₂).submatrix f g).det ∈ SignType.cast.range := by
   -- we will show that the submatrix is singular
   convert zero_in_signTypeCastRange
   rw [Matrix.fromBlocks_submatrix]
@@ -320,7 +320,7 @@ private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_card_lt
   ` e₃ ∘ (I | e') :  Z ≃ (▫X₁ ⊕ X') ⊕ (▫X₂ \ X') `
 -/
   have hAfg : -- make the outer submatrix bijective
-    (fromBlocks
+    (Matrix.fromBlocks
       (A₁.submatrix
         ((·.val.snd) : { x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } → X₁)
         ((·.val.snd) : { y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd } → Y₁)
@@ -331,9 +331,9 @@ private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_card_lt
       )
     ).submatrix f.decomposeSum g.decomposeSum
     =
-    (fromBlocks
-      (fromRows (A₁.submatrix (·.val.snd) ((·.val.snd) ∘ e₁)) 0)
-      (fromRows 0 (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂)))
+    (Matrix.fromBlocks
+      (Matrix.fromRows (A₁.submatrix (·.val.snd) ((·.val.snd) ∘ e₁)) 0)
+      (Matrix.fromRows 0 (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂)))
       0
       (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂))
     ).submatrix
@@ -352,12 +352,12 @@ private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_card_lt
       <;> simp
   rw [hAfg, ←abs_eq_zero, Matrix.abs_det_submatrix_equiv_equiv, abs_eq_zero]
   convert_to
-    (fromRows (A₁.submatrix (·.val.snd) ((·.val.snd) ∘ e₁)) 0).det * (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂)).det
-      = 0
+    (Matrix.fromRows
+      (A₁.submatrix (·.val.snd) ((·.val.snd) ∘ e₁)) 0).det * (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂)).det = 0
   · convert -- none of `exact` `apply` `rw` `erw` `simp_rw` works with `Matrix.det_fromBlocks_zero₂₁` here
       Matrix.det_fromBlocks_zero₂₁
-        (fromRows (A₁.submatrix (·.val.snd) ((·.val.snd) ∘ e₁)) 0)
-        (fromRows 0 (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂)))
+        (Matrix.fromRows (A₁.submatrix (·.val.snd) ((·.val.snd) ∘ e₁)) 0)
+        (Matrix.fromRows 0 (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂)))
         (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂))
   convert zero_mul _
   exact Matrix.det_eq_zero_of_row_eq_zero ◪(Classical.choice hX') (fun _ => rfl)
@@ -365,7 +365,7 @@ private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_card_lt
 /-- The block matrix that has two totally unimodular matrices along the diagonal and zeros elsewhere is totally unimodular. -/
 lemma Matrix.fromBlocks_isTotallyUnimodular [DecidableEq Y₁] [DecidableEq Y₂] {A₁ : Matrix X₁ Y₁ R} {A₂ : Matrix X₂ Y₂ R}
     (hA₁ : A₁.IsTotallyUnimodular) (hA₂ : A₂.IsTotallyUnimodular) :
-    (fromBlocks A₁ 0 0 A₂).IsTotallyUnimodular :=
+    (Matrix.fromBlocks A₁ 0 0 A₂).IsTotallyUnimodular :=
   fun k f g _ _ =>
     if hxy :
       #{ x₁ : Fin k × X₁ // f x₁.fst = ◩x₁.snd } = #{ y₁ : Fin k × Y₁ // g y₁.fst = ◩y₁.snd } ∧
