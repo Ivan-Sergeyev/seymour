@@ -14,6 +14,24 @@ recall Matrix.IsTuSigningOf {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y Z2
 recall Matrix.HasTuSigning {X Y : Type} (U : Matrix X Y Z2) : Prop :=
   ∃ A : Matrix X Y ℚ, A.IsTuSigningOf U
 
+recall StandardRepr.X {α R : Type} [DecidableEq α] : StandardRepr α R → Set α
+recall StandardRepr.Y {α R : Type} [DecidableEq α] : StandardRepr α R → Set α
+recall StandardRepr.B {α R : Type} [DecidableEq α] (S : StandardRepr α R) : Matrix S.X S.Y R
+recall StandardRepr.hXY {α R : Type} [DecidableEq α] (S : StandardRepr α R) : S.X ⫗ S.Y
+
+recall Subtype.toSum {α : Type} {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)]
+    (i : (X ∪ Y).Elem) :
+    X.Elem ⊕ Y.Elem :=
+  if hiX : i.val ∈ X then ◩⟨i, hiX⟩ else
+  if hiY : i.val ∈ Y then ◪⟨i, hiY⟩ else
+  (i.property.elim hiX hiY).elim
+
+recall Matrix.toMatrixUnionUnion {α : Type} {T₁ T₂ S₁ S₂ : Set α} {β : Type}
+    [∀ a, Decidable (a ∈ T₁)] [∀ a, Decidable (a ∈ T₂)] [∀ a, Decidable (a ∈ S₁)] [∀ a, Decidable (a ∈ S₂)]
+    (A : Matrix (T₁.Elem ⊕ T₂.Elem) (S₁.Elem ⊕ S₂.Elem) β) :
+    Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem β :=
+  A.submatrix Subtype.toSum Subtype.toSum
+
 
 -- ## Summary of 1-sum
 
