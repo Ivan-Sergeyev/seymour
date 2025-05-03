@@ -151,7 +151,7 @@ private lemma Matrix.IsTotallyUnimodular.todo_horizontal {X Y F : Type} [Decidab
   | succ p hp =>
     rw [Fin.prod_univ_succ]
     refine in_signTypeCastRange_mul_in_signTypeCastRange (hq (f 0)) ?_
-    exact hp (f ∘ Fin.succ) (g ∘ Fin.succ) (.comp hf (Fin.succ_injective p)) (.comp hg (Fin.succ_injective p))
+    exact hp (f ∘ Fin.succ) (g ∘ Fin.succ) (hf.comp (Fin.succ_injective p)) (hg.comp (Fin.succ_injective p))
 
 private lemma Matrix.IsTotallyUnimodular.todo_vertical {X Y F : Type} [DecidableEq Y] [CommRing F] {A : Matrix X Y F}
     (hA : A.IsTotallyUnimodular) {q : Y → F} (hq : ∀ j : Y, q j ∈ SignType.cast.range) :
