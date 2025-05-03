@@ -137,17 +137,28 @@ private def Matrix.toCanonicalSigning {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ 
     1)
   Matrix.of (fun i j => Q i j * u i * v j)
 
--- TODO induction on `X` and utilize `Matrix.IsTotallyUnimodular.mulRow`
 private lemma Matrix.IsTotallyUnimodular.todo_horizontal {X Y F : Type} [DecidableEq X] [CommRing F] {A : Matrix X Y F}
     (hA : A.IsTotallyUnimodular) {q : X → F} (hq : ∀ i : X, q i ∈ SignType.cast.range) :
     (Matrix.of (fun i j => A i j * q i)).IsTotallyUnimodular := by
-  sorry
+  intro k f g hf hg
+  conv in _ * _ => rw [mul_comm]
+  rw [Matrix.submatrix.eq_1 _ f g]
+  conv in Matrix.of _ (f _) (g _) => rw [of_apply]
+  rw [Matrix.det_mul_column]
+  refine in_signTypeCastRange_mul_in_signTypeCastRange ?_ (hA k f g hf hg)
+  induction k with
+  | zero => rw [Fin.prod_univ_zero]; exact one_in_signTypeCastRange
+  | succ p hp =>
+    rw [Fin.prod_univ_succ]
+    refine in_signTypeCastRange_mul_in_signTypeCastRange (hq (f 0)) ?_
+    exact hp (f ∘ Fin.succ) (g ∘ Fin.succ) (hf.comp (Fin.succ_injective p)) (hg.comp (Fin.succ_injective p))
 
--- TODO transpose and utilize `Matrix.IsTotallyUnimodular.todo_horizontal`
-private lemma Matrix.IsTotallyUnimodular.todo_vertical {X Y F : Type} [DecidableEq X] [CommRing F] {A : Matrix X Y F}
+private lemma Matrix.IsTotallyUnimodular.todo_vertical {X Y F : Type} [DecidableEq Y] [CommRing F] {A : Matrix X Y F}
     (hA : A.IsTotallyUnimodular) {q : Y → F} (hq : ∀ j : Y, q j ∈ SignType.cast.range) :
     (Matrix.of (fun i j => A i j * q j)).IsTotallyUnimodular := by
-  sorry
+  apply Matrix.IsTotallyUnimodular.transpose
+  rw [←Matrix.transpose_isTotallyUnimodular_iff] at hA
+  exact Matrix.IsTotallyUnimodular.todo_horizontal hA hq
 
 lemma Matrix.toCanonicalSigning_TU {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y)
     (hQ : Q.IsTotallyUnimodular) :
