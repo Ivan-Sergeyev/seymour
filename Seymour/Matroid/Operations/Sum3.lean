@@ -157,7 +157,7 @@ private lemma Matrix.IsTotallyUnimodular.todo_vertical {X Y F : Type} [Decidable
     (hA : A.IsTotallyUnimodular) {q : Y → F} (hq : ∀ j : Y, q j ∈ SignType.cast.range) :
     (Matrix.of (fun i j => A i j * q j)).IsTotallyUnimodular := by
   apply Matrix.IsTotallyUnimodular.transpose
-  rw [← Matrix.transpose_isTotallyUnimodular_iff] at hA
+  rw [←Matrix.transpose_isTotallyUnimodular_iff] at hA
   exact Matrix.IsTotallyUnimodular.todo_horizontal hA hq
 
 lemma Matrix.toCanonicalSigning_TU {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y)
