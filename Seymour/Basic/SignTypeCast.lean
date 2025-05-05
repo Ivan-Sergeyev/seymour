@@ -27,6 +27,14 @@ lemma one_in_signTypeCastRange [Ring R] : (1 : R) ∈ SignType.cast.range :=
 lemma neg_one_in_signTypeCastRange [Ring R] : (-1 : R) ∈ SignType.cast.range :=
   ⟨-1, rfl⟩
 
+@[simp]
+lemma SignType.cast_ne_one_add_one [Ring R] [CharZero R] (s : SignType) : s.cast ≠ (1 : R) + (1 : R) := by
+  cases s <;> norm_num
+
+@[simp]
+lemma SignType.cast_ne_neg_one_sub_one [Ring R] [CharZero R] (s : SignType) : s.cast ≠ (-1 : R) - (1 : R) := by
+  cases s <;> norm_num
+
 -- Why cannot `simp` work with this lemma?
 lemma in_signTypeCastRange_mul_in_signTypeCastRange [Ring R] {a b : R}
     (ha : a ∈ SignType.cast.range) (hb : b ∈ SignType.cast.range) :

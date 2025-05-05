@@ -132,7 +132,7 @@ private lemma Matrix.exists_finite_allColsIn {X Y R : Type} [Fintype X] [Decidab
     have hCS' : C ⊆ S' := by
       rintro - ⟨w, rfl⟩
       exact ⟨(fun j => ⟨(A · w) j, hAV j w⟩), trivial, rfl⟩
-    let e : Y' ↪ C := ⟨fun i => ⟨(A · i), by use i⟩, fun ⟨_, w₁, ⟨y₁, hy₁⟩, _⟩ ⟨_, w₂, ⟨y₂, hy₂⟩, _⟩ hzz => by
+    let e : Y' ↪ C := ⟨fun i : Y' => ⟨(A · i), by use i⟩, fun ⟨_, w₁, ⟨y₁, hy₁⟩, _⟩ ⟨_, w₂, ⟨y₂, hy₂⟩, _⟩ _ => by
       simp_all only [Subtype.mk.injEq, C, Y']
       subst hy₁ hy₂
       have := Classical.choose_spec (⟨y₁, rfl⟩ : ∃ y : Y, (A · y) = (A · y₁))

@@ -39,7 +39,6 @@ lemma and_congr_r {P₁ P₂ : Prop} (hP : P₁ ↔ P₂) (Q : Prop) : Q ∧ P�
 lemma Int.neg_one_ne_zero : -1 ≠ 0 := by
   norm_num
 
--- The following lemma could be private:
 lemma exists_minimal_nat_le_of_exists {n : ℕ} (P : { a : ℕ | a ≤ n } → Prop) (hP : P ⟨n, le_refl n⟩) :
     ∃ n : { a : ℕ | a ≤ n }, Minimal P n := by
   obtain ⟨b, -, hb⟩ := Finite.exists_minimal_le hP
@@ -60,6 +59,9 @@ def Function.range_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $x) => `($(x).$(Lean.mkIdent `range))
   | _ => throw ()
 
+lemma Function.range_eq {ι : Type} (f : ι → α) : f.range = { a : α | ∃ i : ι, f i = a } :=
+  rfl
+
 lemma Sum.swap_inj {β : Type} : (@Sum.swap α β).Injective := by
   intro
   aesop
@@ -67,9 +69,9 @@ lemma Sum.swap_inj {β : Type} : (@Sum.swap α β).Injective := by
 lemma finset_of_cardinality_between {β : Type} [Fintype α] [Fintype β] {n : ℕ}
     (hα : #α < n) (hn : n ≤ #α + #β) :
     ∃ b : Finset β, #(α ⊕ b) = n ∧ Nonempty b := by
-  have beta : n - #α ≤ #β
+  have hβ : n - #α ≤ #β
   · omega
-  obtain ⟨s, hs⟩ : ∃ s : Finset β, s.card = n - #α := (Finset.exists_subset_card_eq beta).imp (by simp)
+  obtain ⟨s, hs⟩ : ∃ s : Finset β, s.card = n - #α := (Finset.exists_subset_card_eq hβ).imp (by simp)
   use s
   constructor
   · rw [Fintype.card_sum, Fintype.card_coe, hs]

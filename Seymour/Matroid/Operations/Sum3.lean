@@ -183,15 +183,7 @@ private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Set α} {Q : 
       exact one_in_signTypeCastRange
   exact (hQ.mul_horizontal hu).mul_vertical hv
 
-@[simp]
-private lemma SignType.cast_ne_one_add_one (s : SignType) : s.cast ≠ (1 : ℚ) + (1 : ℚ) := by
-  cases s <;> norm_num
-
-@[simp]
-private lemma SignType.cast_ne_neg_one_sub_one (s : SignType) : s.cast ≠ (-1 : ℚ) - (1 : ℚ) := by
-  cases s <;> norm_num
-
-private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning_case1 {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x' : X} {y₀ y₁ y' : Y}
+private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning_101 {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x' : X} {y₀ y₁ y' : Y}
     (hQ : Q.IsTotallyUnimodular) (hx' : x₁ ≠ x₀) (hx₁ : x' ≠ x₀) (hx₀ : x' ≠ x₁) (hy' : y₁ ≠ y₀) (hy₁ : y' ≠ y₀) (hy₀ : y' ≠ y₁)
     (hQ01 : |!![Q x₀ y₀, Q x₀ y₁, Q x₀ y'; Q x₁ y₀, Q x₁ y₁, Q x₁ y'; Q x' y₀, Q x' y₁, Q x' y']|
       = !![1, 0, 1; 0, 1, 1; 1, 1, 0]) :
@@ -222,7 +214,7 @@ private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning_case1 {X Y : Set α}
   · specialize hQ'' 3 id id Function.injective_id Function.injective_id
     simp [Matrix.det_fin_three, *] at hQ''
 
-private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning_case2 {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x' : X} {y₀ y₁ y' : Y}
+private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning_111 {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x' : X} {y₀ y₁ y' : Y}
     (hQ : Q.IsTotallyUnimodular) (hx' : x₁ ≠ x₀) (hx₁ : x' ≠ x₀) (hx₀ : x' ≠ x₁) (hy' : y₁ ≠ y₀) (hy₁ : y' ≠ y₀) (hy₀ : y' ≠ y₁)
     (hQ01 : |!![Q x₀ y₀, Q x₀ y₁, Q x₀ y'; Q x₁ y₀, Q x₁ y₁, Q x₁ y'; Q x' y₀, Q x' y₁, Q x' y']|
       = !![1, 1, 1; 0, 1, 1; 1, 1, 0]) :
@@ -253,7 +245,7 @@ private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning_case2 {X Y : Set α}
   simp [Matrix.abs, abs_eq] at hQ₀₀ hQ₀₁ hQ₀₂ hQ₁₀ hQ₁₁ hQ₁₂ hQ₂₀ hQ₂₁ hQ₂₂
   cases hQ₀₀ <;> cases hQ₀₁ <;> cases hQ₀₂ <;> cases hQ₁₁ <;> cases hQ₁₂ <;> cases hQ₂₀ <;> cases hQ₂₁
   all_goals try
-    · simp only [mul_one, mul_neg, neg_zero, neg_neg, *, -hQx', -hQy']
+    · simp only [mul_one, mul_neg, neg_zero, neg_neg, *]
   all_goals try
     · specialize hQx' 2 id id Function.injective_id Function.injective_id
       simp [Matrix.det_fin_two, *] at hQx'
