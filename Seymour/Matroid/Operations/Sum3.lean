@@ -181,7 +181,7 @@ private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Set α} {Q : 
     else
       simp_rw [hjy₀, ite_false, hjy₁, ite_false, hjy', ite_false]
       exact one_in_signTypeCastRange
-  exact (hQ.mul_horizontal hu).mul_vertical hv
+  exact (hQ.mul_rows hu).mul_cols hv
 
 private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning_101 {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x' : X} {y₀ y₁ y' : Y}
     (hQ : Q.IsTotallyUnimodular) (hx' : x₁ ≠ x₀) (hx₁ : x' ≠ x₀) (hx₀ : x' ≠ x₁) (hy' : y₁ ≠ y₀) (hy₁ : y' ≠ y₀) (hy₀ : y' ≠ y₁)
@@ -254,14 +254,46 @@ private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning_111 {X Y : Set α} {
       simp [Matrix.det_fin_two, *] at hQy'
 
 -- lemma 15.a
-private lemma Matrix.toCanonicalSigning_ExpandColsTU_a {X Y : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
-    (Q : Matrix X Y ℚ) (hx₀ : x₀ ∈ X) (hx₁ : x₁ ∈ X) (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hy' : y' ∈ Y)
-    (hQ : Q.IsTotallyUnimodular) :
+private lemma Matrix.toCanonicalSigning_ExpandColsTU_a {X Y : Set α} {x' y₀ y₁ y' : α}
+    (Q : Matrix X Y ℚ) (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y)
+    (hyy' : y₁ ≠ y₀) (hyy₁ : y' ≠ y₀) (hyy₀ : y' ≠ y₁)
+    (hQ : Q.IsTotallyUnimodular) (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1) (hQy₁ : Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩ = 1)
+    (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q ⟨x', hx'⟩ y = 0) :
     let c₀ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₀, hy₀⟩
     let c₁ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
     let Q' : Matrix (X \ {x'}).Elem (Y \ {y₀, y₁}).Elem ℚ := Q.submatrix Set.diff_subset.elem Set.diff_subset.elem
-    (Q' ◫ ▮c₀ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular :=
-  sorry
+    (Q' ◫ ▮c₀ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular := by
+  intro c₀ c₁ Q'
+  let B : Matrix X Y ℚ := Q.shortTableauPivot ⟨x', hx'⟩ ⟨y₀, hy₀⟩
+  let B' : Matrix (X \ {x'}).Elem Y ℚ := B.submatrix Set.diff_subset.elem id
+  let e : ((Y \ {y₀, y₁}).Elem ⊕ Unit) ⊕ Unit ≃ Y := ⟨
+    (·.casesOn (·.casesOn Set.diff_subset.elem (fun _ => ⟨y₀, hy₀⟩)) (fun _ => ⟨y₁, hy₁⟩)),
+    fun ⟨y, hy⟩ => if hy₀ : y = y₀ then ◩◪() else if hy₁ : y = y₁ then ◪() else ◩◩⟨y, by simp [*]⟩,
+    fun _ => by aesop,
+    fun _ => by aesop⟩
+  have B'_eq : B' = (Q' ◫ ▮(-c₀) ◫ ▮(c₁ - c₀)).submatrix id e.symm
+  · ext ⟨i, hi⟩ ⟨j, hj⟩
+    have := hi.right
+    if hy₀ : j = y₀ then
+      simp_all [Matrix.shortTableauPivot, e, B, B', c₀]
+    else if hy₁ : j = y₁ then
+      simp_all [Matrix.shortTableauPivot, e, B, B', c₀, c₁]
+    else
+      simp_all [Matrix.shortTableauPivot, e, B, B', Q']
+  have hB : B.IsTotallyUnimodular
+  · apply hQ.shortTableauPivot
+    rw [hQy₀]
+    exact Ne.symm Rat.zero_ne_one
+  have hB' : B'.IsTotallyUnimodular
+  · apply hB.submatrix
+  rw [B'_eq] at hB'
+  have hQcc : (Q' ◫ ▮(-c₀) ◫ ▮(c₁ - c₀)).IsTotallyUnimodular
+  · simpa using hB'.submatrix id e
+  let q : ((Y \ {y₀, y₁}).Elem ⊕ Unit) ⊕ Unit → ℚ := (·.casesOn (·.casesOn 1 (-1)) (-1))
+  have hq : ∀ i : ((Y \ {y₀, y₁}).Elem ⊕ Unit) ⊕ Unit, q i ∈ SignType.cast.range
+  · rintro ((_|_)|_) <;> simp [q]
+  convert hQcc.mul_cols hq
+  aesop
 
 -- lemma 15.b
 private lemma Matrix.toCanonicalSigning_ExpandColsTU_b {X Y : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
@@ -270,7 +302,9 @@ private lemma Matrix.toCanonicalSigning_ExpandColsTU_b {X Y : Set α} {x₀ x₁
     let c₀ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₀, hy₀⟩
     let c₁ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
     let Q' : Matrix (X \ {x'}).Elem (Y \ {y₀, y₁}).Elem ℚ := Q.submatrix Set.diff_subset.elem Set.diff_subset.elem
-    (Q' ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular :=
+    (Q' ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular := by
+  intro c₀ c₁ Q'
+  let B := Q.shortTableauPivot ⟨x', hx'⟩ ⟨y₁, hy₁⟩
   sorry
 
 -- lemma 16.1
