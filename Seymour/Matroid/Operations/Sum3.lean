@@ -183,6 +183,14 @@ private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Set α} {Q : 
       exact one_in_signTypeCastRange
   exact (hQ.mul_horizontal hu).mul_vertical hv
 
+@[simp]
+private lemma SignType.cast_ne_one_add_one (s : SignType) : s.cast ≠ (1 : ℚ) + (1 : ℚ) := by
+  cases s <;> norm_num
+
+@[simp]
+private lemma SignType.cast_ne_neg_one_sub_one (s : SignType) : s.cast ≠ (-1 : ℚ) - (1 : ℚ) := by
+  cases s <;> norm_num
+
 private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning_case1 {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x' : X} {y₀ y₁ y' : Y}
     (hQ : Q.IsTotallyUnimodular) (hx' : x₁ ≠ x₀) (hx₁ : x' ≠ x₀) (hx₀ : x' ≠ x₁) (hy' : y₁ ≠ y₀) (hy₁ : y' ≠ y₀) (hy₀ : y' ≠ y₁)
     (hQ01 : |!![Q x₀ y₀, Q x₀ y₁, Q x₀ y'; Q x₁ y₀, Q x₁ y₁, Q x₁ y'; Q x' y₀, Q x' y₁, Q x' y']|
@@ -190,11 +198,29 @@ private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning_case1 {X Y : Set α}
     let Q' := Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y'
     !![Q' x₀ y₀, Q' x₀ y₁, Q' x₀ y'; Q' x₁ y₀, Q' x₁ y₁, Q' x₁ y'; Q' x' y₀, Q' x' y₁, Q' x' y']
       = !![1, 0, 1; 0, -1, 1; 1, 1, 0] := by
-  -- see proof of Lemma 12 in the write-up on 3-sum, the case where `D₀` is `1`
   intro Q'
   have hQ' : Q'.IsTotallyUnimodular := hQ.toCanonicalSigning x₀ x₁ x' y₀ y₁ y'
-  simp [Q', Matrix.toCanonicalSigning, hx', hx₁, hx₀, hy', hy₁, hy₀]
-  sorry
+  have hQ'' : !![Q' x₀ y₀, Q' x₀ y₁, Q' x₀ y'; Q' x₁ y₀, Q' x₁ y₁, Q' x₁ y'; Q' x' y₀, Q' x' y₁, Q' x' y'].IsTotallyUnimodular
+  · convert hQ'.submatrix ![x₀, x₁, x'] ![y₀, y₁, y']
+    ext i j
+    fin_cases i <;> fin_cases j <;> simp
+  simp [Q', Matrix.toCanonicalSigning, hx', hx₁, hx₀, hy', hy₁, hy₀] at hQ'' ⊢
+  have hQ₀₀ := congr_fun (congr_fun hQ01 0) 0
+  have hQ₀₁ := congr_fun (congr_fun hQ01 0) 1
+  have hQ₀₂ := congr_fun (congr_fun hQ01 0) 2
+  have hQ₁₀ := congr_fun (congr_fun hQ01 1) 0
+  have hQ₁₁ := congr_fun (congr_fun hQ01 1) 1
+  have hQ₁₂ := congr_fun (congr_fun hQ01 1) 2
+  have hQ₂₀ := congr_fun (congr_fun hQ01 2) 0
+  have hQ₂₁ := congr_fun (congr_fun hQ01 2) 1
+  have hQ₂₂ := congr_fun (congr_fun hQ01 2) 2
+  simp [Matrix.abs, abs_eq] at hQ₀₀ hQ₀₁ hQ₀₂ hQ₁₀ hQ₁₁ hQ₁₂ hQ₂₀ hQ₂₁ hQ₂₂
+  cases hQ₀₀ <;> cases hQ₀₂ <;> cases hQ₁₁ <;> cases hQ₁₂ <;> cases hQ₂₀ <;> cases hQ₂₁
+  all_goals try
+    · simp only [mul_one, mul_neg, neg_zero, neg_neg, *]
+  all_goals
+  · specialize hQ'' 3 id id Function.injective_id Function.injective_id
+    simp [Matrix.det_fin_three, *] at hQ''
 
 private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning_case2 {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x' : X} {y₀ y₁ y' : Y}
     (hQ : Q.IsTotallyUnimodular) (hx' : x₁ ≠ x₀) (hx₁ : x' ≠ x₀) (hx₀ : x' ≠ x₁) (hy' : y₁ ≠ y₀) (hy₁ : y' ≠ y₀) (hy₀ : y' ≠ y₁)
@@ -203,11 +229,37 @@ private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning_case2 {X Y : Set α}
     let Q' := Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y'
     !![Q' x₀ y₀, Q' x₀ y₁, Q' x₀ y'; Q' x₁ y₀, Q' x₁ y₁, Q' x₁ y'; Q' x' y₀, Q' x' y₁, Q' x' y']
       = !![1, 1, 1; 0, 1, 1; 1, 1, 0] := by
-  -- see proof of Lemma 12 in the write-up on 3-sum, the case where `D₀` is `!![1, 1; 0, 1]` (up to indices)
   intro Q'
   have hQ' : Q'.IsTotallyUnimodular := hQ.toCanonicalSigning x₀ x₁ x' y₀ y₁ y'
-  simp [Q', Matrix.toCanonicalSigning, hx', hx₁, hx₀, hy', hy₁, hy₀]
-  sorry
+  have hQx' : !![Q' x₀ y₀, Q' x₀ y₁; Q' x' y₀, Q' x' y₁].IsTotallyUnimodular
+  · convert hQ'.submatrix ![x₀, x'] ![y₀, y₁]
+    ext i j
+    fin_cases i <;> fin_cases j <;> simp
+  have hQy' : !![Q' x₀ y₁, Q' x₀ y'; Q' x₁ y₁, Q' x₁ y'].IsTotallyUnimodular
+  · convert hQ'.submatrix ![x₀, x₁] ![y₁, y']
+    ext i j
+    fin_cases i <;> fin_cases j <;> simp
+  simp [Q', Matrix.toCanonicalSigning, hx', hx₁, hx₀, hy', hy₁, hy₀] at hQx' hQy' ⊢
+  clear hx' hx₁ hx₀ hy' hy₁ hy₀ hQ' hQ
+  have hQ₀₀ := congr_fun (congr_fun hQ01 0) 0
+  have hQ₀₁ := congr_fun (congr_fun hQ01 0) 1
+  have hQ₀₂ := congr_fun (congr_fun hQ01 0) 2
+  have hQ₁₀ := congr_fun (congr_fun hQ01 1) 0
+  have hQ₁₁ := congr_fun (congr_fun hQ01 1) 1
+  have hQ₁₂ := congr_fun (congr_fun hQ01 1) 2
+  have hQ₂₀ := congr_fun (congr_fun hQ01 2) 0
+  have hQ₂₁ := congr_fun (congr_fun hQ01 2) 1
+  have hQ₂₂ := congr_fun (congr_fun hQ01 2) 2
+  simp [Matrix.abs, abs_eq] at hQ₀₀ hQ₀₁ hQ₀₂ hQ₁₀ hQ₁₁ hQ₁₂ hQ₂₀ hQ₂₁ hQ₂₂
+  cases hQ₀₀ <;> cases hQ₀₁ <;> cases hQ₀₂ <;> cases hQ₁₁ <;> cases hQ₁₂ <;> cases hQ₂₀ <;> cases hQ₂₁
+  all_goals try
+    · simp only [mul_one, mul_neg, neg_zero, neg_neg, *, -hQx', -hQy']
+  all_goals try
+    · specialize hQx' 2 id id Function.injective_id Function.injective_id
+      simp [Matrix.det_fin_two, *] at hQx'
+  all_goals try
+    · specialize hQy' 2 id id Function.injective_id Function.injective_id
+      simp [Matrix.det_fin_two, *] at hQy'
 
 -- lemma 15.a
 private lemma Matrix.toCanonicalSigning_ExpandColsTU_a {X Y : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
