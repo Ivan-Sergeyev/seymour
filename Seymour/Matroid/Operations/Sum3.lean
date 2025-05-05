@@ -339,7 +339,9 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion₁ {X Y : Set α} {Q 
 -- lemma 16.1
 private lemma Matrix.toCanonicalSigning_SpecialColsForm {X Y : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
     (Q : Matrix X Y ℚ) (hx₀ : x₀ ∈ X) (hx₁ : x₁ ∈ X) (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hy' : y' ∈ Y)
-    (hQ : Q.IsTotallyUnimodular) :
+    (hQ : Q.IsTotallyUnimodular) (hyy' : y₀ ≠ y₁) (hyy₁ : y' ≠ y₀) (hyy₀ : y' ≠ y₁)
+    (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1) (hQy₁ : Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩ = 1)
+    (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q ⟨x', hx'⟩ y = 0) :
     let c₀ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₀, hy₀⟩
     let c₁ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
     ∀ i, ![c₀ i, c₁ i] ≠ ![1, -1] ∧ ![c₀ i, c₁ i] ≠ ![-1, 1] :=
@@ -348,7 +350,9 @@ private lemma Matrix.toCanonicalSigning_SpecialColsForm {X Y : Set α} {x₀ x�
 -- lemma 16.2
 private lemma Matrix.toCanonicalSigning_ExpandColsTU {X Y : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
     (Q : Matrix X Y ℚ) (hx₀ : x₀ ∈ X) (hx₁ : x₁ ∈ X) (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hy' : y' ∈ Y)
-    (hQ : Q.IsTotallyUnimodular) :
+    (hQ : Q.IsTotallyUnimodular) (hyy' : y₀ ≠ y₁) (hyy₁ : y' ≠ y₀) (hyy₀ : y' ≠ y₁)
+    (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1) (hQy₁ : Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩ = 1)
+    (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q ⟨x', hx'⟩ y = 0) :
     let c₀ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₀, hy₀⟩
     let c₁ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
     let Q' : Matrix (X \ {x'}).Elem (Y \ {y₀, y₁}).Elem ℚ := Q.submatrix Set.diff_subset.elem Set.diff_subset.elem
