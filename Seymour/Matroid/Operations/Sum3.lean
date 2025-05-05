@@ -183,10 +183,10 @@ private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Set α} {Q : 
       exact one_in_signTypeCastRange
   exact (hQ.mul_rows hu).mul_cols hv
 
-private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning_101 {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x' : X} {y₀ y₁ y' : Y}
-    (hQ : Q.IsTotallyUnimodular) (hx' : x₁ ≠ x₀) (hx₁ : x' ≠ x₀) (hx₀ : x' ≠ x₁) (hy' : y₁ ≠ y₀) (hy₁ : y' ≠ y₀) (hy₀ : y' ≠ y₁)
-    (hQ01 : |!![Q x₀ y₀, Q x₀ y₁, Q x₀ y'; Q x₁ y₀, Q x₁ y₁, Q x₁ y'; Q x' y₀, Q x' y₁, Q x' y']|
-      = !![1, 0, 1; 0, 1, 1; 1, 1, 0]) :
+private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning_101 {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
+    {x₀ x₁ x' : X} (hx' : x₁ ≠ x₀) (hx₁ : x' ≠ x₀) (hx₀ : x' ≠ x₁)
+    {y₀ y₁ y' : Y} (hy' : y₁ ≠ y₀) (hy₁ : y' ≠ y₀) (hy₀ : y' ≠ y₁)
+    (hQ01 : |!![Q x₀ y₀, Q x₀ y₁, Q x₀ y'; Q x₁ y₀, Q x₁ y₁, Q x₁ y'; Q x' y₀, Q x' y₁, Q x' y']| = !![1,0,1; 0,1,1; 1,1,0]) :
     let Q' := Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y'
     !![Q' x₀ y₀, Q' x₀ y₁, Q' x₀ y'; Q' x₁ y₀, Q' x₁ y₁, Q' x₁ y'; Q' x' y₀, Q' x' y₁, Q' x' y']
       = !![1, 0, 1; 0, -1, 1; 1, 1, 0] := by
@@ -209,15 +209,15 @@ private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning_101 {X Y : Set α} {
   simp [Matrix.abs, abs_eq] at hQ₀₀ hQ₀₁ hQ₀₂ hQ₁₀ hQ₁₁ hQ₁₂ hQ₂₀ hQ₂₁ hQ₂₂
   cases hQ₀₀ <;> cases hQ₀₂ <;> cases hQ₁₁ <;> cases hQ₁₂ <;> cases hQ₂₀ <;> cases hQ₂₁
   all_goals try
-    · simp only [mul_one, mul_neg, neg_zero, neg_neg, *]
+    simp only [mul_one, mul_neg, neg_zero, neg_neg, *]
   all_goals
-  · specialize hQ'' 3 id id Function.injective_id Function.injective_id
+    specialize hQ'' 3 id id Function.injective_id Function.injective_id
     simp [Matrix.det_fin_three, *] at hQ''
 
-private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning_111 {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x' : X} {y₀ y₁ y' : Y}
-    (hQ : Q.IsTotallyUnimodular) (hx' : x₁ ≠ x₀) (hx₁ : x' ≠ x₀) (hx₀ : x' ≠ x₁) (hy' : y₁ ≠ y₀) (hy₁ : y' ≠ y₀) (hy₀ : y' ≠ y₁)
-    (hQ01 : |!![Q x₀ y₀, Q x₀ y₁, Q x₀ y'; Q x₁ y₀, Q x₁ y₁, Q x₁ y'; Q x' y₀, Q x' y₁, Q x' y']|
-      = !![1, 1, 1; 0, 1, 1; 1, 1, 0]) :
+private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning_111 {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
+    {x₀ x₁ x' : X} (hx' : x₁ ≠ x₀) (hx₁ : x' ≠ x₀) (hx₀ : x' ≠ x₁)
+    {y₀ y₁ y' : Y} (hy' : y₁ ≠ y₀) (hy₁ : y' ≠ y₀) (hy₀ : y' ≠ y₁)
+    (hQ01 : |!![Q x₀ y₀, Q x₀ y₁, Q x₀ y'; Q x₁ y₀, Q x₁ y₁, Q x₁ y'; Q x' y₀, Q x' y₁, Q x' y']| = !![1,1,1; 0,1,1; 1,1,0]) :
     let Q' := Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y'
     !![Q' x₀ y₀, Q' x₀ y₁, Q' x₀ y'; Q' x₁ y₀, Q' x₁ y₁, Q' x₁ y'; Q' x' y₀, Q' x' y₁, Q' x' y']
       = !![1, 1, 1; 0, 1, 1; 1, 1, 0] := by
@@ -245,18 +245,19 @@ private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning_111 {X Y : Set α} {
   simp [Matrix.abs, abs_eq] at hQ₀₀ hQ₀₁ hQ₀₂ hQ₁₀ hQ₁₁ hQ₁₂ hQ₂₀ hQ₂₁ hQ₂₂
   cases hQ₀₀ <;> cases hQ₀₁ <;> cases hQ₀₂ <;> cases hQ₁₁ <;> cases hQ₁₂ <;> cases hQ₂₀ <;> cases hQ₂₁
   all_goals try
-    · simp only [mul_one, mul_neg, neg_zero, neg_neg, *]
+    simp only [mul_one, mul_neg, neg_zero, neg_neg, *]
   all_goals try
-    · specialize hQx' 2 id id Function.injective_id Function.injective_id
-      simp [Matrix.det_fin_two, *] at hQx'
+    specialize hQx' 2 id id Function.injective_id Function.injective_id
+    simp [Matrix.det_fin_two, *] at hQx'
   all_goals try
-    · specialize hQy' 2 id id Function.injective_id Function.injective_id
-      simp [Matrix.det_fin_two, *] at hQy'
+    specialize hQy' 2 id id Function.injective_id Function.injective_id
+    simp [Matrix.det_fin_two, *] at hQy'
 
 -- lemma 15.a
 private lemma Matrix.IsTotallyUnimodular.signing_expansion₀ {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
-    {x' y₀ y₁ y' : α} (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy' : y₀ ≠ y₁) (hyy₁ : y' ≠ y₀) (hyy₀ : y' ≠ y₁)
-    (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1) (hQy₁ : Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩ = 1)
+    {x' y₀ y₁ : α} (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy : y₀ ≠ y₁)
+    (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1)
+    (hQy₁ : Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩ = 1)
     (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q ⟨x', hx'⟩ y = 0) :
     let c₀ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₀, hy₀⟩
     let c₁ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
@@ -296,8 +297,9 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion₀ {X Y : Set α} {Q 
 
 -- lemma 15.b
 private lemma Matrix.IsTotallyUnimodular.signing_expansion₁ {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
-    {x' y₀ y₁ y' : α} (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy' : y₀ ≠ y₁) (hyy₁ : y' ≠ y₀) (hyy₀ : y' ≠ y₁)
-    (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1) (hQy₁ : Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩ = 1)
+    {x' y₀ y₁ : α} (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy : y₀ ≠ y₁)
+    (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1)
+    (hQy₁ : Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩ = 1)
     (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q ⟨x', hx'⟩ y = 0) :
     let c₀ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₀, hy₀⟩
     let c₁ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
@@ -337,32 +339,31 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion₁ {X Y : Set α} {Q 
   aesop
 
 -- lemma 16.1
-private lemma Matrix.toCanonicalSigning_SpecialColsForm {X Y : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
-    (Q : Matrix X Y ℚ) (hx₀ : x₀ ∈ X) (hx₁ : x₁ ∈ X) (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hy' : y' ∈ Y)
-    (hQ : Q.IsTotallyUnimodular) (hyy' : y₀ ≠ y₁) (hyy₁ : y' ≠ y₀) (hyy₀ : y' ≠ y₁)
-    (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1) (hQy₁ : Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩ = 1)
+private lemma Matrix.IsTotallyUnimodular.special_cols_form {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
+    {x' y₀ y₁ : α} (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy : y₀ ≠ y₁)
+    (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1)
+    (hQy₁ : Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩ = 1)
     (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q ⟨x', hx'⟩ y = 0) :
     let c₀ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₀, hy₀⟩
     let c₁ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
-    ∀ i, ![c₀ i, c₁ i] ≠ ![1, -1] ∧ ![c₀ i, c₁ i] ≠ ![-1, 1] :=
+    ∀ i : (X \ {x'}).Elem, ![c₀ i, c₁ i] ≠ ![1, -1] ∧ ![c₀ i, c₁ i] ≠ ![-1, 1] := by
   sorry
 
--- lemma 16.2
-private lemma Matrix.toCanonicalSigning_ExpandColsTU {X Y : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
-    (Q : Matrix X Y ℚ) (hx₀ : x₀ ∈ X) (hx₁ : x₁ ∈ X) (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hy' : y' ∈ Y)
-    (hQ : Q.IsTotallyUnimodular) (hyy' : y₀ ≠ y₁) (hyy₁ : y' ≠ y₀) (hyy₀ : y' ≠ y₁)
-    (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1) (hQy₁ : Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩ = 1)
+-- lemma 16.2 (stronger version)
+private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
+    {x' y₀ y₁ : α} (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy : y₀ ≠ y₁)
+    (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1)
+    (hQy₁ : Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩ = 1)
     (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q ⟨x', hx'⟩ y = 0) :
     let c₀ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₀, hy₀⟩
     let c₁ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
     let Q' : Matrix (X \ {x'}).Elem (Y \ {y₀, y₁}).Elem ℚ := Q.submatrix Set.diff_subset.elem Set.diff_subset.elem
-    (Q' ◫ ▮c₀ ◫ ▮(-c₀) ◫ ▮c₁ ◫ ▮(-c₁) ◫ ▮(c₀ - c₁) ◫ ▮(c₁ - c₀) ◫ ▮0).IsTotallyUnimodular :=
+    (Q' ◫ ▮c₀ ◫ ▮(-c₀) ◫ ▮c₁ ◫ ▮(-c₁) ◫ ▮(c₀ - c₁) ◫ ▮(c₁ - c₀) ◫ ▮0).IsTotallyUnimodular := by
   sorry
 
--- todo: same lemmas for rows instead of columns, final lemma (18.2) is given below
-private lemma Matrix.toCanonicalSigning_ExpandRowsTU {X Y : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
-    (Q : Matrix X Y ℚ) (hx₀ : x₀ ∈ X) (hx₁ : x₁ ∈ X) (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hy' : y' ∈ Y)
-    (hQ : Q.IsTotallyUnimodular) :
+-- todo: same lemmas for rows instead of columns, final lemma (18.2) is given below ; TODO assumptions?
+private lemma Matrix.IsTotallyUnimodular.signing_expansion_rows {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
+    {x₀ x₁ x' y₀ y₁ y' : α} (hx₀ : x₀ ∈ X) (hx₁ : x₁ ∈ X) (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hy' : y' ∈ Y) :
     let d₀ : (Y \ {y'}).Elem → ℚ := (Q ⟨x₀, hx₀⟩ <| Set.diff_subset.elem ·)
     let d₁ : (Y \ {y'}).Elem → ℚ := (Q ⟨x₁, hx₁⟩ <| Set.diff_subset.elem ·)
     let Q' : Matrix (X \ {x₀, x₁}).Elem (Y \ {y'}).Elem ℚ := Q.submatrix Set.diff_subset.elem Set.diff_subset.elem
