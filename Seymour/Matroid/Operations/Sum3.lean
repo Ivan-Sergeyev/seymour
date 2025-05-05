@@ -158,21 +158,51 @@ private lemma Matrix.IsTotallyUnimodular.todo_vertical {X Y F : Type} [Decidable
     (Matrix.of (fun i j => A i j * q j)).IsTotallyUnimodular :=
   (hA.transpose.todo_horizontal hq).transpose
 
-lemma Matrix.toCanonicalSigning_TU {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y)
-    (hQ : Q.IsTotallyUnimodular) :
+private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Set α} {Q : Matrix X Y ℚ}
+    (hQ : Q.IsTotallyUnimodular) (x₀ x₁ x' : X) (y₀ y₁ y' : Y) :
     (Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y').IsTotallyUnimodular := by
-  unfold Matrix.toCanonicalSigning
-  let u : X → ℚ := (fun i =>
-    if i = x₀ then Q x₀ y₀ * Q x' y₀ else
-    if i = x₁ then Q x₀ y₀ * Q x₀ y' * Q x₁ y' * Q x' y₀ else
-    if i = x' then 1 else
-    1)
-  let v : Y → ℚ := (fun j =>
-    if j = y₀ then Q x' y₀ else
-    if j = y₁ then Q x' y₁ else
-    if j = y' then Q x₀ y₀ * Q x₀ y' * Q x' y₀ else
-    1)
-  exact (hQ.todo_horizontal (q := u) sorry).todo_vertical (q := v) sorry
+  have hu : ∀ i : X,
+    (fun i =>
+      if i = x₀ then Q x₀ y₀ * Q x' y₀ else
+      if i = x₁ then Q x₀ y₀ * Q x₀ y' * Q x₁ y' * Q x' y₀ else
+      if i = x' then 1 else
+      1) i ∈ SignType.cast.range
+  · intro i
+    if hix₀ : i = x₀ then
+      simp_rw [hix₀, ite_true];
+      apply in_signTypeCastRange_mul_in_signTypeCastRange
+      all_goals apply hQ.apply
+    else if hix₁ : i = x₁ then
+      simp_rw [hix₀, ite_false, hix₁, ite_true]
+      repeat apply in_signTypeCastRange_mul_in_signTypeCastRange
+      all_goals apply hQ.apply
+    else if hix' : i = x' then
+      simp_rw [hix₀, ite_false, hix₁, ite_false, hix', ite_true]
+      exact one_in_signTypeCastRange
+    else
+      simp_rw [hix₀, ite_false, hix₁, ite_false, hix', ite_false]
+      exact one_in_signTypeCastRange
+  have hv : ∀ j : Y,
+    (fun j =>
+      if j = y₀ then Q x' y₀ else
+      if j = y₁ then Q x' y₁ else
+      if j = y' then Q x₀ y₀ * Q x₀ y' * Q x' y₀ else
+      1) j ∈ SignType.cast.range
+  · intro j
+    if hjy₀ : j = y₀ then
+      simp_rw [hjy₀, ite_true];
+      apply hQ.apply
+    else if hjy₁ : j = y₁ then
+      simp_rw [hjy₀, ite_false, hjy₁, ite_true]
+      apply hQ.apply
+    else if hjy' : j = y' then
+      simp_rw [hjy₀, ite_false, hjy₁, ite_false, hjy', ite_true]
+      repeat apply in_signTypeCastRange_mul_in_signTypeCastRange
+      all_goals apply hQ.apply
+    else
+      simp_rw [hjy₀, ite_false, hjy₁, ite_false, hjy', ite_false]
+      exact one_in_signTypeCastRange
+  exact (hQ.todo_horizontal hu).todo_vertical hv
 
 lemma Matrix.toCanonicalSigning_Form_Case1 {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y)
     (hQ : Q.IsTotallyUnimodular)
