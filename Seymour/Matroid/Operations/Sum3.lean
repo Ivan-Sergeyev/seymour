@@ -183,24 +183,30 @@ private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Set α} {Q : 
       exact one_in_signTypeCastRange
   exact (hQ.mul_horizontal hu).mul_vertical hv
 
-private lemma Matrix.toCanonicalSigning_Form_Case1 {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y)
-    (hQ : Q.IsTotallyUnimodular)
+private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning_case1 {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x' : X} {y₀ y₁ y' : Y}
+    (hQ : Q.IsTotallyUnimodular) (hx' : x₁ ≠ x₀) (hx₁ : x' ≠ x₀) (hx₀ : x' ≠ x₁) (hy' : y₁ ≠ y₀) (hy₁ : y' ≠ y₀) (hy₀ : y' ≠ y₁)
     (hQ01 : |!![Q x₀ y₀, Q x₀ y₁, Q x₀ y'; Q x₁ y₀, Q x₁ y₁, Q x₁ y'; Q x' y₀, Q x' y₁, Q x' y']|
       = !![1, 0, 1; 0, 1, 1; 1, 1, 0]) :
     let Q' := Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y'
     !![Q' x₀ y₀, Q' x₀ y₁, Q' x₀ y'; Q' x₁ y₀, Q' x₁ y₁, Q' x₁ y'; Q' x' y₀, Q' x' y₁, Q' x' y']
-      = !![1, 0, 1; 0, -1, 1; 1, 1, 0] :=
+      = !![1, 0, 1; 0, -1, 1; 1, 1, 0] := by
   -- see proof of Lemma 12 in the write-up on 3-sum, the case where `D₀` is `1`
+  intro Q'
+  have hQ' : Q'.IsTotallyUnimodular := hQ.toCanonicalSigning x₀ x₁ x' y₀ y₁ y'
+  simp [Q', Matrix.toCanonicalSigning, hx', hx₁, hx₀, hy', hy₁, hy₀]
   sorry
 
-private lemma Matrix.toCanonicalSigning_Form_Case2 {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y)
-    (hQ : Q.IsTotallyUnimodular)
+private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning_case2 {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x' : X} {y₀ y₁ y' : Y}
+    (hQ : Q.IsTotallyUnimodular) (hx' : x₁ ≠ x₀) (hx₁ : x' ≠ x₀) (hx₀ : x' ≠ x₁) (hy' : y₁ ≠ y₀) (hy₁ : y' ≠ y₀) (hy₀ : y' ≠ y₁)
     (hQ01 : |!![Q x₀ y₀, Q x₀ y₁, Q x₀ y'; Q x₁ y₀, Q x₁ y₁, Q x₁ y'; Q x' y₀, Q x' y₁, Q x' y']|
       = !![1, 1, 1; 0, 1, 1; 1, 1, 0]) :
     let Q' := Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y'
     !![Q' x₀ y₀, Q' x₀ y₁, Q' x₀ y'; Q' x₁ y₀, Q' x₁ y₁, Q' x₁ y'; Q' x' y₀, Q' x' y₁, Q' x' y']
-      = !![1, 1, 1; 0, 1, 1; 1, 1, 0] :=
+      = !![1, 1, 1; 0, 1, 1; 1, 1, 0] := by
   -- see proof of Lemma 12 in the write-up on 3-sum, the case where `D₀` is `!![1, 1; 0, 1]` (up to indices)
+  intro Q'
+  have hQ' : Q'.IsTotallyUnimodular := hQ.toCanonicalSigning x₀ x₁ x' y₀ y₁ y'
+  simp [Q', Matrix.toCanonicalSigning, hx', hx₁, hx₀, hy', hy₁, hy₀]
   sorry
 
 -- lemma 15.a
