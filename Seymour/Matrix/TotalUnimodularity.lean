@@ -149,6 +149,27 @@ lemma Matrix.IsTotallyUnimodular.zero_fromCols {X Y R : Type} (Y' : Type) [CommR
     (@Matrix.fromCols R X Y' Y 0 A).IsTotallyUnimodular :=
   A.replicateCol0_fromCols_isTotallyUnimodular_iff.← hA
 
+lemma Matrix.IsTotallyUnimodular.mul_horizontal {X Y R : Type} [DecidableEq X] [CommRing R] {A : Matrix X Y R}
+    (hA : A.IsTotallyUnimodular) {q : X → R} (hq : ∀ i : X, q i ∈ SignType.cast.range) :
+    (Matrix.of (fun i j => A i j * q i)).IsTotallyUnimodular := by
+  intro k f g hf hg
+  conv in _ * _ => rw [mul_comm]
+  rw [Matrix.submatrix.eq_1 _ f g]
+  conv in Matrix.of _ (f _) (g _) => rw [Matrix.of_apply]
+  rw [Matrix.det_mul_column]
+  refine in_signTypeCastRange_mul_in_signTypeCastRange ?_ (hA k f g hf hg)
+  induction k with
+  | zero => rw [Fin.prod_univ_zero]; exact one_in_signTypeCastRange
+  | succ p hp =>
+    rw [Fin.prod_univ_succ]
+    exact in_signTypeCastRange_mul_in_signTypeCastRange
+      (hq (f 0)) (hp (f ∘ Fin.succ) (g ∘ Fin.succ) (hf.comp (Fin.succ_injective p)) (hg.comp (Fin.succ_injective p)))
+
+lemma Matrix.IsTotallyUnimodular.mul_vertical {X Y R : Type} [DecidableEq Y] [CommRing R] {A : Matrix X Y R}
+    (hA : A.IsTotallyUnimodular) {q : Y → R} (hq : ∀ j : Y, q j ∈ SignType.cast.range) :
+    (Matrix.of (fun i j => A i j * q j)).IsTotallyUnimodular :=
+  (hA.transpose.mul_horizontal hq).transpose
+
 -- The rest of the file deals with a block matrix made of two TU matrices and two `0` matrices.
 
 variable {X₁ X₂ Y₁ Y₂ R : Type}
