@@ -360,8 +360,8 @@ private lemma Matrix.IsTotallyUnimodular.special_form_cols {X Y : Set α} {Q : M
   constructor <;>
   · intro contr
     simp only [c₀, c₁] at contr
-    have hc₀ := congr_fun contr 0
-    have hc₁ := congr_fun contr 1
+    have := congr_fun contr 0
+    have := congr_fun contr 1
     have := hQ.det ![⟨x', hx'⟩, Set.diff_subset.elem i] ![⟨y₀, hy₀⟩, ⟨y₁, hy₁⟩]
     simp_all [Matrix.det_fin_two]
 
