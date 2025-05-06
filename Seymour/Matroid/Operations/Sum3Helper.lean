@@ -55,10 +55,26 @@ private lemma Matrix.submatrix3x3EqSigned₁_AbsEq₁ {X Y : Set α} {Q : Matrix
     |Q.submatrix3x3 x₀ x₁ x' y₀ y₁ y'| = matrix3x3Unsigned₁ :=
   hQ ▸ matrix3x3Signed₁.abs.eta_fin_three
 
+private lemma Matrix.submatrix3x3_submatrix {X Y : Set α} {Q : Matrix X Y ℚ}
+    (x₀ x₁ x' : X) (y₀ y₁ y' : Y) :
+    Q.submatrix3x3 x₀ x₁ x' y₀ y₁ y' = Q.submatrix
+    (match · with
+      | 0 => x₀
+      | 1 => x₁
+      | 2 => x')
+    (match · with
+      | 0 => y₀
+      | 1 => y₁
+      | 2 => y') := by
+  ext i j
+  rw [Matrix.submatrix_apply]
+  split <;> split <;> rfl
+
 private lemma Matrix.IsTotallyUnimodular.submatrix3x3 {X Y : Set α} {Q : Matrix X Y ℚ}
     (hQ : Q.IsTotallyUnimodular) (x₀ x₁ x' : X) (y₀ y₁ y' : Y) :
     (Q.submatrix3x3 x₀ x₁ x' y₀ y₁ y').IsTotallyUnimodular := by
-  sorry
+  rw [Matrix.submatrix3x3_submatrix]
+  exact Matrix.IsTotallyUnimodular.submatrix _ _ hQ
 
 -- we might need this, but later
 private def Matrix.submatrix3x3Mems {X Y : Set α} (Q : Matrix X Y ℚ)
