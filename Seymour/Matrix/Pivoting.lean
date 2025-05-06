@@ -1,6 +1,6 @@
 import Seymour.Basic.Fin
 import Seymour.Basic.SignTypeCast
-import Seymour.Matrix.Basic
+import Seymour.Matrix.TotalUnimodularity
 import Mathlib.LinearAlgebra.Matrix.SchurComplement
 import Mathlib.LinearAlgebra.Matrix.Permutation
 
@@ -78,8 +78,7 @@ private lemma Matrix.IsTotallyUnimodular.mulRow [DecidableEq X] [CommRing F] {A 
     rw [Matrix.det_updateRow_smul]
     apply in_signTypeCastRange_mul_in_signTypeCastRange hc
     have hAf := hA.submatrix f id
-    rw [Matrix.isTotallyUnimodular_iff] at hAf
-    convert hAf k id g
+    convert hAf.det id g
     rw [Matrix.submatrix_submatrix, Function.comp_id, Function.id_comp]
     exact (A.submatrix f g).updateRow_eq_self i
   else
@@ -170,8 +169,7 @@ private lemma Matrix.IsTotallyUnimodular.addMultiples [DecidableEq X] [Field F] 
           have hfi : f' i ≠ x := (hi0 <| hf' <| ·.trans hf0.symm)
           simp [Matrix.addMultiples, hi0, hf0, hfi]
       rw [Matrix.addMultiples_det]
-      rw [Matrix.isTotallyUnimodular_iff] at hA
-      exact hA k.succ f' g'
+      exact hA.det f' g'
     have laplaced : ((A.addMultiples x (- A · y / A x y)).submatrix f' g').det =
         (A.addMultiples x (- A · y / A x y)) x y * ((A.addMultiples x (- A · y / A x y)).submatrix f g).det
     · rw [Matrix.det_succ_column_zero, sum_over_fin_succ_of_only_zeroth_nonzero]

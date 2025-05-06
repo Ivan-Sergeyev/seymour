@@ -1,7 +1,7 @@
-import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 import Mathlib.Data.Fintype.Card
 import Seymour.Basic.Basic
 import Seymour.Basic.SignTypeCast
+import Seymour.Matrix.TotalUnimodularity
 
 
 /-- Formally verified algorithm for testing total unimodularity. -/
@@ -40,10 +40,9 @@ lemma Matrix.testTotallyUnimodular_eq_isTotallyUnimodular {m n : ℕ} (A : Matri
   constructor
   · exact A.isTotallyUnimodular_of_testTotallyUnimodular
   intro hA
-  rw [Matrix.isTotallyUnimodular_iff] at hA
   simp only [Matrix.testTotallyUnimodular, and_imp, decide_eq_true_eq, eq_iff_iff, iff_true]
-  intro k _ f g
-  exact hA k f g
+  intro _ _ f g
+  exact hA.det f g
 
 instance {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Decidable A.IsTotallyUnimodular :=
   decidable_of_iff _ A.testTotallyUnimodular_eq_isTotallyUnimodular

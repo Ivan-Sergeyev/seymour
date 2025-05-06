@@ -42,6 +42,12 @@ example : ¬ (!![2] : Matrix _ _ (ZMod 4)).IsTotallyUnimodular := by
   use 1, id, id
   decide
 
+lemma Matrix.IsTotallyUnimodular.det {X Y R : Type} [CommRing R] {A : Matrix X Y R} (hA : A.IsTotallyUnimodular)
+    {k : ℕ} (f : Fin k → X) (g : Fin k → Y) :
+    (A.submatrix f g).det ∈ Set.range SignType.cast := by
+  rw [Matrix.isTotallyUnimodular_iff] at hA
+  exact hA k f g
+
 lemma Matrix.IsTotallyUnimodular.neg {X Y R : Type} [CommRing R] {A : Matrix X Y R} (hA : A.IsTotallyUnimodular) :
     (-A).IsTotallyUnimodular := by
   rw [Matrix.isTotallyUnimodular_iff] at hA ⊢
@@ -66,7 +72,6 @@ lemma Matrix.IsTotallyUnimodular.map_ratFloor {X Y : Type} {A : Matrix X Y ℚ} 
   intro k f g
   rw [Matrix.submatrix_map]
   have hAfg := (hA.submatrix f g).det_eq_map_ratFloor_det
-  rw [Matrix.isTotallyUnimodular_iff] at hA
   if h0 : ((A.submatrix f g).map Rat.floor).det = 0 then
     rewrite [h0]
     exact ⟨0, rfl⟩
@@ -78,7 +83,7 @@ lemma Matrix.IsTotallyUnimodular.map_ratFloor {X Y : Type} {A : Matrix X Y ℚ} 
     exact ⟨-1, rfl⟩
   else
     exfalso
-    obtain ⟨s, hs⟩ := hAfg ▸ hA k f g
+    obtain ⟨s, hs⟩ := hAfg ▸ hA.det f g
     cases s with
     | zero =>
       apply h0

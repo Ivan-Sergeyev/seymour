@@ -137,6 +137,16 @@ private def Matrix.toCanonicalSigning {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ 
     1)
   Matrix.of (fun i j => Q i j * u i * v j)
 
+-- TODO what assumptions are missing?
+private lemma Matrix.toCanonicalSigning_row {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y) :
+    ∀ y : Y, y ≠ y₀ ∧ y ≠ y₁ → (Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y') x' y = 0 := by
+  sorry
+
+-- TODO what assumptions are missing?
+private lemma Matrix.toCanonicalSigning_elem₀ {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y) :
+    (Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y') x' y₀ = 1 := by
+  sorry
+
 private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Set α} {Q : Matrix X Y ℚ}
     (hQ : Q.IsTotallyUnimodular) (x₀ x₁ x' : X) (y₀ y₁ y' : Y) :
     (Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y').IsTotallyUnimodular := by
@@ -339,15 +349,21 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion₁ {X Y : Set α} {Q 
   aesop
 
 -- lemma 16.1
-private lemma Matrix.IsTotallyUnimodular.special_cols_form {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
-    {x' y₀ y₁ : α} (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy : y₀ ≠ y₁)
-    (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1)
-    (hQy₁ : Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩ = 1)
-    (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q ⟨x', hx'⟩ y = 0) :
+omit [DecidableEq α] in
+private lemma Matrix.IsTotallyUnimodular.special_form_cols {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
+    {x' y₀ y₁ : α} (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y)
+    (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1) (hQy₁ : Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩ = 1) :
     let c₀ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₀, hy₀⟩
     let c₁ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
     ∀ i : (X \ {x'}).Elem, ![c₀ i, c₁ i] ≠ ![1, -1] ∧ ![c₀ i, c₁ i] ≠ ![-1, 1] := by
-  sorry
+  intro c₀ c₁ i
+  constructor <;>
+  · intro contr
+    simp only [c₀, c₁] at contr
+    have hc₀ := congr_fun contr 0
+    have hc₁ := congr_fun contr 1
+    have := hQ.det ![⟨x', hx'⟩, Set.diff_subset.elem i] ![⟨y₀, hy₀⟩, ⟨y₁, hy₁⟩]
+    simp_all [Matrix.det_fin_two]
 
 -- lemma 16.2 (stronger version)
 private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)

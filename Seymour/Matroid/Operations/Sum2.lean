@@ -263,11 +263,10 @@ lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X�
         exact (matrix2sumComposition Aₗ x Aᵣ y).submatrix_det_zero_of_not_injective_right hg
       obtain ⟨iₗ, xₗ, hixₗ⟩ : ∃ iₗ : Fin (n + 2), ∃ xₗ : Xₗ, f iₗ = ◩xₗ
       · have isTU := matrix2sumComposition_bottom_isTotallyUnimodular hAx hAy -- `D ◫ Aᵣ` is TU
-        rw [Matrix.isTotallyUnimodular_iff] at isTU
         rw [matrix2sumComposition_eq_fromRows] at hAfg
         by_contra! hfXₗ
         apply hAfg
-        convert isTU (n + 2) (fn_of_sum_ne_inl hfXₗ) g using 2
+        convert isTU.det (fn_of_sum_ne_inl hfXₗ) g using 2
         ext i j
         rewrite [Matrix.submatrix_apply, eq_of_fn_sum_ne_inl hfXₗ i]
         rfl
