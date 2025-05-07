@@ -411,14 +411,19 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols {X Y : Set α} {
         SignType.cast.range by rintro ((((((_|_)|_)|_)|_)|_)|_) <;> simp)).fromCols_zero Unit
   aesop
 
--- todo: same lemmas for rows instead of columns, final lemma (18.2) is given below ; TODO assumptions?
-private lemma Matrix.IsTotallyUnimodular.signing_expansion_rows {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
-    {x₀ x₁ x' y₀ y₁ y' : α} (hx₀ : x₀ ∈ X) (hx₁ : x₁ ∈ X) (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hy' : y' ∈ Y) :
+-- Lemma 18.2's corollary
+private lemma Matrix.IsTotallyUnimodular.signing_expansion_rows {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ y' : α}
+    (hQ : Q.IsTotallyUnimodular) (hx₀ : x₀ ∈ X) (hx₁ : x₁ ∈ X) (hy' : y' ∈ Y) (hxx : x₀ ≠ x₁)
+    (hQx₀ : Q ⟨x₀, hx₀⟩ ⟨y', hy'⟩ = 1)
+    (hQx₁ : Q ⟨x₁, hx₁⟩ ⟨y', hy'⟩ = 1)
+    (hQx : ∀ x : X, x.val ≠ x₀ ∧ x.val ≠ x₁ → Q x ⟨y', hy'⟩ = 0) :
     let d₀ : (Y \ {y'}).Elem → ℚ := (Q ⟨x₀, hx₀⟩ <| Set.diff_subset.elem ·)
     let d₁ : (Y \ {y'}).Elem → ℚ := (Q ⟨x₁, hx₁⟩ <| Set.diff_subset.elem ·)
     let Q' : Matrix (X \ {x₀, x₁}).Elem (Y \ {y'}).Elem ℚ := Q.submatrix Set.diff_subset.elem Set.diff_subset.elem
-    (Q' ⊟ ▬d₀ ⊟ ▬(-d₀) ⊟ ▬d₁ ⊟ ▬(-d₁) ⊟ ▬(d₀ - d₁) ⊟ ▬(d₁ - d₀) ⊟ ▬0).IsTotallyUnimodular :=
-  sorry
+    (Q' ⊟ ▬d₀ ⊟ ▬(-d₀) ⊟ ▬d₁ ⊟ ▬(-d₁) ⊟ ▬(d₀ - d₁) ⊟ ▬(d₁ - d₀) ⊟ ▬0).IsTotallyUnimodular := by
+  intros
+  convert (hQ.transpose.signing_expansion_cols hy' hx₀ hx₁ hxx hQx₀ hQx₁ hQx).transpose
+  aesop
 
 -- canonical signing of 3-sum constructed from TU signings of summands
 private noncomputable def matrix3sumCompositionCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
