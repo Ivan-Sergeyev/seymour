@@ -1,5 +1,6 @@
+import Seymour.Matrix.Notation
+import Seymour.Matrix.Pivoting
 import Seymour.Matroid.Properties.Regularity
-import Seymour.Matroid.Operations.Sum2
 
 
 variable {α : Type}

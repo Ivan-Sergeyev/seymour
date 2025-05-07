@@ -1,4 +1,5 @@
 import Seymour.Basic.FunctionToHalfSum
+import Seymour.Matrix.Notation
 import Seymour.Matrix.Pivoting
 import Seymour.Matroid.Properties.Regularity
 import Seymour.Matrix.Determinants
@@ -6,6 +7,9 @@ import Seymour.Matrix.PreTUness
 
 
 section Experimental
+
+/-- Function with constant value `v`. -/
+notation:64 "Constant"v:81 => Function.const _ v
 
 private lemma Eq.mem2ₗ {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : a ∈ X :=
   Set.mem_of_mem_inter_left (ha.symm.subset rfl)
@@ -18,6 +22,7 @@ private abbrev Eq.aₗ {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) 
 
 private abbrev Eq.aᵣ {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : Y :=
   ⟨a, ha.mem2ᵣ⟩
+
 
 @[simp]
 private abbrev Matrix.dropRow {α R : Type} {X Y : Set α} (A : Matrix X Y R) (a : α) :
@@ -38,6 +43,64 @@ private abbrev Matrix.interRow {α R : Type} {X Y Z : Set α} (A : Matrix X Y R)
 private abbrev Matrix.interCol {α R : Type} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : Z ∩ Y = {a}) :
     X.Elem → R :=
   (A · ha.aᵣ)
+
+
+@[simp]
+private abbrev Matrix.reglueRow {α R : Type} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : X ∩ Z = {a}) :
+    Matrix ((X \ {a}).Elem ⊕ Unit) Y.Elem R :=
+  (A.dropRow a) ⊟ ▬(A.interRow ha)
+
+@[simp]
+private abbrev Matrix.reglueCol {α R : Type} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : Z ∩ Y = {a}) :
+    Matrix X.Elem (Unit ⊕ (Y \ {a}).Elem) R :=
+  ▮(A.interCol ha) ◫ (A.dropCol a)
+
+private lemma Matrix.reglueRow_eq {α R : Type} [CommRing R] {X Y Z : Set α} {A : Matrix X Y R} {a : α} (ha : X ∩ Z = {a}) :
+    A.reglueRow ha = A.submatrix (fun i => i.casesOn Set.diff_subset.elem (Constant ha.aₗ)) id := by
+  aesop
+
+private lemma Matrix.reglueCol_eq {α R : Type} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : Z ∩ Y = {a}) :
+    A.reglueCol ha = A.submatrix id (fun j => j.casesOn (Constant ha.aᵣ) Set.diff_subset.elem) := by
+  aesop
+
+
+private lemma Matrix.IsTotallyUnimodular.dropRow {α R : Type} [CommRing R] {X Y : Set α} {A : Matrix X Y R}
+    (hA : A.IsTotallyUnimodular) (a : α) :
+    (A.dropRow a).IsTotallyUnimodular := by
+  exact hA.comp_rows Set.diff_subset.elem
+
+private lemma Matrix.IsTotallyUnimodular.dropCol {α R : Type} [CommRing R] {X Y : Set α} {A : Matrix X Y R}
+    (hA : A.IsTotallyUnimodular) (a : α) :
+    (A.dropCol a).IsTotallyUnimodular := by
+  exact hA.comp_cols Set.diff_subset.elem
+
+private lemma Matrix.IsTotallyUnimodular.reglueRow {α R : Type} [CommRing R] {X Y Z : Set α} {A : Matrix X Y R}
+    (hA : A.IsTotallyUnimodular) {a : α} (ha : X ∩ Z = {a}) :
+    (A.reglueRow ha).IsTotallyUnimodular := by
+  rw [A.reglueRow_eq ha]
+  apply hA.submatrix
+
+private lemma Matrix.IsTotallyUnimodular.reglueCol {α R : Type} [CommRing R] {X Y Z : Set α} {A : Matrix X Y R}
+    (hA : A.IsTotallyUnimodular) {a : α} (ha : Z ∩ Y = {a}) :
+    (A.reglueCol ha).IsTotallyUnimodular := by
+  rw [A.reglueCol_eq ha]
+  apply hA.submatrix
+
+
+-- TODO - refactor appliations of these
+lemma Matrix.IsTotallyUnimodular.duplicate_last_row {X Y : Type} {Aₗ : Matrix X Y ℚ} {x : Y → ℚ}
+    (hAx : (Aₗ ⊟ ▬x).IsTotallyUnimodular) :
+    (Aₗ ⊟ ▬x ⊟ ▬x).IsTotallyUnimodular := by
+  convert hAx.comp_rows (Sum.casesOn · id Sum.inr)
+  aesop
+
+private lemma Matrix.IsTotallyUnimodular.aux190 {α : Type} [DecidableEq α] {Xₗ Yₗ : Set α} {Aₗ : Matrix Xₗ Yₗ ℚ} {x : Yₗ → ℚ}
+    (hAx : (Aₗ ⊟ ▬x).IsTotallyUnimodular) :
+    (Aₗ ⊟ ▬x ⊟ ▬(-x) ⊟ ▬0).IsTotallyUnimodular := by
+  convert ((hAx.duplicate_last_row).mul_rows (show ∀ j, (·.casesOn 1 (-1)) j ∈ SignType.cast.range by rintro (_|_) <;> simp)
+    ).fromRows_zero Unit
+  aesop
+
 
 end Experimental
 
@@ -60,8 +123,7 @@ def standardRepr2sumComposition {α : Type} [DecidableEq α] {a : α} {Sₗ Sᵣ
       Sₗ.Y ∪ (Sᵣ.Y \ {a}),
       by
         rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
-        exact ⟨⟨Sₗ.hXY.disjoint_sdiff_left, hXY⟩,
-               ⟨disjoint_of_sdiff_singleton_inter ha, Sᵣ.hXY.disjoint_sdiff_right⟩⟩,
+        exact ⟨⟨Sₗ.hXY.disjoint_sdiff_left, hXY⟩, ⟨disjoint_of_sdiff_singleton_inter ha, Sᵣ.hXY.disjoint_sdiff_right⟩⟩,
       (matrix2sumComposition (Sₗ.B.dropRow a) (Sₗ.B.interRow ha) (Sᵣ.B.dropCol a) (Sᵣ.B.interCol ha)).toMatrixUnionUnion,
       inferInstance,
       inferInstance,
@@ -95,24 +157,6 @@ structure Matroid.Is2sumOf {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ M
 instance Matroid.Is2sumOf.finS {α : Type} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} (hM : M.Is2sumOf Mₗ Mᵣ) : Finite hM.S.X := by
   obtain ⟨_, _, _, _, _, _, _, _, _, _, _, rfl, _⟩ := hM
   apply Finite.Set.finite_union
-
-infixl:63 " ⊟ " => Matrix.fromRows
-infixl:63 " ◫ " => Matrix.fromCols
-notation:64 "▬"r:81 => Matrix.replicateRow Unit r
-notation:64 "▮"c:81 => Matrix.replicateCol Unit c
-
-lemma Matrix.IsTotallyUnimodular.duplicate_last_row {X Y : Type} {Aₗ : Matrix X Y ℚ} {x : Y → ℚ}
-    (hAx : (Aₗ ⊟ ▬x).IsTotallyUnimodular) :
-    (Aₗ ⊟ ▬x ⊟ ▬x).IsTotallyUnimodular := by
-  convert hAx.comp_rows (Sum.casesOn · id Sum.inr)
-  aesop
-
-private lemma Matrix.IsTotallyUnimodular.aux190 {α : Type} [DecidableEq α] {Xₗ Yₗ : Set α} {Aₗ : Matrix Xₗ Yₗ ℚ} {x : Yₗ → ℚ}
-    (hAx : (Aₗ ⊟ ▬x).IsTotallyUnimodular) :
-    (Aₗ ⊟ ▬x ⊟ ▬(-x) ⊟ ▬0).IsTotallyUnimodular := by
-  convert ((hAx.duplicate_last_row).mul_rows (show ∀ j, (·.casesOn 1 (-1)) j ∈ SignType.cast.range by rintro (_|_) <;> simp)
-    ).fromRows_zero Unit
-  aesop
 
 private lemma matrix2sumComposition_left_isTotallyUnimodular_aux {α : Type} [DecidableEq α]
     {Xₗ Yₗ Xᵣ : Set α} {Aₗ : Matrix Xₗ Yₗ ℚ} {x : Yₗ → ℚ} {y : Xᵣ → ℚ}
@@ -183,22 +227,6 @@ private lemma matrix2sumComposition_eq_fromRows {α β : Type} [Semiring β] {X�
     matrix2sumComposition Aₗ x Aᵣ y = (Aₗ ◫ 0) ⊟ ((y · * x ·) ◫ Aᵣ) := by
   rfl
 
-private lemma matrix2sumComposition_isPreTU_1 {α : Type} {Xₗ Yₗ Xᵣ Yᵣ : Set α}
-    {Aₗ : Matrix Xₗ Yₗ ℚ} {x : Yₗ → ℚ} {Aᵣ : Matrix Xᵣ Yᵣ ℚ} {y : Xᵣ → ℚ}
-    (hAx : (Aₗ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ Aᵣ).IsTotallyUnimodular) :
-    (matrix2sumComposition Aₗ x Aᵣ y).IsPreTU 1 := by
-  intro f g
-  rw [Matrix.det_unique, Fin.default_eq_zero, Matrix.submatrix_apply]
-  have hAₗ : Aₗ.IsTotallyUnimodular := hAx.comp_rows Sum.inl
-  have hAᵣ : Aᵣ.IsTotallyUnimodular := hAy.comp_cols Sum.inr
-  cases f 0 with
-  | inl iₗ => cases g 0 with
-    | inl jₗ => exact hAₗ.apply iₗ jₗ
-    | inr jᵣ => exact zero_in_signTypeCastRange
-  | inr iᵣ => cases g 0 with
-    | inl jₗ => exact in_signTypeCastRange_mul_in_signTypeCastRange (hAy.apply iᵣ ◩()) (hAx.apply ◪() jₗ)
-    | inr jᵣ => exact hAᵣ.apply iᵣ jᵣ
-
 /-- The result of the vector `v` after pivoting on `j`th element in the row `u` and restriction. -/
 noncomputable def shortTableauPivotOuterRow {Y Y' R : Type} [DecidableEq Y'] [DivisionRing R]
     (u : Y → R) (j : Y') (g : Y' → Y) (v : Y' → R) : Y' → R :=
@@ -250,6 +278,21 @@ private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq �
   rw [←(B.shortTableauPivot ◩i ◩j).fromBlocks_toBlocks, hBAₗ, hBAᵣ, hB0, hBD]
   rfl
 
+-- OK
+private lemma matrix2sumComposition_isPreTU_1 {α : Type} {Xₗ Yₗ Xᵣ Yᵣ : Set α}
+    {Aₗ : Matrix Xₗ Yₗ ℚ} {x : Yₗ → ℚ} {Aᵣ : Matrix Xᵣ Yᵣ ℚ} {y : Xᵣ → ℚ}
+    (hAx : (Aₗ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ Aᵣ).IsTotallyUnimodular) :
+    (matrix2sumComposition Aₗ x Aᵣ y).IsPreTU 1 := by
+  intro f g
+  rw [Matrix.det_unique, Fin.default_eq_zero, Matrix.submatrix_apply]
+  cases f 0 with
+  | inl iₗ => cases g 0 with
+    | inl jₗ => exact (hAx.comp_rows Sum.inl).apply iₗ jₗ
+    | inr jᵣ => exact zero_in_signTypeCastRange
+  | inr iᵣ => cases g 0 with
+    | inl jₗ => exact in_signTypeCastRange_mul_in_signTypeCastRange (hAy.apply iᵣ ◩()) (hAx.apply ◪() jₗ)
+    | inr jᵣ => exact (hAy.comp_cols Sum.inr).apply iᵣ jᵣ
+
 lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
     {Aₗ : Matrix Xₗ Yₗ ℚ} {x : Yₗ → ℚ} {Aᵣ : Matrix Xᵣ Yᵣ ℚ} {y : Xᵣ → ℚ}
     (hAx : (Aₗ ⊟ ▬x).IsTotallyUnimodular) (hAy : (▮y ◫ Aᵣ).IsTotallyUnimodular) :
@@ -261,50 +304,35 @@ lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X�
   | succ m => induction m generalizing Aₗ x Aᵣ y with
     | zero => exact matrix2sumComposition_isPreTU_1 hAx hAy
     | succ n ih =>
-      have hAₗ : Aₗ.IsTotallyUnimodular := hAx.comp_rows Sum.inl
-      have hAᵣ : Aᵣ.IsTotallyUnimodular := hAy.comp_cols Sum.inr
-      by_contra contr
-      obtain ⟨f, g, hAfg⟩ := exists_submatrix_of_not_isPreTU contr
+      intro f g
       wlog hf : f.Injective
-      · apply hAfg
-        convert zero_in_signTypeCastRange
-        exact (matrix2sumComposition Aₗ x Aᵣ y).submatrix_det_zero_of_not_injective_left hf
+      · exact ((matrix2sumComposition Aₗ x Aᵣ y).submatrix_det_zero_of_not_injective_left hf g) ▸ zero_in_signTypeCastRange
       wlog hg : g.Injective
-      · apply hAfg
-        convert zero_in_signTypeCastRange
-        exact (matrix2sumComposition Aₗ x Aᵣ y).submatrix_det_zero_of_not_injective_right hg
-      obtain ⟨iₗ, xₗ, hixₗ⟩ : ∃ iₗ : Fin (n + 2), ∃ xₗ : Xₗ, f iₗ = ◩xₗ
-      · have isTU := matrix2sumComposition_bottom_isTotallyUnimodular hAx hAy -- `D ◫ Aᵣ` is TU
-        rw [matrix2sumComposition_eq_fromRows] at hAfg
-        by_contra! hfXₗ
-        apply hAfg
-        convert isTU.det (fn_of_sum_ne_inl hfXₗ) g using 2
+      · exact ((matrix2sumComposition Aₗ x Aᵣ y).submatrix_det_zero_of_not_injective_right f hg) ▸ zero_in_signTypeCastRange
+      wlog hfₗ : ∃ iₗ : Fin (n + 2), ∃ xₗ : Xₗ, f iₗ = ◩xₗ
+      · push_neg at hfₗ
+        convert (matrix2sumComposition_bottom_isTotallyUnimodular hAx hAy).det (fn_of_sum_ne_inl hfₗ) g using 2
         ext i j
-        rewrite [Matrix.submatrix_apply, eq_of_fn_sum_ne_inl hfXₗ i]
+        rw [Matrix.submatrix_apply, Matrix.submatrix_apply, eq_of_fn_sum_ne_inl hfₗ i]
         rfl
-      obtain ⟨j₀, y₀, hjy₀, hAxy0⟩ : ∃ j₀ : Fin (n + 2), ∃ y₀ : Yₗ, g j₀ = ◩y₀ ∧ Aₗ xₗ y₀ ≠ 0
-      · by_contra! hgYₗ -- because the `iₗ`th row cannot be all `0`s
-        apply hAfg
+      obtain ⟨iₗ, xₗ, hixₗ⟩ := hfₗ
+      wlog hgₗ : ∃ j₀ : Fin (n + 2), ∃ y₀ : Yₗ, g j₀ = ◩y₀ ∧ Aₗ xₗ y₀ ≠ 0
+      · push_neg at hgₗ
         convert zero_in_signTypeCastRange
-        apply Matrix.det_eq_zero_of_row_eq_zero iₗ
-        intro z
-        rw [matrix2sumComposition_eq_fromRows, Matrix.submatrix_apply, hixₗ, Matrix.fromRows_apply_inl]
-        cases hgz : g z with
-        | inl => exact hgYₗ z _ hgz
-        | inr => simp
+        apply ((matrix2sumComposition Aₗ x Aᵣ y).submatrix f g).det_eq_zero_of_row_eq_zero iₗ
+        intro j
+        cases hgj : g j with
+        | inl yₗ => exact Matrix.submatrix_apply .. ▸ hgj ▸ hixₗ ▸ hgₗ j yₗ hgj
+        | inr => exact Matrix.submatrix_apply .. ▸ hgj ▸ hixₗ ▸ rfl
+      obtain ⟨j₀, y₀, hjy₀, hAxy0⟩ := hgₗ
       have hAxy1 : Aₗ xₗ y₀ = 1 ∨ Aₗ xₗ y₀ = -1
-      · obtain ⟨s, hs⟩ := hAₗ.apply xₗ y₀
+      · obtain ⟨s, hs⟩ := (hAx.comp_rows Sum.inl).apply xₗ y₀
         cases s with
-        | zero =>
-          exfalso
-          apply hAxy0
-          exact hs.symm
-        | pos =>
-          left
-          exact hs.symm
-        | neg =>
-          right
-          exact hs.symm
+        | zero => exact (hAxy0 hs.symm).elim
+        | pos => exact Or.inl hs.symm
+        | neg => exact Or.inr hs.symm
+
+      by_contra hAfg
       obtain ⟨_, _, -, -, impossible⟩ :=
         shortTableauPivot_submatrix_det_ni_signTypeCastRange hAfg iₗ j₀ (by convert hAxy1 <;> simp [matrix2sumComposition, *])
       apply impossible
@@ -327,6 +355,8 @@ lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X�
           field_simp [hj]
           ring
 
+
+-- OK
 lemma standardRepr2sumComposition_hasTuSigning {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {a : α}
     (ha : Sₗ.X ∩ Sᵣ.Y = {a}) (hXY : Sᵣ.X ⫗ Sₗ.Y) (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) :
     (standardRepr2sumComposition ha hXY).fst.B.HasTuSigning := by
@@ -335,14 +365,7 @@ lemma standardRepr2sumComposition_hasTuSigning {α : Type} [DecidableEq α] {S�
   let B' := matrix2sumComposition (Bₗ.dropRow a) (Bₗ.interRow ha) (Bᵣ.dropCol a) (Bᵣ.interCol ha)
   use B'.toMatrixUnionUnion
   constructor
-  · apply Matrix.IsTotallyUnimodular.toMatrixUnionUnion
-    apply matrix2sumComposition_isTotallyUnimodular
-    · convert hBₗ.comp_rows
-        (fun i : (Sₗ.X \ {a}).Elem ⊕ Unit => i.casesOn Set.diff_subset.elem (fun _ => ha.aₗ))
-      aesop
-    · convert hBᵣ.comp_cols
-        (fun j : Unit ⊕ (Sᵣ.Y \ {a}).Elem => j.casesOn (fun _ => ha.aᵣ) Set.diff_subset.elem)
-      aesop
+  · exact (matrix2sumComposition_isTotallyUnimodular (hBₗ.reglueRow ha) (hBᵣ.reglueCol ha)).toMatrixUnionUnion
   · intro i j
     simp only [standardRepr2sumComposition_B_eq, Matrix.toMatrixUnionUnion, Function.comp_apply]
     cases hi : i.toSum with
@@ -363,8 +386,9 @@ lemma standardRepr2sumComposition_hasTuSigning {α : Type} [DecidableEq α] {S�
       | inr jᵣ =>
         exact hBBᵣ iᵣ (Set.diff_subset.elem jᵣ)
 
+-- OK
 /-- Any 2-sum of regular matroids is a regular matroid.
-    This is the middle of the three parts of the easy direction of the Seymour's theorem. -/
+    This is part two (of three) of the easy direction of the Seymour's theorem. -/
 theorem Matroid.Is2sumOf.isRegular {α : Type} [DecidableEq α] {M Mₗ Mᵣ : Matroid α}
     (hM : M.Is2sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
