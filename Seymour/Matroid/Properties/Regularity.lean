@@ -104,8 +104,7 @@ private lemma Matrix.IsTotallyUnimodular.det_eq_zero_iff_support [Fintype α] {A
     A.det = (0 : ℚ) ↔ A.support.det = (0 : Z2) := by
   rw [←hA.ratCast_det_eq_support_det]
   apply zero_iff_ratCast_zero_of_in_signTypeCastRange
-  rw [Matrix.isTotallyUnimodular_iff_fintype] at hA
-  exact hA α id id
+  exact hA.det id id
 
 private lemma Matrix.IsTotallyUnimodular.det_ne_zero_iff_support [Fintype α] {A : Matrix α α ℚ}
     (hA : A.IsTotallyUnimodular) :

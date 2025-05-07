@@ -95,7 +95,6 @@ private lemma Matrix.submatrix3x3mems_eq {X Y : Set α} (Q : Matrix X Y ℚ)
 end Submatrix3x3
 
 
-
 variable [DecidableEq α]
 
 section CanonicalSigning
@@ -114,27 +113,29 @@ section CanonicalSigning
 --     ∀ x : X, x ≠ x₀ ∧ x ≠ x₁ → (Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y') x y' = 0 := by
 --   sorry
 
-/-- Proposition that `Q` is a TU canonical signing. -/
+/-- Proposition that `Q` is a TU canonical signing with `0` on the [0,1] position. -/
 def Matrix.IsTuCanonicalSigning₀ {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y) : Prop :=
   Q.IsTotallyUnimodular
   ∧ (x₁ ≠ x₀ ∧ x' ≠ x₀ ∧ x' ≠ x₁)
   ∧ (y₁ ≠ y₀ ∧ y' ≠ y₀ ∧ y' ≠ y₁)
   ∧ Q.submatrix3x3 x₀ x₁ x' y₀ y₁ y' = matrix3x3signed₀
 
+/-- Proposition that `Q` is a TU canonical signing with `1` on the [0,1] position. -/
 def Matrix.IsTuCanonicalSigning₁ {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y) : Prop :=
   Q.IsTotallyUnimodular
   ∧ (x₁ ≠ x₀ ∧ x' ≠ x₀ ∧ x' ≠ x₁)
   ∧ (y₁ ≠ y₀ ∧ y' ≠ y₀ ∧ y' ≠ y₁)
   ∧ Q.submatrix3x3 x₀ x₁ x' y₀ y₁ y' = matrix3x3signed₁
 
-/-- Assumptions under which `Q.toCanonicalSigning` is a TU canonical signing of `Q.support`. -/
-private def Matrix.IsTuCanonicalylSignable₀ {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y) : Prop :=
+/-- Sufficient condition for `Q.toCanonicalSigning` being a TU canonical signing of `Q.support`. -/
+private def Matrix.IsTuCanonicallySignable₀ {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y) : Prop :=
   Q.IsTotallyUnimodular
   ∧ (x₁ ≠ x₀ ∧ x' ≠ x₀ ∧ x' ≠ x₁)
   ∧ (y₁ ≠ y₀ ∧ y' ≠ y₀ ∧ y' ≠ y₁)
   ∧ |Q.submatrix3x3 x₀ x₁ x' y₀ y₁ y'| = matrix3x3unsigned₀
 
-private def Matrix.IsTuCanonicalylSignable₁ {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y) : Prop :=
+/-- Sufficient condition for `Q.toCanonicalSigning` being a TU canonical signing of `Q.support`. -/
+private def Matrix.IsTuCanonicallySignable₁ {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y) : Prop :=
   Q.IsTotallyUnimodular
   ∧ (x₁ ≠ x₀ ∧ x' ≠ x₀ ∧ x' ≠ x₁)
   ∧ (y₁ ≠ y₀ ∧ y' ≠ y₀ ∧ y' ≠ y₁)
@@ -201,8 +202,8 @@ private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Set α} {Q : 
       exact one_in_signTypeCastRange
   exact (hQ.mul_rows hu).mul_cols hv
 
-private lemma Matrix.IsTuCanonicalylSignable₀_toCanonicalSigning_submatrix3x3 {X Y : Set α} {Q : Matrix X Y ℚ}
-    {x₀ x₁ x' : X} {y₀ y₁ y' : Y} (hQ : Q.IsTuCanonicalylSignable₀ x₀ x₁ x' y₀ y₁ y') :
+private lemma Matrix.IsTuCanonicallySignable₀.toCanonicalSigning_submatrix3x3 {X Y : Set α} {Q : Matrix X Y ℚ}
+    {x₀ x₁ x' : X} {y₀ y₁ y' : Y} (hQ : Q.IsTuCanonicallySignable₀ x₀ x₁ x' y₀ y₁ y') :
     (Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y').submatrix3x3 x₀ x₁ x' y₀ y₁ y' = matrix3x3signed₀ := by
   obtain ⟨hQtu, ⟨hx₀, hx₁, hx'⟩, ⟨hy₀, hy₁, hy'⟩, hQxy⟩ := hQ
   simp only [Matrix.submatrix3x3, matrix3x3unsigned₀] at hQxy
@@ -223,11 +224,11 @@ private lemma Matrix.IsTuCanonicalylSignable₀_toCanonicalSigning_submatrix3x3 
   simp [Matrix.det_fin_three] at hd
   clear hQtu hQ3x3tu hQxy hQ₀₁ hQ₁₀ hQ₂₂ hx₀ hx₁ hx' hy₀ hy₁ hy'
   cases hQ₀₀ <;> cases hQ₀₂ <;> cases hQ₁₁ <;> cases hQ₁₂ <;> cases hQ₂₀ <;> cases hQ₂₁
-  all_goals try simp only [mul_one, mul_neg, neg_zero, neg_neg, *]
-  all_goals simp [*] at hd
+  <;> simp only [mul_one, mul_neg, neg_zero, neg_neg, *]
+  <;> simp [*] at hd
 
-private lemma Matrix.IsTuCanonicalylSignable₁_toCanonicalSigning_submatrix3x3 {X Y : Set α} {Q : Matrix X Y ℚ}
-    {x₀ x₁ x' : X} {y₀ y₁ y' : Y} (hQ : Q.IsTuCanonicalylSignable₁ x₀ x₁ x' y₀ y₁ y') :
+private lemma Matrix.IsTuCanonicallySignable₁.toCanonicalSigning_submatrix3x3 {X Y : Set α} {Q : Matrix X Y ℚ}
+    {x₀ x₁ x' : X} {y₀ y₁ y' : Y} (hQ : Q.IsTuCanonicallySignable₁ x₀ x₁ x' y₀ y₁ y') :
     (Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y').submatrix3x3 x₀ x₁ x' y₀ y₁ y' = matrix3x3signed₁ := by
   obtain ⟨hQtu, ⟨hx₀, hx₁, hx'⟩, ⟨hy₀, hy₁, hy'⟩, hQxy⟩ := hQ
   simp only [Matrix.submatrix3x3, matrix3x3unsigned₁] at hQxy
@@ -253,19 +254,17 @@ private lemma Matrix.IsTuCanonicalylSignable₁_toCanonicalSigning_submatrix3x3 
   <;> simp only [mul_one, mul_neg, neg_zero, neg_neg, *]
   <;> simp [*] at hd₁ hd₂
 
-private lemma Matrix.IsTuCanonicalylSignable₀_toCanonicalSigning {X Y : Set α} {Q : Matrix X Y ℚ}
-    {x₀ x₁ x' : X} {y₀ y₁ y' : Y} (hQ : Q.IsTuCanonicalylSignable₀ x₀ x₁ x' y₀ y₁ y') :
-    (Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y').IsTuCanonicalSigning₀ x₀ x₁ x' y₀ y₁ y' := by
+private lemma Matrix.IsTuCanonicallySignable₀.toCanonicalSigning {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x' : X} {y₀ y₁ y' : Y}
+    (hQ : Q.IsTuCanonicallySignable₀ x₀ x₁ x' y₀ y₁ y') :
+    (Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y').IsTuCanonicalSigning₀ x₀ x₁ x' y₀ y₁ y' :=
   have ⟨hQtu, hxx, hyy, _⟩ := hQ
-  have hQ3x3 := Matrix.IsTuCanonicalylSignable₀_toCanonicalSigning_submatrix3x3 hQ
-  exact ⟨hQtu.toCanonicalSigning x₀ x₁ x' y₀ y₁ y', hxx, hyy, hQ3x3⟩
+  ⟨hQtu.toCanonicalSigning x₀ x₁ x' y₀ y₁ y', hxx, hyy, hQ.toCanonicalSigning_submatrix3x3⟩
 
-private lemma Matrix.IsTuCanonicalylSignable₁_toCanonicalSigning {X Y : Set α} {Q : Matrix X Y ℚ}
-    {x₀ x₁ x' : X} {y₀ y₁ y' : Y} (hQ : Q.IsTuCanonicalylSignable₁ x₀ x₁ x' y₀ y₁ y') :
-    (Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y').IsTuCanonicalSigning₁ x₀ x₁ x' y₀ y₁ y' := by
+private lemma Matrix.IsTuCanonicallySignable₁.toCanonicalSigning {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x' : X} {y₀ y₁ y' : Y}
+    (hQ : Q.IsTuCanonicallySignable₁ x₀ x₁ x' y₀ y₁ y') :
+    (Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y').IsTuCanonicalSigning₁ x₀ x₁ x' y₀ y₁ y' :=
   have ⟨hQtu, hxx, hyy, _⟩ := hQ
-  have hQ3x3 := Matrix.IsTuCanonicalylSignable₁_toCanonicalSigning_submatrix3x3 hQ
-  exact ⟨hQtu.toCanonicalSigning x₀ x₁ x' y₀ y₁ y', hxx, hyy, hQ3x3⟩
+  ⟨hQtu.toCanonicalSigning x₀ x₁ x' y₀ y₁ y', hxx, hyy, hQ.toCanonicalSigning_submatrix3x3⟩
 
 -- lemma 15.a
 private lemma Matrix.IsTotallyUnimodular.signing_expansion₀ {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
@@ -391,7 +390,7 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion_rows {X Y : Set α} {
   sorry
 
 -- canonical signing of 3-sum constructed from TU signings of summands
-private noncomputable def matrix3sumComposition_CanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
+private noncomputable def matrix3sumCompositionCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
     [∀ x, Decidable (x ∈ Xₗ \ {x₀, x₁, x'})] [∀ x, Decidable (x ∈ Xᵣ \ {x₀, x₁, x'})] -- for reindexing of `D`
     [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
     (Bₗ' : Matrix Xₗ Yₗ ℚ) (Bᵣ' : Matrix Xᵣ Yᵣ ℚ)
@@ -453,7 +452,7 @@ private noncomputable def matrix3sumComposition_CanonicalSigning {Xₗ Yₗ Xᵣ
   Matrix.fromBlocks Aₗ 0 D Aᵣ
 
 -- lemma 19.1
-private lemma matrix3sumComposition_CanonicalSigning_D_Eq_SumOuterProducts {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
+private lemma matrix3sumCompositionCanonicalSigning_D_Eq_SumOuterProducts {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
     [∀ x, Decidable (x ∈ Xₗ \ {x₀, x₁, x'})] [∀ x, Decidable (x ∈ Xᵣ \ {x₀, x₁, x'})] -- for reindexing of `D`
     [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
@@ -554,7 +553,7 @@ private lemma matrix3sumComposition_CanonicalSigning_D_Eq_SumOuterProducts {Xₗ
   sorry
 
 -- lemma 19.2
-private lemma matrix3sumComposition_CanonicalSigning_D_Rows {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
+private lemma matrix3sumCompositionCanonicalSigning_D_Rows {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
     [∀ x, Decidable (x ∈ Xₗ \ {x₀, x₁, x'})] [∀ x, Decidable (x ∈ Xᵣ \ {x₀, x₁, x'})] -- for reindexing of `D`
     [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
@@ -655,7 +654,7 @@ private lemma matrix3sumComposition_CanonicalSigning_D_Rows {Xₗ Yₗ Xᵣ Yᵣ
   sorry
 
 -- lemma 19.3
-private lemma matrix3sumComposition_CanonicalSigning_D_Cols {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
+private lemma matrix3sumCompositionCanonicalSigning_D_Cols {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
     [∀ x, Decidable (x ∈ Xₗ \ {x₀, x₁, x'})] [∀ x, Decidable (x ∈ Xᵣ \ {x₀, x₁, x'})] -- for reindexing of `D`
     [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
@@ -756,7 +755,7 @@ private lemma matrix3sumComposition_CanonicalSigning_D_Cols {Xₗ Yₗ Xᵣ Yᵣ
   sorry
 
 -- lemma 19.5
-private lemma matrix3sumComposition_CanonicalSigning_Aᵣ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
+private lemma matrix3sumCompositionCanonicalSigning_Aᵣ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
     [∀ x, Decidable (x ∈ Xₗ \ {x₀, x₁, x'})] [∀ x, Decidable (x ∈ Xᵣ \ {x₀, x₁, x'})] -- for reindexing of `D`
     [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
@@ -857,7 +856,7 @@ private lemma matrix3sumComposition_CanonicalSigning_Aᵣ_D_TU {Xₗ Yₗ Xᵣ Y
   sorry
 
 -- lemma 19.7
-private lemma matrix3sumComposition_CanonicalSigning_Aₗ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
+private lemma matrix3sumCompositionCanonicalSigning_Aₗ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
     [∀ x, Decidable (x ∈ Xₗ \ {x₀, x₁, x'})] [∀ x, Decidable (x ∈ Xᵣ \ {x₀, x₁, x'})] -- for reindexing of `D`
     [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)

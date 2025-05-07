@@ -42,11 +42,11 @@ example : ¬ (!![2] : Matrix _ _ (ZMod 4)).IsTotallyUnimodular := by
   use 1, id, id
   decide
 
-lemma Matrix.IsTotallyUnimodular.det {X Y R : Type} [CommRing R] {A : Matrix X Y R} (hA : A.IsTotallyUnimodular)
-    {k : ℕ} (f : Fin k → X) (g : Fin k → Y) :
+lemma Matrix.IsTotallyUnimodular.det {X Y Z R : Type} [CommRing R] [DecidableEq Z] [Fintype Z] {A : Matrix X Y R}
+    (hA : A.IsTotallyUnimodular) (f : Z → X) (g : Z → Y) :
     (A.submatrix f g).det ∈ Set.range SignType.cast := by
-  rw [Matrix.isTotallyUnimodular_iff] at hA
-  exact hA k f g
+  rw [Matrix.isTotallyUnimodular_iff_fintype] at hA
+  exact hA Z f g
 
 lemma Matrix.IsTotallyUnimodular.neg {X Y R : Type} [CommRing R] {A : Matrix X Y R} (hA : A.IsTotallyUnimodular) :
     (-A).IsTotallyUnimodular := by
@@ -227,9 +227,7 @@ private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_isTotallyU
     {Z : Type} [Fintype Z] [DecidableEq Z] {f : Z → X₁ ⊕ X₂} {g : Z → Y₁ ⊕ Y₂}
     (hfg₁ : #{ x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } = #{ y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd })
     (hfg₂ : #{ x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd } = #{ y₂ : Z × Y₂ // g y₂.fst = ◪y₂.snd }) :
-    ((Matrix.fromBlocks A₁ 0 0 A₂).submatrix f g).det ∈
-      SignType.cast.range := by
-  rw [Matrix.isTotallyUnimodular_iff_fintype] at hA₁ hA₂
+    ((Matrix.fromBlocks A₁ 0 0 A₂).submatrix f g).det ∈ SignType.cast.range := by
   rw [Matrix.fromBlocks_submatrix]
   let e₁ : { x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } ≃ { y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd } :=
     Fintype.equivOfCardEq hfg₁
@@ -283,8 +281,8 @@ private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_isTotallyU
     Matrix.det_fromBlocks_zero₁₂, ←in_signTypeCastRange_iff_abs]
   -- determinants of submatrices in blocks are in `SignType.cast.range` by TUness of `A₁` and `A₂`
   apply in_signTypeCastRange_mul_in_signTypeCastRange
-  · apply hA₁
-  · apply hA₂
+  · apply hA₁.det
+  · apply hA₂.det
 
 /-- `Matrix.fromBlocks_isTotallyUnimodular` non-square case. -/
 private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_card_lt
