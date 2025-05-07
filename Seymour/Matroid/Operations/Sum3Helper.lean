@@ -368,7 +368,7 @@ private lemma Matrix.IsTotallyUnimodular.special_form_cols {X Y : Set α} {Q : M
     have := hQ.det ![⟨x', hx'⟩, Set.diff_subset.elem i] ![⟨y₀, hy₀⟩, ⟨y₁, hy₁⟩]
     simp_all [Matrix.det_fin_two]
 
--- lemma 16.2 (weaker version)
+-- lemma 16.2
 private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols_weak {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
     {x' y₀ y₁ : α} (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy : y₀ ≠ y₁)
     (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1)
@@ -380,7 +380,6 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols_weak {X Y : Set 
     (Q' ◫ ▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular := by
   sorry
 
--- lemma 16.2 (middle version)
 private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols_aux {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
     {x' y₀ y₁ : α} (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy : y₀ ≠ y₁)
     (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1)
@@ -390,9 +389,13 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols_aux {X Y : Set �
     let c₁ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
     let Q' : Matrix (X \ {x'}).Elem (Y \ {y₀, y₁}).Elem ℚ := Q.submatrix Set.diff_subset.elem Set.diff_subset.elem
     (Q' ◫ ▮c₀ ◫ ▮c₀ ◫ ▮c₁ ◫ ▮c₁ ◫ ▮(c₀ - c₁) ◫ ▮(c₀ - c₁)).IsTotallyUnimodular := by
-  sorry
+  intros
+  convert (hQ.signing_expansion_cols_weak hx' hy₀ hy₁ hyy hQy₀ hQy₁ hQy).comp_cols
+    (fun j : (((((((Y \ {y₀, y₁}).Elem ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) =>
+      (j.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (Sum.inl ∘ Sum.inl ∘ Sum.inl)
+          (fun _ => ◩◩◪())) (fun _ => ◩◩◪())) (fun _ => ◩◪())) (fun _ => ◩◪())) (fun _ => ◪())) (fun _ => ◪())))
+  aesop
 
--- lemma 16.2 (stronger version)
 private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
     {x' y₀ y₁ : α} (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy : y₀ ≠ y₁)
     (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1)
