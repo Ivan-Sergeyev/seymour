@@ -369,8 +369,8 @@ private lemma Matrix.IsTotallyUnimodular.special_form_cols {X Y : Set α} {Q : M
     simp_all [Matrix.det_fin_two]
 
 -- lemma 16.2
-private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols_weak {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
-    {x' y₀ y₁ : α} (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy : y₀ ≠ y₁)
+private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols_weak {X Y : Set α} {Q : Matrix X Y ℚ} {x' y₀ y₁ : α}
+    (hQ : Q.IsTotallyUnimodular) (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy : y₀ ≠ y₁)
     (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1)
     (hQy₁ : Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩ = 1)
     (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q ⟨x', hx'⟩ y = 0) :
@@ -380,8 +380,8 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols_weak {X Y : Set 
     (Q' ◫ ▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular := by
   sorry
 
-private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols_aux {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
-    {x' y₀ y₁ : α} (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy : y₀ ≠ y₁)
+private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols_aux {X Y : Set α} {Q : Matrix X Y ℚ} {x' y₀ y₁ : α}
+    (hQ : Q.IsTotallyUnimodular) (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy : y₀ ≠ y₁)
     (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1)
     (hQy₁ : Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩ = 1)
     (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q ⟨x', hx'⟩ y = 0) :
@@ -396,8 +396,8 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols_aux {X Y : Set �
           (fun _ => ◩◩◪())) (fun _ => ◩◩◪())) (fun _ => ◩◪())) (fun _ => ◩◪())) (fun _ => ◪())) (fun _ => ◪())))
   aesop
 
-private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
-    {x' y₀ y₁ : α} (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy : y₀ ≠ y₁)
+private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols {X Y : Set α} {Q : Matrix X Y ℚ} {x' y₀ y₁ : α}
+    (hQ : Q.IsTotallyUnimodular) (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy : y₀ ≠ y₁)
     (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1)
     (hQy₁ : Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩ = 1)
     (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q ⟨x', hx'⟩ y = 0) :
