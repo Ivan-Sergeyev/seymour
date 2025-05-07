@@ -5,6 +5,29 @@ import Seymour.Matrix.Determinants
 import Seymour.Matrix.PreTUness
 
 
+section Experimental
+
+@[simp]
+private abbrev Matrix.dropRow {α R : Type} {X Y : Set α} (A : Matrix X Y R) (a : α) :
+    Matrix (X \ {a}).Elem Y.Elem R :=
+  A ∘ Set.diff_subset.elem
+
+@[simp]
+private abbrev Matrix.dropCol {α R : Type} {X Y : Set α} (A : Matrix X Y R) (a : α) :
+    Matrix X.Elem (Y \ {a}).Elem R :=
+  (A · ∘ Set.diff_subset.elem)
+
+-- private abbrev Matrix.
+
+-- private lemma singleton_inter_in_left {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : a ∈ X :=
+--   Set.mem_of_mem_inter_left (ha.symm.subset rfl)
+
+-- private lemma singleton_inter_in_right {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : a ∈ Y :=
+--   Set.mem_of_mem_inter_right (ha.symm.subset rfl)
+
+end Experimental
+
+
 /-- `Matrix`-level 2-sum for matroids defined by their standard representation matrices; does not check legitimacy. -/
 abbrev matrix2sumComposition {α β : Type} [Semiring β] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
     (Aₗ : Matrix Xₗ Yₗ β) (x : Yₗ → β) (Aᵣ : Matrix Xᵣ Yᵣ β) (y : Xᵣ → β) :
@@ -17,10 +40,11 @@ abbrev matrix2sumComposition {α β : Type} [Semiring β] {Xₗ Yₗ Xᵣ Yᵣ :
 def standardRepr2sumComposition {α : Type} [DecidableEq α] {a : α} {Sₗ Sᵣ : StandardRepr α Z2}
     (ha : Sₗ.X ∩ Sᵣ.Y = {a}) (hXY : Sᵣ.X ⫗ Sₗ.Y) :
     StandardRepr α Z2 × Prop :=
-  let Aₗ : Matrix (Sₗ.X \ {a}).Elem Sₗ.Y.Elem Z2 := Sₗ.B ∘ Set.diff_subset.elem -- the top submatrix of `Bₗ`
+  -- let Aₗ := Sₗ.B.dropRow a
+  -- let Aₗ : Matrix (Sₗ.X \ {a}).Elem Sₗ.Y.Elem Z2 := Sₗ.B ∘ Set.diff_subset.elem -- the top submatrix of `Bₗ`
   let Aᵣ : Matrix Sᵣ.X.Elem (Sᵣ.Y \ {a}).Elem Z2 := (Sᵣ.B · ∘ Set.diff_subset.elem) -- the right submatrix of `Bᵣ`
-  let x : Sₗ.Y.Elem → Z2 := Sₗ.B ⟨a, Set.mem_of_mem_inter_left (by rw [ha]; rfl)⟩ -- the bottom row of `Bₗ`
-  let y : Sᵣ.X.Elem → Z2 := (Sᵣ.B · ⟨a, Set.mem_of_mem_inter_right (by rw [ha]; rfl)⟩) -- the left column of `Bᵣ`
+  let x : Sₗ.Y.Elem → Z2 := Sₗ.B ⟨a, Set.mem_of_mem_inter_left (ha.symm.subset rfl)⟩ -- the bottom row of `Bₗ`
+  let y : Sᵣ.X.Elem → Z2 := (Sᵣ.B · ⟨a, Set.mem_of_mem_inter_right (ha.symm.subset rfl)⟩) -- the left column of `Bᵣ`
   ⟨
     ⟨
       (Sₗ.X \ {a}) ∪ Sᵣ.X,
@@ -28,7 +52,7 @@ def standardRepr2sumComposition {α : Type} [DecidableEq α] {a : α} {Sₗ Sᵣ
       by
         rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
         exact ⟨⟨Sₗ.hXY.disjoint_sdiff_left, hXY⟩, ⟨disjoint_of_singleton_inter_both_wo ha, Sᵣ.hXY.disjoint_sdiff_right⟩⟩,
-      (matrix2sumComposition Aₗ x Aᵣ y).toMatrixUnionUnion,
+      (matrix2sumComposition (Sₗ.B.dropRow a) x Aᵣ y).toMatrixUnionUnion,
       inferInstance,
       inferInstance,
     ⟩,
