@@ -282,7 +282,7 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion₀ {X Y : Set α} {Q 
   let B : Matrix X Y ℚ := Q.shortTableauPivot ⟨x', hx'⟩ ⟨y₀, hy₀⟩
   let B' : Matrix (X \ {x'}).Elem Y ℚ := B.submatrix Set.diff_subset.elem id
   let e : ((Y \ {y₀, y₁}).Elem ⊕ Unit) ⊕ Unit ≃ Y := ⟨
-    (·.casesOn (·.casesOn Set.diff_subset.elem (fun _ => ⟨y₀, hy₀⟩)) (fun _ => ⟨y₁, hy₁⟩)),
+    (·.casesOn (·.casesOn Set.diff_subset.elem ↓⟨y₀, hy₀⟩) ↓⟨y₁, hy₁⟩),
     fun ⟨y, hy⟩ => if hy₀ : y = y₀ then ◩◪() else if hy₁ : y = y₁ then ◪() else ◩◩⟨y, by simp [*]⟩,
     fun _ => by aesop,
     fun _ => by aesop⟩
@@ -324,7 +324,7 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion₁ {X Y : Set α} {Q 
   let B := Q.shortTableauPivot ⟨x', hx'⟩ ⟨y₁, hy₁⟩
   let B' : Matrix (X \ {x'}).Elem Y ℚ := B.submatrix Set.diff_subset.elem id
   let e : ((Y \ {y₀, y₁}).Elem ⊕ Unit) ⊕ Unit ≃ Y := ⟨
-    (·.casesOn (·.casesOn Set.diff_subset.elem (fun _ => ⟨y₁, hy₁⟩)) (fun _ => ⟨y₀, hy₀⟩)),
+    (·.casesOn (·.casesOn Set.diff_subset.elem ↓⟨y₁, hy₁⟩) ↓⟨y₀, hy₀⟩),
     fun ⟨y, hy⟩ => if hy₀ : y = y₀ then ◪() else if hy₁ : y = y₁ then ◩◪() else ◩◩⟨y, by simp [*]⟩,
     fun _ => by aesop,
     fun _ => by aesop⟩
@@ -394,8 +394,7 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols_aux {X Y : Set �
   intros
   convert (hQ.signing_expansion_cols_weak hx' hy₀ hy₁ hyy hQy₀ hQy₁ hQy).comp_cols
     (fun j : (((((((Y \ {y₀, y₁}).Elem ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) =>
-      (j.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (Sum.inl ∘ Sum.inl ∘ Sum.inl)
-          (fun _ => ◩◩◪())) (fun _ => ◩◩◪())) (fun _ => ◩◪())) (fun _ => ◩◪())) (fun _ => ◪())) (fun _ => ◪())))
+      (j.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (◩◩◩·) ↓◩◩◪()) ↓◩◩◪()) ↓◩◪()) ↓◩◪()) ↓◪()) ↓◪()))
   aesop
 
 private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols {X Y : Set α} {Q : Matrix X Y ℚ} {x' y₀ y₁ : α}

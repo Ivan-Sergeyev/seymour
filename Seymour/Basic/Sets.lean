@@ -16,7 +16,7 @@ lemma disjoint_of_sdiff_inter {α : Type} (X Y : Set α) : X \ (X ∩ Y) ⫗ Y \
   rw [Set.diff_self_inter, Set.diff_inter_self_eq_diff]
   exact disjoint_sdiff_sdiff
 
-lemma disjoint_of_sdiff_singleton_inter {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) :
+lemma disjoint_of_sdiff_singleton {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) :
     X \ {a} ⫗ Y \ {a} :=
   ha ▸ disjoint_of_sdiff_inter X Y
 

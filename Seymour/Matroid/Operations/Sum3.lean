@@ -184,7 +184,7 @@ lemma standardRepr3sumComposition_hasTuSigning {α : Type} [DecidableEq α] {S�
   sorry
 
 /-- Any 3-sum of regular matroids is a regular matroid.
-    This is the final of the three parts of the easy direction of the Seymour's theorem. -/
+    This is the final part of the easy direction of the Seymour's theorem. -/
 theorem Matroid.Is3sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
     (hM : M.Is3sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by

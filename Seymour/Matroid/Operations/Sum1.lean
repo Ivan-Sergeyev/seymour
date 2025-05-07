@@ -100,7 +100,7 @@ lemma standardRepr1sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2}
         simp_all
 
 /-- Any 1-sum of regular matroids is a regular matroid.
-    This is the first of the three parts of the easy direction of the Seymour's theorem. -/
+    This is part one (of three) of the easy direction of the Seymour's theorem. -/
 theorem Matroid.Is1sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
     (hM : M.Is1sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by

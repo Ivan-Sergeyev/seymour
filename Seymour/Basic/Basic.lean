@@ -29,12 +29,15 @@ prefix:max "◩" => Sum.inl
 /-- The "right" or "bottom" variant. -/
 prefix:max "◪" => Sum.inr
 
+/-- Constant function. -/
+prefix:max "↓" => Function.const _
+
 
 lemma and_congr_l {P₁ P₂ : Prop} (hP : P₁ ↔ P₂) (Q : Prop) : P₁ ∧ Q ↔ P₂ ∧ Q :=
-  and_congr_left (fun _ => hP)
+  and_congr_left ↓hP
 
 lemma and_congr_r {P₁ P₂ : Prop} (hP : P₁ ↔ P₂) (Q : Prop) : Q ∧ P₁ ↔ Q ∧ P₂ :=
-  and_congr_right (fun _ => hP)
+  and_congr_right ↓hP
 
 lemma Int.neg_one_ne_zero : -1 ≠ 0 := by
   norm_num

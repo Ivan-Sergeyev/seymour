@@ -386,7 +386,7 @@ private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_card_lt
         (Matrix.fromRows 0 (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂)))
         (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂))
   convert zero_mul _
-  exact Matrix.det_eq_zero_of_row_eq_zero ◪(Classical.choice hX') (fun _ => rfl)
+  exact Matrix.det_eq_zero_of_row_eq_zero ◪(Classical.choice hX') ↓rfl
 
 /-- The block matrix that has two totally unimodular matrices along the diagonal and zeros elsewhere is totally unimodular. -/
 lemma Matrix.fromBlocks_isTotallyUnimodular [DecidableEq Y₁] [DecidableEq Y₂] {A₁ : Matrix X₁ Y₁ R} {A₂ : Matrix X₂ Y₂ R}

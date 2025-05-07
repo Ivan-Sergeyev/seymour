@@ -8,21 +8,11 @@ import Seymour.Matrix.PreTUness
 
 section Experimental
 
-/-- Function with constant value `v`. -/
-notation:64 "Constant"v:81 => Function.const _ v
+private abbrev Eq._ₗ {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : X :=
+  ⟨a, Set.mem_of_mem_inter_left (ha.symm.subset rfl)⟩
 
-private lemma Eq.mem2ₗ {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : a ∈ X :=
-  Set.mem_of_mem_inter_left (ha.symm.subset rfl)
-
-private lemma Eq.mem2ᵣ {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : a ∈ Y :=
-  Set.mem_of_mem_inter_right (ha.symm.subset rfl)
-
-private abbrev Eq.aₗ {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : X :=
-  ⟨a, ha.mem2ₗ⟩
-
-private abbrev Eq.aᵣ {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : Y :=
-  ⟨a, ha.mem2ᵣ⟩
-
+private abbrev Eq._ᵣ {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : Y :=
+  ⟨a, Set.mem_of_mem_inter_right (ha.symm.subset rfl)⟩
 
 @[simp]
 private abbrev Matrix.dropRow {α R : Type} {X Y : Set α} (A : Matrix X Y R) (a : α) :
@@ -37,32 +27,30 @@ private abbrev Matrix.dropCol {α R : Type} {X Y : Set α} (A : Matrix X Y R) (a
 @[simp]
 private abbrev Matrix.interRow {α R : Type} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : X ∩ Z = {a}) :
     Y.Elem → R :=
-  A ha.aₗ
+  A ha._ₗ
 
 @[simp]
 private abbrev Matrix.interCol {α R : Type} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : Z ∩ Y = {a}) :
     X.Elem → R :=
-  (A · ha.aᵣ)
-
+  (A · ha._ᵣ)
 
 @[simp]
 private abbrev Matrix.reglueRow {α R : Type} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : X ∩ Z = {a}) :
     Matrix ((X \ {a}).Elem ⊕ Unit) Y.Elem R :=
-  (A.dropRow a) ⊟ ▬(A.interRow ha)
+  A.dropRow a ⊟ ▬(A.interRow ha)
 
 @[simp]
 private abbrev Matrix.reglueCol {α R : Type} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : Z ∩ Y = {a}) :
     Matrix X.Elem (Unit ⊕ (Y \ {a}).Elem) R :=
-  ▮(A.interCol ha) ◫ (A.dropCol a)
+  ▮(A.interCol ha) ◫ A.dropCol a
 
 private lemma Matrix.reglueRow_eq {α R : Type} [CommRing R] {X Y Z : Set α} {A : Matrix X Y R} {a : α} (ha : X ∩ Z = {a}) :
-    A.reglueRow ha = A.submatrix (fun i => i.casesOn Set.diff_subset.elem (Constant ha.aₗ)) id := by
+    A.reglueRow ha = A.submatrix (·.casesOn Set.diff_subset.elem ↓ha._ₗ) id := by
   aesop
 
 private lemma Matrix.reglueCol_eq {α R : Type} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : Z ∩ Y = {a}) :
-    A.reglueCol ha = A.submatrix id (fun j => j.casesOn (Constant ha.aᵣ) Set.diff_subset.elem) := by
+    A.reglueCol ha = A.submatrix id (·.casesOn ↓ha._ᵣ Set.diff_subset.elem) := by
   aesop
-
 
 private lemma Matrix.IsTotallyUnimodular.dropRow {α R : Type} [CommRing R] {X Y : Set α} {A : Matrix X Y R}
     (hA : A.IsTotallyUnimodular) (a : α) :
@@ -86,7 +74,6 @@ private lemma Matrix.IsTotallyUnimodular.reglueCol {α R : Type} [CommRing R] {X
   rw [A.reglueCol_eq ha]
   apply hA.submatrix
 
-
 -- TODO - refactor appliations of these
 lemma Matrix.IsTotallyUnimodular.duplicate_last_row {X Y : Type} {Aₗ : Matrix X Y ℚ} {x : Y → ℚ}
     (hAx : (Aₗ ⊟ ▬x).IsTotallyUnimodular) :
@@ -100,7 +87,6 @@ private lemma Matrix.IsTotallyUnimodular.aux190 {α : Type} [DecidableEq α] {X�
   convert ((hAx.duplicate_last_row).mul_rows (show ∀ j, (·.casesOn 1 (-1)) j ∈ SignType.cast.range by rintro (_|_) <;> simp)
     ).fromRows_zero Unit
   aesop
-
 
 end Experimental
 
@@ -123,7 +109,7 @@ def standardRepr2sumComposition {α : Type} [DecidableEq α] {a : α} {Sₗ Sᵣ
       Sₗ.Y ∪ (Sᵣ.Y \ {a}),
       by
         rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
-        exact ⟨⟨Sₗ.hXY.disjoint_sdiff_left, hXY⟩, ⟨disjoint_of_sdiff_singleton_inter ha, Sᵣ.hXY.disjoint_sdiff_right⟩⟩,
+        exact ⟨⟨Sₗ.hXY.disjoint_sdiff_left, hXY⟩, ⟨disjoint_of_sdiff_singleton ha, Sᵣ.hXY.disjoint_sdiff_right⟩⟩,
       (matrix2sumComposition (Sₗ.B.dropRow a) (Sₗ.B.interRow ha) (Sᵣ.B.dropCol a) (Sᵣ.B.interCol ha)).toMatrixUnionUnion,
       inferInstance,
       inferInstance,
@@ -230,7 +216,7 @@ private lemma matrix2sumComposition_eq_fromRows {α β : Type} [Semiring β] {X�
 /-- The result of the vector `v` after pivoting on `j`th element in the row `u` and restriction. -/
 noncomputable def shortTableauPivotOuterRow {Y Y' R : Type} [DecidableEq Y'] [DivisionRing R]
     (u : Y → R) (j : Y') (g : Y' → Y) (v : Y' → R) : Y' → R :=
-  fun j' : Y' => if j' = j then -v j' / u (g j) else (u (g j) * v j' - u (g j') * v j) / u (g j)
+  fun j' : Y' => if j' = j then - v j' / u (g j) else (u (g j) * v j' - u (g j') * v j) / u (g j)
 
 private lemma Matrix.shortTableauPivot_outer {X Y X' Y' R : Type} [DecidableEq X] [DecidableEq Y] [DecidableEq Y'] [Field R]
     (B : Matrix X Y R) (i : X) (j : Y') (f : X' → X) (g : Y' → Y) (hf : i ∉ f.range) (hg : g.Injective)
@@ -274,7 +260,7 @@ private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq �
   · have := B.shortTableauPivot_outer ◩i j Sum.inr Sum.inl (by simp) Sum.inl_injective hAij x y
     aesop
   have hBAᵣ : (B.shortTableauPivot ◩i ◩j).toBlocks₂₂ = Aᵣ
-  · exact B.shortTableauPivot_submatrix_zero_external_row ◩i ◩j Sum.inr Sum.inr (by simp) (by simp) (fun _ => rfl)
+  · exact B.shortTableauPivot_submatrix_zero_external_row ◩i ◩j Sum.inr Sum.inr (by simp) (by simp) ↓rfl
   rw [←(B.shortTableauPivot ◩i ◩j).fromBlocks_toBlocks, hBAₗ, hBAᵣ, hB0, hBD]
   rfl
 
@@ -306,9 +292,9 @@ lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X�
     | succ n ih =>
       intro f g
       wlog hf : f.Injective
-      · exact ((matrix2sumComposition Aₗ x Aᵣ y).submatrix_det_zero_of_not_injective_left hf g) ▸ zero_in_signTypeCastRange
+      · exact ((matrix2sumComposition Aₗ x Aᵣ y).submatrix_det_zero_of_not_injective_rows g hf) ▸ zero_in_signTypeCastRange
       wlog hg : g.Injective
-      · exact ((matrix2sumComposition Aₗ x Aᵣ y).submatrix_det_zero_of_not_injective_right f hg) ▸ zero_in_signTypeCastRange
+      · exact ((matrix2sumComposition Aₗ x Aᵣ y).submatrix_det_zero_of_not_injective_cols f hg) ▸ zero_in_signTypeCastRange
       wlog hfₗ : ∃ iₗ : Fin (n + 2), ∃ xₗ : Xₗ, f iₗ = ◩xₗ
       · push_neg at hfₗ
         convert (matrix2sumComposition_bottom_isTotallyUnimodular hAx hAy).det (fn_of_sum_ne_inl hfₗ) g using 2
@@ -322,7 +308,7 @@ lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X�
         apply ((matrix2sumComposition Aₗ x Aᵣ y).submatrix f g).det_eq_zero_of_row_eq_zero iₗ
         intro j
         cases hgj : g j with
-        | inl yₗ => exact Matrix.submatrix_apply .. ▸ hgj ▸ hixₗ ▸ hgₗ j yₗ hgj
+        | inl => exact Matrix.submatrix_apply .. ▸ hgj ▸ hixₗ ▸ hgₗ j _ hgj
         | inr => exact Matrix.submatrix_apply .. ▸ hgj ▸ hixₗ ▸ rfl
       obtain ⟨j₀, y₀, hjy₀, hAxy0⟩ := hgₗ
       have hAxy1 : Aₗ xₗ y₀ = 1 ∨ Aₗ xₗ y₀ = -1
@@ -331,7 +317,6 @@ lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X�
         | zero => exact (hAxy0 hs.symm).elim
         | pos => exact Or.inl hs.symm
         | neg => exact Or.inr hs.symm
-
       by_contra hAfg
       obtain ⟨_, _, -, -, impossible⟩ :=
         shortTableauPivot_submatrix_det_ni_signTypeCastRange hAfg iₗ j₀ (by convert hAxy1 <;> simp [matrix2sumComposition, *])
@@ -368,23 +353,12 @@ lemma standardRepr2sumComposition_hasTuSigning {α : Type} [DecidableEq α] {S�
   · exact (matrix2sumComposition_isTotallyUnimodular (hBₗ.reglueRow ha) (hBᵣ.reglueCol ha)).toMatrixUnionUnion
   · intro i j
     simp only [standardRepr2sumComposition_B_eq, Matrix.toMatrixUnionUnion, Function.comp_apply]
-    cases hi : i.toSum with
-    | inl iₗ =>
-      cases j.toSum with
-      | inl jₗ =>
-        exact hBBₗ (Set.diff_subset.elem iₗ) jₗ
-      | inr jᵣ =>
-        rfl
-    | inr iᵣ =>
-      cases hj : j.toSum with
-      | inl jₗ =>
-        have habs := abs_mul (Bᵣ.interCol ha iᵣ) (Bₗ.interRow ha jₗ)
-        have hcast := Z2val_toRat_mul_Z2val_toRat (Sᵣ.B.interCol ha iᵣ) (Sₗ.B.interRow ha jₗ)
-        have hx' := hBBₗ ha.aₗ jₗ
-        have hy' := hBBᵣ iᵣ ha.aᵣ
-        exact hcast ▸ hx' ▸ hy' ▸ habs
-      | inr jᵣ =>
-        exact hBBᵣ iᵣ (Set.diff_subset.elem jᵣ)
+    exact i.toSum.casesOn
+      (fun iₗ => j.toSum.casesOn (hBBₗ (Set.diff_subset.elem iₗ)) (fun _ => rfl))
+      (fun iᵣ => j.toSum.casesOn
+        (fun jₗ => Z2val_toRat_mul_Z2val_toRat (Sᵣ.B.interCol ha iᵣ) (Sₗ.B.interRow ha jₗ) ▸ hBBₗ ha._ₗ jₗ ▸ hBBᵣ iᵣ ha._ᵣ ▸
+            abs_mul (Bᵣ.interCol ha iᵣ) (Bₗ.interRow ha jₗ))
+        (hBBᵣ iᵣ <| Set.diff_subset.elem ·))
 
 -- OK
 /-- Any 2-sum of regular matroids is a regular matroid.
