@@ -69,38 +69,9 @@ lemma Matrix.IsTotallyUnimodular.duplicate_last_row {X Y : Type} {Aₗ : Matrix 
 private lemma Matrix.IsTotallyUnimodular.aux190 {α : Type} [DecidableEq α] {Xₗ Yₗ : Set α} {Aₗ : Matrix Xₗ Yₗ ℚ} {x : Yₗ → ℚ}
     (hAx : (Aₗ ⊟ ▬x).IsTotallyUnimodular) :
     (Aₗ ⊟ ▬x ⊟ ▬(-x) ⊟ ▬0).IsTotallyUnimodular := by
-  rw [Matrix.fromRows_replicateRow0_isTotallyUnimodular_iff]
-  intro k f g hf hg
-  have almost := hAx.duplicate_last_row k f g hf hg
-  if last_row : ∃ i : Fin k, f i = ◪() then
-    apply in_signTypeCastRange_of_neg_one_mul
-    convert almost
-    obtain ⟨i, hi⟩ := last_row
-    have flipped : (Aₗ ⊟ ▬x ⊟ ▬(-x)) = (Aₗ ⊟ ▬x ⊟ ▬x).updateRow ◪() (-x)
-    · aesop
-    have bubbled : ((Aₗ ⊟ ▬x ⊟ ▬x).updateRow ◪() (-x)).submatrix f g = ((Aₗ ⊟ ▬x ⊟ ▬x).submatrix f g).updateRow i ((-x) ∘ g)
-    · ext r
-      if hr : r = i then
-        simp [hr, hi]
-      else
-        have hfr : f r ≠ ◪() := (hr <| hf <| ·.trans hi.symm)
-        simp [hr, hfr]
-    rw [flipped, bubbled, ←((Aₗ ⊟ ▬x ⊟ ▬x).submatrix f g).det_updateRow_smul i (-1) ((-x) ∘ g)]
-    convert_to (((Aₗ ⊟ ▬x ⊟ ▬x).submatrix f g).updateRow i (x ∘ g)).det = ((Aₗ ⊟ ▬x ⊟ ▬x).submatrix f g).det
-    · congr!
-      ext
-      simp
-    congr
-    ext r
-    if hr : r = i then
-      simp [hr, hi]
-    else
-      have hfr : f r ≠ ◪() := (hr <| hf <| ·.trans hi.symm)
-      simp [hr, hfr]
-  else
-    convert almost using 2
-    ext i
-    cases hfi : f i <;> simp_all
+  convert ((hAx.duplicate_last_row).mul_rows (show ∀ j, (·.casesOn 1 (-1)) j ∈ SignType.cast.range by rintro (_|_) <;> simp)
+    ).fromRows_zero Unit
+  aesop
 
 private lemma matrix2sumComposition_left_isTotallyUnimodular_aux {α : Type} [DecidableEq α]
     {Xₗ Yₗ Xᵣ : Set α} {Aₗ : Matrix Xₗ Yₗ ℚ} {x : Yₗ → ℚ} {y : Xᵣ → ℚ}

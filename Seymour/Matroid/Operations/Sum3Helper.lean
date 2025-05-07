@@ -368,6 +368,30 @@ private lemma Matrix.IsTotallyUnimodular.special_form_cols {X Y : Set α} {Q : M
     have := hQ.det ![⟨x', hx'⟩, Set.diff_subset.elem i] ![⟨y₀, hy₀⟩, ⟨y₁, hy₁⟩]
     simp_all [Matrix.det_fin_two]
 
+-- lemma 16.2 (weaker version)
+private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols_weak {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
+    {x' y₀ y₁ : α} (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy : y₀ ≠ y₁)
+    (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1)
+    (hQy₁ : Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩ = 1)
+    (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q ⟨x', hx'⟩ y = 0) :
+    let c₀ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₀, hy₀⟩
+    let c₁ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
+    let Q' : Matrix (X \ {x'}).Elem (Y \ {y₀, y₁}).Elem ℚ := Q.submatrix Set.diff_subset.elem Set.diff_subset.elem
+    (Q' ◫ ▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular := by
+  sorry
+
+-- lemma 16.2 (middle version)
+private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols_aux {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
+    {x' y₀ y₁ : α} (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy : y₀ ≠ y₁)
+    (hQy₀ : Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩ = 1)
+    (hQy₁ : Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩ = 1)
+    (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q ⟨x', hx'⟩ y = 0) :
+    let c₀ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₀, hy₀⟩
+    let c₁ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
+    let Q' : Matrix (X \ {x'}).Elem (Y \ {y₀, y₁}).Elem ℚ := Q.submatrix Set.diff_subset.elem Set.diff_subset.elem
+    (Q' ◫ ▮c₀ ◫ ▮c₀ ◫ ▮c₁ ◫ ▮c₁ ◫ ▮(c₀ - c₁) ◫ ▮(c₀ - c₁)).IsTotallyUnimodular := by
+  sorry
+
 -- lemma 16.2 (stronger version)
 private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
     {x' y₀ y₁ : α} (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy : y₀ ≠ y₁)
@@ -378,7 +402,11 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols {X Y : Set α} {
     let c₁ : (X \ {x'}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
     let Q' : Matrix (X \ {x'}).Elem (Y \ {y₀, y₁}).Elem ℚ := Q.submatrix Set.diff_subset.elem Set.diff_subset.elem
     (Q' ◫ ▮c₀ ◫ ▮(-c₀) ◫ ▮c₁ ◫ ▮(-c₁) ◫ ▮(c₀ - c₁) ◫ ▮(c₁ - c₀) ◫ ▮0).IsTotallyUnimodular := by
-  sorry
+  intros
+  convert ((hQ.signing_expansion_cols_aux hx' hy₀ hy₁ hyy hQy₀ hQy₁ hQy).mul_cols
+    (show ∀ j, (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn 1 1) (-1)) 1) (-1)) 1) (-1)) j ∈
+        SignType.cast.range by rintro ((((((_|_)|_)|_)|_)|_)|_) <;> simp)).fromCols_zero Unit
+  aesop
 
 -- todo: same lemmas for rows instead of columns, final lemma (18.2) is given below ; TODO assumptions?
 private lemma Matrix.IsTotallyUnimodular.signing_expansion_rows {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
