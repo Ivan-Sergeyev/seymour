@@ -82,7 +82,7 @@ recall standardRepr2sumComposition {α : Type} [DecidableEq α] {a : α} {Sₗ S
       Sₗ.Y ∪ (Sᵣ.Y \ {a}),
       by
         rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
-        exact ⟨⟨Sₗ.hXY.disjoint_sdiff_left, hXY⟩, ⟨disjoint_of_singleton_inter_both_wo ha, Sᵣ.hXY.disjoint_sdiff_right⟩⟩,
+        exact ⟨⟨Sₗ.hXY.disjoint_sdiff_left, hXY⟩, ⟨disjoint_of_sdiff_singleton_inter ha, Sᵣ.hXY.disjoint_sdiff_right⟩⟩,
       (matrix2sumComposition Aₗ x Aᵣ y).toMatrixUnionUnion,
       inferInstance,
       inferInstance,

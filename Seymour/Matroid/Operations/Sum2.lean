@@ -7,6 +7,18 @@ import Seymour.Matrix.PreTUness
 
 section Experimental
 
+private lemma Eq.mem2ₗ {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : a ∈ X :=
+  Set.mem_of_mem_inter_left (ha.symm.subset rfl)
+
+private lemma Eq.mem2ᵣ {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : a ∈ Y :=
+  Set.mem_of_mem_inter_right (ha.symm.subset rfl)
+
+private abbrev Eq.aₗ {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : X :=
+  ⟨a, ha.mem2ₗ⟩
+
+private abbrev Eq.aᵣ {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : Y :=
+  ⟨a, ha.mem2ᵣ⟩
+
 @[simp]
 private abbrev Matrix.dropRow {α R : Type} {X Y : Set α} (A : Matrix X Y R) (a : α) :
     Matrix (X \ {a}).Elem Y.Elem R :=
@@ -17,13 +29,15 @@ private abbrev Matrix.dropCol {α R : Type} {X Y : Set α} (A : Matrix X Y R) (a
     Matrix X.Elem (Y \ {a}).Elem R :=
   (A · ∘ Set.diff_subset.elem)
 
--- private abbrev Matrix.
+@[simp]
+private abbrev Matrix.interRow {α R : Type} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : X ∩ Z = {a}) :
+    Y.Elem → R :=
+  A ha.aₗ
 
--- private lemma singleton_inter_in_left {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : a ∈ X :=
---   Set.mem_of_mem_inter_left (ha.symm.subset rfl)
-
--- private lemma singleton_inter_in_right {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : a ∈ Y :=
---   Set.mem_of_mem_inter_right (ha.symm.subset rfl)
+@[simp]
+private abbrev Matrix.interCol {α R : Type} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : Z ∩ Y = {a}) :
+    X.Elem → R :=
+  (A · ha.aᵣ)
 
 end Experimental
 
@@ -40,24 +54,27 @@ abbrev matrix2sumComposition {α β : Type} [Semiring β] {Xₗ Yₗ Xᵣ Yᵣ :
 def standardRepr2sumComposition {α : Type} [DecidableEq α] {a : α} {Sₗ Sᵣ : StandardRepr α Z2}
     (ha : Sₗ.X ∩ Sᵣ.Y = {a}) (hXY : Sᵣ.X ⫗ Sₗ.Y) :
     StandardRepr α Z2 × Prop :=
-  -- let Aₗ := Sₗ.B.dropRow a
-  -- let Aₗ : Matrix (Sₗ.X \ {a}).Elem Sₗ.Y.Elem Z2 := Sₗ.B ∘ Set.diff_subset.elem -- the top submatrix of `Bₗ`
-  let Aᵣ : Matrix Sᵣ.X.Elem (Sᵣ.Y \ {a}).Elem Z2 := (Sᵣ.B · ∘ Set.diff_subset.elem) -- the right submatrix of `Bᵣ`
-  let x : Sₗ.Y.Elem → Z2 := Sₗ.B ⟨a, Set.mem_of_mem_inter_left (ha.symm.subset rfl)⟩ -- the bottom row of `Bₗ`
-  let y : Sᵣ.X.Elem → Z2 := (Sᵣ.B · ⟨a, Set.mem_of_mem_inter_right (ha.symm.subset rfl)⟩) -- the left column of `Bᵣ`
   ⟨
     ⟨
       (Sₗ.X \ {a}) ∪ Sᵣ.X,
       Sₗ.Y ∪ (Sᵣ.Y \ {a}),
       by
         rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
-        exact ⟨⟨Sₗ.hXY.disjoint_sdiff_left, hXY⟩, ⟨disjoint_of_singleton_inter_both_wo ha, Sᵣ.hXY.disjoint_sdiff_right⟩⟩,
-      (matrix2sumComposition (Sₗ.B.dropRow a) x Aᵣ y).toMatrixUnionUnion,
+        exact ⟨⟨Sₗ.hXY.disjoint_sdiff_left, hXY⟩,
+               ⟨disjoint_of_sdiff_singleton_inter ha, Sᵣ.hXY.disjoint_sdiff_right⟩⟩,
+      (matrix2sumComposition (Sₗ.B.dropRow a) (Sₗ.B.interRow ha) (Sᵣ.B.dropCol a) (Sᵣ.B.interCol ha)).toMatrixUnionUnion,
       inferInstance,
       inferInstance,
     ⟩,
-    (Sₗ.X ⫗ Sᵣ.X ∧ Sₗ.Y ⫗ Sᵣ.Y) ∧ (x ≠ 0 ∧ y ≠ 0)
+    (Sₗ.X ⫗ Sᵣ.X ∧ Sₗ.Y ⫗ Sᵣ.Y) ∧ (Sₗ.B.interRow ha ≠ 0 ∧ Sᵣ.B.interCol ha ≠ 0)
   ⟩
+
+-- Use instead of `unfold standardRepr2sumComposition; dsimp`
+lemma standardRepr2sumComposition_B_eq {α : Type} [DecidableEq α] {a : α} {Sₗ Sᵣ : StandardRepr α Z2}
+    (ha : Sₗ.X ∩ Sᵣ.Y = {a}) (hXY : Sᵣ.X ⫗ Sₗ.Y) :
+    (standardRepr2sumComposition ha hXY).fst.B =
+    (matrix2sumComposition (Sₗ.B.dropRow a) (Sₗ.B.interRow ha) (Sᵣ.B.dropCol a) (Sᵣ.B.interCol ha)).toMatrixUnionUnion :=
+  rfl
 
 /-- Binary matroid `M` is a result of 2-summing `Mₗ` and `Mᵣ` in some way. -/
 structure Matroid.Is2sumOf {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) where
@@ -310,74 +327,41 @@ lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {X�
           field_simp [hj]
           ring
 
-lemma standardRepr2sumComposition_B {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {a : α}
-    (ha : Sₗ.X ∩ Sᵣ.Y = {a}) (hXY : Sᵣ.X ⫗ Sₗ.Y) :
-    ∃ haXₗ : a ∈ Sₗ.X, ∃ haYᵣ : a ∈ Sᵣ.Y,
-      (standardRepr2sumComposition ha hXY).fst.B =
-      (matrix2sumComposition
-        (Sₗ.B ∘ Set.diff_subset.elem)
-        (Sₗ.B ⟨a, haXₗ⟩)
-        (Sᵣ.B · ∘ Set.diff_subset.elem)
-        (Sᵣ.B · ⟨a, haYᵣ⟩)
-      ).toMatrixUnionUnion :=
-  have haXY : a ∈ Sₗ.X ∩ Sᵣ.Y := ha ▸ rfl
-  ⟨Set.mem_of_mem_inter_left haXY, Set.mem_of_mem_inter_right haXY, rfl⟩
-
 lemma standardRepr2sumComposition_hasTuSigning {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {a : α}
     (ha : Sₗ.X ∩ Sᵣ.Y = {a}) (hXY : Sᵣ.X ⫗ Sₗ.Y) (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) :
     (standardRepr2sumComposition ha hXY).fst.B.HasTuSigning := by
   obtain ⟨Bₗ, hBₗ, hBBₗ⟩ := hSₗ
   obtain ⟨Bᵣ, hBᵣ, hBBᵣ⟩ := hSᵣ
-  obtain ⟨haXₗ, haYᵣ, hB⟩ := standardRepr2sumComposition_B ha hXY
-  let x' : Sₗ.Y.Elem → ℚ := Bₗ ⟨a, haXₗ⟩
-  let y' : Sᵣ.X.Elem → ℚ := (Bᵣ · ⟨a, haYᵣ⟩)
-  let Aₗ' : Matrix (Sₗ.X \ {a}).Elem Sₗ.Y.Elem ℚ := Bₗ ∘ Set.diff_subset.elem
-  let Aᵣ' : Matrix Sᵣ.X.Elem (Sᵣ.Y \ {a}).Elem ℚ := (Bᵣ · ∘ Set.diff_subset.elem)
-  have hAₗ :
-    ∀ i : (Sₗ.X \ {a}).Elem, ∀ j : Sₗ.Y.Elem,
-      |Aₗ' i j| = (Sₗ.B (Set.diff_subset.elem i) j).val
-  · intro i j
-    exact hBBₗ (Set.diff_subset.elem i) j
-  have hAᵣ :
-    ∀ i : Sᵣ.X.Elem, ∀ j : (Sᵣ.Y \ {a}).Elem,
-      |Aᵣ' i j| = (Sᵣ.B i (Set.diff_subset.elem j)).val
-  · intro i j
-    exact hBBᵣ i (Set.diff_subset.elem j)
-  have hx' : ∀ j, |x' j| = (Sₗ.B ⟨a, haXₗ⟩ j).val
-  · intro j
-    exact hBBₗ ⟨a, haXₗ⟩ j
-  have hy' : ∀ i, |y' i| = (Sᵣ.B i ⟨a, haYᵣ⟩).val
-  · intro i
-    exact hBBᵣ i ⟨a, haYᵣ⟩
-  let B' := matrix2sumComposition Aₗ' x' Aᵣ' y' -- the signing is obtained using the same function but for `ℚ`
+  let B' := matrix2sumComposition (Bₗ.dropRow a) (Bₗ.interRow ha) (Bᵣ.dropCol a) (Bᵣ.interCol ha)
   use B'.toMatrixUnionUnion
   constructor
   · apply Matrix.IsTotallyUnimodular.toMatrixUnionUnion
     apply matrix2sumComposition_isTotallyUnimodular
     · convert hBₗ.comp_rows
-        (fun i : (Sₗ.X \ {a}).Elem ⊕ Unit => i.casesOn Set.diff_subset.elem (fun _ => ⟨a, haXₗ⟩))
+        (fun i : (Sₗ.X \ {a}).Elem ⊕ Unit => i.casesOn Set.diff_subset.elem (fun _ => ha.aₗ))
       aesop
     · convert hBᵣ.comp_cols
-        (fun j : Unit ⊕ (Sᵣ.Y \ {a}).Elem => j.casesOn (fun _ => ⟨a, haYᵣ⟩) Set.diff_subset.elem)
+        (fun j : Unit ⊕ (Sᵣ.Y \ {a}).Elem => j.casesOn (fun _ => ha.aᵣ) Set.diff_subset.elem)
       aesop
   · intro i j
-    simp only [hB, Matrix.toMatrixUnionUnion, Function.comp_apply]
+    simp only [standardRepr2sumComposition_B_eq, Matrix.toMatrixUnionUnion, Function.comp_apply]
     cases hi : i.toSum with
     | inl iₗ =>
       cases j.toSum with
       | inl jₗ =>
-        specialize hAₗ iₗ jₗ
-        simp_all [B']
+        exact hBBₗ (Set.diff_subset.elem iₗ) jₗ
       | inr jᵣ =>
-        simp_all [B']
+        rfl
     | inr iᵣ =>
       cases hj : j.toSum with
       | inl jₗ =>
-        simp only [Matrix.fromBlocks_apply₂₁, B', hx', hy', abs_mul]
-        apply Z2val_toRat_mul_Z2val_toRat
+        have habs := abs_mul (Bᵣ.interCol ha iᵣ) (Bₗ.interRow ha jₗ)
+        have hcast := Z2val_toRat_mul_Z2val_toRat (Sᵣ.B.interCol ha iᵣ) (Sₗ.B.interRow ha jₗ)
+        have hx' := hBBₗ ha.aₗ jₗ
+        have hy' := hBBᵣ iᵣ ha.aᵣ
+        exact hcast ▸ hx' ▸ hy' ▸ habs
       | inr jᵣ =>
-        specialize hAᵣ iᵣ jᵣ
-        simp_all [x', y', Aₗ', Aᵣ', B']
+        exact hBBᵣ iᵣ (Set.diff_subset.elem jᵣ)
 
 /-- Any 2-sum of regular matroids is a regular matroid.
     This is the middle of the three parts of the easy direction of the Seymour's theorem. -/
