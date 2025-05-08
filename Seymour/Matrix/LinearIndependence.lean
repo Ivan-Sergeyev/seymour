@@ -27,7 +27,7 @@ private lemma transpose_rowFun (A : Matrix m n R) : Aᵀ.rowFun = A.colFun := rf
 
 private lemma range_submatrix_left {α l : Type} (A : Matrix m n α) (f : l → m) :
     (A.submatrix f id).rowFun.range = A.rowFun '' f.range := by
-  ext x
+  ext
   simp only [Set.mem_range, Set.mem_image, exists_exists_eq_and]
   rfl
 

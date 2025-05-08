@@ -3,6 +3,7 @@ import Seymour.Basic.Fin
 import Seymour.Basic.FunctionDecompose
 import Seymour.Basic.SignTypeCast
 import Seymour.Matrix.Basic
+import Seymour.Matrix.Notation
 
 
 /-- Every matrix over `Z2` is TU. -/
@@ -114,20 +115,28 @@ lemma Matrix.IsTotallyUnimodular.comp_cols {X Y Y' R : Type} [CommRing R] {A : M
   intro k f g
   exact hA k f (e ∘ g)
 
+lemma Matrix.IsTotallyUnimodular.fromRows_comm {X₁ X₂ Y R : Type} [CommRing R] {A₁ : Matrix X₁ Y R} {A₂ : Matrix X₂ Y R}
+    (hAA : (A₁ ⊟ A₂).IsTotallyUnimodular) :
+    (A₂ ⊟ A₁).IsTotallyUnimodular := by
+  convert hAA.comp_rows Sum.swap
+  ext (_|_) <;> simp
+
+lemma Matrix.IsTotallyUnimodular.fromCols_comm {X Y₁ Y₂ R : Type} [CommRing R] {A₁ : Matrix X Y₁ R} {A₂ : Matrix X Y₂ R}
+    (hAA : (A₁ ◫ A₂).IsTotallyUnimodular) :
+    (A₂ ◫ A₁).IsTotallyUnimodular := by
+  convert hAA.comp_cols Sum.swap
+  ext (_|_) <;> simp
+
 lemma Matrix.replicateRow0_fromRows_isTotallyUnimodular_iff {X Y X' R : Type} [CommRing R] (A : Matrix X Y R) :
     (Matrix.fromRows (Matrix.replicateRow X' 0) A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
-  constructor
-  · intro hA
-    have hA' : (Matrix.fromRows A (Matrix.replicateRow X' 0)).IsTotallyUnimodular
+  constructor <;> intro hA
+  · have hA' : (A ⊟ (Matrix.replicateRow X' 0)).IsTotallyUnimodular
     · convert hA.comp_rows Sum.swap
-      ext i j
-      cases i <;> simp
+      ext (_|_) <;> simp
     rwa [A.fromRows_replicateRow0_isTotallyUnimodular_iff] at hA'
-  · intro hA
-    rw [←A.fromRows_replicateRow0_isTotallyUnimodular_iff] at hA
+  · rw [←A.fromRows_replicateRow0_isTotallyUnimodular_iff] at hA
     convert hA.submatrix Sum.swap id
-    ext i j
-    cases i <;> simp
+    ext (_|_) <;> simp
 
 lemma Matrix.replicateCol0_fromCols_isTotallyUnimodular_iff {X Y Y' R : Type} [CommRing R] (A : Matrix X Y R) :
     (Matrix.fromCols (Matrix.replicateCol Y' 0) A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
@@ -159,7 +168,7 @@ lemma Matrix.IsTotallyUnimodular.mul_rows {X Y R : Type} [DecidableEq X] [CommRi
     (Matrix.of (fun i : X => fun j : Y => A i j * q i)).IsTotallyUnimodular := by
   intro k f g hf hg
   conv in _ * _ => rw [mul_comm]
-  rw [Matrix.submatrix.eq_1 _ f g]
+  rw [Matrix.submatrix.eq_1]
   conv in Matrix.of _ (f _) (g _) => rw [Matrix.of_apply]
   rw [Matrix.det_mul_column]
   refine in_signTypeCastRange_mul_in_signTypeCastRange ?_ (hA k f g hf hg)
@@ -358,8 +367,8 @@ private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_card_lt
     ).submatrix f.decomposeSum g.decomposeSum
     =
     (Matrix.fromBlocks
-      (Matrix.fromRows (A₁.submatrix (·.val.snd) ((·.val.snd) ∘ e₁)) 0)
-      (Matrix.fromRows 0 (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂)))
+      ((A₁.submatrix (·.val.snd) ((·.val.snd) ∘ e₁)) ⊟ 0)
+      (0 ⊟ (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂)))
       0
       (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂))
     ).submatrix
@@ -378,12 +387,11 @@ private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_card_lt
       <;> simp
   rw [hAfg, ←abs_eq_zero, Matrix.abs_det_submatrix_equiv_equiv, abs_eq_zero]
   convert_to
-    (Matrix.fromRows
-      (A₁.submatrix (·.val.snd) ((·.val.snd) ∘ e₁)) 0).det * (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂)).det = 0
+    ((A₁.submatrix (·.val.snd) ((·.val.snd) ∘ e₁)) ⊟ 0).det * (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂)).det = 0
   · convert -- none of `exact` `apply` `rw` `erw` `simp_rw` works with `Matrix.det_fromBlocks_zero₂₁` here
       Matrix.det_fromBlocks_zero₂₁
-        (Matrix.fromRows (A₁.submatrix (·.val.snd) ((·.val.snd) ∘ e₁)) 0)
-        (Matrix.fromRows 0 (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂)))
+        ((A₁.submatrix (·.val.snd) ((·.val.snd) ∘ e₁)) ⊟ 0)
+        (0 ⊟ (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂)))
         (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂))
   convert zero_mul _
   exact Matrix.det_eq_zero_of_row_eq_zero ◪(Classical.choice hX') ↓rfl
