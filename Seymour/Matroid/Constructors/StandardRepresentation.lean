@@ -248,7 +248,7 @@ private lemma exists_standardRepr_isBase_aux_left {X Y G I : Set α} [∀ a, Dec
   have hX : G ∪ (X \ G) = X := Set.union_diff_cancel' (by tauto) hGX
   let e : hIGX.elem.range → hIX.elem.range := fun ⟨⟨i, hi⟩, hhi⟩ => ⟨⟨i, hX ▸ hi⟩, by simpa using hhi⟩
   unfold LinearIndepOn
-  convert (B.linearIndepOn_in_submodule hAI).comp e (fun _ _ hee => by ext; simpa [e] using hee) with ⟨⟨i, hi⟩, -⟩
+  convert (B.linearIndepOn_in_submodule hAI).comp e ↓↓(by ext; simpa [e] using ·) with ⟨⟨i, hi⟩, -⟩
   ext ⟨j, hj⟩
   if hiG : i ∈ G then
     have hBij := B.repr_self_apply ⟨i, hiG⟩ ⟨j, hj⟩
@@ -286,7 +286,7 @@ private lemma exists_standardRepr_isBase_aux_right {X Y G I : Set α} [∀ a, De
   have hX : X = G ∪ (X \ G) := (Set.union_diff_cancel' (by tauto) hGX).symm
   let e : hIX.elem.range → hIGX.elem.range := fun ⟨⟨i, hi⟩, hhi⟩ => ⟨⟨i, hX ▸ hi⟩, by simpa using hhi⟩
   unfold LinearIndepOn
-  convert hBI.comp e (fun _ _ hee => by ext; simpa [e] using hee) with ⟨⟨i, hi⟩, -⟩
+  convert hBI.comp e ↓↓(by ext; simpa [e] using ·) with ⟨⟨i, hi⟩, -⟩
   ext ⟨j, hj⟩
   if hiG : i ∈ G then
     have hBij := B.repr_self_apply ⟨i, hiG⟩ ⟨j, hj⟩
@@ -324,7 +324,7 @@ lemma VectorMatroid.exists_standardRepr_isBase [DivisionRing R] {G : Set α}
         have hv : v ∈ (M.Aᵀ.submatrix hGY.elem id).range
         · aesop
         rw [Submodule.mem_span]
-        exact (fun _ hR => hR hv)
+        exact ↓(· hv)
       have hMvG : M.toMatroid.Indep (j.val ᕃ G)
       · obtain ⟨-, hAG⟩ := hMG.indep
         use Set.insert_subset_iff.← ⟨j.property, hGY⟩
@@ -565,7 +565,7 @@ private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type} [Field F
             rwa [
               ((l.support.image Subtype.val).subtype (· ∈ X)).sum_of_single_nonzero
                 (fun a : X.Elem => l (hXXY.elem a) • (1 : Matrix X X F) a ⟨i, hiX⟩)
-                ⟨i, hiX⟩ (by simp_all) (fun _ _ _ => by simp_all),
+                ⟨i, hiX⟩ (by simp_all) ↓↓↓(by simp_all),
               Matrix.one_apply_eq,
               smul_eq_mul,
               mul_one

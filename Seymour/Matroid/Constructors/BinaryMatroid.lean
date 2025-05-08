@@ -199,10 +199,10 @@ theorem VectorMatroid.indepCols_maximal [Semiring R] (M : VectorMatroid α R) (I
       { K : Set α | M.IndepCols K ∧ K ⊆ I }
       (fun c hcS chain_c _ =>
         ⟨⋃₀ c,
-        ⟨⟨Set.sUnion_subset (fun _ hxc => (hcS hxc).left.left),
-          linearIndepOn_sUnion_of_directedOn chain_c.directedOn (fun _ hxc => (hcS hxc).left.right)⟩,
-          Set.sUnion_subset (fun _ hxc => (hcS hxc).right)⟩,
-        fun _ => Set.subset_sUnion_of_mem⟩)
+        ⟨⟨Set.sUnion_subset ↓(hcS ·|>.left.left),
+          linearIndepOn_sUnion_of_directedOn chain_c.directedOn ↓(hcS ·|>.left.right)⟩,
+          Set.sUnion_subset ↓(hcS ·|>.right)⟩,
+        ↓Set.subset_sUnion_of_mem⟩)
       J ⟨hMJ, hJI⟩
 
 /-- `VectorMatroid` expressed as `IndepMatroid`. -/

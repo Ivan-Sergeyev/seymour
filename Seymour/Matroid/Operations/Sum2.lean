@@ -292,7 +292,7 @@ lemma standardRepr2sumComposition_hasTuSigning {α : Type} [DecidableEq α] {S�
         ZMod.val (((_ ∘ _) i ∘ _) j)
       from Function.comp_apply ▸ Function.comp_apply ▸ Function.comp_apply ▸ Function.comp_apply ▸
         i.toSum.casesOn
-          (fun iₗ => j.toSum.casesOn (hBBₗ (Set.diff_subset.elem iₗ)) (fun _ => rfl))
+          (fun iₗ => j.toSum.casesOn (hBBₗ (Set.diff_subset.elem iₗ)) ↓rfl)
           (fun iᵣ => j.toSum.casesOn
             (fun jₗ => Z2val_toRat_mul_Z2val_toRat (Sᵣ.B.interCol ha iᵣ) (Sₗ.B.interRow ha jₗ) ▸
                 hBBₗ ha._ₗ jₗ ▸ hBBᵣ iᵣ ha._ᵣ ▸ abs_mul (Bᵣ.interCol ha iᵣ) (Bₗ.interRow ha jₗ))

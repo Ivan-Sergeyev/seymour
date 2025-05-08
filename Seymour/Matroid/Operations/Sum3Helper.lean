@@ -284,8 +284,8 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion₀ {X Y : Set α} {Q 
   let e : ((Y \ {y₀, y₁}).Elem ⊕ Unit) ⊕ Unit ≃ Y := ⟨
     (·.casesOn (·.casesOn Set.diff_subset.elem ↓⟨y₀, hy₀⟩) ↓⟨y₁, hy₁⟩),
     fun ⟨y, hy⟩ => if hy₀ : y = y₀ then ◩◪() else if hy₁ : y = y₁ then ◪() else ◩◩⟨y, by simp [*]⟩,
-    fun _ => by aesop,
-    fun _ => by aesop⟩
+    ↓(by aesop),
+    ↓(by aesop)⟩
   have B'_eq : B' = (Q' ◫ ▮(-c₀) ◫ ▮(c₁ - c₀)).submatrix id e.symm
   · ext ⟨i, hi⟩ ⟨j, hj⟩
     have := hi.right
@@ -326,8 +326,8 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion₁ {X Y : Set α} {Q 
   let e : ((Y \ {y₀, y₁}).Elem ⊕ Unit) ⊕ Unit ≃ Y := ⟨
     (·.casesOn (·.casesOn Set.diff_subset.elem ↓⟨y₁, hy₁⟩) ↓⟨y₀, hy₀⟩),
     fun ⟨y, hy⟩ => if hy₀ : y = y₀ then ◪() else if hy₁ : y = y₁ then ◩◪() else ◩◩⟨y, by simp [*]⟩,
-    fun _ => by aesop,
-    fun _ => by aesop⟩
+    ↓(by aesop),
+    ↓(by aesop)⟩
   have B'_eq : B' = (Q' ◫ ▮(-c₁) ◫ ▮(c₀ - c₁)).submatrix id e.symm
   · ext ⟨i, hi⟩ ⟨j, hj⟩
     if j = y₀ then

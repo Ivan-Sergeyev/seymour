@@ -69,7 +69,7 @@ lemma IsUnit.linearIndependent_matrix [DecidableEq α] [Fintype α] {R : Type} [
 lemma sum_elem_matrix_row_of_mem [DecidableEq α] {β : Type} [AddCommMonoidWithOne β] {x : α} {S : Set α} [Fintype S]
     (hxS : x ∈ S) :
     ∑ i : S.Elem, (1 : Matrix α α β) x i.val = 1 := by
-  convert sum_elem_of_single_nonzero hxS (fun _ => Matrix.one_apply_ne')
+  convert sum_elem_of_single_nonzero hxS ↓Matrix.one_apply_ne'
   exact (Matrix.one_apply_eq x).symm
 
 lemma sum_elem_matrix_row_of_nmem [DecidableEq α] {β : Type} [AddCommMonoidWithOne β] {x : α} {S : Set α} [Fintype S]

@@ -21,7 +21,7 @@ postfix:max ".→" => Iff.mp
 postfix:max ".←" => Iff.mpr
 
 /-- We denote the cardinality of a `Fintype` the same way the cardinality of a `Finset` is denoted. -/
-prefix:1000 "#" => Fintype.card
+prefix:max "#" => Fintype.card
 
 /-- The "left" or "top" variant. -/
 prefix:max "◩" => Sum.inl
@@ -29,9 +29,8 @@ prefix:max "◩" => Sum.inl
 /-- The "right" or "bottom" variant. -/
 prefix:max "◪" => Sum.inr
 
-/-- Constant function. -/
-prefix:max "↓" => Function.const _
-
+/-- Writing `↓t` is slightly more general than writing `Function.const _ t`. -/
+notation:max "↓"t:arg => (fun _ => t)
 
 lemma and_congr_l {P₁ P₂ : Prop} (hP : P₁ ↔ P₂) (Q : Prop) : P₁ ∧ Q ↔ P₂ ∧ Q :=
   and_congr_left ↓hP
