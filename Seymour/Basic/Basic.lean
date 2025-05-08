@@ -32,6 +32,7 @@ prefix:max "◪" => Sum.inr
 /-- Writing `↓t` is slightly more general than writing `Function.const _ t`. -/
 notation:max "↓"t:arg => (fun _ => t)
 
+
 lemma and_congr_l {P₁ P₂ : Prop} (hP : P₁ ↔ P₂) (Q : Prop) : P₁ ∧ Q ↔ P₂ ∧ Q :=
   and_congr_left ↓hP
 
