@@ -66,7 +66,7 @@ noncomputable def matrix3sumComposition_standard {F : Type} [Field F] {Xₗ Yₗ
     Matrix.of (fun i => ![Bᵣ (Set.diff_subset.elem i) y₀ᵣ, Bᵣ (Set.diff_subset.elem i) y₁ᵣ])
   let Dₗᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Yₗ \ {y₀, y₁, y'}).Elem F := Dᵣ * D₀ₗ⁻¹ * Dₗ
   -- initial bottom left submatrix
-  let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) F := Matrix.fromBlocks Dₗ D₀ₗ Dₗᵣ Dᵣ
+  let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) F := ⊞ Dₗ D₀ₗ Dₗᵣ Dᵣ
   -- reindexing for bottom left submatrix
   let fᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
     if hi₀ : i.val = x₀ then ◩0 else
@@ -91,7 +91,7 @@ noncomputable def matrix3sumComposition_standard {F : Type} [Field F] {Xₗ Yₗ
   -- actual definition
   ⟨
     -- 3-sum defined as a block matrix
-    Matrix.fromBlocks Aₗ 0 D Aᵣ,
+    ⊞ Aₗ 0 D Aᵣ,
     -- the special elements are all distinct
     ((x₀ ≠ x₁ ∧ x₀ ≠ x' ∧ x₁ ≠ x') ∧ (y₀ ≠ y₁ ∧ y₀ ≠ y' ∧ y₁ ≠ y'))
     -- index sets of rows and columns do not overlap

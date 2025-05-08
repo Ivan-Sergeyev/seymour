@@ -344,7 +344,7 @@ private abbrev Matrix.block₂₂ {k : ℕ} (A : Matrix (Fin k.succ) (Fin k.succ
   Matrix.of (fun i j => A (x.succAbove i) (y.succAbove j))
 
 private lemma Matrix.succAboveAt_block [DivisionRing F] {k : ℕ} (A : Matrix (Fin k.succ) (Fin k.succ) F) (x y : Fin k.succ) :
-    A = (Matrix.fromBlocks (A.block₁₁ x y) (A.block₁₂ x y) (A.block₂₁ x y) (A.block₂₂ x y)
+    A = (⊞ (A.block₁₁ x y) (A.block₁₂ x y) (A.block₂₁ x y) (A.block₂₂ x y)
       ).submatrix x.reindexing.symm y.reindexing.symm := by
   ext i j
   rw [Matrix.submatrix_apply]

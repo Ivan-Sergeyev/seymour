@@ -65,7 +65,7 @@ private lemma Matrix.IsTotallyUnimodular.reglueCol {α R : Type} [CommRing R] {X
 abbrev matrix2sumComposition {α R : Type} [Semiring R] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
     (Aₗ : Matrix Xₗ Yₗ R) (r : Yₗ → R) (Aᵣ : Matrix Xᵣ Yᵣ R) (c : Xᵣ → R) :
     Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) R :=
-  Matrix.fromBlocks Aₗ 0 (c · * r ·) Aᵣ
+  ⊞ Aₗ 0 (c · * r ·) Aᵣ
 
 /-- `StandardRepr`-level 2-sum of two matroids.
     The second part checks legitimacy: the ground sets of `Mₗ` and `Mᵣ` are disjoint except for the element `a ∈ Mₗ.X ∩ Mᵣ.Y`,

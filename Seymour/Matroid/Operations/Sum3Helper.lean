@@ -463,7 +463,7 @@ private noncomputable def matrix3sumCompositionCanonicalSigning {Xₗ Yₗ Xᵣ 
     Matrix.of (fun i => ![Bᵣ (Set.diff_subset.elem i) y₀ᵣ, Bᵣ (Set.diff_subset.elem i) y₁ᵣ])
   let Dₗᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Yₗ \ {y₀, y₁, y'}).Elem ℚ := Dᵣ * D₀ₗ⁻¹ * Dₗ
   -- initial bottom left submatrix
-  let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := Matrix.fromBlocks Dₗ D₀ₗ Dₗᵣ Dᵣ
+  let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := ⊞ Dₗ D₀ₗ Dₗᵣ Dᵣ
   -- reindexing for bottom left submatrix
   let fᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
     if hi₀ : i.val = x₀ then ◩0 else
@@ -486,7 +486,7 @@ private noncomputable def matrix3sumCompositionCanonicalSigning {Xₗ Yₗ Xᵣ 
   -- final bottom left submatrix
   let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := D'.submatrix fᵣ fₗ
   -- actual definition
-  Matrix.fromBlocks Aₗ 0 D Aᵣ
+  ⊞ Aₗ 0 D Aᵣ
 
 -- lemma 19.1
 private lemma matrix3sumCompositionCanonicalSigning_D_Eq_SumOuterProducts {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
@@ -532,7 +532,7 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Eq_SumOuterProducts {Xₗ 
       Matrix.of (fun i => ![Bᵣ (Set.diff_subset.elem i) y₀ᵣ, Bᵣ (Set.diff_subset.elem i) y₁ᵣ])
     let Dₗᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Yₗ \ {y₀, y₁, y'}).Elem ℚ := Dᵣ * D₀ₗ⁻¹ * Dₗ
     -- initial bottom left submatrix
-    let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := Matrix.fromBlocks Dₗ D₀ₗ Dₗᵣ Dᵣ
+    let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := ⊞ Dₗ D₀ₗ Dₗᵣ Dᵣ
     -- reindexing for bottom left submatrix
     let fᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
       if hi₀ : i.val = x₀ then ◩0 else
@@ -633,7 +633,7 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Rows {Xₗ Yₗ Xᵣ Yᵣ 
       Matrix.of (fun i => ![Bᵣ (Set.diff_subset.elem i) y₀ᵣ, Bᵣ (Set.diff_subset.elem i) y₁ᵣ])
     let Dₗᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Yₗ \ {y₀, y₁, y'}).Elem ℚ := Dᵣ * D₀ₗ⁻¹ * Dₗ
     -- initial bottom left submatrix
-    let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := Matrix.fromBlocks Dₗ D₀ₗ Dₗᵣ Dᵣ
+    let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := ⊞ Dₗ D₀ₗ Dₗᵣ Dᵣ
     -- reindexing for bottom left submatrix
     let fᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
       if hi₀ : i.val = x₀ then ◩0 else
@@ -734,7 +734,7 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Cols {Xₗ Yₗ Xᵣ Yᵣ 
       Matrix.of (fun i => ![Bᵣ (Set.diff_subset.elem i) y₀ᵣ, Bᵣ (Set.diff_subset.elem i) y₁ᵣ])
     let Dₗᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Yₗ \ {y₀, y₁, y'}).Elem ℚ := Dᵣ * D₀ₗ⁻¹ * Dₗ
     -- initial bottom left submatrix
-    let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := Matrix.fromBlocks Dₗ D₀ₗ Dₗᵣ Dᵣ
+    let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := ⊞ Dₗ D₀ₗ Dₗᵣ Dᵣ
     -- reindexing for bottom left submatrix
     let fᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
       if hi₀ : i.val = x₀ then ◩0 else
@@ -835,7 +835,7 @@ private lemma matrix3sumCompositionCanonicalSigning_Aᵣ_D_TU {Xₗ Yₗ Xᵣ Y�
       Matrix.of (fun i => ![Bᵣ (Set.diff_subset.elem i) y₀ᵣ, Bᵣ (Set.diff_subset.elem i) y₁ᵣ])
     let Dₗᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Yₗ \ {y₀, y₁, y'}).Elem ℚ := Dᵣ * D₀ₗ⁻¹ * Dₗ
     -- initial bottom left submatrix
-    let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := Matrix.fromBlocks Dₗ D₀ₗ Dₗᵣ Dᵣ
+    let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := ⊞ Dₗ D₀ₗ Dₗᵣ Dᵣ
     -- reindexing for bottom left submatrix
     let fᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
       if hi₀ : i.val = x₀ then ◩0 else
@@ -936,7 +936,7 @@ private lemma matrix3sumCompositionCanonicalSigning_Aₗ_D_TU {Xₗ Yₗ Xᵣ Y�
       Matrix.of (fun i => ![Bᵣ (Set.diff_subset.elem i) y₀ᵣ, Bᵣ (Set.diff_subset.elem i) y₁ᵣ])
     let Dₗᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Yₗ \ {y₀, y₁, y'}).Elem ℚ := Dᵣ * D₀ₗ⁻¹ * Dₗ
     -- initial bottom left submatrix
-    let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := Matrix.fromBlocks Dₗ D₀ₗ Dₗᵣ Dᵣ
+    let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := ⊞ Dₗ D₀ₗ Dₗᵣ Dᵣ
     -- reindexing for bottom left submatrix
     let fᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
       if hi₀ : i.val = x₀ then ◩0 else

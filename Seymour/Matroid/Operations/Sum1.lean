@@ -7,7 +7,7 @@ variable {α : Type} [DecidableEq α]
 abbrev matrix1sumComposition {R : Type} [Zero R] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
     (Aₗ : Matrix Xₗ Yₗ R) (Aᵣ : Matrix Xᵣ Yᵣ R) :
     Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) R :=
-  Matrix.fromBlocks Aₗ 0 0 Aᵣ
+  ⊞ Aₗ 0 0 Aᵣ
 
 /-- `StandardRepr`-level 1-sum of two matroids.
     It checks that everything is disjoint (returned as `.snd` of the output). -/
