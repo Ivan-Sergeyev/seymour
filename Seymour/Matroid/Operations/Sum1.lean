@@ -4,9 +4,9 @@ import Seymour.Matroid.Properties.Regularity
 variable {α : Type} [DecidableEq α]
 
 /-- `Matrix`-level 1-sum for matroids defined by their standard representation matrices. -/
-abbrev matrix1sumComposition {β : Type} [Zero β] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
-    (Aₗ : Matrix Xₗ Yₗ β) (Aᵣ : Matrix Xᵣ Yᵣ β) :
-    Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) β :=
+abbrev matrix1sumComposition {R : Type} [Zero R] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
+    (Aₗ : Matrix Xₗ Yₗ R) (Aᵣ : Matrix Xᵣ Yᵣ R) :
+    Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) R :=
   Matrix.fromBlocks Aₗ 0 0 Aᵣ
 
 /-- `StandardRepr`-level 1-sum of two matroids.
@@ -72,32 +72,13 @@ lemma standardRepr1sumComposition_comm {Sₗ Sᵣ : StandardRepr α Z2} {hXY : S
 
 lemma standardRepr1sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2}
     (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) :
-    (standardRepr1sumComposition hXY hYX).fst.B.HasTuSigning := by
-  obtain ⟨Bₗ, hBₗ, hBBₗ⟩ := hSₗ
-  obtain ⟨Bᵣ, hBᵣ, hBBᵣ⟩ := hSᵣ
-  have hB : (standardRepr1sumComposition hXY hYX).fst.B = (matrix1sumComposition Sₗ.B Sᵣ.B).toMatrixUnionUnion
-  · rfl
-  let B' := matrix1sumComposition Bₗ Bᵣ -- the signing is obtained using the same function but for `ℚ`
-  use B'.toMatrixUnionUnion
-  constructor
-  · exact (Matrix.fromBlocks_isTotallyUnimodular hBₗ hBᵣ).toMatrixUnionUnion
-  · intro i j
-    simp only [hB, B', Matrix.toMatrixUnionUnion, Function.comp_apply]
-    cases i.toSum with
-    | inl iₗ =>
-      cases j.toSum with
-      | inl jₗ =>
-        specialize hBBₗ iₗ jₗ
-        simp_all
-      | inr jᵣ =>
-        simp_all
-    | inr iᵣ =>
-      cases j.toSum with
-      | inl jₗ =>
-        simp_all
-      | inr jᵣ =>
-        specialize hBBᵣ iᵣ jᵣ
-        simp_all
+    (standardRepr1sumComposition hXY hYX).fst.B.HasTuSigning :=
+  have ⟨Bₗ, hBₗ, hBBₗ⟩ := hSₗ
+  have ⟨Bᵣ, hBᵣ, hBBᵣ⟩ := hSᵣ
+  ⟨_, (Matrix.fromBlocks_isTotallyUnimodular hBₗ hBᵣ).toMatrixUnionUnion, (fun i j =>
+    show |((matrix1sumComposition Bₗ Bᵣ ∘ _) i ∘ _) j| = ZMod.val (((_ ∘ _) i ∘ _) j)
+    from Function.comp_apply ▸ Function.comp_apply ▸ Function.comp_apply ▸ Function.comp_apply ▸
+      i.toSum.casesOn (fun iₗ => j.toSum.casesOn (hBBₗ iₗ) ↓abs_zero) (fun iᵣ => j.toSum.casesOn ↓abs_zero (hBBᵣ iᵣ)))⟩
 
 /-- Any 1-sum of regular matroids is a regular matroid.
     This is part one (of three) of the easy direction of the Seymour's theorem. -/

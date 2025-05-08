@@ -32,14 +32,14 @@ end InterEqToMem
 
 section Submatrix3x3
 
+@[simp] private abbrev matrix3x3unsigned₀ : Matrix (Fin 3) (Fin 3) ℚ := !![1, 0, 1; 0, 1, 1; 1, 1, 0]
+@[simp] private abbrev matrix3x3unsigned₁ : Matrix (Fin 3) (Fin 3) ℚ := !![1, 1, 1; 0, 1, 1; 1, 1, 0]
+
+@[simp] private abbrev matrix3x3signed₀ : Matrix (Fin 3) (Fin 3) ℚ := !![1, 0, 1; 0, -1, 1; 1, 1, 0]
+@[simp] private abbrev matrix3x3signed₁ : Matrix (Fin 3) (Fin 3) ℚ := matrix3x3unsigned₁
+
 @[simp]
-private abbrev matrix3x3unsigned₀ : Matrix (Fin 3) (Fin 3) ℚ := !![1, 0, 1; 0, 1, 1; 1, 1, 0]
-private def matrix3x3unsigned₁ : Matrix (Fin 3) (Fin 3) ℚ := !![1, 1, 1; 0, 1, 1; 1, 1, 0]
-
-private def matrix3x3signed₀ : Matrix (Fin 3) (Fin 3) ℚ := !![1, 0, 1; 0, -1, 1; 1, 1, 0]
-private def matrix3x3signed₁ : Matrix (Fin 3) (Fin 3) ℚ := matrix3x3unsigned₁
-
-private def Matrix.submatrix3x3 {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y) :
+private abbrev Matrix.submatrix3x3 {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y) :
     Matrix (Fin 3) (Fin 3) ℚ :=
   !![
     Q x₀ y₀, Q x₀ y₁, Q x₀ y';
@@ -50,12 +50,12 @@ private def Matrix.submatrix3x3 {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x
 private lemma submatrix3x3signed₀_abs {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x' : X} {y₀ y₁ y' : Y}
     (hQ : Q.submatrix3x3 x₀ x₁ x' y₀ y₁ y' = matrix3x3signed₀) :
     |Q.submatrix3x3 x₀ x₁ x' y₀ y₁ y'| = matrix3x3unsigned₀ :=
-  hQ ▸ matrix3x3signed₀.abs.eta_fin_three
+  hQ ▸ |matrix3x3signed₀|.eta_fin_three
 
 private lemma submatrix3x3signed₁_abs {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x' : X} {y₀ y₁ y' : Y}
     (hQ : Q.submatrix3x3 x₀ x₁ x' y₀ y₁ y' = matrix3x3signed₁) :
     |Q.submatrix3x3 x₀ x₁ x' y₀ y₁ y'| = matrix3x3unsigned₁ :=
-  hQ ▸ matrix3x3signed₁.abs.eta_fin_three
+  hQ ▸ |matrix3x3signed₁|.eta_fin_three
 
 private lemma Matrix.submatrix3x3_eq {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y) :
     Q.submatrix3x3 x₀ x₁ x' y₀ y₁ y' =

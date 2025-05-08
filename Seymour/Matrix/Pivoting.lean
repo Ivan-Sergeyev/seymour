@@ -62,12 +62,12 @@ private lemma Matrix.mulRow_det [DecidableEq X] [Fintype X] [CommRing F] (A : Ma
   rw [Matrix.mulRow, Matrix.det_updateRow_smul, Matrix.updateRow_eq_self]
 
 private lemma Matrix.IsTotallyUnimodular.mulRow [DecidableEq X] [CommRing F] {A : Matrix X Y F}
-    (hA : A.IsTotallyUnimodular) (x : X) {c : F} (hc : c ∈ SignType.cast.range) :
-    (A.mulRow x c).IsTotallyUnimodular := by
+    (hA : A.IsTotallyUnimodular) (x : X) {q : F} (hq : q ∈ SignType.cast.range) :
+    (A.mulRow x q).IsTotallyUnimodular := by
   intro k f g hf hg
   if hi : ∃ i : Fin k, f i = x then
     obtain ⟨i, rfl⟩ := hi
-    convert_to ((A.submatrix f g).updateRow i (c • (A.submatrix id g) (f i))).det ∈ SignType.cast.range
+    convert_to ((A.submatrix f g).updateRow i (q • (A.submatrix id g) (f i))).det ∈ SignType.cast.range
     · congr
       ext i' j'
       if hii : i' = i then
@@ -76,7 +76,7 @@ private lemma Matrix.IsTotallyUnimodular.mulRow [DecidableEq X] [CommRing F] {A 
         have hfii : f i' ≠ f i := (hii <| hf ·)
         simp [Matrix.mulRow, hii, hfii]
     rw [Matrix.det_updateRow_smul]
-    apply in_signTypeCastRange_mul_in_signTypeCastRange hc
+    apply in_signTypeCastRange_mul_in_signTypeCastRange hq
     have hAf := hA.submatrix f id
     convert hAf.det id g
     rw [Matrix.submatrix_submatrix, Function.comp_id, Function.id_comp]

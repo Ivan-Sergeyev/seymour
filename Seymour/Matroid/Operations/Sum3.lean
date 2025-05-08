@@ -34,11 +34,11 @@ variable [DecidableEq α]
 section StandardMatrixDefinition
 
 /-- The 3-sum composition of two matrices. -/
-noncomputable def matrix3sumComposition_standard {β : Type} [Field β] {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
+noncomputable def matrix3sumComposition_standard {F : Type} [Field F] {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
     [∀ x, Decidable (x ∈ Xₗ \ {x₀, x₁, x'})] [∀ x, Decidable (x ∈ Xᵣ \ {x₀, x₁, x'})] -- for reindexing of `D`
     [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
-    (Bₗ : Matrix Xₗ Yₗ β) (Bᵣ : Matrix Xᵣ Yᵣ β) (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x'}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y'}) :
-    Matrix ((Xₗ \ {x₀, x₁}).Elem ⊕ (Xᵣ \ {x'}).Elem) ((Yₗ \ {y'}).Elem ⊕ (Yᵣ \ {y₀, y₁}).Elem) β × Prop :=
+    (Bₗ : Matrix Xₗ Yₗ F) (Bᵣ : Matrix Xᵣ Yᵣ F) (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x'}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y'}) :
+    Matrix ((Xₗ \ {x₀, x₁}).Elem ⊕ (Xᵣ \ {x'}).Elem) ((Yₗ \ {y'}).Elem ⊕ (Yᵣ \ {y₀, y₁}).Elem) F × Prop :=
   -- row membership
   let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
   let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
@@ -54,19 +54,19 @@ noncomputable def matrix3sumComposition_standard {β : Type} [Field β] {Xₗ Y�
   let y'ₗ : Yₗ := ⟨y', hYY.mem3₂ₗ⟩
   let y'ᵣ : Yᵣ := ⟨y', hYY.mem3₂ᵣ⟩
   -- top left submatrix
-  let Aₗ : Matrix (Xₗ \ {x₀, x₁}).Elem (Yₗ \ {y'}).Elem β := Bₗ.submatrix Set.diff_subset.elem Set.diff_subset.elem
+  let Aₗ : Matrix (Xₗ \ {x₀, x₁}).Elem (Yₗ \ {y'}).Elem F := Bₗ.submatrix Set.diff_subset.elem Set.diff_subset.elem
   -- bottom right submatrix
-  let Aᵣ : Matrix (Xᵣ \ {x'}).Elem (Yᵣ \ {y₀, y₁}).Elem β := Bᵣ.submatrix Set.diff_subset.elem Set.diff_subset.elem
+  let Aᵣ : Matrix (Xᵣ \ {x'}).Elem (Yᵣ \ {y₀, y₁}).Elem F := Bᵣ.submatrix Set.diff_subset.elem Set.diff_subset.elem
   -- pieces of bottom left submatrix
-  let D₀ₗ : Matrix (Fin 2) (Fin 2) β := !![Bₗ x₀ₗ y₀ₗ, Bₗ x₀ₗ y₁ₗ; Bₗ x₁ₗ y₀ₗ, Bₗ x₁ₗ y₁ₗ]
-  let D₀ᵣ : Matrix (Fin 2) (Fin 2) β := !![Bᵣ x₀ᵣ y₀ᵣ, Bᵣ x₀ᵣ y₁ᵣ; Bᵣ x₁ᵣ y₀ᵣ, Bᵣ x₁ᵣ y₁ᵣ]
-  let Dₗ : Matrix (Fin 2) (Yₗ \ {y₀, y₁, y'}).Elem β :=
+  let D₀ₗ : Matrix (Fin 2) (Fin 2) F := !![Bₗ x₀ₗ y₀ₗ, Bₗ x₀ₗ y₁ₗ; Bₗ x₁ₗ y₀ₗ, Bₗ x₁ₗ y₁ₗ]
+  let D₀ᵣ : Matrix (Fin 2) (Fin 2) F := !![Bᵣ x₀ᵣ y₀ᵣ, Bᵣ x₀ᵣ y₁ᵣ; Bᵣ x₁ᵣ y₀ᵣ, Bᵣ x₁ᵣ y₁ᵣ]
+  let Dₗ : Matrix (Fin 2) (Yₗ \ {y₀, y₁, y'}).Elem F :=
     ![Bₗ x₀ₗ ∘ Set.diff_subset.elem, Bₗ x₁ₗ ∘ Set.diff_subset.elem]
-  let Dᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Fin 2) β :=
+  let Dᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Fin 2) F :=
     Matrix.of (fun i => ![Bᵣ (Set.diff_subset.elem i) y₀ᵣ, Bᵣ (Set.diff_subset.elem i) y₁ᵣ])
-  let Dₗᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Yₗ \ {y₀, y₁, y'}).Elem β := Dᵣ * D₀ₗ⁻¹ * Dₗ
+  let Dₗᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Yₗ \ {y₀, y₁, y'}).Elem F := Dᵣ * D₀ₗ⁻¹ * Dₗ
   -- initial bottom left submatrix
-  let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) β := Matrix.fromBlocks Dₗ D₀ₗ Dₗᵣ Dᵣ
+  let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) F := Matrix.fromBlocks Dₗ D₀ₗ Dₗᵣ Dᵣ
   -- reindexing for bottom left submatrix
   let fᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
     if hi₀ : i.val = x₀ then ◩0 else
@@ -87,7 +87,7 @@ noncomputable def matrix3sumComposition_standard {β : Type} [Field β] {Xₗ Y�
       simp_all only
       simp_all only [Set.mem_diff, Set.mem_singleton_iff, imp_false, not_true_eq_false]))
   -- final bottom left submatrix
-  let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem β := D'.submatrix fᵣ fₗ
+  let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem F := D'.submatrix fᵣ fₗ
   -- actual definition
   ⟨
     -- 3-sum defined as a block matrix

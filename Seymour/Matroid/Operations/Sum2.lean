@@ -62,10 +62,10 @@ private lemma Matrix.IsTotallyUnimodular.reglueCol {α R : Type} [CommRing R] {X
 -- ## Definition
 
 /-- `Matrix`-level 2-sum for matroids defined by their standard representation matrices; does not check legitimacy. -/
-abbrev matrix2sumComposition {α β : Type} [Semiring β] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
-    (Aₗ : Matrix Xₗ Yₗ β) (x : Yₗ → β) (Aᵣ : Matrix Xᵣ Yᵣ β) (y : Xᵣ → β) :
-    Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) β :=
-  Matrix.fromBlocks Aₗ 0 (y · * x ·) Aᵣ
+abbrev matrix2sumComposition {α R : Type} [Semiring R] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
+    (Aₗ : Matrix Xₗ Yₗ R) (r : Yₗ → R) (Aᵣ : Matrix Xᵣ Yᵣ R) (c : Xᵣ → R) :
+    Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) R :=
+  Matrix.fromBlocks Aₗ 0 (c · * r ·) Aᵣ
 
 /-- `StandardRepr`-level 2-sum of two matroids.
     The second part checks legitimacy: the ground sets of `Mₗ` and `Mᵣ` are disjoint except for the element `a ∈ Mₗ.X ∩ Mᵣ.Y`,
@@ -124,9 +124,9 @@ private lemma Matrix.shortTableauPivot_otherRow_eq {X Y Y' R : Type}
     simp only [hj', ↓reduceIte, ite_eq_right_iff]
     exact (False.elim <| hj' <| hg ·)
 
-private lemma Matrix.shortTableauPivot_outer {X Y X' Y' R : Type} [DecidableEq X] [DecidableEq Y] [DecidableEq Y'] [Field R]
-    (A : Matrix X Y R) (x : X) (y' : Y') (f : X' → X) (g : Y' → Y) (hf : x ∉ f.range) (hg : g.Injective)
-    (r : Y' → R) (c : X' → R) (hBfg : A.submatrix f g = (c · * r ·)) :
+private lemma Matrix.shortTableauPivot_outer {X Y X' Y' F : Type} [DecidableEq X] [DecidableEq Y] [DecidableEq Y'] [Field F]
+    (A : Matrix X Y F) (x : X) (y' : Y') (f : X' → X) (g : Y' → Y) (hf : x ∉ f.range) (hg : g.Injective)
+    (r : Y' → F) (c : X' → F) (hBfg : A.submatrix f g = (c · * r ·)) :
     (A.shortTableauPivot x (g y')).submatrix f g = (c · * (shortTableauPivotOtherRow (A x) r g y') ·) := by
   ext i j
   have hfig : A (f i) ∘ g = (c i * r ·) := congr_fun hBfg i
@@ -134,30 +134,30 @@ private lemma Matrix.shortTableauPivot_outer {X Y X' Y' R : Type} [DecidableEq X
       congr_fun (A.shortTableauPivot_otherRow_eq x y' (ne_of_mem_of_not_mem (Set.mem_range_self i) hf) hg) j
   rw [Matrix.submatrix_apply, hAgfg]
   simp only [Matrix.fromRows_apply_inl, Matrix.fromRows_apply_inr, Matrix.of_apply, Matrix.replicateRow_apply,
-    Matrix.shortTableauPivot, shortTableauPivotOtherRow, Function.comp_apply, one_div, reduceCtorEq, ↓reduceIte, mul_ite]
+    Matrix.shortTableauPivot, shortTableauPivotOtherRow, Function.comp_apply, one_div, reduceCtorEq, ↓reduceIte]
   split <;> ring
 
 private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq α] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
-    (Aₗ : Matrix Xₗ Yₗ ℚ) (x : Yₗ → ℚ) (Aᵣ : Matrix Xᵣ Yᵣ ℚ) (y : Xᵣ → ℚ) {i : Xₗ} {j : Yₗ} :
-    (matrix2sumComposition Aₗ x Aᵣ y).shortTableauPivot ◩i ◩j =
-    matrix2sumComposition (Aₗ.shortTableauPivot i j) (shortTableauPivotOtherRow (Aₗ i) x id j) Aᵣ y :=
-  ((matrix2sumComposition Aₗ x Aᵣ y).shortTableauPivot ◩i ◩j).fromBlocks_toBlocks ▸
-   (matrix2sumComposition (Aₗ.shortTableauPivot i j) (shortTableauPivotOtherRow (Aₗ i) x id j) Aᵣ y).fromBlocks_toBlocks ▸
+    (Aₗ : Matrix Xₗ Yₗ ℚ) (r : Yₗ → ℚ) (Aᵣ : Matrix Xᵣ Yᵣ ℚ) (c : Xᵣ → ℚ) {i : Xₗ} {j : Yₗ} :
+    (matrix2sumComposition Aₗ r Aᵣ c).shortTableauPivot ◩i ◩j =
+    matrix2sumComposition (Aₗ.shortTableauPivot i j) (shortTableauPivotOtherRow (Aₗ i) r id j) Aᵣ c :=
+  ((matrix2sumComposition Aₗ r Aᵣ c).shortTableauPivot ◩i ◩j).fromBlocks_toBlocks ▸
+   (matrix2sumComposition (Aₗ.shortTableauPivot i j) (shortTableauPivotOtherRow (Aₗ i) r id j) Aᵣ c).fromBlocks_toBlocks ▸
     Matrix.fromBlocks_inj.← ⟨
-    ((matrix2sumComposition Aₗ x Aᵣ y).submatrix_shortTableauPivot Sum.inl_injective Sum.inl_injective i j).symm,
-    Matrix.ext ((matrix2sumComposition Aₗ x Aᵣ y).shortTableauPivot_zero i ◩j Sum.inl Sum.inr
+    ((matrix2sumComposition Aₗ r Aᵣ c).submatrix_shortTableauPivot Sum.inl_injective Sum.inl_injective i j).symm,
+    Matrix.ext ((matrix2sumComposition Aₗ r Aᵣ c).shortTableauPivot_zero i ◩j Sum.inl Sum.inr
       (by simp) (by simp [matrix2sumComposition])),
-    (matrix2sumComposition Aₗ x Aᵣ y).shortTableauPivot_outer ◩i j Sum.inr Sum.inl (by simp) Sum.inl_injective x y rfl,
-    (matrix2sumComposition Aₗ x Aᵣ y).shortTableauPivot_submatrix_zero_external_row ◩i ◩j Sum.inr Sum.inr
+    (matrix2sumComposition Aₗ r Aᵣ c).shortTableauPivot_outer ◩i j Sum.inr Sum.inl (by simp) Sum.inl_injective r c rfl,
+    (matrix2sumComposition Aₗ r Aᵣ c).shortTableauPivot_submatrix_zero_external_row ◩i ◩j Sum.inr Sum.inr
       (by simp) (by simp) ↓rfl⟩
 
-private lemma Matrix.IsTotallyUnimodular.fromRows_pivot {α : Type} [DecidableEq α] {Xₗ Yₗ : Set α}
-    {Aₗ : Matrix Xₗ Yₗ ℚ} {x : Yₗ → ℚ} (hAₗx : (Aₗ ⊟ ▬x).IsTotallyUnimodular) {xₗ : Xₗ} {yₗ : Yₗ} (hAxy : Aₗ xₗ yₗ ≠ 0) :
-    ((Aₗ.shortTableauPivot xₗ yₗ) ⊟ ▬(shortTableauPivotOtherRow (Aₗ xₗ) x id yₗ)).IsTotallyUnimodular := by
-  have hAxxy : (Aₗ ⊟ ▬x) ◩xₗ yₗ ≠ 0 := hAxy
-  convert hAₗx.shortTableauPivot hAxxy
-  exact Matrix.ext (fun i : ↑Xₗ ⊕ Unit => fun j : Yₗ => (i.casesOn (fun iₗ : Xₗ =>
-      congr_fun (congr_fun (((Aₗ ⊟ ▬x).submatrix_shortTableauPivot Sum.inl_injective Function.injective_id xₗ yₗ)) iₗ) j)
+private lemma Matrix.IsTotallyUnimodular.fromRows_pivot {α : Type} [DecidableEq α] {X Y : Set α}
+    {A : Matrix X Y ℚ} {r : Y → ℚ} (hAr : (A ⊟ ▬r).IsTotallyUnimodular) {x : X} {y : Y} (hAxy : A x y ≠ 0) :
+    ((A.shortTableauPivot x y) ⊟ ▬(shortTableauPivotOtherRow (A x) r id y)).IsTotallyUnimodular := by
+  have hArxy : (A ⊟ ▬r) ◩x y ≠ 0 := hAxy
+  convert hAr.shortTableauPivot hArxy
+  exact Matrix.ext (fun i : X ⊕ Unit => fun j : Y => (i.casesOn (fun iₗ : X =>
+      congr_fun (congr_fun (((A ⊟ ▬r).submatrix_shortTableauPivot Sum.inl_injective Function.injective_id x y)) iₗ) j)
     ↓rfl))
 
 private lemma Matrix.shortTableauPivot_abs_det_eq_submatrix_abs_det {F : Type} [LinearOrderedField F] {k : ℕ}
@@ -179,28 +179,29 @@ private lemma Matrix.shortTableauPivot_abs_det_eq_submatrix_abs_det {F : Type} [
 
 -- ## Total unimodularity after adjoining an outer product
 
-private lemma Matrix.IsTotallyUnimodular.fromCols_pnz {X Y : Type} [DecidableEq Y] {A : Matrix X Y ℚ} {y : X → ℚ}
-    (hAy : (A ◫ ▮y).IsTotallyUnimodular) :
-    (A ◫ ▮y ◫ ▮(-y) ◫ ▮0).IsTotallyUnimodular := by
-  have hAyy : (A ◫ ▮y ◫ ▮y).IsTotallyUnimodular
-  · convert hAy.comp_cols (Sum.casesOn · id Sum.inr)
+private lemma Matrix.IsTotallyUnimodular.fromCols_pnz {X Y : Type} [DecidableEq Y] {A : Matrix X Y ℚ} {c : X → ℚ}
+    (hAc : (A ◫ ▮c).IsTotallyUnimodular) :
+    (A ◫ ▮c ◫ ▮(-c) ◫ ▮0).IsTotallyUnimodular := by
+  have hAcc : (A ◫ ▮c ◫ ▮c).IsTotallyUnimodular
+  · convert hAc.comp_cols (Sum.casesOn · id Sum.inr)
     ext (_|_) <;> simp
-  convert (hAyy.mul_cols (show ∀ j, (·.casesOn 1 (-1)) j ∈ SignType.cast.range by rintro (_|_) <;> simp)).fromCols_zero Unit
+  convert (hAcc.mul_cols (show ∀ j, (·.casesOn 1 (-1)) j ∈ SignType.cast.range by rintro (_|_) <;> simp)).fromCols_zero Unit
   ext _ (_|_) <;> simp
 
-private lemma Matrix.IsTotallyUnimodular.fromCols_outerProduct {X Yᵣ Y' : Type} [DecidableEq Yᵣ] {A : Matrix X Yᵣ ℚ} {y : X → ℚ}
-    (hAy : (A ◫ ▮y).IsTotallyUnimodular) {x : Y' → ℚ} (hx : ∀ j' : Y', x j' ∈ SignType.cast.range) :
-    (A ◫ (y · * x ·)).IsTotallyUnimodular := by
-  convert hAy.fromCols_pnz.comp_cols
+private lemma Matrix.IsTotallyUnimodular.fromCols_outer {X Yᵣ Y' : Type} [DecidableEq Yᵣ]
+    {A : Matrix X Yᵣ ℚ} {r : Y' → ℚ} {c : X → ℚ}
+    (hAc : (A ◫ ▮c).IsTotallyUnimodular) (hr : ∀ j' : Y', r j' ∈ SignType.cast.range) :
+    (A ◫ (c · * r ·)).IsTotallyUnimodular := by
+  convert hAc.fromCols_pnz.comp_cols
     (fun j : Yᵣ ⊕ Y' => j.casesOn (Sum.inl ∘ Sum.inl ∘ Sum.inl) (fun j : Y' =>
-      if h0 : x j = 0 then ◪()
-      else if h1 : x j = 1 then ◩◩◪()
-      else if h9 : x j = -1 then ◩◪()
-      else False.elim (by obtain ⟨s, hs⟩ := hx j; cases s <;> simp_all)
+      if h0 : r j = 0 then ◪()
+      else if h1 : r j = 1 then ◩◩◪()
+      else if h9 : r j = -1 then ◩◪()
+      else False.elim (by obtain ⟨s, hs⟩ := hr j; cases s <;> simp_all)
     ))
   ext (_ | j)
-  · simp only [Matrix.fromCols_apply_inl, Function.comp_apply]
-  · obtain ⟨s, hs⟩ := hx j
+  · simp
+  · obtain ⟨s, hs⟩ := hr j
     simp only [Matrix.fromCols_apply_inr, Matrix.replicateCol_zero, Function.comp_apply]
     split_ifs
     all_goals try simp [*]
@@ -208,47 +209,47 @@ private lemma Matrix.IsTotallyUnimodular.fromCols_outerProduct {X Yᵣ Y' : Type
     cases s <;> simp_all
 
 private lemma matrix2sumComposition_bottom_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Yᵣ] [DecidableEq Yₗ]
-    {Aₗ : Matrix Xₗ Yₗ ℚ} {x : Yₗ → ℚ} {Aᵣ : Matrix Xᵣ Yᵣ ℚ} {y : Xᵣ → ℚ}
-    (hAₗx : (Aₗ ⊟ ▬x).IsTotallyUnimodular) (hyAᵣ : (▮y ◫ Aᵣ).IsTotallyUnimodular) :
-    ((y · * x ·) ◫ Aᵣ).IsTotallyUnimodular :=
-  (hyAᵣ.fromCols_comm.fromCols_outerProduct (hAₗx.apply ◪())).fromCols_comm
+    {Aₗ : Matrix Xₗ Yₗ ℚ} {r : Yₗ → ℚ} {Aᵣ : Matrix Xᵣ Yᵣ ℚ} {c : Xᵣ → ℚ}
+    (hAr : (Aₗ ⊟ ▬r).IsTotallyUnimodular) (hAc : (▮c ◫ Aᵣ).IsTotallyUnimodular) :
+    ((c · * r ·) ◫ Aᵣ).IsTotallyUnimodular :=
+  (hAc.fromCols_comm.fromCols_outer (hAr.apply ◪())).fromCols_comm
 
 
 -- ## Proof of regularity of the 2-sum
 
 private lemma matrix2sumComposition_isPreTU_1 {α : Type} {Xₗ Yₗ Xᵣ Yᵣ : Set α}
-    {Aₗ : Matrix Xₗ Yₗ ℚ} {x : Yₗ → ℚ} {Aᵣ : Matrix Xᵣ Yᵣ ℚ} {y : Xᵣ → ℚ}
-    (hAₗx : (Aₗ ⊟ ▬x).IsTotallyUnimodular) (hyAᵣ : (▮y ◫ Aᵣ).IsTotallyUnimodular) :
-    (matrix2sumComposition Aₗ x Aᵣ y).IsPreTU 1 := by
+    {Aₗ : Matrix Xₗ Yₗ ℚ} {r : Yₗ → ℚ} {Aᵣ : Matrix Xᵣ Yᵣ ℚ} {c : Xᵣ → ℚ}
+    (hAr : (Aₗ ⊟ ▬r).IsTotallyUnimodular) (hAc : (▮c ◫ Aᵣ).IsTotallyUnimodular) :
+    (matrix2sumComposition Aₗ r Aᵣ c).IsPreTU 1 := by
   intro f g
   rw [Matrix.det_unique, Fin.default_eq_zero, Matrix.submatrix_apply]
   cases f 0 with
   | inl iₗ => cases g 0 with
-    | inl jₗ => exact (hAₗx.comp_rows Sum.inl).apply iₗ jₗ
+    | inl jₗ => exact (hAr.comp_rows Sum.inl).apply iₗ jₗ
     | inr jᵣ => exact zero_in_signTypeCastRange
   | inr iᵣ => cases g 0 with
-    | inl jₗ => exact in_signTypeCastRange_mul_in_signTypeCastRange (hyAᵣ.apply iᵣ ◩()) (hAₗx.apply ◪() jₗ)
-    | inr jᵣ => exact (hyAᵣ.comp_cols Sum.inr).apply iᵣ jᵣ
+    | inl jₗ => exact in_signTypeCastRange_mul_in_signTypeCastRange (hAc.apply iᵣ ◩()) (hAr.apply ◪() jₗ)
+    | inr jᵣ => exact (hAc.comp_cols Sum.inr).apply iᵣ jᵣ
 
 private lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq α] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
-    {Aₗ : Matrix Xₗ Yₗ ℚ} {x : Yₗ → ℚ} {Aᵣ : Matrix Xᵣ Yᵣ ℚ} {y : Xᵣ → ℚ}
-    (hAₗx : (Aₗ ⊟ ▬x).IsTotallyUnimodular) (hyAᵣ : (▮y ◫ Aᵣ).IsTotallyUnimodular) :
-    (matrix2sumComposition Aₗ x Aᵣ y).IsTotallyUnimodular := by
+    {Aₗ : Matrix Xₗ Yₗ ℚ} {r : Yₗ → ℚ} {Aᵣ : Matrix Xᵣ Yᵣ ℚ} {c : Xᵣ → ℚ}
+    (hAr : (Aₗ ⊟ ▬r).IsTotallyUnimodular) (hAc : (▮c ◫ Aᵣ).IsTotallyUnimodular) :
+    (matrix2sumComposition Aₗ r Aᵣ c).IsTotallyUnimodular := by
   rw [Matrix.isTotallyUnimodular_iff_forall_IsPreTU]
   intro k
   cases k with
   | zero => simp [Matrix.IsPreTU]
-  | succ m => induction m generalizing Aₗ x Aᵣ y with
-    | zero => exact matrix2sumComposition_isPreTU_1 hAₗx hyAᵣ
+  | succ m => induction m generalizing Aₗ r Aᵣ c with
+    | zero => exact matrix2sumComposition_isPreTU_1 hAr hAc
     | succ n ih =>
       intro f g
       wlog hf : f.Injective
-      · exact ((matrix2sumComposition Aₗ x Aᵣ y).submatrix_det_zero_of_not_injective_rows g hf) ▸ zero_in_signTypeCastRange
+      · exact (matrix2sumComposition Aₗ r Aᵣ c).submatrix_det_zero_of_not_injective_rows g hf ▸ zero_in_signTypeCastRange
       wlog hg : g.Injective
-      · exact ((matrix2sumComposition Aₗ x Aᵣ y).submatrix_det_zero_of_not_injective_cols f hg) ▸ zero_in_signTypeCastRange
+      · exact (matrix2sumComposition Aₗ r Aᵣ c).submatrix_det_zero_of_not_injective_cols f hg ▸ zero_in_signTypeCastRange
       wlog hfₗ : ∃ iₗ : Fin (n + 2), ∃ xₗ : Xₗ, f iₗ = ◩xₗ
       · push_neg at hfₗ
-        convert (matrix2sumComposition_bottom_isTotallyUnimodular hAₗx hyAᵣ).det (fn_of_sum_ne_inl hfₗ) g using 2
+        convert (matrix2sumComposition_bottom_isTotallyUnimodular hAr hAc).det (fn_of_sum_ne_inl hfₗ) g using 2
         ext
         rewrite [Matrix.submatrix_apply, Matrix.submatrix_apply, eq_of_fn_sum_ne_inl hfₗ]
         rfl
@@ -256,28 +257,28 @@ private lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq
       wlog hgₗ : ∃ j₀ : Fin (n + 2), ∃ y₀ : Yₗ, g j₀ = ◩y₀ ∧ Aₗ xₗ y₀ ≠ 0
       · push_neg at hgₗ
         convert zero_in_signTypeCastRange
-        apply ((matrix2sumComposition Aₗ x Aᵣ y).submatrix f g).det_eq_zero_of_row_eq_zero iₗ
+        apply ((matrix2sumComposition Aₗ r Aᵣ c).submatrix f g).det_eq_zero_of_row_eq_zero iₗ
         intro j
         cases hgj : g j with
         | inl => exact Matrix.submatrix_apply .. ▸ hgj ▸ hfiₗ ▸ hgₗ j _ hgj
         | inr => exact Matrix.submatrix_apply .. ▸ hgj ▸ hfiₗ ▸ rfl
       obtain ⟨j₀, y₀, hgj₀, hAxy0⟩ := hgₗ
       have hAxy1 : Aₗ xₗ y₀ = 1 ∨ Aₗ xₗ y₀ = -1
-      · obtain ⟨s, hs⟩ := (hAₗx.comp_rows Sum.inl).apply xₗ y₀
+      · obtain ⟨s, hs⟩ := (hAr.comp_rows Sum.inl).apply xₗ y₀
         cases s with
         | zero => exact (hAxy0 hs.symm).elim
         | pos => exact Or.inl hs.symm
         | neg => exact Or.inr hs.symm
-      have hAxAy1 : ((matrix2sumComposition Aₗ x Aᵣ y).submatrix f g) iₗ j₀ = 1 ∨
-                    ((matrix2sumComposition Aₗ x Aᵣ y).submatrix f g) iₗ j₀ = -1
+      have hArAc1 : ((matrix2sumComposition Aₗ r Aᵣ c).submatrix f g) iₗ j₀ = 1 ∨
+                    ((matrix2sumComposition Aₗ r Aᵣ c).submatrix f g) iₗ j₀ = -1
       · rw [Matrix.submatrix_apply, hfiₗ, hgj₀]
         exact hAxy1
-      obtain ⟨f', g', -, -, hdet⟩ :=
-        ((matrix2sumComposition Aₗ x Aᵣ y).submatrix f g).shortTableauPivot_abs_det_eq_submatrix_abs_det hAxAy1
-      rw [in_signTypeCastRange_iff_abs, hdet, (matrix2sumComposition Aₗ x Aᵣ y).submatrix_shortTableauPivot hf hg iₗ j₀,
-        hfiₗ, hgj₀, Matrix.submatrix_submatrix, matrix2sumComposition_shortTableauPivot Aₗ x Aᵣ y,
+      obtain ⟨f', g', -, -, hArAc⟩ :=
+        ((matrix2sumComposition Aₗ r Aᵣ c).submatrix f g).shortTableauPivot_abs_det_eq_submatrix_abs_det hArAc1
+      rw [in_signTypeCastRange_iff_abs, hArAc, (matrix2sumComposition Aₗ r Aᵣ c).submatrix_shortTableauPivot hf hg iₗ j₀,
+        hfiₗ, hgj₀, Matrix.submatrix_submatrix, matrix2sumComposition_shortTableauPivot Aₗ r Aᵣ c,
         ←in_signTypeCastRange_iff_abs]
-      exact ih (hAₗx.fromRows_pivot hAxy0) hyAᵣ (f ∘ f') (g ∘ g')
+      exact ih (hAr.fromRows_pivot hAxy0) hAc (f ∘ f') (g ∘ g')
 
 lemma standardRepr2sumComposition_hasTuSigning {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {a : α}
     (ha : Sₗ.X ∩ Sᵣ.Y = {a}) (hXY : Sᵣ.X ⫗ Sₗ.Y) (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) :
@@ -288,13 +289,13 @@ lemma standardRepr2sumComposition_hasTuSigning {α : Type} [DecidableEq α] {S�
     (fun i j =>
       show
         |((matrix2sumComposition (Bₗ.dropRow a) (Bₗ.interRow ha) (Bᵣ.dropCol a) (Bᵣ.interCol ha) ∘ _) i ∘ _) j| =
-        ZMod.val (((matrix2sumComposition _ _ _ _ ∘ _) i ∘ _) j)
+        ZMod.val (((_ ∘ _) i ∘ _) j)
       from Function.comp_apply ▸ Function.comp_apply ▸ Function.comp_apply ▸ Function.comp_apply ▸
         i.toSum.casesOn
           (fun iₗ => j.toSum.casesOn (hBBₗ (Set.diff_subset.elem iₗ)) (fun _ => rfl))
           (fun iᵣ => j.toSum.casesOn
             (fun jₗ => Z2val_toRat_mul_Z2val_toRat (Sᵣ.B.interCol ha iᵣ) (Sₗ.B.interRow ha jₗ) ▸
-                hBBₗ ha._ₗ jₗ ▸ hBBᵣ iᵣ ha._ᵣ ▸abs_mul (Bᵣ.interCol ha iᵣ) (Bₗ.interRow ha jₗ))
+                hBBₗ ha._ₗ jₗ ▸ hBBᵣ iᵣ ha._ᵣ ▸ abs_mul (Bᵣ.interCol ha iᵣ) (Bₗ.interRow ha jₗ))
             (hBBᵣ iᵣ <| Set.diff_subset.elem ·)))⟩
 
 instance Matroid.Is2sumOf.finS {α : Type} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} (hM : M.Is2sumOf Mₗ Mᵣ) : Finite hM.S.X := by
