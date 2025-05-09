@@ -1,5 +1,4 @@
 import Seymour.Basic.FunctionToHalfSum
-import Seymour.Matrix.Notation
 import Seymour.Matrix.Pivoting
 import Seymour.Matroid.Properties.Regularity
 import Seymour.Matrix.Determinants
@@ -137,8 +136,9 @@ private lemma Matrix.shortTableauPivot_outer {X Y X' Y' F : Type} [DecidableEq X
   <;> simp [shortTableauPivotOtherRow, Matrix.shortTableauPivot_eq, hj]
   <;> ring
 
-private lemma matrix2sumComposition_shortTableauPivot {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
-    [DecidableEq Yᵣ] (Aₗ : Matrix Xₗ Yₗ ℚ) (r : Yₗ → ℚ) (Aᵣ : Matrix Xᵣ Yᵣ ℚ) (c : Xᵣ → ℚ) {i : Xₗ} {j : Yₗ} :
+private lemma matrix2sumComposition_shortTableauPivot {Xₗ Yₗ Xᵣ Yᵣ : Type}
+    [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
+    (Aₗ : Matrix Xₗ Yₗ ℚ) (r : Yₗ → ℚ) (Aᵣ : Matrix Xᵣ Yᵣ ℚ) (c : Xᵣ → ℚ) {i : Xₗ} {j : Yₗ} :
     (matrix2sumComposition Aₗ r Aᵣ c).shortTableauPivot ◩i ◩j =
     matrix2sumComposition (Aₗ.shortTableauPivot i j) (shortTableauPivotOtherRow (Aₗ i) r id j) Aᵣ c :=
   ((matrix2sumComposition Aₗ r Aᵣ c).shortTableauPivot ◩i ◩j).fromBlocks_toBlocks ▸

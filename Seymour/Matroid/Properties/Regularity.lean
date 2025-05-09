@@ -295,7 +295,7 @@ lemma StandardRepr.toMatroid_isRegular_iff_hasTuSigning (S : StandardRepr α Z2)
     cc
   · intro ⟨B, hB, hBS⟩
     apply S.toVectorMatroid.toMatroid_isRegular_if_hasTuSigning
-    use (B.prependId · ∘ Subtype.toSum), (hB.one_fromCols).comp_cols Subtype.toSum
+    use ((1 ◫ B) · ∘ Subtype.toSum), (hB.one_fromCols).comp_cols Subtype.toSum
     intro i j
     cases hj : j.toSum with
     | inl x =>

@@ -1,4 +1,3 @@
-import Seymour.Matrix.Notation
 import Seymour.Matrix.Pivoting
 import Seymour.Matroid.Properties.Regularity
 

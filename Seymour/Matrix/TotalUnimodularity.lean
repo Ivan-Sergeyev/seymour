@@ -3,7 +3,6 @@ import Seymour.Basic.Fin
 import Seymour.Basic.FunctionDecompose
 import Seymour.Basic.SignTypeCast
 import Seymour.Matrix.Basic
-import Seymour.Matrix.Notation
 
 
 /-- Every matrix over `Z2` is TU. -/

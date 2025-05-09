@@ -45,7 +45,7 @@ private lemma Matrix.IsTotallyUnimodular.mulRow [DecidableEq X] [CommRing F] {A 
     simp_all [Matrix.submatrix, Matrix.mulRow]
 
 /-- Add row `x` of `A` multiplied by factor `q` (where `q` is different for each row) to every row of `A` except `x`. -/
-private def Matrix.addMultiples [DecidableEq X] [NonUnitalNonAssocSemiring F] (A : Matrix X Y F) (x : X) (q : X → F) :
+private def Matrix.addMultiples [DecidableEq X] [Add F] [SMul F F] (A : Matrix X Y F) (x : X) (q : X → F) :
     Matrix X Y F :=
   fun i : X => if i = x then A x else A i + q i • A x
 
@@ -159,12 +159,12 @@ private lemma Matrix.IsTotallyUnimodular.addPivotMultiples [DecidableEq X] [Fiel
       | neg => exact hAyx hs.symm
 
 
--- ## Long tableau pivot
+-- ## Long-tableau pivoting
 
 /-- The result of pivoting in a long tableau. This definition makes sense only if `A x y` is non-zero. -/
-def Matrix.longTableauPivot [One F] [Mul F] [Div F] [Sub F] [DecidableEq X] (A : Matrix X Y F) (x : X) (y : Y) :
+def Matrix.longTableauPivot [One F] [SMul F F] [Div F] [Sub F] [DecidableEq X] (A : Matrix X Y F) (x : X) (y : Y) :
     Matrix X Y F :=
-  fun i =>
+  Matrix.of <| fun i : X =>
     if i = x then
       (1 / A x y) • A i
     else
@@ -189,28 +189,30 @@ lemma Matrix.IsTotallyUnimodular.longTableauPivot [DecidableEq X] [Field F] {A :
   exact (hA.addPivotMultiples hxy).mulRow x hAxy
 
 
--- ## Short tableau pivot
+-- ## Short-tableau pivoting
 
 /-- The result of pivoting in a short tableau. This definition makes sense only if `A x y` is non-zero. -/
-def Matrix.shortTableauPivot [Zero F] [One F] [Mul F] [Div F] [Sub F] [DecidableEq X] [DecidableEq Y]
+def Matrix.shortTableauPivot [Zero F] [One F] [SMul F F] [Div F] [Sub F] [DecidableEq X] [DecidableEq Y]
     (A : Matrix X Y F) (x : X) (y : Y) :
     Matrix X Y F :=
-  (A.prependId.longTableauPivot x ◪y).submatrix id (fun j => if j = y then ◩x else ◪j)
+  ((1 ◫ A).longTableauPivot x ◪y).submatrix id (fun j : Y => if j = y then ◩x else ◪j)
 
-/-- Explicit formula for short tableau pivot. -/
+/-- Explicit formula for the short-tableau pivoting. -/
 @[simp]
 lemma Matrix.shortTableauPivot_eq [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (x : X) (y : Y) :
-    A.shortTableauPivot x y = Matrix.of (fun i j =>
-    if i = x then
-      if j = y then
-        1 / A x y
+    A.shortTableauPivot x y =
+    Matrix.of (fun i : X => fun j : Y =>
+      if i = x then
+        if j = y then
+          1 / A x y
+        else
+          A x j / A x y
       else
-        A x j / A x y
-    else
-      if j = y then
-        - A i y / A x y
-      else
-        A i j - A i y * A x j / A x y) := by
+        if j = y then
+          - A i y / A x y
+        else
+          A i j - A i y * A x j / A x y
+    ) := by
   ext i j
   by_cases hi : i = x
   <;> by_cases hj : j = y
@@ -220,12 +222,8 @@ lemma Matrix.shortTableauPivot_eq [Field F] [DecidableEq X] [DecidableEq Y] (A :
 /-- Short tableau pivot preserves total unimodularity. -/
 lemma Matrix.IsTotallyUnimodular.shortTableauPivot [DecidableEq X] [DecidableEq Y] [Field F] {A : Matrix X Y F}
     (hA : A.IsTotallyUnimodular) {x : X} {y : Y} (hxy : A x y ≠ 0) :
-    (A.shortTableauPivot x y).IsTotallyUnimodular := by
-  have hxy' : (A.prependId) x ◪y ≠ 0 := hxy
-  exact ((hA.one_fromCols).longTableauPivot x ◪y hxy').submatrix id (fun j => if j = y then ◩x else ◪j)
-
-
--- ## Specialized API
+    (A.shortTableauPivot x y).IsTotallyUnimodular :=
+  ((hA.one_fromCols).longTableauPivot x ◪y hxy).submatrix id (fun j : Y => if j = y then ◩x else ◪j)
 
 lemma Matrix.shortTableauPivot_zero {X' Y' : Type} [DecidableEq X] [DecidableEq Y] [DecidableEq X'] [DivisionRing F]
     (A : Matrix X Y F) (x : X') (y : Y) (f : X' → X) (g : Y' → Y) (hg : y ∉ g.range) (hAfg : ∀ i j, A (f i) (g j) = 0) :

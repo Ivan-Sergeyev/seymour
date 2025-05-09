@@ -1,3 +1,5 @@
+import Mathlib.Data.Matrix.ColumnRowPartitioned
+import Mathlib.Data.Matrix.RowCol
 import Mathlib.Tactic
 import Linters
 
@@ -20,8 +22,13 @@ postfix:max ".→" => Iff.mp
 /-- The right-to-left direction of `↔`. -/
 postfix:max ".←" => Iff.mpr
 
+/-- Writing `↓t` is slightly more general than writing `Function.const _ t`. -/
+notation:max "↓"t:arg => (fun _ => t)
+
 /-- We denote the cardinality of a `Fintype` the same way the cardinality of a `Finset` is denoted. -/
 prefix:max "#" => Fintype.card
+
+postfix:max ".≃" => Equiv.setCongr
 
 /-- The "left" or "top" variant. -/
 prefix:max "◩" => Sum.inl
@@ -29,8 +36,20 @@ prefix:max "◩" => Sum.inl
 /-- The "right" or "bottom" variant. -/
 prefix:max "◪" => Sum.inr
 
-/-- Writing `↓t` is slightly more general than writing `Function.const _ t`. -/
-notation:max "↓"t:arg => (fun _ => t)
+/-- Glue rows of two matrices. -/
+infixl:63 " ⊟ " => Matrix.fromRows
+
+/-- Glue cols of two matrices. -/
+infixl:63 " ◫ " => Matrix.fromCols
+
+/-- Glue four matrices into one block matrix. -/
+notation:62 "⊞ " A:max B:max C:max D:max => Matrix.fromBlocks A B C D
+
+/-- Convert vector to a single-row matrix. -/
+notation:64 "▬"r:81 => Matrix.replicateRow Unit r
+
+/-- Convert vector to a single-col matrix. -/
+notation:64 "▮"c:81 => Matrix.replicateCol Unit c
 
 
 lemma and_congr_l {P₁ P₂ : Prop} (hP : P₁ ↔ P₂) (Q : Prop) : P₁ ∧ Q ↔ P₂ ∧ Q :=

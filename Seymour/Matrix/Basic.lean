@@ -1,5 +1,4 @@
 import Seymour.Basic.Basic
-import Seymour.Matrix.Notation
 import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 
 open scoped Matrix
@@ -7,32 +6,25 @@ open scoped Matrix
 
 variable {α : Type}
 
-/-- Add the identity matrix to the left of given matrix (important "definition" -- use it with standard representations). -/
-@[simp low]
-abbrev Matrix.prependId [Zero α] [One α] {m n : Type} [DecidableEq m] (A : Matrix m n α) : Matrix m (m ⊕ n) α :=
-  1 ◫ A
-
-/-- Add the identity matrix on top of given matrix (auxiliary "definition" -- use it only in small lemmas). -/
-@[simp low]
-abbrev Matrix.uppendId [Zero α] [One α] {m n : Type} [DecidableEq n] (A : Matrix m n α) : Matrix (n ⊕ m) n α :=
-  1 ⊟ A
+@[simp]
+lemma Matrix.one_fromCols_transpose [Zero α] [One α] {m n : Type} [DecidableEq m] (A : Matrix m n α) :
+    (1 ◫ A)ᵀ = (1 : Matrix m m α) ⊟ Aᵀ := by
+  rw [←Matrix.transpose_one, ←Matrix.transpose_fromCols, Matrix.transpose_one]
 
 @[simp]
-lemma Matrix.prependId_transpose [Zero α] [One α] {m n : Type} [DecidableEq m] (A : Matrix m n α) :
-    A.prependIdᵀ = Aᵀ.uppendId := by
-  ext i j
-  cases i with
-  | inr => rfl
-  | inl i' =>
-    if hi' : i' = j then
-      simp [Matrix.one_apply_eq, hi']
-    else
-      simp [Matrix.one_apply_ne, hi', Ne.symm hi']
+lemma Matrix.one_fromRows_transpose [Zero α] [One α] {m n : Type} [DecidableEq n] (A : Matrix m n α) :
+    (1 ⊟ A)ᵀ = ((1 : Matrix n n α) ◫ Aᵀ : Matrix ..) := by
+  rw [←Matrix.transpose_one, ←Matrix.transpose_fromRows, Matrix.transpose_one]
 
 @[simp]
-lemma Matrix.uppendId_transpose [Zero α] [One α] {m n : Type} [DecidableEq n] (A : Matrix m n α) :
-    A.uppendIdᵀ = Aᵀ.prependId := by
-  rw [←Matrix.transpose_transpose A.transpose.prependId, Matrix.prependId_transpose, Matrix.transpose_transpose]
+lemma Matrix.fromCols_one_transpose [Zero α] [One α] {m n : Type} [DecidableEq m] (A : Matrix m n α) :
+    (A ◫ 1)ᵀ = Aᵀ ⊟ (1 : Matrix m m α) := by
+  rw [←Matrix.transpose_one, ←Matrix.transpose_fromCols, Matrix.transpose_one]
+
+@[simp]
+lemma Matrix.fromRows_one_transpose [Zero α] [One α] {m n : Type} [DecidableEq n] (A : Matrix m n α) :
+    (A ⊟ 1)ᵀ = (Aᵀ ◫ (1 : Matrix n n α) : Matrix ..) := by
+  rw [←Matrix.transpose_one, ←Matrix.transpose_fromRows, Matrix.transpose_one]
 
 /-- Two matrices are equal if they agree on all columns. -/
 lemma Matrix.ext_col {m n : Type} {A B : Matrix m n α} (hAB : ∀ i : m, A i = B i) : A = B :=

@@ -1,5 +1,4 @@
 import Seymour.HardDirection -- the final file
-import Seymour.Matrix.OfLinearMaps -- currently not used
 
 
 -- ## Summary of basic definitions
@@ -35,9 +34,9 @@ recall Matrix.toMatrixUnionUnion {α : Type} {T₁ T₂ S₁ S₂ : Set α} {β 
 
 -- ## Summary of 1-sum
 
-recall matrix1sumComposition {β : Type} [Zero β] {Xₗ Yₗ Xᵣ Yᵣ : Type}
-    (Aₗ : Matrix Xₗ Yₗ β) (Aᵣ : Matrix Xᵣ Yᵣ β) :
-    Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) β :=
+recall matrix1sumComposition {R : Type} [Zero R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
+    (Aₗ : Matrix Xₗ Yₗ R) (Aᵣ : Matrix Xᵣ Yᵣ R) :
+    Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) R :=
   Matrix.fromBlocks Aₗ 0 0 Aᵣ
 
 recall standardRepr1sumComposition {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2}
@@ -64,9 +63,9 @@ recall standardRepr1sumComposition_hasTuSigning {α : Type} [DecidableEq α] {S�
 
 -- ## Summary of 2-sum
 
-recall matrix2sumComposition {β : Type} [Semiring β] {Xₗ Yₗ Xᵣ Yᵣ : Type}
-    (Aₗ : Matrix Xₗ Yₗ β) (x : Yₗ → β) (Aᵣ : Matrix Xᵣ Yᵣ β) (y : Xᵣ → β) :
-    Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) β :=
+recall matrix2sumComposition {R : Type} [Semiring R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
+    (Aₗ : Matrix Xₗ Yₗ R) (x : Yₗ → R) (Aᵣ : Matrix Xᵣ Yᵣ R) (y : Xᵣ → R) :
+    Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) R :=
   Matrix.fromBlocks Aₗ 0 (fun i j => y i * x j) Aᵣ
 
 recall standardRepr2sumComposition {α : Type} [DecidableEq α] {a : α} {Sₗ Sᵣ : StandardRepr α Z2}

@@ -32,7 +32,7 @@ variable {α R : Type} [DecidableEq α]
 
 /-- Convert standard representation of a vector matroid to a full representation. -/
 def StandardRepr.toVectorMatroid [Zero R] [One R] (S : StandardRepr α R) : VectorMatroid α R :=
-  ⟨S.X, S.X ∪ S.Y, (S.B.prependId · ∘ Subtype.toSum)⟩
+  ⟨S.X, S.X ∪ S.Y, ((1 ◫ S.B) · ∘ Subtype.toSum)⟩
 
 /-- Converting standard representation to full representation does not change the set of row indices. -/
 @[simp]
@@ -49,7 +49,7 @@ lemma StandardRepr.toVectorMatroid_Y [Zero R] [One R] (S : StandardRepr α R) :
 /-- If a vector matroid has a standard representation matrix `B`, its full representation matrix is `[1 | B]`. -/
 @[simp]
 lemma StandardRepr.toVectorMatroid_A [Zero R] [One R] (S : StandardRepr α R) :
-    S.toVectorMatroid.A = (S.B.prependId · ∘ Subtype.toSum) :=
+    S.toVectorMatroid.A = ((1 ◫ S.B) · ∘ Subtype.toSum) :=
   rfl
 
 /-- Ground set of a vector matroid is union of row and column index sets of its standard matrix representation. -/
@@ -66,52 +66,46 @@ instance {S : StandardRepr α R} [Zero R] [One R] [Finite S.X] [Finite S.Y] : Fi
 
 lemma StandardRepr.toVectorMatroid_indep_iff [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
-    I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R (S.B.prependId · ∘ Subtype.toSum)ᵀ ((S.X ∪ S.Y) ↓∩ I) := by
+    I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R ((1 ◫ S.B) · ∘ Subtype.toSum)ᵀ ((S.X ∪ S.Y) ↓∩ I) := by
   rfl
 
 @[simp]
 lemma StandardRepr.toVectorMatroid_indep_iff' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
-    I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) ((S.X ∪ S.Y) ↓∩ I) := by
+    I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R ((1 ◫ S.B)ᵀ ∘ Subtype.toSum) ((S.X ∪ S.Y) ↓∩ I) := by
   rfl
-
-lemma StandardRepr.toVectorMatroid_indep_iff'' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
-    S.toVectorMatroid.toMatroid.Indep I ↔
-    I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R (S.Bᵀ.uppendId ∘ Subtype.toSum) ((S.X ∪ S.Y) ↓∩ I) := by
-  simp_rw [←Matrix.prependId_transpose]
-  rfl -- TODO reëxamine simp-normal form!
 
 lemma StandardRepr.toVectorMatroid_indep_iff_elem [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependId · ∘ Subtype.toSum)ᵀ hI.elem.range := by
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R ((1 ◫ S.B) · ∘ Subtype.toSum)ᵀ hI.elem.range := by
   rw [StandardRepr.toVectorMatroid_indep_iff]
   unfold HasSubset.Subset.elem
   aesop
 
 lemma StandardRepr.toVectorMatroid_indep_iff_elem' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) hI.elem.range :=
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R ((1 ◫ S.B)ᵀ ∘ Subtype.toSum) hI.elem.range :=
   S.toVectorMatroid_indep_iff_elem I
 
 lemma StandardRepr.toVectorMatroid_indep_iff_elem'' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.Bᵀ.uppendId ∘ Subtype.toSum) hI.elem.range := by
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R ((1 ⊟ S.Bᵀ) ∘ Subtype.toSum) hI.elem.range := by
   simpa using S.toVectorMatroid_indep_iff_elem' I
 
 lemma StandardRepr.toVectorMatroid_indep_iff_submatrix [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (S.B.prependId.submatrix id (Subtype.toSum ∘ hI.elem))ᵀ := by
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R ((1 ◫ S.B).submatrix id (Subtype.toSum ∘ hI.elem))ᵀ := by
   simp only [StandardRepr.toVectorMatroid, VectorMatroid.toMatroid_indep, VectorMatroid.indepCols_iff_submatrix]
   rfl -- TODO reëxamine simp-normal form!
 
 lemma StandardRepr.toVectorMatroid_indep_iff_submatrix' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (S.B.prependIdᵀ.submatrix (Subtype.toSum ∘ hI.elem) id) :=
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R ((1 ◫ S.B)ᵀ.submatrix (Subtype.toSum ∘ hI.elem) id) :=
   S.toVectorMatroid_indep_iff_submatrix I
 
 lemma StandardRepr.toVectorMatroid_indep_iff_submatrix'' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toVectorMatroid.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (S.Bᵀ.uppendId.submatrix (Subtype.toSum ∘ hI.elem) id) := by
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R ((1 ⊟ S.Bᵀ).submatrix (Subtype.toSum ∘ hI.elem) id) := by
   simpa using S.toVectorMatroid_indep_iff_submatrix' I
 
 attribute [local ext] StandardRepr in
@@ -162,58 +156,53 @@ lemma StandardRepr.toMatroid_E [DivisionRing R] (S : StandardRepr α R) :
 
 lemma StandardRepr.toMatroid_indep_iff [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
-    I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R (S.B.prependId · ∘ Subtype.toSum)ᵀ ((S.X ∪ S.Y) ↓∩ I) :=
+    I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R ((1 ◫ S.B) · ∘ Subtype.toSum)ᵀ ((S.X ∪ S.Y) ↓∩ I) :=
   S.toVectorMatroid_indep_iff I
 
 lemma StandardRepr.toMatroid_indep_iff' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
-    I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) ((S.X ∪ S.Y) ↓∩ I) :=
+    I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R ((1 ◫ S.B)ᵀ ∘ Subtype.toSum) ((S.X ∪ S.Y) ↓∩ I) :=
   S.toVectorMatroid_indep_iff' I
-
-lemma StandardRepr.toMatroid_indep_iff'' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
-    S.toMatroid.Indep I ↔
-    I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R (S.Bᵀ.uppendId ∘ Subtype.toSum) ((S.X ∪ S.Y) ↓∩ I) :=
-  S.toVectorMatroid_indep_iff'' I
 
 lemma StandardRepr.toMatroid_indep_iff_elem [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependId · ∘ Subtype.toSum)ᵀ hI.elem.range :=
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R ((1 ◫ S.B) · ∘ Subtype.toSum)ᵀ hI.elem.range :=
   S.toVectorMatroid_indep_iff_elem I
 
 @[simp high]
 lemma StandardRepr.toMatroid_indep_iff_elem' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) hI.elem.range :=
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R ((1 ◫ S.B)ᵀ ∘ Subtype.toSum) hI.elem.range :=
   S.toVectorMatroid_indep_iff_elem' I
 
 lemma StandardRepr.toMatroid_indep_iff_elem'' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R (S.Bᵀ.uppendId ∘ Subtype.toSum) hI.elem.range :=
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R ((1 ⊟ S.Bᵀ) ∘ Subtype.toSum) hI.elem.range :=
   S.toVectorMatroid_indep_iff_elem'' I
 
 lemma StandardRepr.toMatroid_indep_iff_submatrix [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (S.B.prependId.submatrix id (Subtype.toSum ∘ hI.elem))ᵀ :=
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R ((1 ◫ S.B).submatrix id (Subtype.toSum ∘ hI.elem))ᵀ :=
   S.toVectorMatroid_indep_iff_submatrix I
 
 lemma StandardRepr.toMatroid_indep_iff_submatrix' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (S.B.prependIdᵀ.submatrix (Subtype.toSum ∘ hI.elem) id) :=
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R ((1 ◫ S.B)ᵀ.submatrix (Subtype.toSum ∘ hI.elem) id) :=
   S.toVectorMatroid_indep_iff_submatrix' I
 
 lemma StandardRepr.toMatroid_indep_iff_submatrix'' [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R (S.Bᵀ.uppendId.submatrix (Subtype.toSum ∘ hI.elem) id) :=
+    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R ((1 ⊟ S.Bᵀ).submatrix (Subtype.toSum ∘ hI.elem) id) :=
   S.toVectorMatroid_indep_iff_submatrix'' I
 
 @[simp]
 lemma StandardRepr.toMatroid_indep [DivisionRing R] (S : StandardRepr α R) :
-    S.toMatroid.Indep = (∃ hI : · ⊆ S.X ∪ S.Y, LinearIndepOn R (S.B.prependIdᵀ ∘ Subtype.toSum) hI.elem.range) := by
+    S.toMatroid.Indep = (∃ hI : · ⊆ S.X ∪ S.Y, LinearIndepOn R ((1 ◫ S.B)ᵀ ∘ Subtype.toSum) hI.elem.range) := by
   ext I
   exact S.toVectorMatroid_indep_iff_elem' I
 
 lemma StandardRepr.toMatroid_indep' [DivisionRing R] (S : StandardRepr α R) :
-    S.toMatroid.Indep = (∃ hI : · ⊆ S.X ∪ S.Y, LinearIndepOn R (S.Bᵀ.uppendId ∘ Subtype.toSum) hI.elem.range) := by
+    S.toMatroid.Indep = (∃ hI : · ⊆ S.X ∪ S.Y, LinearIndepOn R ((1 ⊟ S.Bᵀ) ∘ Subtype.toSum) hI.elem.range) := by
   simp
 
 lemma VectorMatroid.isFinitary [DivisionRing R] (M : VectorMatroid α R) : M.toMatroid.Finitary := by
@@ -243,7 +232,7 @@ private lemma exists_standardRepr_isBase_aux_left {X Y G I : Set α} [∀ a, Dec
       B.repr ⟨A ⟨i, hiX⟩, hiR⟩ g = B.repr (B ⟨i, hiG⟩) g)
     (hAI : LinearIndepOn R A hIX.elem.range) :
     LinearIndepOn R
-      (((Matrix.of (fun x : X => fun g : G => B.repr ⟨A x, in_submoduleSpan_range A x⟩ g)).submatrix hXGX.elem id).uppendId
+      ((1 ⊟ (Matrix.of (fun x : X => fun g : G => B.repr ⟨A x, in_submoduleSpan_range A x⟩ g)).submatrix hXGX.elem id)
         ∘ Subtype.toSum)
       hIGX.elem.range := by
   have hX : G ∪ (X \ G) = X := Set.union_diff_cancel' (by tauto) hGX
@@ -280,7 +269,7 @@ private lemma exists_standardRepr_isBase_aux_right {X Y G I : Set α} [∀ a, De
     (hB : ∀ i : α, ∀ g : G, ∀ hiX : i ∈ X, ∀ hiG : i ∈ G, ∀ hiR : A ⟨i, hiX⟩ ∈ Submodule.span R A.range,
       B.repr ⟨A ⟨i, hiX⟩, hiR⟩ g = B.repr (B ⟨i, hiG⟩) g)
     (hBI : LinearIndepOn R
-      (((Matrix.of (fun x : X => fun g : G => B.repr ⟨A x, in_submoduleSpan_range A x⟩ g)).submatrix hXGX.elem id).uppendId
+      ((1 ⊟ (Matrix.of (fun x : X => fun g : G => B.repr ⟨A x, in_submoduleSpan_range A x⟩ g)).submatrix hXGX.elem id)
         ∘ Subtype.toSum) hIGX.elem.range) :
     LinearIndepOn R A hIX.elem.range := by
   apply B.linearIndepOn_of_in_submodule
@@ -375,7 +364,7 @@ lemma VectorMatroid.exists_standardRepr_isBase [DivisionRing R] {G : Set α}
       B.repr ⟨M.Aᵀ ⟨j, hjy⟩, hjR⟩ g = B.repr (B ⟨j, hjg⟩) g
   · simp [B]
   simp only [StandardRepr.toMatroid_indep_iff_elem', VectorMatroid.toMatroid_indep_iff_elem,
-    Matrix.prependId_transpose, Matrix.transpose_submatrix, Set.union_diff_self]
+    Matrix.one_fromCols_transpose, Matrix.transpose_submatrix, Set.union_diff_self]
   have hGYY : G ∪ M.Y = M.Y := Set.union_eq_self_of_subset_left hGY
   constructor
   · intro ⟨hI, hRCI⟩
@@ -402,7 +391,7 @@ lemma VectorMatroid.exists_lin_indep_rows_TU [Field R] (V : VectorMatroid α R) 
     ∃ W : VectorMatroid α R, V.toMatroid = W.toMatroid ∧ LinearIndependent R W.A ∧ W.A.IsTotallyUnimodular := by
   sorry
 
-lemma VectorMatroid.exists_lin_indep_rows_TU' [Field R] {G : Set α}
+lemma VectorMatroid.exists_lin_indep_rows_isBase_TU [Field R] {G : Set α}
     (V : VectorMatroid α R) (hVG : V.toMatroid.IsBase G) (hVA : V.A.IsTotallyUnimodular) :
     ∃ W : VectorMatroid α R, V.toMatroid = W.toMatroid ∧ LinearIndependent R W.A ∧ W.X = G ∧ W.A.IsTotallyUnimodular := by
   sorry
@@ -414,7 +403,7 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
     ∃ S : StandardRepr α R, S.X = G ∧ S.toMatroid = V.toMatroid ∧ S.B.IsTotallyUnimodular := by
   have hGV : G ⊆ V.Y := hVG.subset_ground
   -- 1. delete linearly dependent rows
-  obtain ⟨W, hVW, hW, hWG, hWtu⟩ := V.exists_lin_indep_rows_TU' hVG hVA
+  obtain ⟨W, hVW, hW, hWG, hWtu⟩ := V.exists_lin_indep_rows_isBase_TU hVG hVA
   have hGW : G ⊆ W.Y := vectorMatroid_toMatroid_Y_congr hVW ▸ hGV
   have : Fintype G := sorry
   wlog hG : 0 < #G
@@ -452,9 +441,9 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
         sorry
       · exact hGX'
   obtain ⟨W', hWW, hWtu, hGX', hGY', hfW'⟩ := indu #G (by rfl)
-  let I : Matrix G G R := W'.A.submatrix (Equiv.setCongr hGX') hGY'.elem
+  let I : Matrix G G R := W'.A.submatrix hGX'.≃ hGY'.elem
   have hYGY : W'.Y \ G ⊆ W'.Y := Set.diff_subset
-  let B : Matrix G (W'.Y \ G).Elem R := W'.A.submatrix (Equiv.setCongr hGX') hYGY.elem
+  let B : Matrix G (W'.Y \ G).Elem R := W'.A.submatrix hGX'.≃ hYGY.elem
   use ⟨_, _, Set.disjoint_sdiff_right, B, G.decidableMemOfFintype, (Classical.propDecidable <| · ∈ W'.Y \ G)⟩
   constructor
   · simp
@@ -462,7 +451,7 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
   · rw [hVW, ←hWW]
     simp only [B]
     sorry
-  · exact hWtu.submatrix (Equiv.setCongr hGX') hYGY.elem
+  · exact hWtu.submatrix hGX'.≃ hYGY.elem
 
 /-- The identity matrix has linearly independent rows. -/
 lemma Matrix.one_linearIndependent [Ring R] : LinearIndependent R (1 : Matrix α α R) := by
@@ -495,9 +484,9 @@ omit R
 private lemma sum_support_image_subtype_eq_zero {X Y : Set α} {F : Type} [Field F] {B : Matrix Y X F} {D : Set X} {y : Y}
     {hX : ∀ a, Decidable (a ∈ X)} {hY : ∀ a, Decidable (a ∈ Y)} (hXXY : X ⊆ X ∪ Y) (hYXY : Y ⊆ X ∪ Y) -- redundant but keep
     {l : (X ∪ Y).Elem →₀ F} (hl : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' D) (hly : l (hYXY.elem y) = 0)
-    {i : (X ∪ Y).Elem} (hiX : i.val ∈ X) (hlBi : ∑ a ∈ l.support, l a • B.uppendId a.toSum ⟨i, hiX⟩ = 0) :
+    {i : (X ∪ Y).Elem} (hiX : i.val ∈ X) (hlBi : ∑ a ∈ l.support, l a • (1 ⊟ B) a.toSum ⟨i, hiX⟩ = 0) :
     ∑ a ∈ (l.support.image Subtype.val).subtype (· ∈ X),
-      l (hXXY.elem a) • B.uppendId (hXXY.elem a).toSum ⟨i, hiX⟩ = 0 := by
+      l (hXXY.elem a) • (1 ⊟ B) (hXXY.elem a).toSum ⟨i, hiX⟩ = 0 := by
   rw [←Finset.sum_finset_coe] at hlBi
   convert hlBi
   apply Finset.sum_bij (fun a ha => ⟨hXXY.elem a, by simpa using ha⟩)
@@ -556,7 +545,7 @@ private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type} [Field F
   on_goal 1 => let D := D₁; let Dₒ := D₂; let B := B₁; let Bₒ := B₂; let F := F₁; let F₀ := F₂
   on_goal 2 => let D := D₂; let Dₒ := D₁; let B := B₂; let Bₒ := B₁; let F := F₂; let F₀ := F₁
   all_goals
-    by_contra hD
+  · by_contra hD
     rw [Set.not_subset_iff_exists_mem_not_mem] at hD
     -- otherwise `y ᕃ Dₒ` is dependent in `Mₒ` but indep in `M`
     have hMₒ : ¬ (StandardRepr.mk X Y hXY Bₒ hX hY).toMatroid.Indep (y.val ᕃ Dₒ)
@@ -572,9 +561,9 @@ private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type} [Field F
       simp only at x hDₒ
       simp_rw [Function.comp_apply]
       rw [Finset.sum_apply]
-      show ∑ i : hDₒ.elem.range.Elem, (i.val.toSum.casesOn (- Bₒᵀ y) 1 : F₀) • Bₒ.prependId x i.val.toSum = 0
+      show ∑ i : hDₒ.elem.range.Elem, (i.val.toSum.casesOn (- Bₒᵀ y) 1 : F₀) • (1 ◫ Bₒ) x i.val.toSum = 0
       suffices separated : Bₒ x y + ∑ i : Dₒ.Elem, (- Bₒᵀ y i) • (1 : Matrix X X F₀) x i.val = 0
-      · rw [Finset.sum_set_coe (f := (fun i : (X ∪ Y).Elem => (i.toSum.casesOn (- Bₒᵀ y) 1 : F₀) • Bₒ.prependId x i.toSum)),
+      · rw [Finset.sum_set_coe (f := (fun i : (X ∪ Y).Elem => (i.toSum.casesOn (- Bₒᵀ y) 1 : F₀) • (1 ◫ Bₒ) x i.toSum)),
           Set.toFinset_range,
           show Finset.univ.image hDₒ.elem = hYXY.elem y ᕃ Finset.map ⟨hXXY.elem, hXXY.elem_injective⟩ { x : X | Bₒᵀ y x ≠ 0 } by
             aesop,
@@ -587,7 +576,7 @@ private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type} [Field F
             rw [hXY.inter_eq] at impossible
             exact impossible)]
         convert separated
-        · convert_to Bₒ.prependId x ◪y = Bₒ x y
+        · convert_to ((1 : Matrix X X F₀) ◫ Bₒ) x ◪y = Bₒ x y
           · cases _ : (hYXY.elem y).toSum <;> simp_all [Subtype.toSum, hXY.not_mem_of_mem_right y.property]
           rfl
         · simp only [Finset.sum_map, Function.Embedding.coeFn_mk, HasSubset.Subset.elem, Subtype.coe_prop, toSum_left]
@@ -651,15 +640,15 @@ private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type} [Field F
         rw [Finsupp.linearCombination_apply] at hlBd
         have hlBd' : l.sum (fun i a => a • Matrix.fromRows 1 Bᵀ i.toSum d) = 0
         · simpa [Finsupp.sum] using hlBd
-        have untransposed : l.sum (fun i a => a • B.prependId d i.toSum) = 0
-        · rwa [←Matrix.transpose_transpose B.prependId, Matrix.prependId_transpose]
+        have untransposed : l.sum (fun i a => a • ((1 : Matrix X X F) ◫ B) d i.toSum) = 0
+        · rwa [←Matrix.transpose_transpose (1 ◫ B), Matrix.one_fromCols_transpose]
         have hyl : hYXY.elem y ∈ l.support
         · rwa [Finsupp.mem_support_iff]
-        have h0 : ∀ a ∈ l.support, a.val ≠ y.val → l a • B.prependId d a.toSum = 0
+        have h0 : ∀ a ∈ l.support, a.val ≠ y.val → l a • ((1 : Matrix X X F) ◫ B) d a.toSum = 0
         · intro a ha hay
           have hal := hl'' a ha
           if haX : a.val ∈ X then
-            convert_to l a • B.prependId d ◩⟨a.val, haX⟩ = 0
+            convert_to l a • ((1 : Matrix X X F) ◫ B) d ◩⟨a.val, haX⟩ = 0
             · simp [Subtype.toSum, haX]
             simp_rw [Matrix.fromCols_apply_inl]
             rw [smul_eq_mul, mul_eq_zero]
@@ -677,13 +666,13 @@ private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type} [Field F
           else
             exfalso
             exact a.property.casesOn haX haY
-        have hlyd : l (hYXY.elem y) • B.prependId d (hYXY.elem y).toSum ≠ 0
+        have hlyd : l (hYXY.elem y) • ((1 : Matrix X X F) ◫ B) d (hYXY.elem y).toSum ≠ 0
         · intro contr
           refine hly ((mul_eq_zero_iff_right ?_).→ contr)
           have := hXY.not_mem_of_mem_right y.property
           simp_all [B, Dₒ, D₁, D₂]
         rw [Finsupp.sum,
-          l.support.sum_of_single_nonzero (fun a : (X ∪ Y).Elem => l a • B.prependId d a.toSum) (hYXY.elem y) hyl]
+          l.support.sum_of_single_nonzero (fun a : (X ∪ Y).Elem => l a • (1 ◫ B) d a.toSum) (hYXY.elem y) hyl]
         at untransposed
         · rw [untransposed] at hlyd
           exact hlyd rfl

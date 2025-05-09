@@ -31,7 +31,7 @@ private lemma VectorMatroid.indepCols_eq_indepColsOld [Semiring R] (M : VectorMa
     M.IndepCols = M.IndepColsOld := by
   ext I
   constructor <;> intro ⟨hI, hAI⟩ <;> use hI <;> let e : I ≃ M.Y ↓∩ I :=
-      (Equiv.ofInjective hI.elem hI.elem_injective).trans (Equiv.setCongr hI.elem_range)
+      (Equiv.ofInjective hI.elem hI.elem_injective).trans hI.elem_range.≃
   · exact (linearIndependent_equiv' e (by aesop)).← hAI
   · exact (linearIndependent_equiv' e (by aesop)).→ hAI
 
