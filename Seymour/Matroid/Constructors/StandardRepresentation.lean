@@ -27,8 +27,17 @@ structure StandardRepr (α R : Type) [DecidableEq α] where
 attribute [instance] StandardRepr.decmemX
 attribute [instance] StandardRepr.decmemY
 
+noncomputable abbrev StandardRepr.loopy {α : Type} (R : Type) (Y : Set α) [DecidableEq α] : StandardRepr α R where
+  X := ∅
+  Y := Y
+  hXY _ a _ := a
+  B x _ := False.elim x.prop
+  decmemX a := Set.decidableEmptyset a
+  decmemY a := Classical.propDecidable (a ∈ Y)
 
 variable {α R : Type} [DecidableEq α]
+
+@[simp] lemma StandardRepr.empty_X_emptyset (Y : Set α) : (StandardRepr.loopy R Y).X = ∅ := rfl
 
 /-- Convert standard representation of a vector matroid to a full representation. -/
 def StandardRepr.toVectorMatroid [Zero R] [One R] (S : StandardRepr α R) : VectorMatroid α R :=
@@ -204,6 +213,28 @@ lemma StandardRepr.toMatroid_indep [DivisionRing R] (S : StandardRepr α R) :
 lemma StandardRepr.toMatroid_indep' [DivisionRing R] (S : StandardRepr α R) :
     S.toMatroid.Indep = (∃ hI : · ⊆ S.X ∪ S.Y, LinearIndepOn R ((1 ⊟ S.Bᵀ) ∘ Subtype.toSum) hI.elem.range) := by
   simp
+
+@[simp]
+lemma StandardRepr.loopy_toVectorMatroid [DivisionRing R] {Y : Set α} :
+    (StandardRepr.loopy R Y).toMatroid = Matroid.loopyOn Y := by
+  ext X hX
+  · simp
+  · rw [StandardRepr.toMatroid_E] at hX
+    rw [StandardRepr.toMatroid_indep_iff', Matroid.loopyOn_indep_iff]
+    simp_rw [hX, true_and]
+    refine ⟨fun h => ?_, ?_⟩
+    · by_cases hXX : X ⊆ (StandardRepr.loopy R Y).X
+      · simp_all
+      · by_cases hY : Y = ∅
+        · rw [Set.empty_union] at hX
+          exact Set.subset_eq_empty hX hY
+        · absurd h
+          rw [linearDepOn_iff]
+          rw [Set.subset_empty_iff] at hXX
+          have ⟨x, hx⟩ := Set.nonempty_def.→ <| Set.nonempty_iff_ne_empty.← hXX
+          use Finsupp.single ⟨x, hX hx⟩ 1
+          exact ⟨Finsupp.single_mem_supported R 1 hx, funext (False.elim <| IsEmpty.false ·), by simp⟩
+    · rintro rfl; simp
 
 lemma VectorMatroid.isFinitary [DivisionRing R] (M : VectorMatroid α R) : M.toMatroid.Finitary := by
   constructor
@@ -407,7 +438,10 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
   have hGW : G ⊆ W.Y := vectorMatroid_toMatroid_Y_congr hVW ▸ hGV
   have : Fintype G := sorry
   wlog hG : 0 < #G
-  · sorry
+  · rw [not_lt, nonpos_iff_eq_zero, ← Set.toFinset_card, Finset.card_eq_zero, Set.toFinset_eq_empty] at hG
+    use StandardRepr.loopy R V.Y
+    subst hG
+    simpa using (Matroid.not_rankPos_iff.→ <| (not_congr (Matroid.rankPos_iff V.toMatroid)).← (· hVG)).symm
   let f : Fin #G → G := (Fintype.equivFin G).invFun
   have indu : ∀ k : ℕ, ∀ hk : k ≤ #G, ∃ W' : VectorMatroid α R,
     W'.toMatroid = W.toMatroid ∧ W'.A.IsTotallyUnimodular ∧ ∃ hGX' : G = W'.X, ∃ hGY' : G ⊆ W'.Y,
