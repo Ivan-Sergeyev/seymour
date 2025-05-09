@@ -62,7 +62,7 @@ private lemma Matrix.IsTotallyUnimodular.reglueCol {α R : Type} [CommRing R] {X
 -- ## Definition
 
 /-- `Matrix`-level 2-sum for matroids defined by their standard representation matrices; does not check legitimacy. -/
-abbrev matrix2sumComposition {α R : Type} [Semiring R] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
+abbrev matrix2sumComposition {R : Type} [Semiring R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
     (Aₗ : Matrix Xₗ Yₗ R) (r : Yₗ → R) (Aᵣ : Matrix Xᵣ Yᵣ R) (c : Xᵣ → R) :
     Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) R :=
   ⊞ Aₗ 0 (c · * r ·) Aᵣ
@@ -112,12 +112,12 @@ private abbrev shortTableauPivotOtherRow {Y Y' R : Type} [DecidableEq Y'] [Divis
   (▬(p ∘ g) ⊟ ▬r).shortTableauPivot ◩() y' ◪()
 
 private lemma Matrix.shortTableauPivot_otherRow_eq {X Y Y' R : Type}
-    [DivisionRing R] [DecidableEq X] [DecidableEq Y] [DecidableEq Y']
+    [Field R] [DecidableEq X] [DecidableEq Y] [DecidableEq Y']
     (A : Matrix X Y R) (x : X) (y' : Y') {i : X} (hix : i ≠ x) {g : Y' → Y} (hg : g.Injective) :
     (A.shortTableauPivot x (g y')) i ∘ g = shortTableauPivotOtherRow (A x) (A i ∘ g) g y' := by
   ext j'
   simp only [Matrix.fromRows_apply_inl, Matrix.fromRows_apply_inr, Matrix.replicateRow_apply, Matrix.of_apply,
-    Matrix.shortTableauPivot, shortTableauPivotOtherRow, Function.comp_apply, one_div, reduceCtorEq, hix]
+    Matrix.shortTableauPivot_eq, shortTableauPivotOtherRow, Function.comp_apply, one_div, reduceCtorEq, hix]
   if hj' : j' = y' then
     simp only [hj']
   else
@@ -133,12 +133,12 @@ private lemma Matrix.shortTableauPivot_outer {X Y X' Y' F : Type} [DecidableEq X
   have hAgfg := hfig ▸ Function.comp_apply ▸
       congr_fun (A.shortTableauPivot_otherRow_eq x y' (ne_of_mem_of_not_mem (Set.mem_range_self i) hf) hg) j
   rw [Matrix.submatrix_apply, hAgfg]
-  simp only [Matrix.fromRows_apply_inl, Matrix.fromRows_apply_inr, Matrix.of_apply, Matrix.replicateRow_apply,
-    Matrix.shortTableauPivot, shortTableauPivotOtherRow, Function.comp_apply, one_div, reduceCtorEq, ↓reduceIte]
-  split <;> ring
+  by_cases hj : j = y'
+  <;> simp [shortTableauPivotOtherRow, Matrix.shortTableauPivot_eq, hj]
+  <;> ring
 
-private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq α] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
-    (Aₗ : Matrix Xₗ Yₗ ℚ) (r : Yₗ → ℚ) (Aᵣ : Matrix Xᵣ Yᵣ ℚ) (c : Xᵣ → ℚ) {i : Xₗ} {j : Yₗ} :
+private lemma matrix2sumComposition_shortTableauPivot {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
+    [DecidableEq Yᵣ] (Aₗ : Matrix Xₗ Yₗ ℚ) (r : Yₗ → ℚ) (Aᵣ : Matrix Xᵣ Yᵣ ℚ) (c : Xᵣ → ℚ) {i : Xₗ} {j : Yₗ} :
     (matrix2sumComposition Aₗ r Aᵣ c).shortTableauPivot ◩i ◩j =
     matrix2sumComposition (Aₗ.shortTableauPivot i j) (shortTableauPivotOtherRow (Aₗ i) r id j) Aᵣ c :=
   ((matrix2sumComposition Aₗ r Aᵣ c).shortTableauPivot ◩i ◩j).fromBlocks_toBlocks ▸
@@ -151,6 +151,11 @@ private lemma matrix2sumComposition_shortTableauPivot {α : Type} [DecidableEq �
     (matrix2sumComposition Aₗ r Aᵣ c).shortTableauPivot_submatrix_zero_external_row ◩i ◩j Sum.inr Sum.inr
       (by simp) (by simp) ↓rfl⟩
 
+private lemma Matrix.shortTableauPivot_adjoinRow_eq {X Y : Type} [DecidableEq X] [DecidableEq Y]
+    (A : Matrix X Y ℚ) (r : Y → ℚ) (x : X) (y : Y) (j : Y) :
+    (▬A x ⊟ ▬r).shortTableauPivot (◩()) y (◪()) j = (A ⊟ ▬r).shortTableauPivot (◩x) y (◪()) j := by
+  by_cases hj : j = y <;> simp [hj, Matrix.shortTableauPivot, Matrix.longTableauPivot]
+
 private lemma Matrix.IsTotallyUnimodular.fromRows_pivot {α : Type} [DecidableEq α] {X Y : Set α}
     {A : Matrix X Y ℚ} {r : Y → ℚ} (hAr : (A ⊟ ▬r).IsTotallyUnimodular) {x : X} {y : Y} (hAxy : A x y ≠ 0) :
     ((A.shortTableauPivot x y) ⊟ ▬(shortTableauPivotOtherRow (A x) r id y)).IsTotallyUnimodular := by
@@ -158,7 +163,7 @@ private lemma Matrix.IsTotallyUnimodular.fromRows_pivot {α : Type} [DecidableEq
   convert hAr.shortTableauPivot hArxy
   exact Matrix.ext (fun i : X ⊕ Unit => fun j : Y => (i.casesOn (fun iₗ : X =>
       congr_fun (congr_fun (((A ⊟ ▬r).submatrix_shortTableauPivot Sum.inl_injective Function.injective_id x y)) iₗ) j)
-    ↓rfl))
+    ↓(A.shortTableauPivot_adjoinRow_eq r x y j)))
 
 private lemma Matrix.shortTableauPivot_abs_det_eq_submatrix_abs_det {F : Type} [LinearOrderedField F] {k : ℕ}
     (A : Matrix (Fin k.succ) (Fin k.succ) F) {i j : Fin k.succ} (hAij : A i j = 1 ∨ A i j = -1) :

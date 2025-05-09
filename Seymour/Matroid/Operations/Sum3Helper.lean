@@ -290,11 +290,11 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion₀ {X Y : Set α} {Q 
   · ext ⟨i, hi⟩ ⟨j, hj⟩
     have := hi.right
     if j = y₀ then
-      simp_all [Matrix.shortTableauPivot, e, B, B', c₀]
+      simp_all [Matrix.shortTableauPivot_eq, e, B, B', c₀]
     else if j = y₁ then
-      simp_all [Matrix.shortTableauPivot, e, B, B', c₀, c₁]
+      simp_all [Matrix.shortTableauPivot_eq, e, B, B', c₀, c₁]
     else
-      simp_all [Matrix.shortTableauPivot, e, B, B', Q']
+      simp_all [Matrix.shortTableauPivot_eq, e, B, B', Q']
   have hB : B.IsTotallyUnimodular
   · apply hQ.shortTableauPivot
     rw [hQy₀]
@@ -308,7 +308,7 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion₀ {X Y : Set α} {Q 
   have hq : ∀ i : ((Y \ {y₀, y₁}).Elem ⊕ Unit) ⊕ Unit, q i ∈ SignType.cast.range
   · rintro ((_|_)|_) <;> simp [q]
   convert hQcc.mul_cols hq
-  aesop
+  ext _ ((_|_)|_) <;> simp [q]
 
 -- lemma 15.b
 private lemma Matrix.IsTotallyUnimodular.signing_expansion₁ {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
@@ -331,13 +331,13 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion₁ {X Y : Set α} {Q 
   have B'_eq : B' = (Q' ◫ ▮(-c₁) ◫ ▮(c₀ - c₁)).submatrix id e.symm
   · ext ⟨i, hi⟩ ⟨j, hj⟩
     if j = y₀ then
-      simp_all [Matrix.shortTableauPivot, e, B, B', c₁]
+      simp_all [Matrix.shortTableauPivot_eq, e, B, B', c₁]
       aesop
     else if j = y₁ then
       have := hi.right
-      simp_all [Matrix.shortTableauPivot, e, B, B', c₀, c₁]
+      simp_all [Matrix.shortTableauPivot_eq, e, B, B', c₀, c₁]
     else
-      simp_all [Matrix.shortTableauPivot, e, B, B', Q']
+      simp_all [Matrix.shortTableauPivot_eq, e, B, B', Q']
   have hB : B.IsTotallyUnimodular
   · apply hQ.shortTableauPivot
     rw [hQy₁]
@@ -351,7 +351,7 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion₁ {X Y : Set α} {Q 
   have hq : ∀ i : ((Y \ {y₀, y₁}).Elem ⊕ Unit) ⊕ Unit, q i ∈ SignType.cast.range
   · rintro ((_|_)|_) <;> simp [q]
   convert hQcc.mul_cols hq
-  aesop
+  ext _ ((_|_)|_) <;> simp [q]
 
 -- lemma 16.1
 omit [DecidableEq α] in

@@ -35,7 +35,7 @@ recall Matrix.toMatrixUnionUnion {α : Type} {T₁ T₂ S₁ S₂ : Set α} {β 
 
 -- ## Summary of 1-sum
 
-recall matrix1sumComposition {α β : Type} [Zero β] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
+recall matrix1sumComposition {β : Type} [Zero β] {Xₗ Yₗ Xᵣ Yᵣ : Type}
     (Aₗ : Matrix Xₗ Yₗ β) (Aᵣ : Matrix Xᵣ Yᵣ β) :
     Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) β :=
   Matrix.fromBlocks Aₗ 0 0 Aᵣ
@@ -64,7 +64,7 @@ recall standardRepr1sumComposition_hasTuSigning {α : Type} [DecidableEq α] {S�
 
 -- ## Summary of 2-sum
 
-recall matrix2sumComposition {α β : Type} [Semiring β] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
+recall matrix2sumComposition {β : Type} [Semiring β] {Xₗ Yₗ Xᵣ Yᵣ : Type}
     (Aₗ : Matrix Xₗ Yₗ β) (x : Yₗ → β) (Aᵣ : Matrix Xᵣ Yᵣ β) (y : Xᵣ → β) :
     Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) β :=
   Matrix.fromBlocks Aₗ 0 (fun i j => y i * x j) Aᵣ

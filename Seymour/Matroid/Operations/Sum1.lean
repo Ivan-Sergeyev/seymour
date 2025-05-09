@@ -1,13 +1,13 @@
 import Seymour.Matroid.Properties.Regularity
 
 
-variable {α : Type} [DecidableEq α]
-
 /-- `Matrix`-level 1-sum for matroids defined by their standard representation matrices. -/
-abbrev matrix1sumComposition {R : Type} [Zero R] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
+abbrev matrix1sumComposition {R : Type} [Zero R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
     (Aₗ : Matrix Xₗ Yₗ R) (Aᵣ : Matrix Xᵣ Yᵣ R) :
     Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) R :=
   ⊞ Aₗ 0 0 Aᵣ
+
+variable {α : Type} [DecidableEq α]
 
 /-- `StandardRepr`-level 1-sum of two matroids.
     It checks that everything is disjoint (returned as `.snd` of the output). -/

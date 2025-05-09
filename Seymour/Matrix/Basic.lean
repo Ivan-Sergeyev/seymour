@@ -1,4 +1,5 @@
 import Seymour.Basic.Basic
+import Seymour.Matrix.Notation
 import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 
 open scoped Matrix
@@ -8,16 +9,16 @@ variable {α : Type}
 
 /-- Add the identity matrix to the left of given matrix (important "definition" -- use it with standard representations). -/
 @[simp low]
-abbrev Matrix.prependId [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) : Matrix m (m ⊕ n) α :=
-  Matrix.fromCols 1 A
+abbrev Matrix.prependId [Zero α] [One α] {m n : Type} [DecidableEq m] (A : Matrix m n α) : Matrix m (m ⊕ n) α :=
+  1 ◫ A
 
 /-- Add the identity matrix on top of given matrix (auxiliary "definition" -- use it only in small lemmas). -/
 @[simp low]
-abbrev Matrix.uppendId [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) : Matrix (n ⊕ m) n α :=
-  Matrix.fromRows 1 A
+abbrev Matrix.uppendId [Zero α] [One α] {m n : Type} [DecidableEq n] (A : Matrix m n α) : Matrix (n ⊕ m) n α :=
+  1 ⊟ A
 
 @[simp]
-lemma Matrix.prependId_transpose [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) :
+lemma Matrix.prependId_transpose [Zero α] [One α] {m n : Type} [DecidableEq m] (A : Matrix m n α) :
     A.prependIdᵀ = Aᵀ.uppendId := by
   ext i j
   cases i with
@@ -29,7 +30,7 @@ lemma Matrix.prependId_transpose [Zero α] [One α] {m n : Type} [DecidableEq m]
       simp [Matrix.one_apply_ne, hi', Ne.symm hi']
 
 @[simp]
-lemma Matrix.uppendId_transpose [Zero α] [One α] {m n : Type} [DecidableEq m] [DecidableEq n] (A : Matrix m n α) :
+lemma Matrix.uppendId_transpose [Zero α] [One α] {m n : Type} [DecidableEq n] (A : Matrix m n α) :
     A.uppendIdᵀ = Aᵀ.prependId := by
   rw [←Matrix.transpose_transpose A.transpose.prependId, Matrix.prependId_transpose, Matrix.transpose_transpose]
 
