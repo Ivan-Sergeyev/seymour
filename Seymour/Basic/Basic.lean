@@ -28,6 +28,7 @@ notation:max "↓"t:arg => (fun _ => t)
 /-- We denote the cardinality of a `Fintype` the same way the cardinality of a `Finset` is denoted. -/
 prefix:max "#" => Fintype.card
 
+/-- Canonical bijection between subtypes corresponding to equal sets. -/
 postfix:max ".≃" => Equiv.setCongr
 
 /-- The "left" or "top" variant. -/
