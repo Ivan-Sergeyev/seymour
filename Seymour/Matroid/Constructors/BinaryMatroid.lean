@@ -223,6 +223,10 @@ def VectorMatroid.toMatroid [DivisionRing R] (M : VectorMatroid α R) : Matroid 
 lemma VectorMatroid.toMatroid_E [DivisionRing R] (M : VectorMatroid α R) : M.toMatroid.E = M.Y :=
   rfl
 
+lemma vectorMatroid_toMatroid_Y_congr [DivisionRing R] {V W : VectorMatroid α R} (hVW : V.toMatroid = W.toMatroid) :
+    V.Y = W.Y :=
+  congr_arg Matroid.E hVW
+
 @[simp low]
 lemma VectorMatroid.toMatroid_indep [DivisionRing R] (M : VectorMatroid α R) : M.toMatroid.Indep = M.IndepCols :=
   rfl

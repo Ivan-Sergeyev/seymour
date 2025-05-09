@@ -1,6 +1,7 @@
 import Seymour.Basic.Fin
 import Seymour.Basic.Sets
 import Seymour.Matrix.LinearIndependence
+import Seymour.Matrix.Pivoting
 import Seymour.Matrix.Support
 import Seymour.Matroid.Constructors.BinaryMatroid
 import Seymour.Matroid.Elementary.Basic
@@ -393,13 +394,75 @@ lemma VectorMatroid.exists_standardRepr [DivisionRing R] (M : VectorMatroid α R
   peel M.exists_standardRepr_isBase M.toMatroid.exists_isBase.choose_spec with hS
   exact hS.right
 
+lemma VectorMatroid.exists_lin_indep_rows [Field R] (V : VectorMatroid α R) :
+    ∃ W : VectorMatroid α R, V.toMatroid = W.toMatroid ∧ LinearIndependent R W.A := by
+  sorry
+
+lemma VectorMatroid.exists_lin_indep_rows_TU [Field R] (V : VectorMatroid α R) (hVA : V.A.IsTotallyUnimodular) :
+    ∃ W : VectorMatroid α R, V.toMatroid = W.toMatroid ∧ LinearIndependent R W.A ∧ W.A.IsTotallyUnimodular := by
+  sorry
+
+lemma VectorMatroid.exists_lin_indep_rows_TU' [Field R] {G : Set α}
+    (V : VectorMatroid α R) (hVG : V.toMatroid.IsBase G) (hVA : V.A.IsTotallyUnimodular) :
+    ∃ W : VectorMatroid α R, V.toMatroid = W.toMatroid ∧ LinearIndependent R W.A ∧ W.X = G ∧ W.A.IsTotallyUnimodular := by
+  sorry
+
 /-- Every vector matroid whose full representation matrix is totally unimodular has a standard representation whose rows are
     a given base and the standard representation matrix is totally unimodular. -/
 lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G : Set α}
-    (M : VectorMatroid α R) (hMG : M.toMatroid.IsBase G) (hMA : M.A.IsTotallyUnimodular) :
-    ∃ S : StandardRepr α R, S.X = G ∧ S.toMatroid = M.toMatroid ∧ S.B.IsTotallyUnimodular := by
-  -- gonna be difficult
-  sorry
+    (V : VectorMatroid α R) (hVG : V.toMatroid.IsBase G) (hVA : V.A.IsTotallyUnimodular) :
+    ∃ S : StandardRepr α R, S.X = G ∧ S.toMatroid = V.toMatroid ∧ S.B.IsTotallyUnimodular := by
+  have hGV : G ⊆ V.Y := hVG.subset_ground
+  -- 1. delete linearly dependent rows
+  obtain ⟨W, hVW, hW, hWG, hWtu⟩ := V.exists_lin_indep_rows_TU' hVG hVA
+  have hGW : G ⊆ W.Y := vectorMatroid_toMatroid_Y_congr hVW ▸ hGV
+  have : Fintype G := sorry
+  wlog hG : 0 < #G
+  · sorry
+  let f : Fin #G → G := (Fintype.equivFin G).invFun
+  have indu : ∀ k : ℕ, ∀ hk : k ≤ #G, ∃ W' : VectorMatroid α R,
+    W'.toMatroid = W.toMatroid ∧ W'.A.IsTotallyUnimodular ∧ ∃ hGX' : G = W'.X, ∃ hGY' : G ⊆ W'.Y,
+      ∀ j : Fin k, ∀ g : G,
+        if g = f ⟨j.val, by omega⟩
+        then W'.A (hGX' ▸ g) (hGY'.elem (f ⟨j.val, by omega⟩)) = 1
+        else W'.A (hGX' ▸ g) (hGY'.elem (f ⟨j.val, by omega⟩)) = 0
+  · intro k
+    induction k with
+    | zero =>
+      intro _
+      use W, rfl, hWtu, hWG.symm, hGW
+      intro ⟨_, _⟩
+      omega
+    | succ n ih =>
+      intro hn
+      obtain ⟨W', hWW, hWtu, hGX', hGY', hfW'⟩ := ih (by omega)
+      obtain ⟨i, hi⟩ : ∃ i : W'.X, W'.A i (hGY'.elem (f ⟨n, by omega⟩)) ≠ 0
+      · sorry
+      use ⟨W'.X, W'.Y, W'.A.longTableauPivot i (hGY'.elem (f ⟨n, by omega⟩))⟩
+      constructor
+      · rw [←hWW]
+        -- pivoting preserves linear (in)dependence of columns
+        sorry
+      constructor
+      · apply hWtu.longTableauPivot
+        exact hi
+      constructor
+      · -- previous columns are unaffected because the element in the pivot row was already `0`
+        -- new column is by definition of the long-tableau pivot
+        sorry
+      · exact hGX'
+  obtain ⟨W', hWW, hWtu, hGX', hGY', hfW'⟩ := indu #G (by rfl)
+  let I : Matrix G G R := W'.A.submatrix (Equiv.setCongr hGX') hGY'.elem
+  have hYGY : W'.Y \ G ⊆ W'.Y := Set.diff_subset
+  let B : Matrix G (W'.Y \ G).Elem R := W'.A.submatrix (Equiv.setCongr hGX') hYGY.elem
+  use ⟨_, _, Set.disjoint_sdiff_right, B, G.decidableMemOfFintype, (Classical.propDecidable <| · ∈ W'.Y \ G)⟩
+  constructor
+  · simp
+  constructor
+  · rw [hVW, ←hWW]
+    simp only [B]
+    sorry
+  · exact hWtu.submatrix (Equiv.setCongr hGX') hYGY.elem
 
 /-- The identity matrix has linearly independent rows. -/
 lemma Matrix.one_linearIndependent [Ring R] : LinearIndependent R (1 : Matrix α α R) := by
