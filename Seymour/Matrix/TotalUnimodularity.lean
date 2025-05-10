@@ -4,6 +4,19 @@ import Seymour.Basic.FunctionDecompose
 import Seymour.Basic.SignTypeCast
 import Seymour.Matrix.Basic
 
+@[simp]
+lemma Matrix.empty_X_isTotallyUnimodular {X Y : Type} [IsEmpty X] {R : Type} [CommRing R] (A : Matrix X Y R) :
+    A.IsTotallyUnimodular := by
+  intro k f g
+  cases k with
+  | zero => simp
+  | succ n => exact False.elim <| IsEmpty.false (f 0)
+
+@[simp]
+lemma Matrix.empty_Y_isTotallyUnimodular {X Y : Type} [IsEmpty Y] {R : Type} [CommRing R] (A : Matrix X Y R) :
+    A.IsTotallyUnimodular := by
+  apply Matrix.IsTotallyUnimodular.transpose
+  exact Matrix.empty_X_isTotallyUnimodular fun y x => A x y
 
 /-- Every matrix over `Z2` is TU. -/
 @[simp]
