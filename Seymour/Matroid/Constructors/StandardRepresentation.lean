@@ -464,28 +464,28 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
       use ⟨W'.X, W'.Y, W'.A.longTableauPivot i (hGY'.elem (f ⟨n, by omega⟩))⟩
       constructor
       · rw [←hWW]
-        -- pivoting preserves linear (in)dependence of columns
-        sorry
-      constructor
-      · apply hWtu.longTableauPivot
-        exact hi
-      constructor
-      · -- previous columns are unaffected because the element in the pivot row was already `0`
-        -- new column is by definition of the long-tableau pivot
-        sorry
-      · exact hGX'
+        ext x hx
+        · rw [toMatroid_E, toMatroid_E]
+        · rw [toMatroid_indep_iff_elem, toMatroid_indep_iff_elem]
+          congr! 2 with hxY
+          sorry -- pivoting preserves linear (in)dependence of columns
+      refine ⟨hWtu.longTableauPivot i _ hi, hGX', hGY', ?_⟩
+      -- previous columns are unaffected because the element in the pivot row was already `0`
+      -- new column is by definition of the long-tableau pivot
+      sorry
   obtain ⟨W', hWW, hWtu, hGX', hGY', hfW'⟩ := indu #G (by rfl)
   let I : Matrix G G R := W'.A.submatrix hGX'.≃ hGY'.elem
   have hYGY : W'.Y \ G ⊆ W'.Y := Set.diff_subset
   let B : Matrix G (W'.Y \ G).Elem R := W'.A.submatrix hGX'.≃ hYGY.elem
   use ⟨_, _, Set.disjoint_sdiff_right, B, G.decidableMemOfFintype, (Classical.propDecidable <| · ∈ W'.Y \ G)⟩
-  constructor
-  · simp
-  constructor
-  · rw [hVW, ←hWW]
-    simp only [B]
+  refine ⟨by simp, ?_, hWtu.submatrix hGX'.≃ hYGY.elem⟩
+  rw [hVW, ←hWW]
+  simp only [B]
+  ext x hx
+  · show x ∈ G ∪ W'.Y \ G ↔ x ∈ W'.Y
+    rw [Set.union_diff_cancel' (fun _ => id) hGY']
+  · dsimp at hx
     sorry
-  · exact hWtu.submatrix hGX'.≃ hYGY.elem
 
 /-- The identity matrix has linearly independent rows. -/
 lemma Matrix.one_linearIndependent [Ring R] : LinearIndependent R (1 : Matrix α α R) := by
