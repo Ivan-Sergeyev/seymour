@@ -63,18 +63,48 @@ lemma Matrix.isTuSigningOf_iff {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y
 
 variable {α : Type}
 
+lemma VectorMatroid_mapEquiv_eq {α β : Type} (X Y : Set α) (A : Matrix X Y ℚ) (e : α ≃ β) : (VectorMatroid.mk (e '' X) (e '' Y) (A.submatrix ⇑(e.image X).symm ⇑(e.image Y).symm)).toMatroid = (VectorMatroid.mk X Y A).toMatroid.mapEquiv e := by
+  let Ma := VectorMatroid.mk X Y A
+  let Mb := VectorMatroid.mk (e '' X) (e '' Y) (A.submatrix ⇑(e.image X).symm ⇑(e.image Y).symm)
+  show Mb.toMatroid = Ma.toMatroid.mapEquiv e
+  apply Matroid.ext_indep
+  exact Ma.toMatroid.mapEquiv_ground_eq e
+  intro I hI
+  rw [Ma.toMatroid.mapEquiv_indep_iff]
+  rw [Mb.toMatroid_indep]
+  rw [Ma.toMatroid_indep]
+  rw [VectorMatroid.IndepCols]
+  rw [VectorMatroid.IndepCols]
+  simp
+  have MaY : Ma.Y = Y := rfl
+  have MbY : Mb.Y = e '' Y := rfl
+  have MaA : Ma.A.transpose = A.transpose := rfl
+  have MbA : Mb.A.transpose = (A.submatrix ⇑(e.image X).symm ⇑(e.image Y).symm).transpose := rfl
+  rw [MaA, MbA]
+  constructor
+  · intro ⟨hI, hIndep⟩
+    rw [MbY] at hI
+    constructor
+    exact hI
+    sorry
+  · intro ⟨hI, hIndep⟩
+    rw [MaY] at hI
+    constructor
+    exact hI
+    sorry
+
 /-- Matroids are regular up to map equivalence. -/
 @[simp]
 lemma Matroid.isRegular_mapEquiv_iff {β : Type} (M : Matroid α) (e : α ≃ β) : (M.mapEquiv e).IsRegular ↔ M.IsRegular := by
-  constructor
-  <;> intro ⟨X, Y, A, hA, hAM⟩
+  constructor <;> intro ⟨X, Y, A, hA, hAM⟩
   on_goal 1 => let f := e.symm
   on_goal 2 => let f := e
   all_goals
     use f '' X
     use f '' Y
     use A.submatrix (f.image X).symm (f.image Y).symm, hA.submatrix _ _
-    sorry
+    rw [VectorMatroid_mapEquiv_eq X Y A f]
+    aesop
 
 variable [DecidableEq α]
 
