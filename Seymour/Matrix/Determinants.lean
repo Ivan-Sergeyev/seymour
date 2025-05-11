@@ -75,16 +75,16 @@ lemma Matrix.isUnit_2x2 (Q : Matrix (Fin 2) (Fin 2) Z2) (hQ : IsUnit Q) :
     simp_all [fin2_eq_1_of_ne_0]
 
 
-variable {X Y Z R : Type} [Fintype Z] [DecidableEq Z] [CommRing R] {f : Z → X} {g : Z → Y}
+variable {X Y Z R : Type} [Fintype Z] [DecidableEq Z] [CommRing R]
 
-lemma Matrix.submatrix_det_zero_of_not_injective_right (A : Matrix X Y R) (hg : ¬g.Injective) :
+lemma Matrix.submatrix_det_zero_of_not_injective_cols (A : Matrix X Y R) (f : Z → X) {g : Z → Y} (hg : ¬g.Injective) :
     (A.submatrix f g).det = 0 := by
   rw [Function.not_injective_iff] at hg
   obtain ⟨i, j, hgij, hij⟩ := hg
   apply Matrix.det_zero_of_column_eq hij
   simp [hgij]
 
-lemma Matrix.submatrix_det_zero_of_not_injective_left (A : Matrix X Y R) (hf : ¬f.Injective) :
+lemma Matrix.submatrix_det_zero_of_not_injective_rows (A : Matrix X Y R) {f : Z → X} (g : Z → Y) (hf : ¬f.Injective) :
     (A.submatrix f g).det = 0 := by
   rw [←Matrix.det_transpose, Matrix.transpose_submatrix]
-  exact A.transpose.submatrix_det_zero_of_not_injective_right hf
+  exact A.transpose.submatrix_det_zero_of_not_injective_cols g hf

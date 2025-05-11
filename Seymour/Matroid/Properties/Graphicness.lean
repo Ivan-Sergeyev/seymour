@@ -146,7 +146,7 @@ lemma Matrix.IsGraphic.isTotallyUnimodular {X Y : Set α} {A : Matrix X Y ℚ} (
         by_contra hA0
         have hl := Matrix.linearIndependent_rows_of_det_ne_zero hA0
         rw [Fintype.linearIndependent_iff] at hl
-        have hl1 := hl (fun _ => 1)
+        have hl1 := hl ↓1
         simp_rw [one_smul, one_ne_zero, forall_const] at hl1
         exact hl1 (Matrix.IsGraphic.cols_sum_zero hAfg)
     · have ⟨j₁, i₁, hnAg⟩ := hA.submatrix_one_if_not_graphic hf hAfg

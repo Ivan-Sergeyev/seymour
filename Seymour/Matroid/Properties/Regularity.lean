@@ -134,8 +134,7 @@ private lemma Matrix.IsTotallyUnimodular.det_eq_zero_iff_support [Fintype α] {A
     A.det = (0 : ℚ) ↔ A.support.det = (0 : Z2) := by
   rw [←hA.ratCast_det_eq_support_det]
   apply zero_iff_ratCast_zero_of_in_signTypeCastRange
-  rw [Matrix.isTotallyUnimodular_iff_fintype] at hA
-  exact hA α id id
+  exact hA.det id id
 
 private lemma Matrix.IsTotallyUnimodular.det_ne_zero_iff_support [Fintype α] {A : Matrix α α ℚ}
     (hA : A.IsTotallyUnimodular) :
@@ -326,7 +325,7 @@ lemma StandardRepr.toMatroid_isRegular_iff_hasTuSigning (S : StandardRepr α Z2)
     cc
   · intro ⟨B, hB, hBS⟩
     apply S.toVectorMatroid.toMatroid_isRegular_if_hasTuSigning
-    use (B.prependId · ∘ Subtype.toSum), (hB.one_fromCols).comp_cols Subtype.toSum
+    use ((1 ◫ B) · ∘ Subtype.toSum), (hB.one_fromCols).comp_cols Subtype.toSum
     intro i j
     cases hj : j.toSum with
     | inl x =>

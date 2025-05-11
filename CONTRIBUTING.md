@@ -220,7 +220,6 @@ The guideline below is written primarily to assist you in reading the code.
 - We do not write `.1` and `.2` to access fields; write their names instead (with the exception for `Iff.mp` and `Iff.mpr` where we prefer our notation `.→` and `.←` respectively).
 - We prefer Mathlib's `have` over Std's `have` inside tactic-block proofs.
 - We prefer Mathlib's `congr_arg` and `congr_fun` over Std's `congrArg` and `congrFun` respectively.
-- If you have a standard representation matrix and need a full representation matrix, use `Matrix.prependId` to put the identity matrix on the left of the standard representation matrix. Do not use `Matrix.uppendId` unless necessary.
 - We do not write a space after `←` in the `rw` syntax.
 - We do not write `↦` as this syntax does not work everywhere. Write `=>` instead.
 - Ordering of cases when eliminating `SignType` is: first `zero` (0), then `pos` (1), then `neg` (-1).

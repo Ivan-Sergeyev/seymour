@@ -31,7 +31,7 @@ private lemma VectorMatroid.indepCols_eq_indepColsOld [Semiring R] (M : VectorMa
     M.IndepCols = M.IndepColsOld := by
   ext I
   constructor <;> intro ⟨hI, hAI⟩ <;> use hI <;> let e : I ≃ M.Y ↓∩ I :=
-      (Equiv.ofInjective hI.elem hI.elem_injective).trans (Equiv.setCongr hI.elem_range)
+      (Equiv.ofInjective hI.elem hI.elem_injective).trans hI.elem_range.≃
   · exact (linearIndependent_equiv' e (by aesop)).← hAI
   · exact (linearIndependent_equiv' e (by aesop)).→ hAI
 
@@ -199,10 +199,10 @@ theorem VectorMatroid.indepCols_maximal [Semiring R] (M : VectorMatroid α R) (I
       { K : Set α | M.IndepCols K ∧ K ⊆ I }
       (fun c hcS chain_c _ =>
         ⟨⋃₀ c,
-        ⟨⟨Set.sUnion_subset (fun _ hxc => (hcS hxc).left.left),
-          linearIndepOn_sUnion_of_directedOn chain_c.directedOn (fun _ hxc => (hcS hxc).left.right)⟩,
-          Set.sUnion_subset (fun _ hxc => (hcS hxc).right)⟩,
-        fun _ => Set.subset_sUnion_of_mem⟩)
+        ⟨⟨Set.sUnion_subset ↓(hcS ·|>.left.left),
+          linearIndepOn_sUnion_of_directedOn chain_c.directedOn ↓(hcS ·|>.left.right)⟩,
+          Set.sUnion_subset ↓(hcS ·|>.right)⟩,
+        ↓Set.subset_sUnion_of_mem⟩)
       J ⟨hMJ, hJI⟩
 
 /-- `VectorMatroid` expressed as `IndepMatroid`. -/
@@ -222,6 +222,10 @@ def VectorMatroid.toMatroid [DivisionRing R] (M : VectorMatroid α R) : Matroid 
 @[simp]
 lemma VectorMatroid.toMatroid_E [DivisionRing R] (M : VectorMatroid α R) : M.toMatroid.E = M.Y :=
   rfl
+
+lemma vectorMatroid_toMatroid_Y_congr [DivisionRing R] {V W : VectorMatroid α R} (hVW : V.toMatroid = W.toMatroid) :
+    V.Y = W.Y :=
+  congr_arg Matroid.E hVW
 
 @[simp low]
 lemma VectorMatroid.toMatroid_indep [DivisionRing R] (M : VectorMatroid α R) : M.toMatroid.Indep = M.IndepCols :=
