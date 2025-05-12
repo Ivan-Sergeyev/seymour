@@ -414,18 +414,15 @@ lemma VectorMatroid.exists_standardRepr [DivisionRing R] (M : VectorMatroid α R
   peel M.exists_standardRepr_isBase M.toMatroid.exists_isBase.choose_spec with hS
   exact hS.right
 
-lemma VectorMatroid.exists_lin_indep_rows [Field R] (V : VectorMatroid α R) :
-    ∃ W : VectorMatroid α R, V.toMatroid = W.toMatroid ∧ LinearIndependent R W.A := by
-  sorry
-
-lemma VectorMatroid.exists_lin_indep_rows_TU [Field R] (V : VectorMatroid α R) (hVA : V.A.IsTotallyUnimodular) :
-    ∃ W : VectorMatroid α R, V.toMatroid = W.toMatroid ∧ LinearIndependent R W.A ∧ W.A.IsTotallyUnimodular := by
-  sorry
-
 lemma VectorMatroid.exists_lin_indep_rows_isBase_TU [Field R] {G : Set α}
-    (V : VectorMatroid α R) (hVG : V.toMatroid.IsBase G) (hVA : V.A.IsTotallyUnimodular) :
-    ∃ W : VectorMatroid α R, V.toMatroid = W.toMatroid ∧ LinearIndependent R W.A ∧ W.X = G ∧ W.A.IsTotallyUnimodular := by
-  sorry
+    (V : VectorMatroid α R) (hVG : V.toMatroid.IsBase G) :
+    ∃ W : VectorMatroid α R, V.toMatroid = W.toMatroid ∧ LinearIndependent R W.A ∧ W.X = G ∧
+      (V.A.IsTotallyUnimodular → W.A.IsTotallyUnimodular) := by
+  use ⟨G, sorry, sorry⟩
+  refine ⟨?_, ?_, rfl, fun hVA => ?_⟩
+  · sorry
+  · sorry
+  · sorry
 
 /-- Every vector matroid whose full representation matrix is totally unimodular has a standard representation whose rows are
     a given base and the standard representation matrix is totally unimodular. -/
@@ -434,7 +431,8 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
     ∃ S : StandardRepr α R, S.X = G ∧ S.toMatroid = V.toMatroid ∧ S.B.IsTotallyUnimodular := by
   have hGV : G ⊆ V.Y := hVG.subset_ground
   -- 1. delete linearly dependent rows
-  obtain ⟨W, hVW, hW, hWG, hWtu⟩ := V.exists_lin_indep_rows_isBase_TU hVG hVA
+  obtain ⟨W, hVW, hW, hWG, hWtu⟩ := V.exists_lin_indep_rows_isBase_TU hVG
+  specialize hWtu hVA
   have hGW : G ⊆ W.Y := vectorMatroid_toMatroid_Y_congr hVW ▸ hGV
   have : Fintype G := sorry
   wlog hG : 0 < #G
