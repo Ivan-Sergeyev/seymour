@@ -417,17 +417,8 @@ lemma VectorMatroid.exists_standardRepr [DivisionRing R] (M : VectorMatroid α R
   peel M.exists_standardRepr_isBase M.toMatroid.exists_isBase.choose_spec with hS
   exact hS.right
 
-lemma VectorMatroid.exists_lin_indep_rows [Field R] (V : VectorMatroid α R) :
-    ∃ W : VectorMatroid α R, V.toMatroid = W.toMatroid ∧ LinearIndependent R W.A := by
-  sorry
-
-lemma VectorMatroid.exists_lin_indep_rows_TU [Field R] (V : VectorMatroid α R) (hVA : V.A.IsTotallyUnimodular) :
-    ∃ W : VectorMatroid α R, V.toMatroid = W.toMatroid ∧ LinearIndependent R W.A ∧ W.A.IsTotallyUnimodular := by
-  sorry
-
-lemma VectorMatroid.exists_lin_indep_rows_isBase_TU [Field R] {G : Set α}
-    (V : VectorMatroid α R) (hVG : V.toMatroid.IsBase G) (hVA : V.A.IsTotallyUnimodular) :
-    ∃ W : VectorMatroid α R, V.toMatroid = W.toMatroid ∧ LinearIndependent R W.A ∧ W.X = G ∧ W.A.IsTotallyUnimodular := by
+lemma VectorMatroid.longTableauPivot [Field R] (V : VectorMatroid α R) {x : V.X} {y : V.Y} (hVxy : V.A x y ≠ 0) :
+    (VectorMatroid.mk V.X V.Y (V.A.longTableauPivot x y)).toMatroid = V.toMatroid := by
   sorry
 
 /-- Every vector matroid whose full representation matrix is totally unimodular has a standard representation whose rows are
@@ -436,68 +427,162 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
     (V : VectorMatroid α R) (hVG : V.toMatroid.IsBase G) (hVA : V.A.IsTotallyUnimodular) :
     ∃ S : StandardRepr α R, S.X = G ∧ S.toMatroid = V.toMatroid ∧ S.B.IsTotallyUnimodular := by
   have hGV : G ⊆ V.Y := hVG.subset_ground
-  -- 1. delete linearly dependent rows
-  obtain ⟨W, hVW, hW, hWG, hWtu⟩ := V.exists_lin_indep_rows_isBase_TU hVG hVA
-  have hGW : G ⊆ W.Y := vectorMatroid_toMatroid_Y_congr hVW ▸ hGV
   have : Fintype G := sorry
   wlog hG : 0 < #G
   · rw [not_lt, nonpos_iff_eq_zero, ← Set.toFinset_card, Finset.card_eq_zero, Set.toFinset_eq_empty] at hG
     use StandardRepr.loopy R V.Y
     subst hG
     simpa using (Matroid.not_rankPos_iff.→ ((not_congr (Matroid.rankPos_iff V.toMatroid)).← (· hVG))).symm
-  let f : Fin #G → G := (Fintype.equivFin G).invFun
-  have indu : ∀ k : ℕ, ∀ hk : k ≤ #G, ∃ W' : VectorMatroid α R,
-    W'.toMatroid = W.toMatroid ∧ W'.A.IsTotallyUnimodular ∧ ∃ hGX' : G = W'.X, ∃ hGY' : G ⊆ W'.Y,
-      ∀ j : Fin k, ∀ g : G,
-        if g = f ⟨j.val, by omega⟩
-        then W'.A (hGX' ▸ g) (hGY'.elem (f ⟨j.val, by omega⟩)) = 1
-        else W'.A (hGX' ▸ g) (hGY'.elem (f ⟨j.val, by omega⟩)) = 0
+  let g : Fin #G → G := (Fintype.equivFin G).invFun
+  have indu : ∀ k : ℕ, ∀ hk : k ≤ #G, ∃ W : VectorMatroid α R,
+    W.toMatroid = V.toMatroid ∧ W.A.IsTotallyUnimodular ∧ ∃ hGY : G ⊆ W.Y, ∃ f : Fin k → W.X, f.Injective ∧
+      ∀ i : W.X, ∀ j : Fin k,
+        if i = f j
+        then W.A i (hGY.elem (g ⟨j.val, by omega⟩)) = 1
+        else W.A i (hGY.elem (g ⟨j.val, by omega⟩)) = 0
+--    ∀ j : Fin k, W.A (f j) (hGY.elem (g ⟨j.val, by omega⟩)) = 1 ∧ ∀ i : W.X, i ≠ f j → W.A i (hGY.elem (g ⟨j.val, by omega⟩)) = 0
+--    or call `Pi.single`
   · intro k
     induction k with
     | zero =>
       intro _
-      use W, rfl, hWtu, hWG.symm, hGW
-      intro ⟨_, _⟩
+      use V, rfl, hVA, hGV, (Nat.not_succ_le_zero _ ·.isLt |>.elim), ↓↓↓(by omega)
+      intro _ ⟨_, _⟩
       omega
     | succ n ih =>
       intro hn
-      obtain ⟨W', hWW, hW'tu, hGX', hGY', hfW'⟩ := ih (by omega)
-      obtain ⟨i, hi⟩ : ∃ i : W'.X, W'.A i (hGY'.elem (f ⟨n, by omega⟩)) ≠ 0
-      · sorry
-      use ⟨W'.X, W'.Y, W'.A.longTableauPivot i (hGY'.elem (f ⟨n, by omega⟩))⟩
-      constructor
-      · rw [←hWW]
-        ext I hI
+      obtain ⟨W, hWV, hWA, hGY, f, hf, hfW⟩ := ih (by omega)
+      wlog hgf : ∃ x : W.X, W.A x (hGY.elem (g ⟨n, by omega⟩)) ≠ 0 ∧ x ∉ f.range
+      · push_neg at hgf
+        exfalso
+        let X' := { x : W.X | W.A x (hGY.elem (g ⟨n, by omega⟩)) ≠ 0 }
+        let G' := { g ⟨i.val, by omega⟩ | (i : Fin n) (hi : f i ∈ X') }
+        let G'' : Set G := g ⟨n, by omega⟩ ᕃ G'
+        have hg : ¬ W.toMatroid.Indep G''
         · simp
-        · rw [VectorMatroid.toMatroid_indep_iff_elem, VectorMatroid.toMatroid_indep_iff_elem]
-          congr! 2 with hIY
-          sorry -- pivoting preserves linear (in)dependence of columns
-      refine ⟨hW'tu.longTableauPivot i _ hi, hGX', hGY', ?_⟩
-      -- previous columns are unaffected because the element in the pivot row was already `0`
-      -- new column is by definition of the long-tableau pivot
-      sorry
-  obtain ⟨W', hWW, hW'tu, hGX', hGY', hfW'⟩ := indu #G (by rfl)
-  let I : Matrix G G R := W'.A.submatrix hGX'.≃ hGY'.elem
-  have hYGY : W'.Y \ G ⊆ W'.Y := Set.diff_subset
-  use ⟨_, _, Set.disjoint_sdiff_right, W'.A.submatrix hGX'.≃ hYGY.elem,
-    G.decidableMemOfFintype, (Classical.propDecidable <| · ∈ W'.Y \ G)⟩
-  refine ⟨by simp, ?_, hW'tu.submatrix hGX'.≃ hYGY.elem⟩
-  rw [hVW, ←hWW]
-  -- let B : Basis G R (Submodule.span R W'.Aᵀ.range)
-  -- · apply Basis.mk (v := fun j : G.Elem => ⟨W'.Aᵀ (hGY'.elem j), in_submoduleSpan_range W'.Aᵀ (hGY'.elem j)⟩)
-  --   · sorry
-  --   · sorry
+          intro _
+          rw [linearDepOn_iff]
+          classical
+          let c : W.Y → R := fun j : W.Y =>
+            if hjG : j.val ∈ G then
+              let j' : G := ⟨j.val, hjG⟩
+              if hj' : j' ∈ G' then W.A (f hj'.choose) (hGY.elem (g ⟨n, by omega⟩))
+              else if j' = g ⟨n, by omega⟩ then -1 else 0
+            else 0
+          use Finsupp.ofSupportFinite c (by sorry)
+          constructor
+          · simp [c, Finsupp.supported, Finsupp.ofSupportFinite]
+            intro j hjY hjG hj
+            let j' : G := ⟨j, hjG⟩
+            if hj' : j' ∈ G' then
+              use hjG
+              right
+              exact hj'
+            else if hj'' : j' = g ⟨n, by omega⟩ then
+              use hjG
+              left
+              exact hj''
+            else
+              exfalso
+              apply hj
+              split
+              · contradiction
+              · rfl
+          constructor
+          · sorry
+          · simp only [Finsupp.ofSupportFinite, ne_eq, id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int]
+            intro hc
+            rw [Finsupp.ext_iff] at hc
+            specialize hc (hGY.elem (g ⟨n, by omega⟩))
+            have hgG' : g ⟨n, by omega⟩ ∉ G'
+            · intro ⟨i, hfi, hgi⟩
+              apply (Fintype.equivFin G).symm.injective at hgi
+              exact (congr_arg Fin.val hgi ▸ i.isLt).false
+            simp [c, hgG'] at hc
+        have hG'' : Subtype.val '' G'' ⊆ G
+        · simp
+        exact hg (hWV ▸ hVG.indep.subset hG'')
+      obtain ⟨x, hx, hxf⟩ := hgf
+      use ⟨W.X, W.Y, W.A.longTableauPivot x (hGY.elem (g ⟨n, by omega⟩))⟩, hWV ▸ W.longTableauPivot hx, hWA.longTableauPivot _ _ hx, hGY
+      let f' : Fin n.succ → W.X := Fin.snoc f x
+      use f'
+      constructor
+      · intro a b hab
+        if ha : a.val = n then
+          if hb : b.val = n then
+            ext
+            rw [ha, hb]
+          else
+            have ha' : a = n
+            · ext
+              simp [ha]
+            exfalso
+            rw [ha'] at hab
+            simp only [f', Fin.snoc_last, Fin.natCast_eq_last] at hab
+            rw [hab] at hxf
+            apply hxf
+            have hb' : b.val < n
+            · omega
+            use ⟨b.val, hb'⟩
+            simp [hb', Fin.snoc]
+            rfl
+        else
+          if hb : b.val = n then
+            have hb' : b = n
+            · ext
+              simp [hb]
+            exfalso
+            rw [hb'] at hab
+            simp only [f', Fin.snoc_last, Fin.natCast_eq_last] at hab
+            rw [←hab] at hxf
+            apply hxf
+            have ha' : a.val < n
+            · omega
+            use ⟨a.val, ha'⟩
+            simp [ha', Fin.snoc]
+            rfl
+          else
+            have ha' : a.val < n
+            · omega
+            have hb' : b.val < n
+            · omega
+            simp [ha', hb', f', Fin.snoc] at hab
+            apply hf at hab
+            ext
+            simpa [Fin.castLT] using hab
+      intro i j
+      if hj : j.val < n then
+        convert hfW i ⟨j.val, hj⟩ using 2
+        · simp [hj, f', Fin.snoc, Fin.castLT]
+        · sorry
+        · sorry
+      else
+        if hi : i = f' j then
+          have hjx : f' j ≠ x
+          · intro contr
+            apply hxf
+            sorry
+          simp [hi, hj, hjx, Matrix.longTableauPivot]
+          sorry
+        else
+          sorry
+  obtain ⟨W, hVW, hWA, hGY, f, hf, hfW⟩ := indu #G (by rfl)
+  have hYGY : W.Y \ G ⊆ W.Y := Set.diff_subset
+  use ⟨G, W.Y \ G, Set.disjoint_sdiff_right, W.A.submatrix (f ∘ Fintype.equivFin G) hYGY.elem,
+    G.decidableMemOfFintype, (Classical.propDecidable <| · ∈ W.Y \ G)⟩
+  refine ⟨by simp, ?_, hWA.submatrix (f ∘ Fintype.equivFin G) hYGY.elem⟩
+  have hYY : W.Y = V.Y := vectorMatroid_toMatroid_Y_congr hVW
+  have hGYY : G ∪ W.Y = V.Y := hYY ▸ Set.union_eq_self_of_subset_left hGY
   ext I hIGYG
-  · exact (congr_fun (Set.union_diff_cancel' ↓id hGY') _).to_iff
+  · simpa [hYY] using (hGY ·)
   · dsimp at hIGYG
     simp only [StandardRepr.toMatroid_indep_iff_elem', VectorMatroid.toMatroid_indep_iff_elem, Set.union_diff_self,
       Matrix.one_fromCols_transpose, Matrix.transpose_submatrix]
-    have hGYY : G ∪ W'.Y = W'.Y := Set.union_eq_self_of_subset_left hGY'
     constructor
-    · intro ⟨hIGY, hRAI⟩
+    · intro ⟨hIGY, hRWI⟩
       use hGYY ▸ hIGY
       sorry
-    · intro ⟨hI, hRAI⟩
+    · intro ⟨hI, hRVI⟩
       use hGYY.symm ▸ hI
       sorry
 
