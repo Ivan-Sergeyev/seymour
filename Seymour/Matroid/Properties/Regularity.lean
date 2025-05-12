@@ -125,9 +125,7 @@ lemma Matroid.isRegular_mapEquiv_iff {β : Type} (M : Matroid α) (e : α ≃ β
   on_goal 1 => let f := e.symm
   on_goal 2 => let f := e
   all_goals
-    use f '' X
-    use f '' Y
-    use A.submatrix (f.image X).symm (f.image Y).symm, hA.submatrix _ _
+    use f '' X, f '' Y, A.submatrix (f.image X).symm (f.image Y).symm, hA.submatrix _ _
     rw [VectorMatroid_mapEquiv_eq X Y A f]
     aesop
 

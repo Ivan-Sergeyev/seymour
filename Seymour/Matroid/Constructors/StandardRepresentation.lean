@@ -476,19 +476,30 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
       -- previous columns are unaffected because the element in the pivot row was already `0`
       -- new column is by definition of the long-tableau pivot
       sorry
-  obtain ⟨W', hWW, hWtu, hGX', hGY', hfW'⟩ := indu #G (by rfl)
+  obtain ⟨W', hWW, hW'tu, hGX', hGY', hfW'⟩ := indu #G (by rfl)
   let I : Matrix G G R := W'.A.submatrix hGX'.≃ hGY'.elem
   have hYGY : W'.Y \ G ⊆ W'.Y := Set.diff_subset
-  let B : Matrix G (W'.Y \ G).Elem R := W'.A.submatrix hGX'.≃ hYGY.elem
-  use ⟨_, _, Set.disjoint_sdiff_right, B, G.decidableMemOfFintype, (Classical.propDecidable <| · ∈ W'.Y \ G)⟩
-  refine ⟨by simp, ?_, hWtu.submatrix hGX'.≃ hYGY.elem⟩
+  use ⟨_, _, Set.disjoint_sdiff_right, W'.A.submatrix hGX'.≃ hYGY.elem,
+    G.decidableMemOfFintype, (Classical.propDecidable <| · ∈ W'.Y \ G)⟩
+  refine ⟨by simp, ?_, hW'tu.submatrix hGX'.≃ hYGY.elem⟩
   rw [hVW, ←hWW]
-  simp only [B]
-  ext x hx
-  · show x ∈ G ∪ W'.Y \ G ↔ x ∈ W'.Y
-    rw [Set.union_diff_cancel' (fun _ => id) hGY']
-  · dsimp at hx
-    sorry
+  -- let B : Basis G R (Submodule.span R W'.Aᵀ.range)
+  -- · apply Basis.mk (v := fun j : G.Elem => ⟨W'.Aᵀ (hGY'.elem j), in_submoduleSpan_range W'.Aᵀ (hGY'.elem j)⟩)
+  --   · sorry
+  --   · sorry
+  ext I hIGYG
+  · exact (congr_fun (Set.union_diff_cancel' ↓id hGY') _).to_iff
+  · dsimp at hIGYG
+    simp only [StandardRepr.toMatroid_indep_iff_elem', VectorMatroid.toMatroid_indep_iff_elem, Set.union_diff_self,
+      Matrix.one_fromCols_transpose, Matrix.transpose_submatrix]
+    have hGYY : G ∪ W'.Y = W'.Y := Set.union_eq_self_of_subset_left hGY'
+    constructor
+    · intro ⟨hIGY, hRAI⟩
+      use hGYY ▸ hIGY
+      sorry
+    · intro ⟨hI, hRAI⟩
+      use hGYY.symm ▸ hI
+      sorry
 
 /-- The identity matrix has linearly independent rows. -/
 lemma Matrix.one_linearIndependent [Ring R] : LinearIndependent R (1 : Matrix α α R) := by
