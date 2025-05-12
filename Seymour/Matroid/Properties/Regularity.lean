@@ -82,7 +82,7 @@ lemma VectorMatroid_mapEquiv_eq {α β : Type} (X Y : Set α) (A : Matrix X Y �
   on_goal 3 => refine Finsupp.embDomain_eq_zero.→ (hI (Finsupp.embDomain (e.image Y).symm l) ?_ ?_)
   on_goal 2 =>
     rw [Finsupp.linearCombination_embDomain, Matrix.transpose_submatrix]
-    show (Finsupp.linearCombination ℚ (A.transpose.submatrix ((e.image Y).symm ∘ (e.image Y)) (e.image X).symm)) l = 0
+    show (Finsupp.linearCombination ℚ (A.transpose.submatrix ((e.image Y).symm ∘ e.image Y) (e.image X).symm)) l = 0
     rw [Equiv.symm_comp_self]
     ext x
     rw [funext_iff] at hll
@@ -97,12 +97,12 @@ lemma VectorMatroid_mapEquiv_eq {α β : Type} (X Y : Set α) (A : Matrix X Y �
     rw [Matrix.transpose_submatrix] at hll
     ext x
     rw [funext_iff] at hll
-    specialize hll ⟨(e.image X) x, Subtype.coe_prop ((e.image X) x)⟩
+    specialize hll ⟨e.image X x, Subtype.coe_prop ((e.image X) x)⟩
     rw [Pi.zero_apply] at hll ⊢
     rw [←hll, Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, Finsupp.sum.eq_1, Finsupp.sum.eq_1]
     simp only [Finset.sum_apply, Pi.smul_apply, Matrix.submatrix_apply, Matrix.transpose_apply, smul_eq_mul, id_eq,
       Equiv.image_apply_coe,
-      show ((e.image X).symm ⟨e x, (by simp)⟩) = x by
+      show ((e.image X).symm ⟨e x, by simp⟩) = x by
         apply_fun e.image X
         rw [Equiv.apply_symm_apply]
         rfl]
@@ -114,7 +114,7 @@ lemma VectorMatroid_mapEquiv_eq {α β : Type} (X Y : Set α) (A : Matrix X Y �
     ext x
     simp_rw [Set.mem_preimage, Set.mem_image_equiv, Equiv.symm_symm]
   · rfl
-  · rw [show ((e.image Y).symm.toEmbedding x) = ⟨e.symm x, (Set.mem_image_equiv).→ x.prop⟩
+  · rw [show ((e.image Y).symm.toEmbedding x) = ⟨e.symm x, Set.mem_image_equiv.→ x.prop⟩
         by apply_fun (Equiv.Set.image e Y e.injective); simp,
       Equiv.apply_symm_apply]
 
