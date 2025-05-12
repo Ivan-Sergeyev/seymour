@@ -63,35 +63,62 @@ lemma Matrix.isTuSigningOf_iff {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y
 
 variable {α : Type}
 
-lemma VectorMatroid_mapEquiv_eq {α β : Type} (X Y : Set α) (A : Matrix X Y ℚ) (e : α ≃ β) : (VectorMatroid.mk (e '' X) (e '' Y) (A.submatrix ⇑(e.image X).symm ⇑(e.image Y).symm)).toMatroid = (VectorMatroid.mk X Y A).toMatroid.mapEquiv e := by
+lemma VectorMatroid_mapEquiv_eq {α β : Type} (X Y : Set α) (A : Matrix X Y ℚ) (e : α ≃ β) :
+    (VectorMatroid.mk (e '' X) (e '' Y) (A.submatrix ⇑(e.image X).symm ⇑(e.image Y).symm)).toMatroid =
+      (VectorMatroid.mk X Y A).toMatroid.mapEquiv e := by
   let Ma := VectorMatroid.mk X Y A
   let Mb := VectorMatroid.mk (e '' X) (e '' Y) (A.submatrix ⇑(e.image X).symm ⇑(e.image Y).symm)
-  show Mb.toMatroid = Ma.toMatroid.mapEquiv e
-  apply Matroid.ext_indep
-  exact Ma.toMatroid.mapEquiv_ground_eq e
+  apply Matroid.ext_indep <| Ma.toMatroid.mapEquiv_ground_eq e
   intro I hI
-  rw [Ma.toMatroid.mapEquiv_indep_iff]
-  rw [Mb.toMatroid_indep]
-  rw [Ma.toMatroid_indep]
-  rw [VectorMatroid.IndepCols]
-  rw [VectorMatroid.IndepCols]
-  simp
-  have MaY : Ma.Y = Y := rfl
-  have MbY : Mb.Y = e '' Y := rfl
-  have MaA : Ma.A.transpose = A.transpose := rfl
-  have MbA : Mb.A.transpose = (A.submatrix ⇑(e.image X).symm ⇑(e.image Y).symm).transpose := rfl
-  rw [MaA, MbA]
+  rw [Ma.toMatroid.mapEquiv_indep_iff, Mb.toMatroid_indep, Ma.toMatroid_indep,
+    VectorMatroid.IndepCols, VectorMatroid.IndepCols, Equiv.symm_image_subset]
   constructor
-  · intro ⟨hI, hIndep⟩
-    rw [MbY] at hI
-    constructor
-    exact hI
-    sorry
-  · intro ⟨hI, hIndep⟩
-    rw [MaY] at hI
-    constructor
-    exact hI
-    sorry
+  all_goals
+    intro ⟨hI, hIndep⟩
+    refine ⟨hI, ?_⟩
+    rw [linearIndepOn_iff] at hIndep ⊢
+    intro l hl hll
+  on_goal 1 => refine Finsupp.embDomain_eq_zero.→ <| hIndep (Finsupp.embDomain (e.image Y) l) ?_ ?_
+  on_goal 3 => refine Finsupp.embDomain_eq_zero.→ <| hIndep (Finsupp.embDomain (e.image Y).symm l) ?_ ?_
+  on_goal 2 =>
+    rw [Finsupp.linearCombination_embDomain, Matrix.transpose_submatrix]
+    show (Finsupp.linearCombination ℚ (A.transpose.submatrix ((e.image Y).symm ∘ (e.image Y)) (e.image X).symm)) l = 0
+    rw [Equiv.symm_comp_self]
+    ext x
+    rw [funext_iff] at hll
+    specialize hll ⟨(e.image X).symm x, (Set.mem_image_equiv).→ x.prop⟩
+    rw [Pi.zero_apply] at hll ⊢
+    rw [← hll, Finsupp.linearCombination_apply, Finsupp.linearCombination_apply,
+      Finsupp.sum.eq_1, Finsupp.sum.eq_1]
+    simp only [Finset.sum_apply, Pi.smul_apply, Matrix.submatrix_apply, id_eq,
+      Matrix.transpose_apply, smul_eq_mul, Matrix.submatrix_id_id, Equiv.image_symm_apply_coe]
+    rfl
+  on_goal 3 =>
+    rw [Finsupp.linearCombination_embDomain]
+    rw [Matrix.transpose_submatrix] at hll
+    ext x
+    rw [funext_iff] at hll
+    specialize hll ⟨(e.image X) x, Subtype.coe_prop ((e.image X) x)⟩
+    rw [Pi.zero_apply] at hll ⊢
+    rw [← hll, Finsupp.linearCombination_apply, Finsupp.linearCombination_apply,
+      Finsupp.sum.eq_1, Finsupp.sum.eq_1]
+    simp only [Finset.sum_apply, Pi.smul_apply, Matrix.submatrix_apply, id_eq,
+      Matrix.transpose_apply, smul_eq_mul, Equiv.image_apply_coe,
+      show ((e.image X).symm (Subtype.mk (e x) (by simp))) = x by
+        apply_fun e.image X
+        rw [Equiv.apply_symm_apply]
+        rfl]
+    rfl
+  all_goals
+    rw [Finsupp.mem_supported] at hl ⊢
+    simp_rw [Finsupp.support_embDomain, Finset.coe_map, Set.image_subset_iff] at hl ⊢
+    refine subset_of_subset_of_eq hl ?_
+    ext x
+    simp only [Set.mem_preimage, Set.mem_image_equiv, Equiv.symm_symm]
+  · rfl
+  · rw [show ((e.image Y).symm.toEmbedding x) = ⟨e.symm x, (Set.mem_image_equiv).→ x.prop⟩ by
+      apply_fun (Equiv.Set.image e Y e.injective)
+      simp, Equiv.apply_symm_apply]
 
 /-- Matroids are regular up to map equivalence. -/
 @[simp]
