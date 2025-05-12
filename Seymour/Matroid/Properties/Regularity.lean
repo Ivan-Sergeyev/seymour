@@ -63,7 +63,9 @@ lemma Matrix.isTuSigningOf_iff {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y
 
 variable {α : Type}
 
-lemma VectorMatroid_mapEquiv_eq {α β : Type} (X Y : Set α) (A : Matrix X Y ℚ) (e : α ≃ β) : (VectorMatroid.mk (e '' X) (e '' Y) (A.submatrix ⇑(e.image X).symm ⇑(e.image Y).symm)).toMatroid = (VectorMatroid.mk X Y A).toMatroid.mapEquiv e := by
+lemma VectorMatroid_mapEquiv_eq {α β : Type} (X Y : Set α) (A : Matrix X Y ℚ) (e : α ≃ β) :
+    (VectorMatroid.mk (e '' X) (e '' Y) (A.submatrix ⇑(e.image X).symm ⇑(e.image Y).symm)).toMatroid =
+      (VectorMatroid.mk X Y A).toMatroid.mapEquiv e := by
   let Ma := VectorMatroid.mk X Y A
   let Mb := VectorMatroid.mk (e '' X) (e '' Y) (A.submatrix ⇑(e.image X).symm ⇑(e.image Y).symm)
   apply Matroid.ext_indep <| Ma.toMatroid.mapEquiv_ground_eq e
@@ -89,7 +91,17 @@ lemma VectorMatroid_mapEquiv_eq {α β : Type} (X Y : Set α) (A : Matrix X Y �
       ext x
       simp
     · rw [Finsupp.linearCombination_embDomain, Matrix.transpose_submatrix]
-      sorry
+      show (Finsupp.linearCombination ℚ (A.transpose.submatrix ((e.image Y).symm ∘ (e.image Y)) (e.image X).symm)) l = 0
+      rw [Equiv.symm_comp_self]
+      ext x
+      rw [funext_iff, show A.transpose = A.transpose.submatrix id id from rfl] at hll
+      specialize hll ⟨(e.image X).symm x, (Set.mem_image_equiv).→ x.prop⟩
+      rw [Pi.zero_apply] at hll ⊢
+      rw [← hll, Finsupp.linearCombination_apply, Finsupp.linearCombination_apply,
+        Finsupp.sum.eq_1, Finsupp.sum.eq_1]
+      simp only [Finset.sum_apply, Pi.smul_apply, Matrix.submatrix_apply, id_eq,
+        Matrix.transpose_apply, smul_eq_mul, Matrix.submatrix_id_id, Equiv.image_symm_apply_coe, Ma]
+      rfl
   · refine Finsupp.embDomain_eq_zero.→ <| hIndep (Finsupp.embDomain (e.image Y).symm l) ?_ ?_
     · rw [Finsupp.mem_supported] at hl ⊢
       simp_rw [Finsupp.support_embDomain, Finset.coe_map, Set.image_subset_iff, Ma] at hl ⊢
@@ -100,7 +112,20 @@ lemma VectorMatroid_mapEquiv_eq {α β : Type} (X Y : Set α) (A : Matrix X Y �
         simp]
     · rw [Finsupp.linearCombination_embDomain]
       rw [Matrix.transpose_submatrix] at hll
-      sorry
+      show (Finsupp.linearCombination ℚ (A.transpose.submatrix (e.image Y).symm id)) l = 0
+      ext x
+      rw [funext_iff] at hll
+      specialize hll ⟨(e.image X) x, Subtype.coe_prop ((e.image X) x)⟩
+      rw [Pi.zero_apply] at hll ⊢
+      rw [← hll, Finsupp.linearCombination_apply, Finsupp.linearCombination_apply,
+        Finsupp.sum.eq_1, Finsupp.sum.eq_1]
+      simp only [Finset.sum_apply, Pi.smul_apply, Matrix.submatrix_apply, id_eq,
+        Matrix.transpose_apply, smul_eq_mul, Equiv.image_apply_coe, Ma,
+        show ((e.image X).symm (Subtype.mk (e x) (by sorry))) = x by
+          apply_fun e.image X
+          rw [Equiv.apply_symm_apply]
+          rfl]
+      rfl
 
 /-- Matroids are regular up to map equivalence. -/
 @[simp]
