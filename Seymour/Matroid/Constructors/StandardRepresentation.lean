@@ -423,11 +423,10 @@ lemma VectorMatroid.longTableauPivot [Field R] (V : VectorMatroid α R) {x : V.X
 
 /-- Every vector matroid whose full representation matrix is totally unimodular has a standard representation whose rows are
     a given base and the standard representation matrix is totally unimodular. -/
-lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G : Set α}
+lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G : Set α} [Fintype G]
     (V : VectorMatroid α R) (hVG : V.toMatroid.IsBase G) (hVA : V.A.IsTotallyUnimodular) :
     ∃ S : StandardRepr α R, S.X = G ∧ S.toMatroid = V.toMatroid ∧ S.B.IsTotallyUnimodular := by
   have hGV : G ⊆ V.Y := hVG.subset_ground
-  have : Fintype G := sorry
   wlog hG : 0 < #G
   · rw [not_lt, nonpos_iff_eq_zero, ← Set.toFinset_card, Finset.card_eq_zero, Set.toFinset_eq_empty] at hG
     use StandardRepr.loopy R V.Y
@@ -440,8 +439,6 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
         if i = f j
         then W.A i (hGY.elem (g ⟨j.val, by omega⟩)) = 1
         else W.A i (hGY.elem (g ⟨j.val, by omega⟩)) = 0
---    ∀ j : Fin k, W.A (f j) (hGY.elem (g ⟨j.val, by omega⟩)) = 1 ∧ ∀ i : W.X, i ≠ f j → W.A i (hGY.elem (g ⟨j.val, by omega⟩)) = 0
---    or call `Pi.single`
   · intro k
     induction k with
     | zero =>
@@ -566,15 +563,15 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
           sorry
         else
           sorry
-  obtain ⟨W, hVW, hWA, hGY, f, hf, hfW⟩ := indu #G (by rfl)
+  obtain ⟨W, hVW, hWA, hGW, f, hf, hfW⟩ := indu #G (by rfl)
   have hYGY : W.Y \ G ⊆ W.Y := Set.diff_subset
   use ⟨G, W.Y \ G, Set.disjoint_sdiff_right, W.A.submatrix (f ∘ Fintype.equivFin G) hYGY.elem,
     G.decidableMemOfFintype, (Classical.propDecidable <| · ∈ W.Y \ G)⟩
   refine ⟨by simp, ?_, hWA.submatrix (f ∘ Fintype.equivFin G) hYGY.elem⟩
-  have hYY : W.Y = V.Y := vectorMatroid_toMatroid_Y_congr hVW
-  have hGYY : G ∪ W.Y = V.Y := hYY ▸ Set.union_eq_self_of_subset_left hGY
+  rw [←hVW]
+  have hGYY : G ∪ W.Y = W.Y := Set.union_eq_self_of_subset_left hGW
   ext I hIGYG
-  · simpa [hYY] using (hGY ·)
+  · simpa using (hGW ·)
   · dsimp at hIGYG
     simp only [StandardRepr.toMatroid_indep_iff_elem', VectorMatroid.toMatroid_indep_iff_elem, Set.union_diff_self,
       Matrix.one_fromCols_transpose, Matrix.transpose_submatrix]
@@ -582,7 +579,7 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
     · intro ⟨hIGY, hRWI⟩
       use hGYY ▸ hIGY
       sorry
-    · intro ⟨hI, hRVI⟩
+    · intro ⟨hI, hRWI⟩
       use hGYY.symm ▸ hI
       sorry
 
