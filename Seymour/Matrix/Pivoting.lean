@@ -36,9 +36,8 @@ private lemma Matrix.mulCol_linearIndepOn [DecidableEq Y] [Field F] (A : Matrix 
     ext x'
     rw [funext_iff] at hfgl
     specialize hfgl x'
-    simp_rw [Finset.sum_apply, Pi.smul_apply, smul_eq_mul] at hfgl ⊢
-    simp_rw [Matrix.updateCol_apply, Pi.smul_apply] at hfgl ⊢
-    simp only [smul_eq_mul, mul_ite, Finset.sum_ite_irrel] at hfgl ⊢
+    simp_rw [Finset.sum_apply, Pi.smul_apply, Matrix.updateCol_apply, Pi.smul_apply,
+      smul_eq_mul, mul_ite, Finset.sum_ite_irrel] at hfgl ⊢
   · split_ifs with hx'
     · subst hx'
       conv => enter [1, 2, x]; rw [←mul_assoc, mul_comm (f x), mul_assoc]
@@ -112,7 +111,7 @@ private lemma Matrix.addMultiples_linearIndepOn [DecidableEq X] [Field F] (A : M
 /-- Adding multiples of a row to all other rows of a matrix does not change the determinant of the matrix. -/
 private lemma Matrix.addMultiples_det [DecidableEq X] [Fintype X] [CommRing F] (A : Matrix X X F) (x : X) (q : X → F) :
     (A.addMultiples x q).det = A.det := by
-  apply Matrix.det_eq_of_forall_row_eq_smul_add_const (fun i : X => if i = x then 0 else q i) x (by simp)
+  apply Matrix.det_eq_of_forall_row_eq_smul_add_const (fun i : X => if i = x then 0 else q i) x (if_pos rfl)
   unfold Matrix.addMultiples
   aesop
 
