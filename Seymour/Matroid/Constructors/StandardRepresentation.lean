@@ -419,10 +419,11 @@ lemma VectorMatroid.exists_standardRepr [DivisionRing R] (M : VectorMatroid α R
 
 lemma VectorMatroid.longTableauPivot [Field R] (V : VectorMatroid α R) {x : V.X} {y : V.Y} (hVxy : V.A x y ≠ 0) :
     (VectorMatroid.mk V.X V.Y (V.A.longTableauPivot x y)).toMatroid = V.toMatroid := by
-  ext I hI
+  ext
   · rfl
-  · rw [VectorMatroid.toMatroid_indep, VectorMatroid.toMatroid_indep, VectorMatroid.IndepCols, VectorMatroid.IndepCols, and_congr_right_iff]
-    exact fun h => Matrix.longTableauPivot_linearIndependent hVxy _
+  · rw [VectorMatroid.toMatroid_indep, VectorMatroid.toMatroid_indep, VectorMatroid.IndepCols, VectorMatroid.IndepCols,
+      and_congr_right_iff]
+    exact ↓(V.A.longTableauPivot_linearIndepenOn hVxy _)
 
 /-- Every vector matroid whose full representation matrix is totally unimodular has a standard representation whose rows are
     a given base and the standard representation matrix is totally unimodular. -/
