@@ -35,7 +35,7 @@ recall Matrix.toMatrixUnionUnion {α : Type} {T₁ T₂ S₁ S₂ : Set α} {β 
 -- ## Summary of 1-sum
 
 recall matrix1sumComposition {R : Type} [Zero R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
-    (Aₗ : Matrix Xₗ Yₗ R) (Aᵣ : Matrix Xᵣ Yᵣ R) :
+    (AₗMatrix.oneSumᵣ : Matrix Xᵣ Yᵣ R) :
     Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) R :=
   Matrix.fromBlocks Aₗ 0 0 Aᵣ
 
@@ -48,7 +48,7 @@ recall standardRepr1sumComposition {α : Type} [DecidableEq α] {Sₗ Sᵣ : Sta
       Sₗ.Y ∪ Sᵣ.Y,
       by simp only [Set.disjoint_union_left, Set.disjoint_union_right]; exact ⟨⟨Sₗ.hXY, hYX.symm⟩, ⟨hXY, Sᵣ.hXY⟩⟩,
       (matrix1sumComposition Sₗ.B Sᵣ.B).toMatrixUnionUnion,
-      inferInstance,
+      iMatrix.oneSum
       inferInstance,
     ⟩,
     Sₗ.X ⫗ Sᵣ.X ∧ Sₗ.Y ⫗ Sᵣ.Y

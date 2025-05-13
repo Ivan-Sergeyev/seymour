@@ -161,6 +161,8 @@ lemma HasSubset.Subset.elem_injective (hXY : X ⊆ Y) : hXY.elem.Injective := by
   ext
   simpa using hxy
 
+abbrev HasSubset.Subset.elem_embedding (hXY : X ⊆ Y) : X ↪ Y := ⟨hXY.elem, hXY.elem_injective⟩
+
 lemma HasSubset.Subset.elem_range (hXY : X ⊆ Y) : hXY.elem.range = { a : Y.Elem | a.val ∈ X } := by
   aesop
 
@@ -185,6 +187,19 @@ lemma toSum_right [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] {i :
     (hiX : i.val ∉ X) (hiY : i.val ∈ Y) :
     i.toSum = ◪⟨i.val, hiY⟩ := by
   simp [Subtype.toSum, hiY, hiX]
+
+lemma toSum_disjoint_inl_ni_right [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)]
+    (hXY : X ⫗ Y) {x : X} {i : (X ∪ Y).Elem} (hi : i.toSum = ◩x) : i.val ∉ Y := by
+  by_contra hiY
+  simp [Set.disjoint_right.→ hXY hiY, hiY] at hi
+
+lemma toSum_inl_in_left [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)]
+    {x : X} {i : (X ∪ Y).Elem} (hi : i.toSum = ◩x) : i.val ∈ X := by
+  by_contra hiX
+  if hiY : i.val ∈ Y then
+    simp [hiX, hiY] at hi
+  else
+    exact i.property.elim hiX hiY
 
 /-- Convert `X.Elem ⊕ Y.Elem` to `(X ∪ Y).Elem`. -/
 def Sum.toUnion (i : X.Elem ⊕ Y.Elem) : (X ∪ Y).Elem :=

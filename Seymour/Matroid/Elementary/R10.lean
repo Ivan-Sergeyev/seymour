@@ -1,26 +1,26 @@
-import Seymour.Matroid.Properties.Graphicness
 import Seymour.Matrix.TotalUnimodularityTest
+import Seymour.Matroid.Properties.Regularity
 
 
-def matrixR10auxZ2 : Matrix (Fin 5) (Fin 5) Z2 :=
+def matrixR10_Z2 : Matrix (Fin 5) (Fin 5) Z2 :=
   !![1, 0, 0, 1, 1; 1, 1, 0, 0, 1; 0, 1, 1, 0, 1; 0, 0, 1, 1, 1; 1, 1, 1, 1, 1]
 
-def matrixR10auxRat : Matrix (Fin 5) (Fin 5) ℚ :=
-  matrixR10auxZ2.map (·.val)
+def matrixR10_Rat : Matrix (Fin 5) (Fin 5) ℚ :=
+  matrixR10_Z2.map (·.val)
 
-lemma matrixR10auxRat_isTotallyUnimodular : matrixR10auxRat.IsTotallyUnimodular :=
-  matrixR10auxRat.isTotallyUnimodular_of_testTotallyUnimodularFast (by decide +kernel)
+lemma matrixR10_Rat_isTotallyUnimodular : matrixR10_Rat.IsTotallyUnimodular :=
+  matrixR10_Rat.isTotallyUnimodular_of_testTotallyUnimodularFast (by decide +kernel)
 
 def matrixR10Z2 : Matrix { x : Fin 10 | x.val < 5 } { x : Fin 10 | 5 ≤ x.val } Z2 :=
-  matrixR10auxZ2.submatrix
+  matrixR10_Z2.submatrix
     (fun i => ⟨i.val, i.property⟩)
     (fun j => ⟨j.val - 5, by omega⟩)
 
 def matrixR10Rat : Matrix { x : Fin 10 | x.val < 5 } { x : Fin 10 | 5 ≤ x.val } ℚ :=
   matrixR10Z2.map (·.val)
 
-lemma matrixR10Rat_eq_coe_matrixR10auxRat :
-    matrixR10Rat = matrixR10auxRat.submatrix (fun i => ⟨i.val, i.property⟩) (fun j => ⟨j.val - 5, by omega⟩) := by
+lemma matrixR10Rat_eq_coe_matrixR10_Rat :
+    matrixR10Rat = matrixR10_Rat.submatrix (fun i => ⟨i.val, i.property⟩) (fun j => ⟨j.val - 5, by omega⟩) := by
   simp_all only [Set.coe_setOf, Set.mem_setOf_eq]
   rfl
 
@@ -46,8 +46,8 @@ lemma matroidR10.isRegular : matroidR10.toMatroid.IsRegular := by
   use matrixR10Rat
   simp_rw [Matrix.IsTuSigningOf]
   refine ⟨?_, fun i j => ?_⟩
-  · rw [matrixR10Rat_eq_coe_matrixR10auxRat]
-    apply matrixR10auxRat_isTotallyUnimodular.submatrix
+  · rw [matrixR10Rat_eq_coe_matrixR10_Rat]
+    apply matrixR10_Rat_isTotallyUnimodular.submatrix
   · rw [matrixR10Rat, matroidR10_B_eq]
     simp_rw [Set.coe_setOf, Matrix.map_apply, abs_eq_self]
     apply Nat.cast_nonneg

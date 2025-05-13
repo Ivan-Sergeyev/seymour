@@ -1,89 +1,215 @@
+import Mathlib.Data.Matroid.Sum
 import Seymour.Matroid.Properties.Regularity
 
 
-/-- `Matrix`-level 1-sum for matroids defined by their standard representation matrices. -/
-abbrev matrix1sumComposition {R : Type} [Zero R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
-    (Aₗ : Matrix Xₗ Yₗ R) (Aᵣ : Matrix Xᵣ Yᵣ R) :
+-- ## Matrix-level 1-sum
+
+/-- General definition of 1-sum of matrices. -/
+abbrev Matrix.oneSum {R Xₗ Yₗ Xᵣ Yᵣ : Type} [Zero R] (Aₗ : Matrix Xₗ Yₗ R) (Aᵣ : Matrix Xᵣ Yᵣ R) :
     Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) R :=
   ⊞ Aₗ 0 0 Aᵣ
 
-variable {α : Type} [DecidableEq α]
-
-/-- `StandardRepr`-level 1-sum of two matroids.
-    It checks that everything is disjoint (returned as `.snd` of the output). -/
-def standardRepr1sumComposition {Sₗ Sᵣ : StandardRepr α Z2} (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
-    StandardRepr α Z2 × Prop :=
+/-- If matrices have TU signings, then their 1-sum has a TU signing. -/
+lemma matrix1sumComposition_hasTuSigning {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
+    {Aₗ : Matrix Xₗ Yₗ Z2} {Aᵣ : Matrix Xᵣ Yᵣ Z2} (hAₗ : Aₗ.HasTuSigning) (hAᵣ : Aᵣ.HasTuSigning) :
+    (Aₗ.oneSum Aᵣ).HasTuSigning :=
+  have ⟨_, hBAₗ, hBₗ⟩ := hAₗ
+  have ⟨_, hBAᵣ, hBᵣ⟩ := hAᵣ
   ⟨
-    ⟨
-      Sₗ.X ∪ Sᵣ.X,
-      Sₗ.Y ∪ Sᵣ.Y,
-      by simp only [Set.disjoint_union_left, Set.disjoint_union_right]; exact ⟨⟨Sₗ.hXY, hYX.symm⟩, ⟨hXY, Sᵣ.hXY⟩⟩,
-      (matrix1sumComposition Sₗ.B Sᵣ.B).toMatrixUnionUnion,
-      inferInstance,
-      inferInstance,
-    ⟩,
-    Sₗ.X ⫗ Sᵣ.X ∧ Sₗ.Y ⫗ Sᵣ.Y
+    _,
+    fun i j => i.casesOn (fun iₗ => j.casesOn (hBAₗ iₗ) ↓abs_zero) (fun iᵣ => j.casesOn ↓abs_zero (hBAᵣ iᵣ)),
+    Matrix.fromBlocks_isTotallyUnimodular hBₗ hBᵣ
   ⟩
 
-/-- Matroid `M` is a result of 1-summing `Mₗ` and `Mᵣ` in some way. -/
-structure Matroid.Is1sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) where
-  S : StandardRepr α Z2
-  Sₗ : StandardRepr α Z2
-  Sᵣ : StandardRepr α Z2
-  hSₗ : Finite Sₗ.X
-  hSᵣ : Finite Sᵣ.X
-  hM : S.toMatroid = M
-  hMₗ : Sₗ.toMatroid = Mₗ
-  hMᵣ : Sᵣ.toMatroid = Mᵣ
-  hXY : Sₗ.X ⫗ Sᵣ.Y
-  hYX : Sₗ.Y ⫗ Sᵣ.X
-  IsSum : (standardRepr1sumComposition hXY hYX).fst = S
-  IsValid : (standardRepr1sumComposition hXY hYX).snd
+private lemma Matrix.HasTuSigning.toMatrixUnionUnion {α : Type} {Xₗ Yₗ Xᵣ Yᵣ : Set α} {A : Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) Z2}
+    [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
+    (hA : A.HasTuSigning) :
+    A.toMatrixUnionUnion.HasTuSigning :=
+  have ⟨_, hBA, hB⟩ := hA
+  ⟨
+    _,
+    (hBA ·.toSum ·.toSum),
+    hB.toMatrixUnionUnion
+  ⟩
 
-instance Matroid.Is1sumOf.finS {M Mₗ Mᵣ : Matroid α} (hM : M.Is1sumOf Mₗ Mᵣ) : Finite hM.S.X := by
-  obtain ⟨_, Sₗ, Sᵣ, _, _, _, _, _, _, _, rfl, _⟩ := hM
-  exact Finite.Set.finite_union Sₗ.X Sᵣ.X
+private abbrev union_comm_equiv {α : Type} (A B : Set α) : (A ∪ B).Elem ≃ (B ∪ A).Elem where
+  toFun := fun i => ⟨i.val, i.property.symm⟩
+  invFun := fun i => ⟨i.val, i.property.symm⟩
+  left_inv := (by intro x; simp only [Subtype.coe_eta])
+  right_inv := (by intro x; simp only [Subtype.coe_eta])
 
-/-- Matroid constructed from a valid 1-sum of binary matroids is the same as disjoint sum of matroids constructed from them. -/
-lemma standardRepr1sumComposition_eq_disjointSum {Sₗ Sᵣ : StandardRepr α Z2} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
-    (valid : (standardRepr1sumComposition hXY hYX).snd) :
-    (standardRepr1sumComposition hXY hYX).fst.toMatroid = Matroid.disjointSum Sₗ.toMatroid Sᵣ.toMatroid (by
-      simp [StandardRepr.toMatroid, StandardRepr.toVectorMatroid, Set.disjoint_union_left, Set.disjoint_union_right]
-      exact ⟨⟨valid.left, hYX⟩, ⟨hXY, valid.right⟩⟩) := by
-  ext I hI
-  · simp only [StandardRepr.toMatroid_E, Set.mem_union, Matroid.disjointSum_ground_eq, standardRepr1sumComposition]
-    tauto
-  · simp only [StandardRepr.toMatroid_indep_iff, Matroid.disjointSum_indep_iff, StandardRepr.toMatroid_E,
-      Set.inter_subset_right, exists_true_left]
-    constructor
-    <;> intro linearlyI
-    · sorry
-    · use hI
-      sorry
+/-- 1-sum is commutative. -/
+lemma matrix1sumComposition_comm {α R : Type} [DivisionRing R] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
+    [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
+    (Aₗ : Matrix Xₗ Yₗ R) (Aᵣ : Matrix Xᵣ Yᵣ R) (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) :
+    (Aᵣ.oneSum Aₗ).toMatrixUnionUnion =
+    (Aₗ.oneSum Aᵣ).toMatrixUnionUnion.reindex (union_comm_equiv Xₗ Xᵣ) (union_comm_equiv Yₗ Yᵣ) := by
+  ext i j
+  unfold Matrix.oneSum Matrix.toMatrixUnionUnion Matrix.reindex union_comm_equiv Subtype.toSum
+  simp only [Function.comp_apply, Equiv.coe_fn_symm_mk, Equiv.coe_fn_mk, Matrix.submatrix_apply]
+  if hiₗ : i.val ∈ Xₗ then
+    have hiᵣ : i.val ∉ Xᵣ := Set.disjoint_left.→ hXX hiₗ
+    if hjₗ : j.val ∈ Yₗ then
+      have hjᵣ : j.val ∉ Yᵣ := Set.disjoint_left.→ hYY hjₗ
+      simp [hiₗ, hjₗ, hiᵣ, hjᵣ]
+    else if hjᵣ : j.val ∈ Yᵣ then
+      simp [hiₗ, hjₗ, hiᵣ, hjᵣ]
+    else
+      exact (j.property.elim hjᵣ hjₗ).elim
+  else if hiᵣ : i.val ∈ Xᵣ then
+    if hjₗ : j.val ∈ Yₗ then
+      have hjᵣ : j.val ∉ Yᵣ := Set.disjoint_left.→ hYY hjₗ
+      simp [hiₗ, hjₗ, hiᵣ, hjᵣ]
+    else if hjᵣ : j.val ∈ Yᵣ then
+      simp [hiₗ, hjₗ, hiᵣ, hjᵣ]
+    else
+      exact (j.property.elim hjᵣ hjₗ).elim
+  else
+    exact (i.property.elim hiᵣ hiₗ).elim
+
+/-- Matroid corresponding to matrix 1-sum is the same as the disjoint sum of matroids constructed from them. -/
+lemma standardRepr1sumComposition_eq_disjointSum {R : Type} [DivisionRing R] {α : Type} [DecidableEq α] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
+    [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
+    (Aₗ : Matrix Xₗ Yₗ R) (Aᵣ : Matrix Xᵣ Yᵣ R)
+    (hXₗXᵣ : Xₗ ⫗ Xᵣ) (hXₗYₗ : Xₗ ⫗ Yₗ) (hXₗYᵣ : Xₗ ⫗ Yᵣ) (hYₗXᵣ : Yₗ ⫗ Xᵣ) (hYₗYᵣ : Yₗ ⫗ Yᵣ) (hXᵣYᵣ : Xᵣ ⫗ Yᵣ) :
+    (Aₗ.oneSum Aᵣ).toMatrixUnionUnion.toStandardVectorMatroid
+    = Matroid.disjointSum Aₗ.toStandardVectorMatroid Aᵣ.toStandardVectorMatroid (by
+        rw [Aₗ.toStandardVectorMatroid_E, Aᵣ.toStandardVectorMatroid_E,
+          Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
+        exact ⟨⟨hXₗXᵣ, hYₗXᵣ⟩, ⟨hXₗYᵣ, hYₗYᵣ⟩⟩) := by
+  unfold Matrix.oneSum Matrix.toMatrixUnionUnion
+  simp only [Function.comp_apply, IndepMatroid.matroid_E]
+  sorry
+  -- ext I hI
+  -- constructor
+  -- · aesop
+  -- · aesop
+  -- · rw [Matrix.toStandardVectorMatroid_E] at hI
+  --   constructor
+  --   · intro ⟨_, hI_indep⟩
+  --     simp only [Matroid.disjointSum_indep_iff, Matrix.toStandardVectorMatroid_E,
+  --       Matrix.toStandardVectorMatroid_indep, Matrix.linearIndepRows_iff_elem, Function.range,
+  --       Set.inter_subset_right, exists_true_left]
+  --     constructor
+  --     · rw [linearIndepOn_iff] at hI_indep ⊢
+  --       intro sₗ hsₗ hsₗ0
+  --       let embₗ : Xₗ ↪ (Xₗ ∪ Xᵣ).Elem := Set.subset_union_left.elem_embedding
+  --       refine Finsupp.embDomain_eq_zero.→ (hI_indep (Finsupp.embDomain embₗ sₗ) ?_ ?_)
+  --       · rw [Finsupp.mem_supported] at hsₗ ⊢
+  --         rw [Finsupp.support_embDomain embₗ sₗ]
+  --         simp only [Finset.coe_map, Function.Embedding.coeFn_mk, HasSubset.Subset.elem,
+  --           Set.image_subset_iff]
+  --         let f : I ∩ Xₗ ⊆ Xₗ := Set.inter_subset_right
+  --         have hssₗ : Set.range f.elem ⊆ ⇑embₗ ⁻¹' (Subtype.val ⁻¹' I) := fun _ => by aesop
+  --         exact hsₗ.trans hssₗ
+  --       · rw [Finsupp.linearCombination_embDomain]
+  --         rw [funext_iff] at hsₗ0
+  --         ext y
+  --         simp only [Pi.zero_apply] at hsₗ0 ⊢
+  --         if hyₗ : y.val ∈ Yₗ then
+  --           specialize hsₗ0 ⟨y.val, hyₗ⟩
+  --           simp only [←hsₗ0, embₗ, Finsupp.linearCombination_apply, Finsupp.sum.eq_1]
+  --           simp [hyₗ]
+  --         else if hyᵣ : y.val ∈ Yᵣ then
+  --           simp [hyₗ, hyᵣ, embₗ, Finsupp.linearCombination, Finsupp.sum]
+  --         else
+  --           exact (y.property.elim hyₗ hyᵣ).elim
+  --     constructor
+  --     · rw [linearIndepOn_iff] at hI_indep ⊢
+  --       intro sᵣ hsᵣ hsᵣ0
+  --       let embᵣ : Xᵣ ↪ (Xₗ ∪ Xᵣ).Elem := Set.subset_union_right.elem_embedding
+  --       refine Finsupp.embDomain_eq_zero.→ (hI_indep (Finsupp.embDomain embᵣ sᵣ) ?_ ?_)
+  --       · rw [Finsupp.mem_supported] at hsᵣ ⊢
+  --         rw [Finsupp.support_embDomain embᵣ sᵣ]
+  --         simp only [Finset.coe_map, Function.Embedding.coeFn_mk, HasSubset.Subset.elem,
+  --           Set.image_subset_iff]
+  --         let f : I ∩ Xᵣ ⊆ Xᵣ := Set.inter_subset_right
+  --         have hssᵣ : Set.range f.elem ⊆ ⇑embᵣ ⁻¹' (Subtype.val ⁻¹' I) := fun _ => by aesop
+  --         exact hsᵣ.trans hssᵣ
+  --       · rw [Finsupp.linearCombination_embDomain]
+  --         rw [funext_iff] at hsᵣ0
+  --         ext y
+  --         simp only [Pi.zero_apply] at hsᵣ0 ⊢
+
+  --         if hyᵣ : y.val ∈ Yᵣ then
+  --           specialize hsᵣ0 ⟨y.val, hyᵣ⟩
+  --           simp only [←hsᵣ0, embᵣ, Finsupp.linearCombination_apply, Finsupp.sum.eq_1]
+  --           simp [hyᵣ]
+  --           sorry
+  --         else if hyₗ : y.val ∈ Yₗ then
+  --           simp [hyₗ, hyᵣ, embᵣ, Finsupp.linearCombination, Finsupp.sum, toSum_left]
+  --           sorry
+  --         else
+  --           exact (y.property.elim hyₗ hyᵣ).elim
+  --     · exact hI
+  --   · sorry
+
+
+-- ## Matroid-level 1-sum
+
+-- variable {α : Type} {Xₗ Yₗ Xᵣ Yᵣ : Set α}
+-- variable [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
+
+/-- Matroid-level 1-sum of two matrices. Returns correctness `Prop` as the second output. -/
+def standardRepr1sumComposition {R : Type} [DivisionRing R] {α : Type} [DecidableEq α] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
+    [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
+    (Aₗ : Matrix Xₗ Yₗ R) (Aᵣ : Matrix Xᵣ Yᵣ R) :
+    (Matrix (Xₗ ∪ Xᵣ).Elem (Yₗ ∪ Yᵣ).Elem R) × Prop :=
+  ⟨
+    (Aₗ.oneSum Aᵣ).toMatrixUnionUnion,
+    Xₗ ⫗ Xᵣ ∧ Xₗ ⫗ Yₗ ∧ Xₗ ⫗ Yᵣ ∧ Yₗ ⫗ Xᵣ ∧ Yₗ ⫗ Yᵣ ∧ Xᵣ ⫗ Yᵣ
+  ⟩
+
+/-- Matroid `M` is a 1-sum composition of `Mₗ` and `Mᵣ`. -/
+structure Matroid.IsOneSumOf
+    {α : Type} [DecidableEq α] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
+    [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
+    (M Mₗ Mᵣ : Matroid α) where
+  A : Matrix (Xₗ ∪ Xᵣ).Elem (Yₗ ∪ Yᵣ).Elem Z2
+  Aₗ : Matrix Xₗ Yₗ Z2
+  Aᵣ : Matrix Xᵣ Yᵣ Z2
+  hXₗ : Finite Xₗ
+  hXᵣ : Finite Xᵣ
+  hM : A.toStandardVectorMatroid = M
+  hMₗ : Aₗ.toStandardVectorMatroid = Mₗ
+  hMᵣ : Aᵣ.toStandardVectorMatroid = Mᵣ
+  -- hXₗXᵣ : Xₗ ⫗ Xᵣ
+  -- hXₗYₗ : Xₗ ⫗ Yₗ
+  -- hXₗYᵣ : Xₗ ⫗ Yᵣ
+  -- hYₗXᵣ : Yₗ ⫗ Xᵣ
+  -- hYₗYᵣ : Yₗ ⫗ Yᵣ
+  -- hXᵣYᵣ : Xᵣ ⫗ Yᵣ
+  IsSum : (standardRepr1sumComposition Aₗ Aᵣ).fst = A
+  IsValid : (standardRepr1sumComposition Aₗ Aᵣ).snd
+
+-- instance Matroid.IsOneSumOf.finS {M Mₗ Mᵣ : Matroid α} (hM : M.IsOneSumOf Mₗ Mᵣ) : Finite (Xₗ ∪ Xᵣ : Set α) := by
+--   obtain ⟨_, Sₗ, Sᵣ, _, _, _, _, _, _, _, rfl, _⟩ := hM
+--   exact Finite.Set.finite_union Sₗ.X Sᵣ.X
 
 /-- A valid 1-sum of binary matroids is commutative. -/
-lemma standardRepr1sumComposition_comm {Sₗ Sᵣ : StandardRepr α Z2} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
-    (valid : (standardRepr1sumComposition hXY hYX).snd) :
-    (standardRepr1sumComposition hXY hYX).fst.toMatroid = (standardRepr1sumComposition hYX.symm hXY.symm).fst.toMatroid := by
-  rw [
-    standardRepr1sumComposition_eq_disjointSum valid,
-    standardRepr1sumComposition_eq_disjointSum ⟨valid.left.symm, valid.right.symm⟩,
-    Matroid.disjointSum_comm]
+lemma standardRepr1sumComposition_comm {R : Type} [DivisionRing R] {α : Type} [DecidableEq α] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
+    [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
+    (Aₗ : Matrix Xₗ Yₗ R) (Aᵣ : Matrix Xᵣ Yᵣ R)
+    (hXₗXᵣ : Xₗ ⫗ Xᵣ) (hXₗYₗ : Xₗ ⫗ Yₗ) (hXₗYᵣ : Xₗ ⫗ Yᵣ) (hYₗXᵣ : Yₗ ⫗ Xᵣ) (hYₗYᵣ : Yₗ ⫗ Yᵣ) (hXᵣYᵣ : Xᵣ ⫗ Yᵣ) :
+    (standardRepr1sumComposition Aₗ Aᵣ).fst.toStandardVectorMatroid =
+    (standardRepr1sumComposition Aᵣ Aₗ).fst.toStandardVectorMatroid := by
+  unfold standardRepr1sumComposition
+  rw [standardRepr1sumComposition_eq_disjointSum Aₗ Aᵣ hXₗXᵣ hXₗYₗ hXₗYᵣ hYₗXᵣ hYₗYᵣ hXᵣYᵣ,
+      standardRepr1sumComposition_eq_disjointSum Aᵣ Aₗ hXₗXᵣ.symm hXᵣYᵣ hYₗXᵣ.symm hXₗYᵣ.symm hYₗYᵣ.symm hXₗYₗ,
+      Matroid.disjointSum_comm]
 
-lemma standardRepr1sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2}
-    (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) :
-    (standardRepr1sumComposition hXY hYX).fst.B.HasTuSigning :=
-  have ⟨Bₗ, hBₗ, hBBₗ⟩ := hSₗ
-  have ⟨Bᵣ, hBᵣ, hBBᵣ⟩ := hSᵣ
-  ⟨_, (Matrix.fromBlocks_isTotallyUnimodular hBₗ hBᵣ).toMatrixUnionUnion, (fun i j =>
-    show |((matrix1sumComposition Bₗ Bᵣ ∘ _) i ∘ _) j| = ZMod.val (((_ ∘ _) i ∘ _) j)
-    from Function.comp_apply ▸ Function.comp_apply ▸ Function.comp_apply ▸ Function.comp_apply ▸
-      i.toSum.casesOn (fun iₗ => j.toSum.casesOn (hBBₗ iₗ) ↓abs_zero) (fun iᵣ => j.toSum.casesOn ↓abs_zero (hBBᵣ iᵣ)))⟩
+lemma standardRepr1sumComposition_hasTuSigning {α : Type} [DecidableEq α] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
+    [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
+    [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
+    {Aₗ : Matrix Xₗ Yₗ Z2} {Aᵣ : Matrix Xᵣ Yᵣ Z2} (hAₗ : Aₗ.HasTuSigning) (hAᵣ : Aᵣ.HasTuSigning) :
+    (Aₗ.oneSum Aᵣ).toMatrixUnionUnion.HasTuSigning :=
+  (matrix1sumComposition_hasTuSigning hAₗ hAᵣ).toMatrixUnionUnion
 
 /-- Any 1-sum of regular matroids is a regular matroid.
     This is part one (of three) of the easy direction of the Seymour's theorem. -/
-theorem Matroid.Is1sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
-    (hM : M.Is1sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
+theorem Matroid.IsOneSumOf.isRegular {α : Type} [DecidableEq α] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
+    [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
+    {M Mₗ Mᵣ : Matroid α} (hM : M.IsOneSumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
   have := hM.finS
   obtain ⟨_, _, _, _, _, rfl, rfl, rfl, _, _, rfl, _⟩ := hM
