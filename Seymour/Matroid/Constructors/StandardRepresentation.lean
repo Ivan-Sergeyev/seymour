@@ -432,7 +432,7 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
     ∃ S : StandardRepr α R, S.X = G ∧ S.toMatroid = V.toMatroid ∧ S.B.IsTotallyUnimodular := by
   have hGV : G ⊆ V.Y := hVG.subset_ground
   wlog hG : 0 < #G
-  · rw [not_lt, nonpos_iff_eq_zero, ← Set.toFinset_card, Finset.card_eq_zero, Set.toFinset_eq_empty] at hG
+  · rw [not_lt, nonpos_iff_eq_zero, ←Set.toFinset_card, Finset.card_eq_zero, Set.toFinset_eq_empty] at hG
     use StandardRepr.loopy R V.Y
     subst hG
     simpa using (Matroid.not_rankPos_iff.→ ((not_congr (Matroid.rankPos_iff V.toMatroid)).← (· hVG))).symm
@@ -459,7 +459,7 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
         let X' := { x : W.X | W.A x (hGY.elem (g ⟨n, by omega⟩)) ≠ 0 }
         let G' := { g ⟨i.val, by omega⟩ | (i : Fin n) (hi : f i ∈ X') }
         let G'' : Set G := g ⟨n, by omega⟩ ᕃ G'
-        have hg : ¬ W.toMatroid.Indep G''
+        have hG'' : ¬ W.toMatroid.Indep G''
         · simp
           intro _
           rw [linearDepOn_iff]
@@ -500,13 +500,13 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
               apply (Fintype.equivFin G).symm.injective at hgi
               exact (congr_arg Fin.val hgi ▸ i.isLt).false
             simp [c, hgG'] at hc
-        have hG'' : Subtype.val '' G'' ⊆ G
+        have hGG'' : Subtype.val '' G'' ⊆ G
         · simp
-        exact hg (hWV ▸ hVG.indep.subset hG'')
+        exact hG'' (hWV ▸ hVG.indep.subset hGG'')
       obtain ⟨x, hx, hxf⟩ := hgf
-      use ⟨W.X, W.Y, W.A.longTableauPivot x (hGY.elem (g ⟨n, by omega⟩))⟩, hWV ▸ W.longTableauPivot hx, hWA.longTableauPivot _ _ hx, hGY
       let f' : Fin n.succ → W.X := Fin.snoc f x
-      use f'
+      use ⟨W.X, W.Y, W.A.longTableauPivot x (hGY.elem (g ⟨n, by omega⟩))⟩,
+        hWV ▸ W.longTableauPivot hx, hWA.longTableauPivot _ _ hx, hGY, f'
       constructor
       · intro a b hab
         if ha : a.val = n then
