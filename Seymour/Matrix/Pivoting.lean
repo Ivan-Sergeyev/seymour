@@ -9,21 +9,23 @@ variable {X Y F : Type}
 
 -- ## Elementary row operations
 
-/-- Multiply row `x` of `A` by factor `q` and keep the rest of `A` unchanged. -/
-private def Matrix.mulRow [DecidableEq X] [Mul F] (A : Matrix X Y F) (x : X) (q : F) :
+/-- Multiply column `x` of `A` by factor `q` and keep the rest of `A` unchanged. -/
+private def Matrix.mulCol [DecidableEq Y] [Mul F] (A : Matrix X Y F) (y : Y) (q : F) :
     Matrix X Y F :=
-  A.updateRow x (q • A x)
+  A.updateCol y (q • A.transpose y)
 
-/-- If row `x` of `A` is multiplied by factor `q`, then the determinant is multiplied by factor `q`. -/
-private lemma Matrix.mulRow_det [DecidableEq X] [Fintype X] [CommRing F] (A : Matrix X X F) (x : X) (q : F) :
-    (A.mulRow x q).det = q * A.det := by
-  rw [Matrix.mulRow, Matrix.det_updateRow_smul, Matrix.updateRow_eq_self]
+/-- If column `y` of `A` is multiplied by factor `q`, then the determinant is multiplied by factor `q`. -/
+private lemma Matrix.mulCol_det [DecidableEq X] [Fintype X] [CommRing F] (A : Matrix X X F) (x : X) (q : F) :
+    (A.mulCol x q).det = q * A.det := by
+  rw [Matrix.mulCol, Matrix.det_updateCol_smul]
+  show q * (A.updateCol x (A · x)).det = q * A.det
+  rw [Matrix.updateCol_eq_self]
 
-/-- Multiplying a row `x` by a non-zero factor preserves linear independence on the transpose. -/
-private lemma Matrix.mulRow_linearIndepOn [DecidableEq X] [Field F] (A : Matrix X Y F) (x : X)
-    {q : F} (hq : q ≠ 0) (S : Set Y) :
-    LinearIndepOn F (A.mulRow x q).transpose S ↔ LinearIndepOn F A.transpose S := by
-  rw [Matrix.mulRow, ←Matrix.updateCol_transpose, linearIndepOn_iffₛ, linearIndepOn_iffₛ]
+/-- Multiplying a column `x` by a non-zero factor preserves linear independence. -/
+private lemma Matrix.mulCol_linearIndepOn [DecidableEq Y] [Field F] (A : Matrix X Y F) (y : Y)
+    {q : F} (hq : q ≠ 0) (S : Set X) :
+    LinearIndepOn F (A.mulCol y q) S ↔ LinearIndepOn F A S := by
+  rw [Matrix.mulCol, linearIndepOn_iffₛ, linearIndepOn_iffₛ]
   constructor
   all_goals
     intro h
@@ -39,7 +41,6 @@ private lemma Matrix.mulRow_linearIndepOn [DecidableEq X] [Field F] (A : Matrix 
     simp only [smul_eq_mul, mul_ite, Finset.sum_ite_irrel] at hfgl ⊢
   · split_ifs with hx'
     · subst hx'
-      simp_rw [transpose_apply] at hfgl
       conv => enter [1, 2, x]; rw [←mul_assoc, mul_comm (f x), mul_assoc]
       conv => enter [2, 2, x]; rw [←mul_assoc, mul_comm (g x), mul_assoc]
       rw [← Finset.mul_sum, ← Finset.mul_sum]
@@ -47,12 +48,30 @@ private lemma Matrix.mulRow_linearIndepOn [DecidableEq X] [Field F] (A : Matrix 
     · exact hfgl
   · split_ifs at hfgl with hx'
     · subst hx'
-      simp_rw [transpose_apply]
       conv at hfgl => enter [1, 2, x]; rw [←mul_assoc, mul_comm (f x), mul_assoc]
       conv at hfgl => enter [2, 2, x]; rw [←mul_assoc, mul_comm (g x), mul_assoc]
       rw [← Finset.mul_sum, ← Finset.mul_sum] at hfgl
       exact mul_left_cancel₀ hq hfgl
     · exact hfgl
+
+/-- Multiply row `x` of `A` by factor `q` and keep the rest of `A` unchanged. -/
+private def Matrix.mulRow [DecidableEq X] [Mul F] (A : Matrix X Y F) (x : X) (q : F) :
+    Matrix X Y F :=
+  A.updateRow x (q • A x)
+
+/-- If row `x` of `A` is multiplied by factor `q`, then the determinant is multiplied by factor `q`. -/
+private lemma Matrix.mulRow_det [DecidableEq X] [Fintype X] [CommRing F] (A : Matrix X X F) (x : X) (q : F) :
+    (A.mulRow x q).det = q * A.det := by
+  rw [Matrix.mulRow, Matrix.det_updateRow_smul, Matrix.updateRow_eq_self]
+
+/-- Multiplying a row `x` by a non-zero factor preserves linear independence on the transpose. -/
+private lemma Matrix.mulRow_linearIndepOn [DecidableEq X] [Field F] (A : Matrix X Y F) (x : X)
+    {q : F} (hq : q ≠ 0) (S : Set Y) :
+    LinearIndepOn F (A.mulRow x q).transpose S ↔ LinearIndepOn F A.transpose S := by
+  rw [Matrix.mulRow, ←Matrix.updateCol_transpose]
+  let B := A.transpose
+  rw [show A.transpose = B by rfl, show A = B.transpose by rfl, ←Matrix.mulCol]
+  exact Matrix.mulCol_linearIndepOn B x hq S
 
 /-- Multiplying a row by a `0, ±1` factor preserves total unimodularity. -/
 private lemma Matrix.IsTotallyUnimodular.mulRow [DecidableEq X] [CommRing F] {A : Matrix X Y F}
