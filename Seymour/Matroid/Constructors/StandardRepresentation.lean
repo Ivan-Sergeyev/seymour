@@ -482,8 +482,8 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
                 by_cases hj' : j' ∈ G'
                 · convert_to True ↔ True
                   · rw [iff_true, dite_of_true hj']
-                    -- TODO call `Classical.choose_spec` on `(f ⋯.choose)` in the goal
-                    sorry
+                    generalize_proofs _ hf
+                    exact hf.choose_spec.left
                   · aesop
                   rfl
                 by_cases hj'' : j' = g ⟨n, by omega⟩
@@ -497,7 +497,7 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
                     exact (congr_arg Subtype.val hj'').symm
                   rfl
                 · convert_to False ↔ False
-                  · aesop
+                  · simp_all [j']
                   · aesop
                   rfl
               · aesop
@@ -522,7 +522,7 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
               · contradiction
               · rfl
           constructor
-          · sorry
+          · sorry -- `Finset.sum_insert` will be used here
           · simp only [Finsupp.ofSupportFinite, ne_eq, id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int]
             intro hc
             rw [Finsupp.ext_iff] at hc
@@ -614,9 +614,11 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
     constructor
     · intro ⟨hIGY, hRWI⟩
       use hGYY ▸ hIGY
+      generalize_proofs hGYG at hRWI
       sorry
     · intro ⟨hI, hRWI⟩
       use hGYY.symm ▸ hI
+      generalize_proofs hGYG
       sorry
 
 /-- The identity matrix has linearly independent rows. -/

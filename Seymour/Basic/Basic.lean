@@ -225,5 +225,7 @@ lemma toUnion_toSum [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (h
   cases i <;> simp [hXY]
 
 
+attribute [aesop apply safe] Classical.choose_spec
+
 /-- Nonterminal `aesop` (strongly discouraged to use). -/
 macro "aesopnt" : tactic => `(tactic| aesop (config := {warnOnNonterminal := false}))
