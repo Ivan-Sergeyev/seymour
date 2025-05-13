@@ -425,6 +425,7 @@ lemma VectorMatroid.longTableauPivot [Field R] (V : VectorMatroid α R) {x : V.X
       and_congr_right_iff]
     exact ↓(V.A.longTableauPivot_linearIndepenOn hVxy _)
 
+set_option maxHeartbeats 400000
 /-- Every vector matroid whose full representation matrix is totally unimodular has a standard representation whose rows are
     a given base and the standard representation matrix is totally unimodular. -/
 lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G : Set α} [Fintype G]
@@ -470,7 +471,38 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
               if hj' : j' ∈ G' then W.A (f hj'.choose) (hGY.elem (g ⟨n, by omega⟩))
               else if j' = g ⟨n, by omega⟩ then -1 else 0
             else 0
-          use Finsupp.ofSupportFinite c (by sorry)
+          use Finsupp.ofSupportFinite c (by
+            have hc : c.support = hGY.elem '' G''
+            · ext j
+              simp [G'', c, Function.support]
+              clear * -
+              by_cases hjG : j.val ∈ G
+              · simp [hjG]
+                let j' : G := ⟨j.val, hjG⟩
+                by_cases hj' : j' ∈ G'
+                · convert_to True ↔ True
+                  · rw [iff_true, dite_of_true hj']
+                    -- TODO call `Classical.choose_spec` on `(f ⋯.choose)` in the goal
+                    sorry
+                  · aesop
+                  rfl
+                by_cases hj'' : j' = g ⟨n, by omega⟩
+                · convert_to True ↔ True
+                  · rw [iff_true, dite_of_false hj']
+                    simp
+                    exact hj''
+                  · rw [iff_true]
+                    left
+                    ext
+                    exact (congr_arg Subtype.val hj'').symm
+                  rfl
+                · convert_to False ↔ False
+                  · aesop
+                  · aesop
+                  rfl
+              · aesop
+            rw [hc]
+            exact (hGY.elem '' G'').toFinite)
           constructor
           · simp [c, Finsupp.supported, Finsupp.ofSupportFinite]
             intro j hjY hjG hj

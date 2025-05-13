@@ -74,6 +74,12 @@ lemma exists_minimal_nat_of_exists {P : ℕ → Prop} (hP : ∃ n : ℕ, P n) : 
 
 variable {α : Type}
 
+lemma dite_of_true {P : Prop} [Decidable P] (p : P) {f : P → α} {a : α} : (if hp : P then f hp else a) = f p := by
+  simp [p]
+
+lemma dite_of_false {P : Prop} [Decidable P] (p : ¬P) {f : P → α} {a : α} : (if hp : P then f hp else a) = a := by
+  simp [p]
+
 @[simp]
 abbrev Function.range {ι : Type} (f : ι → α) : Set α := Set.range f
 
