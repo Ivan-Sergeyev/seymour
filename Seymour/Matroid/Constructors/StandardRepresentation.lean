@@ -532,11 +532,44 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
             rw [Finsupp.ofSupportFinite_coe, hc']
             ext i
             rw [Finset.sum_apply]
-            show (∑ j ∈ hGY.elem '' G'', c j • W.Aᵀ j i) = 0
+            show ∑ j ∈ hGY.elem '' G'', c j • W.Aᵀ j i = 0
             have hG'' : (hGY.elem '' G'').toFinset = hGY.elem (g ⟨n, hnG⟩) ᕃ G'.toFinset.map ⟨hGY.elem, hGY.elem_injective⟩
-            · sorry
-            rw [hG'', Finset.sum_insert (by intro hgGYG'; apply hgG'; sorry)] -- apply `hGY.elem_injective` here
-            sorry
+            · simp only [G'']
+              clear * -
+              aesop
+            rw [hG'', Finset.sum_insert (hgG' <| by simpa using ·)]
+            if hi : i ∈ X' then
+              rw [add_eq_zero_iff_eq_neg', Finset.sum_map]
+              specialize hfW i
+              --rw [Finset.sum_of_single_nonzero G'.toFinset _ ⟨i.val, by sorry⟩]
+              sorry
+            else
+              convert add_zero (0 : R)
+              · exact smul_eq_zero_of_right _ (by simpa [X'] using hi)
+              · rw [Finset.sum_map]
+                apply Finset.sum_eq_zero
+                intro a ha
+                simp [X'] at hi
+                rw [Set.mem_toFinset] at ha
+                obtain ⟨j, hfj, hgja⟩ := ha
+                if hij : i = f j then
+                  apply smul_eq_zero_of_left
+                  simp [c, ←hgja]
+                  rw [dite_of_false]
+                  · generalize_proofs hjG
+                    have hgjgn : g ⟨j, hjG⟩ ≠ g ⟨n, hnG⟩
+                    · intro hgg
+                      apply (Fintype.equivFin G).symm.injective at hgg
+                      exact (congr_arg Fin.val hgg ▸ j.isLt).false
+                    simp [hgjgn]
+                  intro ⟨z, hz, hgz⟩
+                  have hzj : z = j
+                  · apply (Fintype.equivFin G).symm.injective at hgz
+                    ext
+                    simpa using hgz
+                  exact (hzj ▸ hz) (hij ▸ hi)
+                else
+                  exact smul_eq_zero_of_right _ (hgja ▸ (by simpa [hij] using hfW i j))
           · simp only [Finsupp.ofSupportFinite, ne_eq, id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int]
             intro hc0
             rw [Finsupp.ext_iff] at hc0
