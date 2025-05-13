@@ -471,38 +471,36 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
               if hj' : j' ∈ G' then W.A (f hj'.choose) (hGY.elem (g ⟨n, by omega⟩))
               else if j' = g ⟨n, by omega⟩ then -1 else 0
             else 0
-          use Finsupp.ofSupportFinite c (by
-            have hc : c.support = hGY.elem '' G''
-            · ext j
-              simp [G'', c, Function.support]
-              clear * -
-              by_cases hjG : j.val ∈ G
-              · simp [hjG]
-                let j' : G := ⟨j.val, hjG⟩
-                by_cases hj' : j' ∈ G'
-                · convert_to True ↔ True
-                  · rw [iff_true, dite_of_true hj']
-                    generalize_proofs _ hf
-                    exact hf.choose_spec.left
-                  · aesop
-                  rfl
-                by_cases hj'' : j' = g ⟨n, by omega⟩
-                · convert_to True ↔ True
-                  · rw [iff_true, dite_of_false hj']
-                    simp
-                    exact hj''
-                  · rw [iff_true]
-                    left
-                    ext
-                    exact (congr_arg Subtype.val hj'').symm
-                  rfl
-                · convert_to False ↔ False
-                  · simp_all [j']
-                  · aesop
-                  rfl
-              · aesop
-            rw [hc]
-            exact (hGY.elem '' G'').toFinite)
+          have hc : c.support = hGY.elem '' G''
+          · ext j
+            simp [G'', c, Function.support]
+            clear * -
+            by_cases hjG : j.val ∈ G
+            · simp [hjG]
+              let j' : G := ⟨j.val, hjG⟩
+              by_cases hj' : j' ∈ G'
+              · convert_to True ↔ True
+                · rw [iff_true, dite_of_true hj']
+                  generalize_proofs _ hf
+                  exact hf.choose_spec.left
+                · aesop
+                rfl
+              by_cases hj'' : j' = g ⟨n, by omega⟩
+              · convert_to True ↔ True
+                · rw [iff_true, dite_of_false hj']
+                  simp
+                  exact hj''
+                · rw [iff_true]
+                  left
+                  ext
+                  exact (congr_arg Subtype.val hj'').symm
+                rfl
+              · convert_to False ↔ False
+                · simp_all [j']
+                · aesop
+                rfl
+            · aesop
+          use Finsupp.ofSupportFinite c (hc ▸ (hGY.elem '' G'').toFinite)
           constructor
           · simp [c, Finsupp.supported, Finsupp.ofSupportFinite]
             intro j hjY hjG hj
@@ -522,16 +520,23 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
               · contradiction
               · rfl
           constructor
-          · sorry -- `Finset.sum_insert` will be used here
+          · have hc' : (Finsupp.ofSupportFinite c (hc ▸ (hGY.elem '' G'').toFinite)).support = (hGY.elem '' G'').toFinset
+            · apply eq_toFinset_of_toSet_eq
+              exact ofSupportFinite_support_eq (Finite.Set.finite_image G'' hGY.elem) hc
+            rw [Finsupp.ofSupportFinite_coe, hc']
+            ext i
+            rw [Finset.sum_apply]
+            show (∑ j ∈ hGY.elem '' G'', c j • W.Aᵀ j i) = 0
+            sorry -- `Finset.sum_insert` will be used here
           · simp only [Finsupp.ofSupportFinite, ne_eq, id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int]
-            intro hc
-            rw [Finsupp.ext_iff] at hc
-            specialize hc (hGY.elem (g ⟨n, by omega⟩))
+            intro hc0
+            rw [Finsupp.ext_iff] at hc0
+            specialize hc0 (hGY.elem (g ⟨n, by omega⟩))
             have hgG' : g ⟨n, by omega⟩ ∉ G'
             · intro ⟨i, hfi, hgi⟩
               apply (Fintype.equivFin G).symm.injective at hgi
               exact (congr_arg Fin.val hgi ▸ i.isLt).false
-            simp [c, hgG'] at hc
+            simp [c, hgG'] at hc0
         have hGG'' : Subtype.val '' G'' ⊆ G
         · simp
         exact hG'' (hWV ▸ hVG.indep.subset hGG'')

@@ -88,6 +88,11 @@ def Function.range_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $x) => `($(x).$(Lean.mkIdent `range))
   | _ => throw ()
 
+@[app_unexpander Function.support]
+def Function.support_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $x) => `($(x).$(Lean.mkIdent `support))
+  | _ => throw ()
+
 lemma Function.range_eq {ι : Type} (f : ι → α) : f.range = { a : α | ∃ i : ι, f i = a } :=
   rfl
 
@@ -111,6 +116,13 @@ lemma finset_of_cardinality_between {β : Type} [Fintype α] [Fintype β] {n : �
       rw [nonempty_subtype, not_exists] at hs'
       exact Finset.eq_empty_of_forall_not_mem hs'
     omega
+
+lemma ofSupportFinite_support_eq {R : Type} [Zero R] {f : α → R} {S : Set α} (hS : Finite S) (hfS : f.support = S) :
+    (Finsupp.ofSupportFinite f (hfS ▸ hS)).support = S := by
+  aesop
+
+lemma eq_toFinset_of_toSet_eq {s : Finset α} {S : Set α} [Fintype S] (hsS : s.toSet = S) : s = S.toFinset := by
+  aesop
 
 lemma Finset.sum_of_single_nonzero {ι : Type} (s : Finset ι) [AddCommMonoid α] (f : ι → α) (a : ι) (ha : a ∈ s)
     (hf : ∀ i ∈ s, i ≠ a → f i = 0) :
@@ -137,13 +149,13 @@ lemma sum_elem_of_single_nonzero {ι : Type} [AddCommMonoid α] {f : ι → α} 
   ext
   exact contr
 
-lemma sum_insert_elem {ι : Type} [DecidableEq ι] [AddCommMonoid α] {s : Set ι} [Fintype s] {a : ι} (ha : a ∉ s) (f : ι → α) :
-    ∑ i : (a ᕃ s).Elem, f i = f a + ∑ i : s.Elem, f i := by
+lemma sum_insert_elem {ι : Type} [DecidableEq ι] [AddCommMonoid α] {S : Set ι} [Fintype S] {a : ι} (ha : a ∉ S) (f : ι → α) :
+    ∑ i : (a ᕃ S).Elem, f i = f a + ∑ i : S.Elem, f i := by
   simp_all [Finset.sum_set_coe]
 
-lemma finset_toSet_sum {ι : Type} [AddCommMonoid α] {S : Finset ι} {s : Set ι} [Fintype s] (hSs : S.toSet = s) (f : ι → α) :
-    ∑ i : S.toSet, f i = ∑ i : s, f i := by
-  apply Finset.sum_bij (fun a _ => ⟨a.val, hSs ▸ a.coe_prop⟩)
+lemma finset_toSet_sum {ι : Type} [AddCommMonoid α] {s : Finset ι} {S : Set ι} [Fintype S] (hsS : s.toSet = S) (f : ι → α) :
+    ∑ i : s.toSet, f i = ∑ i : S, f i := by
+  apply Finset.sum_bij (fun a _ => ⟨a.val, hsS ▸ a.coe_prop⟩)
   · simp
   · simp
   · aesop
