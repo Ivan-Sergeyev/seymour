@@ -425,7 +425,7 @@ lemma VectorMatroid.longTableauPivot [Field R] (V : VectorMatroid α R) {x : V.X
       and_congr_right_iff]
     exact ↓(V.A.longTableauPivot_linearIndepenOn hVxy _)
 
-set_option maxHeartbeats 400000
+set_option maxHeartbeats 400000 in
 /-- Every vector matroid whose full representation matrix is totally unimodular has a standard representation whose rows are
     a given base and the standard representation matrix is totally unimodular. -/
 lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G : Set α} [Fintype G]
@@ -454,12 +454,18 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
     | succ n ih =>
       intro hn
       obtain ⟨W, hWV, hWA, hGY, f, hf, hfW⟩ := ih (by omega)
-      wlog hgf : ∃ x : W.X, W.A x (hGY.elem (g ⟨n, by omega⟩)) ≠ 0 ∧ x ∉ f.range
+      have hnG : n < #G
+      · omega
+      wlog hgf : ∃ x : W.X, W.A x (hGY.elem (g ⟨n, hnG⟩)) ≠ 0 ∧ x ∉ f.range
       · push_neg at hgf
         exfalso
-        let X' := { x : W.X | W.A x (hGY.elem (g ⟨n, by omega⟩)) ≠ 0 }
+        let X' := { x : W.X | W.A x (hGY.elem (g ⟨n, hnG⟩)) ≠ 0 }
         let G' := { g ⟨i.val, by omega⟩ | (i : Fin n) (hi : f i ∈ X') }
-        let G'' : Set G := g ⟨n, by omega⟩ ᕃ G'
+        let G'' : Set G := g ⟨n, hnG⟩ ᕃ G'
+        have hgG' : g ⟨n, hnG⟩ ∉ G'
+        · intro ⟨i, hfi, hgi⟩
+          apply (Fintype.equivFin G).symm.injective at hgi
+          exact (congr_arg Fin.val hgi ▸ i.isLt).false
         have hG'' : ¬ W.toMatroid.Indep G''
         · simp
           intro _
@@ -468,8 +474,8 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
           let c : W.Y → R := fun j : W.Y =>
             if hjG : j.val ∈ G then
               let j' : G := ⟨j.val, hjG⟩
-              if hj' : j' ∈ G' then W.A (f hj'.choose) (hGY.elem (g ⟨n, by omega⟩))
-              else if j' = g ⟨n, by omega⟩ then -1 else 0
+              if hj' : j' ∈ G' then W.A (f hj'.choose) (hGY.elem (g ⟨n, hnG⟩))
+              else if j' = g ⟨n, hnG⟩ then -1 else 0
             else 0
           have hc : c.support = hGY.elem '' G''
           · ext j
@@ -485,7 +491,7 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
                   exact hf.choose_spec.left
                 · aesop
                 rfl
-              by_cases hj'' : j' = g ⟨n, by omega⟩
+              by_cases hj'' : j' = g ⟨n, hnG⟩
               · convert_to True ↔ True
                 · rw [iff_true, dite_of_false hj']
                   simp
@@ -509,7 +515,7 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
               use hjG
               right
               exact hj'
-            else if hj'' : j' = g ⟨n, by omega⟩ then
+            else if hj'' : j' = g ⟨n, hnG⟩ then
               use hjG
               left
               exact hj''
@@ -527,22 +533,21 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
             ext i
             rw [Finset.sum_apply]
             show (∑ j ∈ hGY.elem '' G'', c j • W.Aᵀ j i) = 0
-            sorry -- `Finset.sum_insert` will be used here
+            have hG'' : (hGY.elem '' G'').toFinset = hGY.elem (g ⟨n, hnG⟩) ᕃ G'.toFinset.map ⟨hGY.elem, hGY.elem_injective⟩
+            · sorry
+            rw [hG'', Finset.sum_insert (by intro hgGYG'; apply hgG'; sorry)] -- apply `hGY.elem_injective` here
+            sorry
           · simp only [Finsupp.ofSupportFinite, ne_eq, id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int]
             intro hc0
             rw [Finsupp.ext_iff] at hc0
-            specialize hc0 (hGY.elem (g ⟨n, by omega⟩))
-            have hgG' : g ⟨n, by omega⟩ ∉ G'
-            · intro ⟨i, hfi, hgi⟩
-              apply (Fintype.equivFin G).symm.injective at hgi
-              exact (congr_arg Fin.val hgi ▸ i.isLt).false
+            specialize hc0 (hGY.elem (g ⟨n, hnG⟩))
             simp [c, hgG'] at hc0
         have hGG'' : Subtype.val '' G'' ⊆ G
         · simp
         exact hG'' (hWV ▸ hVG.indep.subset hGG'')
       obtain ⟨x, hx, hxf⟩ := hgf
       let f' : Fin n.succ → W.X := Fin.snoc f x
-      use ⟨W.X, W.Y, W.A.longTableauPivot x (hGY.elem (g ⟨n, by omega⟩))⟩,
+      use ⟨W.X, W.Y, W.A.longTableauPivot x (hGY.elem (g ⟨n, hnG⟩))⟩,
         hWV ▸ W.longTableauPivot hx, hWA.longTableauPivot _ _ hx, hGY, f'
       constructor
       · intro a b hab
