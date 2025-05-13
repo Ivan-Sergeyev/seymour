@@ -100,30 +100,6 @@ lemma Sum.swap_inj {β : Type} : (@Sum.swap α β).Injective := by
   intro
   aesop
 
-lemma finset_of_cardinality_between {β : Type} [Fintype α] [Fintype β] {n : ℕ}
-    (hα : #α < n) (hn : n ≤ #α + #β) :
-    ∃ b : Finset β, #(α ⊕ b) = n ∧ Nonempty b := by
-  have hβ : n - #α ≤ #β
-  · omega
-  obtain ⟨s, hs⟩ : ∃ s : Finset β, s.card = n - #α := (Finset.exists_subset_card_eq hβ).imp (by simp)
-  use s
-  constructor
-  · rw [Fintype.card_sum, Fintype.card_coe, hs]
-    omega
-  · by_contra hs'
-    have : s.card = 0
-    · rw [Finset.card_eq_zero]
-      rw [nonempty_subtype, not_exists] at hs'
-      exact Finset.eq_empty_of_forall_not_mem hs'
-    omega
-
-lemma ofSupportFinite_support_eq {R : Type} [Zero R] {f : α → R} {S : Set α} (hS : Finite S) (hfS : f.support = S) :
-    (Finsupp.ofSupportFinite f (hfS ▸ hS)).support = S := by
-  aesop
-
-lemma eq_toFinset_of_toSet_eq {s : Finset α} {S : Set α} [Fintype S] (hsS : s.toSet = S) : s = S.toFinset := by
-  aesop
-
 lemma Finset.sum_of_single_nonzero {ι : Type} (s : Finset ι) [AddCommMonoid α] (f : ι → α) (a : ι) (ha : a ∈ s)
     (hf : ∀ i ∈ s, i ≠ a → f i = 0) :
     s.sum f = f a := by
