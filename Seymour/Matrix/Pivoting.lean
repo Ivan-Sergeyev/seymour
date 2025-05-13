@@ -19,6 +19,35 @@ private lemma Matrix.mulRow_det [DecidableEq X] [Fintype X] [CommRing F] (A : Ma
     (A.mulRow x q).det = q * A.det := by
   rw [Matrix.mulRow, Matrix.det_updateRow_smul, Matrix.updateRow_eq_self]
 
+/-- Multiplying a row `x` by a non-zero factor preserves linear independence on the transpose. -/
+private lemma Matrix.mulRow_linearIndepOn [DecidableEq X] [Field F] (A : Matrix X Y F) (x : X)
+    {q : F} (hq : q ≠ 0) (S : Set Y) :
+    LinearIndepOn F (A.mulRow x q).transpose S ↔ LinearIndepOn F A.transpose S := by
+  rw [Matrix.mulRow, ← Matrix.updateCol_transpose, linearIndepOn_iffₛ, linearIndepOn_iffₛ]
+  constructor
+  all_goals
+    intro h
+    peel h with f hf g hg h
+    refine fun hfgl => h ?_
+    rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply,
+      Finsupp.sum, Finsupp.sum] at hfgl ⊢
+    ext x'
+    rw [funext_iff] at hfgl
+    specialize hfgl x'
+    simp_rw [Finset.sum_apply, Pi.smul_apply, smul_eq_mul] at hfgl ⊢
+    simp_rw [Matrix.updateCol_apply, Pi.smul_apply] at hfgl ⊢
+    simp only [smul_eq_mul, mul_ite, Finset.sum_ite_irrel] at hfgl ⊢
+  · split_ifs with hx'
+    · subst hx'
+      simp_rw [transpose_apply] at hfgl
+      sorry
+    · exact hfgl
+  · split_ifs at hfgl with hx'
+    · subst hx'
+      simp_rw [transpose_apply]
+      sorry
+    · exact hfgl
+
 /-- Multiplying a row by a `0, ±1` factor preserves total unimodularity. -/
 private lemma Matrix.IsTotallyUnimodular.mulRow [DecidableEq X] [CommRing F] {A : Matrix X Y F}
     (hA : A.IsTotallyUnimodular) (x : X) {q : F} (hq : q ∈ SignType.cast.range) :
@@ -48,6 +77,12 @@ private lemma Matrix.IsTotallyUnimodular.mulRow [DecidableEq X] [CommRing F] {A 
 private def Matrix.addMultiples [DecidableEq X] [Add F] [SMul F F] (A : Matrix X Y F) (x : X) (q : X → F) :
     Matrix X Y F :=
   fun i : X => if i = x then A x else A i + q i • A x
+
+/-- Using the `addMultiples` operator preserves linear independence on the transpose. -/
+private lemma Matrix.addMultiples_linearIndepOn [DecidableEq X] [Field F] (A : Matrix X Y F) (x : X)
+    {q : X → F} (S : Set Y):
+    LinearIndepOn F (A.addMultiples x q).transpose S ↔ LinearIndepOn F A.transpose S := by
+  sorry
 
 /-- Adding multiples of a row to all other rows of a matrix does not change the determinant of the matrix. -/
 private lemma Matrix.addMultiples_det [DecidableEq X] [Fintype X] [CommRing F] (A : Matrix X X F) (x : X) (q : X → F) :
@@ -188,6 +223,11 @@ lemma Matrix.IsTotallyUnimodular.longTableauPivot [DecidableEq X] [Field F] {A :
   · rw [inv_eq_self_of_in_signTypeCastRange] <;> exact hA.apply x y
   exact (hA.addPivotMultiples hxy).mulRow x hAxy
 
+/-- Long tableau pivot preserves linear independence on transpose. -/
+lemma Matrix.longTableauPivot_linearIndependent [DecidableEq X] [Field F] {A : Matrix X Y F}
+    {x : X} {y : Y} (hxy : A x y ≠ 0) (S : Set Y) :
+    LinearIndepOn F (A.longTableauPivot x y).transpose S ↔ LinearIndepOn F A.transpose S := by
+  rw [Matrix.longTableauPivot_eq, Matrix.mulRow_linearIndepOn _ _ (one_div_ne_zero hxy), Matrix.addMultiples_linearIndepOn]
 
 -- ## Short-tableau pivoting
 
