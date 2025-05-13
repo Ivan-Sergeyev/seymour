@@ -9,6 +9,50 @@ variable {X Y F : Type}
 
 -- ## Elementary row operations
 
+/-- Multiply column `x` of `A` by factor `q` and keep the rest of `A` unchanged. -/
+private def Matrix.mulCol [DecidableEq Y] [Mul F] (A : Matrix X Y F) (y : Y) (q : F) :
+    Matrix X Y F :=
+  A.updateCol y (q • A.transpose y)
+
+/-- If column `y` of `A` is multiplied by factor `q`, then the determinant is multiplied by factor `q`. -/
+private lemma Matrix.mulCol_det [DecidableEq X] [Fintype X] [CommRing F] (A : Matrix X X F) (x : X) (q : F) :
+    (A.mulCol x q).det = q * A.det := by
+  rw [Matrix.mulCol, Matrix.det_updateCol_smul]
+  show q * (A.updateCol x (A · x)).det = q * A.det
+  rw [Matrix.updateCol_eq_self]
+
+/-- Multiplying a column `x` by a non-zero factor preserves linear independence. -/
+private lemma Matrix.mulCol_linearIndepOn [DecidableEq Y] [Field F] (A : Matrix X Y F) (y : Y)
+    {q : F} (hq : q ≠ 0) (S : Set X) :
+    LinearIndepOn F (A.mulCol y q) S ↔ LinearIndepOn F A S := by
+  rw [Matrix.mulCol, linearIndepOn_iffₛ, linearIndepOn_iffₛ]
+  constructor
+  all_goals
+    intro h
+    peel h with f hf g hg h
+    refine fun hfgl => h ?_
+    rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply,
+      Finsupp.sum, Finsupp.sum] at hfgl ⊢
+    ext x'
+    rw [funext_iff] at hfgl
+    specialize hfgl x'
+    simp_rw [Finset.sum_apply, Pi.smul_apply, Matrix.updateCol_apply, Pi.smul_apply,
+      smul_eq_mul, mul_ite, Finset.sum_ite_irrel] at hfgl ⊢
+  · split_ifs with hx'
+    · subst hx'
+      conv => enter [1, 2, x]; rw [←mul_assoc, mul_comm (f x), mul_assoc]
+      conv => enter [2, 2, x]; rw [←mul_assoc, mul_comm (g x), mul_assoc]
+      rw [← Finset.mul_sum, ← Finset.mul_sum]
+      exact congrArg (HMul.hMul q) hfgl
+    · exact hfgl
+  · split_ifs at hfgl with hx'
+    · subst hx'
+      conv at hfgl => enter [1, 2, x]; rw [←mul_assoc, mul_comm (f x), mul_assoc]
+      conv at hfgl => enter [2, 2, x]; rw [←mul_assoc, mul_comm (g x), mul_assoc]
+      rw [← Finset.mul_sum, ← Finset.mul_sum] at hfgl
+      exact mul_left_cancel₀ hq hfgl
+    · exact hfgl
+
 /-- Multiply row `x` of `A` by factor `q` and keep the rest of `A` unchanged. -/
 private def Matrix.mulRow [DecidableEq X] [Mul F] (A : Matrix X Y F) (x : X) (q : F) :
     Matrix X Y F :=
@@ -18,6 +62,15 @@ private def Matrix.mulRow [DecidableEq X] [Mul F] (A : Matrix X Y F) (x : X) (q 
 private lemma Matrix.mulRow_det [DecidableEq X] [Fintype X] [CommRing F] (A : Matrix X X F) (x : X) (q : F) :
     (A.mulRow x q).det = q * A.det := by
   rw [Matrix.mulRow, Matrix.det_updateRow_smul, Matrix.updateRow_eq_self]
+
+/-- Multiplying a row `x` by a non-zero factor preserves linear independence on the transpose. -/
+private lemma Matrix.mulRow_linearIndepOn [DecidableEq X] [Field F] (A : Matrix X Y F) (x : X)
+    {q : F} (hq : q ≠ 0) (S : Set Y) :
+    LinearIndepOn F (A.mulRow x q).transpose S ↔ LinearIndepOn F A.transpose S := by
+  rw [Matrix.mulRow, ←Matrix.updateCol_transpose]
+  let B := A.transpose
+  rw [show A.transpose = B by rfl, show A = B.transpose by rfl, ←Matrix.mulCol]
+  exact Matrix.mulCol_linearIndepOn B x hq S
 
 /-- Multiplying a row by a `0, ±1` factor preserves total unimodularity. -/
 private lemma Matrix.IsTotallyUnimodular.mulRow [DecidableEq X] [CommRing F] {A : Matrix X Y F}
@@ -44,15 +97,40 @@ private lemma Matrix.IsTotallyUnimodular.mulRow [DecidableEq X] [CommRing F] {A 
     convert hA k f g hf hg using 2
     simp_all [Matrix.submatrix, Matrix.mulRow]
 
+/-- Add column `x` of `A` multiplied by `q` (where `q` is different for each column) to every column of `A` except `x`. -/
+private def Matrix.addColumnMultiples [DecidableEq Y] [Add F] [SMul F F] (A : Matrix X Y F) (y : Y) (q : Y → F) :
+    Matrix X Y F :=
+  fun i j => if j = y then A i y else A i j + q j • A i y
+
+/-- Using the `addColumnMultiples` operator preserves linear independence on the transpose. -/
+private lemma Matrix.addColumnMultiples_linearIndepOn [DecidableEq Y] [Field F] (A : Matrix X Y F) (y : Y)
+    {q : Y → F} (S : Set X) :
+    LinearIndepOn F (A.addColumnMultiples y q) S ↔ LinearIndepOn F A S := by
+  sorry
+
 /-- Add row `x` of `A` multiplied by factor `q` (where `q` is different for each row) to every row of `A` except `x`. -/
 private def Matrix.addMultiples [DecidableEq X] [Add F] [SMul F F] (A : Matrix X Y F) (x : X) (q : X → F) :
     Matrix X Y F :=
   fun i : X => if i = x then A x else A i + q i • A x
 
+private lemma Matrix.addMultiples_tranpose_eq [DecidableEq X] [Add F] [SMul F F] (A : Matrix X Y F) (x : X) (q : X → F) :
+    (A.addMultiples x q).transpose = A.transpose.addColumnMultiples x q := by
+  unfold Matrix.addMultiples Matrix.addColumnMultiples
+  ext i j
+  dsimp only [Matrix.transpose_apply]
+  split_ifs <;> rfl
+
+/-- Using the `addMultiples` operator preserves linear independence on the transpose. -/
+private lemma Matrix.addMultiples_linearIndepOn [DecidableEq X] [Field F] (A : Matrix X Y F) (x : X)
+    {q : X → F} (S : Set Y) :
+    LinearIndepOn F (A.addMultiples x q).transpose S ↔ LinearIndepOn F A.transpose S := by
+  rw [Matrix.addMultiples_tranpose_eq]
+  exact Matrix.addColumnMultiples_linearIndepOn A.transpose x S
+
 /-- Adding multiples of a row to all other rows of a matrix does not change the determinant of the matrix. -/
 private lemma Matrix.addMultiples_det [DecidableEq X] [Fintype X] [CommRing F] (A : Matrix X X F) (x : X) (q : X → F) :
     (A.addMultiples x q).det = A.det := by
-  apply Matrix.det_eq_of_forall_row_eq_smul_add_const (fun i : X => if i = x then 0 else q i) x (by simp)
+  apply Matrix.det_eq_of_forall_row_eq_smul_add_const (fun i : X => if i = x then 0 else q i) x (if_pos rfl)
   unfold Matrix.addMultiples
   aesop
 
@@ -188,6 +266,11 @@ lemma Matrix.IsTotallyUnimodular.longTableauPivot [DecidableEq X] [Field F] {A :
   · rw [inv_eq_self_of_in_signTypeCastRange] <;> exact hA.apply x y
   exact (hA.addPivotMultiples hxy).mulRow x hAxy
 
+/-- Long tableau pivot preserves linear independence on transpose. -/
+lemma Matrix.longTableauPivot_linearIndependent [DecidableEq X] [Field F] {A : Matrix X Y F}
+    {x : X} {y : Y} (hxy : A x y ≠ 0) (S : Set Y) :
+    LinearIndepOn F (A.longTableauPivot x y).transpose S ↔ LinearIndepOn F A.transpose S := by
+  rw [Matrix.longTableauPivot_eq, Matrix.mulRow_linearIndepOn _ _ (one_div_ne_zero hxy), Matrix.addMultiples_linearIndepOn]
 
 -- ## Short-tableau pivoting
 
