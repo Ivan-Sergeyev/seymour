@@ -97,16 +97,35 @@ private lemma Matrix.IsTotallyUnimodular.mulRow [DecidableEq X] [CommRing F] {A 
     convert hA k f g hf hg using 2
     simp_all [Matrix.submatrix, Matrix.mulRow]
 
+/-- Add column `x` of `A` multiplied by `q` (where `q` is different for each column) to every column of `A` except `x`. -/
+private def Matrix.addColumnMultiples [DecidableEq Y] [Add F] [SMul F F] (A : Matrix X Y F) (y : Y) (q : Y → F) :
+    Matrix X Y F :=
+  fun i j => if j = y then A i y else A i j + q j • A i y
+
+/-- Using the `addColumnMultiples` operator preserves linear independence on the transpose. -/
+private lemma Matrix.addColumnMultiples_linearIndepOn [DecidableEq Y] [Field F] (A : Matrix X Y F) (y : Y)
+    {q : Y → F} (S : Set X) :
+    LinearIndepOn F (A.addColumnMultiples y q) S ↔ LinearIndepOn F A S := by
+  sorry
+
 /-- Add row `x` of `A` multiplied by factor `q` (where `q` is different for each row) to every row of `A` except `x`. -/
 private def Matrix.addMultiples [DecidableEq X] [Add F] [SMul F F] (A : Matrix X Y F) (x : X) (q : X → F) :
     Matrix X Y F :=
   fun i : X => if i = x then A x else A i + q i • A x
 
+private lemma Matrix.addMultiples_tranpose_eq [DecidableEq X] [Add F] [SMul F F] (A : Matrix X Y F) (x : X) (q : X → F) :
+    (A.addMultiples x q).transpose = A.transpose.addColumnMultiples x q := by
+  unfold Matrix.addMultiples Matrix.addColumnMultiples
+  ext i j
+  dsimp only [Matrix.transpose_apply]
+  split_ifs <;> rfl
+
 /-- Using the `addMultiples` operator preserves linear independence on the transpose. -/
 private lemma Matrix.addMultiples_linearIndepOn [DecidableEq X] [Field F] (A : Matrix X Y F) (x : X)
-    {q : X → F} (S : Set Y):
+    {q : X → F} (S : Set Y) :
     LinearIndepOn F (A.addMultiples x q).transpose S ↔ LinearIndepOn F A.transpose S := by
-  sorry
+  rw [Matrix.addMultiples_tranpose_eq]
+  exact Matrix.addColumnMultiples_linearIndepOn A.transpose x S
 
 /-- Adding multiples of a row to all other rows of a matrix does not change the determinant of the matrix. -/
 private lemma Matrix.addMultiples_det [DecidableEq X] [Fintype X] [CommRing F] (A : Matrix X X F) (x : X) (q : X → F) :
