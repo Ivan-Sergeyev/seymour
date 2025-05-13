@@ -23,7 +23,7 @@ private lemma Matrix.mulRow_det [DecidableEq X] [Fintype X] [CommRing F] (A : Ma
 private lemma Matrix.mulRow_linearIndepOn [DecidableEq X] [Field F] (A : Matrix X Y F) (x : X)
     {q : F} (hq : q ≠ 0) (S : Set Y) :
     LinearIndepOn F (A.mulRow x q).transpose S ↔ LinearIndepOn F A.transpose S := by
-  rw [Matrix.mulRow, ← Matrix.updateCol_transpose, linearIndepOn_iffₛ, linearIndepOn_iffₛ]
+  rw [Matrix.mulRow, ←Matrix.updateCol_transpose, linearIndepOn_iffₛ, linearIndepOn_iffₛ]
   constructor
   all_goals
     intro h
@@ -40,12 +40,18 @@ private lemma Matrix.mulRow_linearIndepOn [DecidableEq X] [Field F] (A : Matrix 
   · split_ifs with hx'
     · subst hx'
       simp_rw [transpose_apply] at hfgl
-      sorry
+      conv => enter [1, 2, x]; rw [←mul_assoc, mul_comm (f x), mul_assoc]
+      conv => enter [2, 2, x]; rw [←mul_assoc, mul_comm (g x), mul_assoc]
+      rw [← Finset.mul_sum, ← Finset.mul_sum]
+      exact congrArg (HMul.hMul q) hfgl
     · exact hfgl
   · split_ifs at hfgl with hx'
     · subst hx'
       simp_rw [transpose_apply]
-      sorry
+      conv at hfgl => enter [1, 2, x]; rw [←mul_assoc, mul_comm (f x), mul_assoc]
+      conv at hfgl => enter [2, 2, x]; rw [←mul_assoc, mul_comm (g x), mul_assoc]
+      rw [← Finset.mul_sum, ← Finset.mul_sum] at hfgl
+      exact mul_left_cancel₀ hq hfgl
     · exact hfgl
 
 /-- Multiplying a row by a `0, ±1` factor preserves total unimodularity. -/
