@@ -9,19 +9,19 @@ variable {X Y F : Type}
 
 -- ## Elementary row operations
 
-/-- Multiply column `x` of `A` by factor `q` and keep the rest of `A` unchanged. -/
+/-- Multiply column `y` of `A` by factor `q` and keep the rest of `A` unchanged. -/
 private def Matrix.mulCol [DecidableEq Y] [Mul F] (A : Matrix X Y F) (y : Y) (q : F) :
     Matrix X Y F :=
   A.updateCol y (q • A.transpose y)
 
-/-- If column `y` of `A` is multiplied by factor `q`, then the determinant is multiplied by factor `q`. -/
+/-- If column `x` of `A` is multiplied by factor `q`, then the determinant is multiplied by factor `q`. -/
 private lemma Matrix.mulCol_det [DecidableEq X] [Fintype X] [CommRing F] (A : Matrix X X F) (x : X) (q : F) :
     (A.mulCol x q).det = q * A.det := by
   rw [Matrix.mulCol, Matrix.det_updateCol_smul]
   show q * (A.updateCol x (A · x)).det = q * A.det
   rw [Matrix.updateCol_eq_self]
 
-/-- Multiplying a column `x` by a non-zero factor preserves linear independence. -/
+/-- Multiplying a column `y` by a non-zero factor preserves linear independence. -/
 private lemma Matrix.mulCol_linearIndepOn [DecidableEq Y] [Field F] (A : Matrix X Y F) (y : Y)
     {q : F} (hq : q ≠ 0) (S : Set X) :
     LinearIndepOn F (A.mulCol y q) S ↔ LinearIndepOn F A S := by
