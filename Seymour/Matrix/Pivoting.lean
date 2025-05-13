@@ -107,7 +107,33 @@ private def Matrix.addColumnMultiples [DecidableEq Y] [Add F] [SMul F F] (A : Ma
 private lemma Matrix.addColumnMultiples_linearIndepOn [DecidableEq Y] [Field F] (A : Matrix X Y F) (y : Y)
     {q : Y → F} (S : Set X) :
     LinearIndepOn F (A.addColumnMultiples y q) S ↔ LinearIndepOn F A S := by
-  sorry
+  -- TODO: there is a lot of shared code (mainly the setup) between here and Matrix.mulCol_linearIndepOn.
+  -- can we have an aux lemma to show it suffices to show LinearIndepOn .. ↔ LinearIndepOn .. for this?
+  rw [linearIndepOn_iffₛ, linearIndepOn_iffₛ]
+  constructor
+  all_goals
+    intro hFFS
+    peel hFFS with f hf g hg h
+    refine fun hfgl => h ?_
+    rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply,
+      Finsupp.sum, Finsupp.sum] at hfgl ⊢
+    ext x'
+    rw [funext_iff] at hfgl
+    have hfgl' := hfgl x'
+    simp_rw [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, Matrix.addColumnMultiples] at hfgl hfgl' ⊢
+  · split_ifs with hx'
+    · subst hx'; exact hfgl'
+    · conv => enter [1, 2, x]; rw [left_distrib, smul_eq_mul, mul_comm (q x'), ←mul_assoc]
+      conv => enter [2, 2, x]; rw [left_distrib, smul_eq_mul, mul_comm (q x'), ←mul_assoc]
+      rw [Finset.sum_add_distrib, Finset.sum_add_distrib, ← Finset.sum_mul, ← Finset.sum_mul, hfgl', hfgl y]
+  · split_ifs at hfgl' with hx'
+    · subst hx'; exact hfgl'
+    · conv at hfgl' => enter [1, 2, x]; rw [left_distrib, smul_eq_mul, mul_comm (q x'), ←mul_assoc]
+      conv at hfgl' => enter [2, 2, x]; rw [left_distrib, smul_eq_mul, mul_comm (q x'), ←mul_assoc]
+      rw [Finset.sum_add_distrib, Finset.sum_add_distrib, ← Finset.sum_mul, ← Finset.sum_mul] at hfgl'
+      have := hfgl y
+      simp only [↓reduceIte] at this
+      rwa [this, add_left_inj] at hfgl'
 
 /-- Add row `x` of `A` multiplied by factor `q` (where `q` is different for each row) to every row of `A` except `x`. -/
 private def Matrix.addMultiples [DecidableEq X] [Add F] [SMul F F] (A : Matrix X Y F) (x : X) (q : X → F) :
