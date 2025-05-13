@@ -112,8 +112,8 @@ private lemma Matrix.addColumnMultiples_linearIndepOn [DecidableEq Y] [Field F] 
   rw [linearIndepOn_iffₛ, linearIndepOn_iffₛ]
   constructor
   all_goals
-    intro h
-    peel h with f hf g hg h
+    intro hFFS
+    peel hFFS with f hf g hg h
     refine fun hfgl => h ?_
     rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply,
       Finsupp.sum, Finsupp.sum] at hfgl ⊢
@@ -123,13 +123,13 @@ private lemma Matrix.addColumnMultiples_linearIndepOn [DecidableEq Y] [Field F] 
     simp_rw [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, Matrix.addColumnMultiples] at hfgl hfgl' ⊢
   · split_ifs with h
     · subst h; exact hfgl'
-    · conv => enter [1, 2, x]; rw [left_distrib, smul_eq_mul, mul_comm (q x'), ← mul_assoc]
-      conv => enter [2, 2, x]; rw [left_distrib, smul_eq_mul, mul_comm (q x'), ← mul_assoc]
+    · conv => enter [1, 2, x]; rw [left_distrib, smul_eq_mul, mul_comm (q x'), ←mul_assoc]
+      conv => enter [2, 2, x]; rw [left_distrib, smul_eq_mul, mul_comm (q x'), ←mul_assoc]
       rw [Finset.sum_add_distrib, Finset.sum_add_distrib, ← Finset.sum_mul, ← Finset.sum_mul, hfgl', hfgl y]
   · split_ifs at hfgl' with h
     · subst h; exact hfgl'
-    · conv at hfgl' => enter [1, 2, x]; rw [left_distrib, smul_eq_mul, mul_comm (q x'), ← mul_assoc]
-      conv at hfgl' => enter [2, 2, x]; rw [left_distrib, smul_eq_mul, mul_comm (q x'), ← mul_assoc]
+    · conv at hfgl' => enter [1, 2, x]; rw [left_distrib, smul_eq_mul, mul_comm (q x'), ←mul_assoc]
+      conv at hfgl' => enter [2, 2, x]; rw [left_distrib, smul_eq_mul, mul_comm (q x'), ←mul_assoc]
       rw [Finset.sum_add_distrib, Finset.sum_add_distrib, ← Finset.sum_mul, ← Finset.sum_mul] at hfgl'
       have := hfgl y
       simp only [↓reduceIte] at this
