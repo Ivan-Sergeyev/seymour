@@ -763,9 +763,7 @@ private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type} [Field F
       ⟨hYXY.elem y, by simp, by dsimp only; rw [hsy]; simp⟩⟩
     · rw [Finset.coe_insert, Set.insert_subset_iff]
       exact ⟨by simp, by simp [Set.preimage, Set.setOf_or]⟩
-    · rw [Finset.sum_insert (by
-        simpa [Subtype.impEmbedding] using
-          show ∀ (x : ↑y ∈ X), Subtype.mk ↑y _ ∉ Dₒ from fun a => absurd a (Disjoint.not_mem_of_mem_right hXY y.prop))]
+    · rw [Finset.sum_insert (by simpa [Subtype.impEmbedding] using (absurd · (Disjoint.not_mem_of_mem_right hXY y.prop)))]
       ext x
       rw [Pi.add_apply, Pi.smul_apply, Finset.sum_apply, Pi.zero_apply]
       convert_to Bₒ x y + ∑ i : Dₒ.Elem, (- Bₒᵀ y i) • (1 : Matrix X X F₀) x i.val = 0 using 2
