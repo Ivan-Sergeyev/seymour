@@ -256,7 +256,7 @@ lemma VectorMatroid.isFinitary [DivisionRing R] (M : VectorMatroid α R) : M.toM
   specialize hI s.support.toSet (by rw [Set.image_subset_iff]; convert hs; aesop) (Subtype.val '' s.support).toFinite
   simp [VectorMatroid.toMatroid_indep_iff_elem] at hI
   rw [linearIndepOn_iff] at hI
-  exact hI s (fun a ha => ⟨⟨a.val, Set.mem_image_of_mem Subtype.val ha⟩, by simp⟩) hAs
+  exact hI s (⟨⟨·.val, Set.mem_image_of_mem Subtype.val ·⟩, by simp⟩) hAs
 
 private lemma exists_standardRepr_isBase_aux_left {X Y G I : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ G)]
     [DivisionRing R] {A : Matrix X Y R} {B : Basis G R (Submodule.span R A.range)}
@@ -432,11 +432,6 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
     (V : VectorMatroid α R) (hVG : V.toMatroid.IsBase G) (hVA : V.A.IsTotallyUnimodular) :
     ∃ S : StandardRepr α R, S.X = G ∧ S.toMatroid = V.toMatroid ∧ S.B.IsTotallyUnimodular := by
   have hGV : G ⊆ V.Y := hVG.subset_ground
-  wlog hG : 0 < #G
-  · rw [not_lt, nonpos_iff_eq_zero, ←Set.toFinset_card, Finset.card_eq_zero, Set.toFinset_eq_empty] at hG
-    use StandardRepr.loopy R V.Y
-    subst hG
-    simpa using (Matroid.not_rankPos_iff.→ ((not_congr (Matroid.rankPos_iff V.toMatroid)).← (· hVG))).symm
   let g : Fin #G → G := (Fintype.equivFin G).invFun
   have indu : ∀ k : ℕ, ∀ hk : k ≤ #G, ∃ W : VectorMatroid α R,
     W.toMatroid = V.toMatroid ∧ W.A.IsTotallyUnimodular ∧ ∃ hGY : G ⊆ W.Y, ∃ f : Fin k → W.X, f.Injective ∧
@@ -539,9 +534,11 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
               aesop
             rw [hG'', Finset.sum_insert (hgG' <| by simpa using ·)]
             if hi : i ∈ X' then
-              rw [add_eq_zero_iff_eq_neg', Finset.sum_map]
+              rw [add_eq_zero_iff_eq_neg', Finset.sum_map, ←Finset.sum_attach]
               specialize hfW i
-              --rw [Finset.sum_of_single_nonzero G'.toFinset _ ⟨i.val, by sorry⟩]
+              simp [c, hgG']
+              conv_lhs => congr; rfl; ext x; rw [dite_of_true (Set.mem_toFinset.→ x.property)]
+              generalize_proofs hhG hhg hhX' hhY
               sorry
             else
               convert add_zero (0 : R)
