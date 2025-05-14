@@ -628,20 +628,40 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
             simpa [Fin.castLT] using hab
       intro i j
       if hj : j.val < n then
-        convert hfW i ⟨j.val, hj⟩ using 2
-        · simp [hj, f', Fin.snoc, Fin.castLT]
-        · sorry
-        · sorry
-      else
-        if hi : i = f' j then
-          have hjx : f' j ≠ x
-          · intro contr
-            apply hxf
-            sorry
-          simp [hi, hj, hjx, Matrix.longTableauPivot]
-          sorry
+        have hxj : x ≠ f' j := (have hxf' := · ▸ hxf; by simp [f', hj, Fin.snoc] at hxf')
+        let jₙ : Fin n := ⟨j.val, by omega⟩
+        have hjjₙ : f' j = f jₙ
+        · simp [f', hj, Fin.snoc]
+          rfl
+        if hij : i = f' j then
+          have hijₙ : i = f jₙ := hjjₙ ▸ hij
+          have hxjₙ : x ≠ f jₙ := hijₙ ▸ hij ▸ hxj
+          simp [hij]
+          rw [W.A.longTableauPivot_elem_of_zero_in_pivot_row hxj.symm (by simpa [hxjₙ] using hfW x jₙ)]
+          simpa [hijₙ, hjjₙ] using hfW i jₙ
         else
-          sorry
+          have hijₙ : i ≠ f jₙ := hjjₙ ▸ hij
+          have hxjₙ : x ≠ f jₙ := hjjₙ ▸ hxj
+          simp [hij]
+          if hix : i = x then
+            rw [←hix]
+            apply W.A.longTableauPivot_elem_in_pivot_row_eq_zero
+            simpa [hijₙ] using hfW i jₙ
+          else
+            rw [W.A.longTableauPivot_elem_of_zero_in_pivot_row hix]
+            · simpa [hijₙ] using hfW i jₙ
+            · simpa [hxjₙ] using hfW x jₙ
+      else
+        have hjn : j.val = n
+        · omega
+        have hgjgn : g ⟨j.val, by omega⟩ = g ⟨n, hnG⟩
+        · simp [hjn]
+        have hxj : x = f' j
+        · simp [f', hjn, Fin.snoc]
+        if hij : i = f' j then
+          simpa [hij, hgjgn, hxj] using W.A.longTableauPivot_elem_pivot (hxj ▸ hx)
+        else
+          simpa [hij, hgjgn, hxj] using W.A.longTableauPivot_elem_in_pivot_col_eq_zero hij (hxj ▸ hx)
   obtain ⟨W, hVW, hWA, hGW, f, hf, hfW⟩ := indu #G (by rfl)
   have hYGY : W.Y \ G ⊆ W.Y := Set.diff_subset
   use ⟨G, W.Y \ G, Set.disjoint_sdiff_right, W.A.submatrix (f ∘ Fintype.equivFin G) hYGY.elem,

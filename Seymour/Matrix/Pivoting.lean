@@ -161,7 +161,7 @@ private lemma Matrix.addRowMultiples_det [DecidableEq X] [Fintype X] [CommRing F
 
 /-- Adding multiples of a row to all other rows of a matrix preserves total unimodularity. -/
 private lemma Matrix.IsTotallyUnimodular.addPivotMultiples [DecidableEq X] [Field F] {A : Matrix X Y F}
-    (hA : A.IsTotallyUnimodular) {x : X} {y : Y} (hxy : A x y ≠ 0) :
+    (hA : A.IsTotallyUnimodular) {x : X} {y : Y} (hAxy : A x y ≠ 0) :
     (A.addRowMultiples x (- A · y / A x y)).IsTotallyUnimodular := by
   intro k f g hf hg
   -- If `x` is in the selected rows, the determinant won't change.
@@ -249,22 +249,24 @@ private lemma Matrix.IsTotallyUnimodular.addPivotMultiples [DecidableEq X] [Fiel
     have eq_Axy : (A.addRowMultiples x (- A · y / A x y)) x y = A x y
     · simp [Matrix.addRowMultiples]
     rw [laplaced, eq_Axy] at similar
-    if hAxy : A x y = 1 then
-      simpa [hAxy] using similar
-    else if hAyx : A x y = -1 then
-      exact in_signTypeCastRange_of_neg_one_mul (hAyx ▸ similar)
+    if hAxy1 : A x y = 1 then
+      simpa [hAxy1] using similar
+    else if hAxy9 : A x y = -1 then
+      exact in_signTypeCastRange_of_neg_one_mul (hAxy9 ▸ similar)
     else
       exfalso
       obtain ⟨s, hs⟩ := hA.apply x y
       cases s with
-      | zero => exact hxy hs.symm
-      | pos => exact hAxy hs.symm
-      | neg => exact hAyx hs.symm
+      | zero => exact hAxy hs.symm
+      | pos => exact hAxy1 hs.symm
+      | neg => exact hAxy9 hs.symm
 
 
 -- ## Long-tableau pivoting
 
-/-- The result of pivoting in a long tableau. This definition makes sense only if `A x y` is non-zero. -/
+/-- The result of pivoting in a long tableau. This definition makes sense only if `A x y` is non-zero.
+    The recommending spelling when calling the function is `(A.longTableauPivot x y) i j` when pivoting in `A` on `[x,y]` and
+    indexing at `[i,j]` even tho the `( )` is redundant. -/
 def Matrix.longTableauPivot [One F] [SMul F F] [Div F] [Sub F] [DecidableEq X] (A : Matrix X Y F) (x : X) (y : Y) :
     Matrix X Y F :=
   Matrix.of <| fun i : X =>
@@ -273,65 +275,85 @@ def Matrix.longTableauPivot [One F] [SMul F F] [Div F] [Sub F] [DecidableEq X] (
     else
       A i - (A i y / A x y) • A x
 
-/-- Long tableau pivot expressed via elementary row operations. -/
-private lemma Matrix.longTableauPivot_eq [DecidableEq X] [Field F] (A : Matrix X Y F) (x : X) (y : Y) :
+lemma Matrix.longTableauPivot_elem_pivot [DecidableEq X] [DivisionSemiring F] [Sub F] (A : Matrix X Y F) {x : X} {y : Y}
+    (hAxy : A x y ≠ 0) :
+    (A.longTableauPivot x y) x y = 1 := by
+  simp [hAxy, Matrix.longTableauPivot]
+
+lemma Matrix.longTableauPivot_elem_in_pivot_col_eq_zero [DecidableEq X] [DivisionRing F] (A : Matrix X Y F) {x i : X} {y : Y}
+    (hix : i ≠ x) (hAxy : A x y ≠ 0) :
+    (A.longTableauPivot x y) i y = 0 := by
+  simp [hix, hAxy, Matrix.longTableauPivot]
+
+lemma Matrix.longTableauPivot_elem_in_pivot_row_eq_zero [DecidableEq X] [NonAssocSemiring F] [Sub F] [Div F] (A : Matrix X Y F)
+    {x : X} {j : Y} (hAxj : A x j = 0) (y : Y) :
+    (A.longTableauPivot x y) x j = 0 := by
+  simp [hAxj, Matrix.longTableauPivot]
+
+lemma Matrix.longTableauPivot_elem_of_zero_in_pivot_row [DecidableEq X] [Ring F] [Div F] (A : Matrix X Y F) {x i : X} {j : Y}
+    (hix : i ≠ x) (hAxj : A x j = 0) (y : Y) :
+    (A.longTableauPivot x y) i j = A i j := by
+  simp [hix, hAxj, Matrix.longTableauPivot]
+
+/-- Long-tableau pivoting expressed via elementary row operations. -/
+private lemma Matrix.longTableauPivot_eq [DecidableEq X] [DivisionRing F] (A : Matrix X Y F) (x : X) (y : Y) :
     A.longTableauPivot x y = (A.addRowMultiples x (- A · y / A x y)).mulRow x (1 / A x y) := by
   ext i j
   if hi : i = x then
     simp [Matrix.longTableauPivot, Matrix.addRowMultiples, Matrix.mulRow, hi]
   else
-    field_simp [Matrix.longTableauPivot, Matrix.addRowMultiples, Matrix.mulRow, hi, sub_eq_add_neg]
+    simp [Matrix.longTableauPivot, Matrix.addRowMultiples, Matrix.mulRow, hi, sub_eq_add_neg, neg_mul, neg_div]
 
-/-- Long tableau pivot preserves total unimodularity. -/
+/-- Long-tableau pivoting preserves total unimodularity. -/
 lemma Matrix.IsTotallyUnimodular.longTableauPivot [DecidableEq X] [Field F] {A : Matrix X Y F}
-    (hA : A.IsTotallyUnimodular) (x : X) (y : Y) (hxy : A x y ≠ 0) :
+    (hA : A.IsTotallyUnimodular) (x : X) (y : Y) (hAxy : A x y ≠ 0) :
     (A.longTableauPivot x y).IsTotallyUnimodular := by
   rw [A.longTableauPivot_eq x y]
-  have hAxy : 1 / A x y ∈ SignType.cast.range
+  have h1Axy : 1 / A x y ∈ SignType.cast.range
   · rw [inv_eq_self_of_in_signTypeCastRange] <;> exact hA.apply x y
-  exact (hA.addPivotMultiples hxy).mulRow x hAxy
+  exact (hA.addPivotMultiples hAxy).mulRow x h1Axy
 
-/-- Long tableau pivot preserves linear independence on transpose. -/
-lemma Matrix.longTableauPivot_linearIndepenOn [DecidableEq X] [Field F] {A : Matrix X Y F} {x : X} {y : Y}
-    (hxy : A x y ≠ 0) (S : Set Y) :
+/-- Long-tableau pivoting preserves linear independence on transpose. -/
+lemma Matrix.longTableauPivot_linearIndepenOn [DecidableEq X] [Field F] (A : Matrix X Y F) {x : X} {y : Y}
+    (hAxy : A x y ≠ 0) (S : Set Y) :
     LinearIndepOn F (A.longTableauPivot x y)ᵀ S ↔ LinearIndepOn F Aᵀ S := by
-  rw [A.longTableauPivot_eq, Matrix.mulRow_linearIndepOn _ _ (one_div_ne_zero hxy), A.addRowMultiples_linearIndepOn]
+  rw [A.longTableauPivot_eq, Matrix.mulRow_linearIndepOn _ _ (one_div_ne_zero hAxy), A.addRowMultiples_linearIndepOn]
 
 -- ## Short-tableau pivoting
 
-/-- The result of pivoting in a short tableau. This definition makes sense only if `A x y` is non-zero. -/
-def Matrix.shortTableauPivot [Zero F] [One F] [SMul F F] [Div F] [Sub F] [DecidableEq X] [DecidableEq Y]
+/-- The result of pivoting in a short tableau. This definition makes sense only if `A x y` is non-zero.
+    The recommending spelling when calling the function is `(A.shortTableauPivot x y) i j` when pivoting in `A` on `[x,y]` and
+    indexing at `[i,j]` even tho the `( )` is redundant. -/
+def Matrix.shortTableauPivot [One F] [SMul F F] [Div F] [Zero F] [Sub F] [DecidableEq X] [DecidableEq Y]
     (A : Matrix X Y F) (x : X) (y : Y) :
     Matrix X Y F :=
   ((1 ◫ A).longTableauPivot x ◪y).submatrix id (fun j : Y => if j = y then ◩x else ◪j)
 
 /-- Explicit formula for the short-tableau pivoting. -/
 @[simp]
-lemma Matrix.shortTableauPivot_eq [Field F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (x : X) (y : Y) :
+lemma Matrix.shortTableauPivot_eq [DivisionRing F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F) (x : X) (y : Y) :
     A.shortTableauPivot x y =
     Matrix.of (fun i : X => fun j : Y =>
       if i = x then
         if j = y then
           1 / A x y
         else
-          A x j / A x y
+          (1 / A x y) * A x j
       else
         if j = y then
           - A i y / A x y
         else
-          A i j - A i y * A x j / A x y
+          A i j - A i y / A x y * A x j
     ) := by
   ext i j
-  by_cases hi : i = x
-  <;> by_cases hj : j = y
-  <;> simp [hi, hj, Matrix.shortTableauPivot, Matrix.longTableauPivot, mul_one]
-  <;> ring
+  by_cases hi : i = x <;> by_cases hj : j = y
+  <;> simp [hi, hj, Matrix.shortTableauPivot, Matrix.longTableauPivot, mul_one, neg_div']
 
-/-- Short tableau pivot preserves total unimodularity. -/
+/-- Short-tableau pivoting preserves total unimodularity. -/
 lemma Matrix.IsTotallyUnimodular.shortTableauPivot [DecidableEq X] [DecidableEq Y] [Field F] {A : Matrix X Y F}
-    (hA : A.IsTotallyUnimodular) {x : X} {y : Y} (hxy : A x y ≠ 0) :
+    (hA : A.IsTotallyUnimodular) {x : X} {y : Y} (hAxy : A x y ≠ 0) :
     (A.shortTableauPivot x y).IsTotallyUnimodular :=
-  ((hA.one_fromCols).longTableauPivot x ◪y hxy).submatrix id (fun j : Y => if j = y then ◩x else ◪j)
+  ((hA.one_fromCols).longTableauPivot x ◪y hAxy).submatrix id (fun j : Y => if j = y then ◩x else ◪j)
 
 lemma Matrix.shortTableauPivot_zero {X' Y' : Type} [DecidableEq X] [DecidableEq Y] [DecidableEq X'] [DivisionRing F]
     (A : Matrix X Y F) (x : X') (y : Y) (f : X' → X) (g : Y' → Y) (hg : y ∉ g.range) (hAfg : ∀ i j, A (f i) (g j) = 0) :
@@ -470,12 +492,12 @@ private lemma Matrix.shortTableauPivot_submatrix_eq_blockish [Field F] {k : ℕ}
   simp [Matrix.mul_apply, mul_right_comm]
 
 private noncomputable instance invertible_matrix_fin1_of_ne_zero [Field F] {A : Matrix (Fin 1) (Fin 1) F}
-    [hAxy : NeZero (A 0 0)] :
+    [hA0 : NeZero (A 0 0)] :
     Invertible A :=
   A.invertibleOfLeftInverse A⁻¹ (by
     ext i j
     rw [i.eq_zero, j.eq_zero]
-    simp [IsUnit.inv_mul_cancel (IsUnit.mk0 _ hAxy.out)])
+    simp [IsUnit.inv_mul_cancel (IsUnit.mk0 _ hA0.out)])
 
 private lemma shortTableauPivot_submatrix_succAbove_succAbove_det_abs_eq_div [LinearOrderedField F] {k : ℕ}
     {A : Matrix (Fin k.succ) (Fin k.succ) F} {x y : Fin k.succ} (hAxy : A x y ≠ 0) :
@@ -499,20 +521,20 @@ lemma shortTableauPivot_submatrix_det_abs_eq_div [LinearOrderedField F] {k : ℕ
 /-- Corollary 1. -/
 lemma shortTableauPivot_submatrix_det_ni_signTypeCastRange [LinearOrderedField F] {k : ℕ}
     {A : Matrix (Fin k.succ) (Fin k.succ) F}
-    (hA : A.det ∉ SignType.cast.range) (i j : Fin k.succ) (hAij : A i j = 1 ∨ A i j = -1) :
+    (hA : A.det ∉ SignType.cast.range) (x y : Fin k.succ) (hAxy : A x y = 1 ∨ A x y = -1) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
-      ((A.shortTableauPivot i j).submatrix f g).det ∉ SignType.cast.range := by
-  have hAij0 : A i j ≠ 0
-  · cases hAij with
+      ((A.shortTableauPivot x y).submatrix f g).det ∉ SignType.cast.range := by
+  have hAxy0 : A x y ≠ 0
+  · cases hAxy with
     | inl h1 =>
       rw [h1]
       norm_num
     | inr h9 =>
       rw [h9]
       norm_num
-  obtain ⟨f, g, hf, hg, hAfg⟩ := shortTableauPivot_submatrix_det_abs_eq_div hAij0
+  obtain ⟨f, g, hf, hg, hAfg⟩ := shortTableauPivot_submatrix_det_abs_eq_div hAxy0
   use f, g, hf, hg
   rw [in_signTypeCastRange_iff_abs, hAfg]
-  cases hAij with
+  cases hAxy with
   | inl h1 => rwa [h1, abs_one, div_one, ←in_signTypeCastRange_iff_abs]
   | inr h9 => rwa [h9, abs_neg, abs_one, div_one, ←in_signTypeCastRange_iff_abs]
