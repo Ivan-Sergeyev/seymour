@@ -16,15 +16,15 @@ lemma ratCast_eq_intCast_ratFloor_of_in_signTypeCastRange {a : ℚ} (ha : a ∈ 
 variable {R : Type}
 
 @[simp high]
-lemma zero_in_signTypeCastRange [Ring R] : (0 : R) ∈ SignType.cast.range :=
+lemma zero_in_signTypeCastRange [NonAssocRing R] : (0 : R) ∈ SignType.cast.range :=
   ⟨0, rfl⟩
 
 @[simp high]
-lemma one_in_signTypeCastRange [Ring R] : (1 : R) ∈ SignType.cast.range :=
+lemma one_in_signTypeCastRange [NonAssocRing R] : (1 : R) ∈ SignType.cast.range :=
   ⟨1, rfl⟩
 
 @[simp high]
-lemma neg_one_in_signTypeCastRange [Ring R] : (-1 : R) ∈ SignType.cast.range :=
+lemma neg_one_in_signTypeCastRange [NonAssocRing R] : (-1 : R) ∈ SignType.cast.range :=
   ⟨-1, rfl⟩
 
 @[simp]
@@ -36,32 +36,32 @@ lemma SignType.cast_ne_neg_one_sub_one [Ring R] [CharZero R] (s : SignType) : s.
   cases s <;> norm_num
 
 -- Why cannot `simp` work with this lemma?
-lemma in_signTypeCastRange_mul_in_signTypeCastRange [Ring R] {a b : R}
+lemma in_signTypeCastRange_mul_in_signTypeCastRange [NonAssocRing R] {a b : R}
     (ha : a ∈ SignType.cast.range) (hb : b ∈ SignType.cast.range) :
     a * b ∈ SignType.cast.range := by
   obtain ⟨a', rfl⟩ := ha
   obtain ⟨b', rfl⟩ := hb
   exact ⟨_, SignType.coe_mul a' b'⟩
 
-lemma neg_one_mul_in_signTypeCastRange [Ring R] {a : R}
+lemma neg_one_mul_in_signTypeCastRange [NonAssocRing R] {a : R}
     (ha : a ∈ SignType.cast.range) :
     (-1) * a ∈ SignType.cast.range :=
   in_signTypeCastRange_mul_in_signTypeCastRange ⟨-1, rfl⟩ ha
 
-lemma neg_in_signTypeCastRange [Ring R] {a : R}
+lemma neg_in_signTypeCastRange [NonAssocRing R] {a : R}
     (ha : a ∈ SignType.cast.range) :
     -a ∈ SignType.cast.range := by
   rw [neg_eq_neg_one_mul]
   exact neg_one_mul_in_signTypeCastRange ha
 
-lemma in_signTypeCastRange_of_neg_one_mul [Ring R] {a : R}
+lemma in_signTypeCastRange_of_neg_one_mul [NonAssocRing R] {a : R}
     (ha : (-1) * a ∈ SignType.cast.range) :
     a ∈ SignType.cast.range := by
   rw [←neg_neg a, neg_eq_neg_one_mul]
   apply neg_one_mul_in_signTypeCastRange
   rwa [neg_eq_neg_one_mul]
 
-lemma in_signTypeCastRange_of_neg [Ring R] {a : R}
+lemma in_signTypeCastRange_of_neg [NonAssocRing R] {a : R}
     (ha : -a ∈ SignType.cast.range) :
     a ∈ SignType.cast.range := by
   rw [neg_eq_neg_one_mul] at ha

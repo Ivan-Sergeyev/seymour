@@ -290,8 +290,8 @@ lemma Matrix.longTableauPivot_elem_in_pivot_row_eq_zero [DecidableEq X] [NonAsso
     (A.longTableauPivot x y) x j = 0 := by
   simp [hAxj, Matrix.longTableauPivot]
 
-lemma Matrix.longTableauPivot_elem_of_zero_in_pivot_row [DecidableEq X] [Ring F] [Div F] (A : Matrix X Y F) {x i : X} {j : Y}
-    (hix : i ≠ x) (hAxj : A x j = 0) (y : Y) :
+lemma Matrix.longTableauPivot_elem_of_zero_in_pivot_row [DecidableEq X] [NonAssocRing F] [Div F] (A : Matrix X Y F)
+    {x i : X} {j : Y} (hix : i ≠ x) (hAxj : A x j = 0) (y : Y) :
     (A.longTableauPivot x y) i j = A i j := by
   simp [hix, hAxj, Matrix.longTableauPivot]
 
