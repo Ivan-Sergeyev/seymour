@@ -659,7 +659,7 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
         have hxj : x = f' j
         · simp [f', hjn, Fin.snoc]
         if hij : i = f' j then
-          simpa [hij, hgjgn, hxj] using W.A.longTableauPivot_elem_pivot (hxj ▸ hx)
+          simpa [hij, hgjgn, hxj] using W.A.longTableauPivot_elem_pivot_eq_one (hxj ▸ hx)
         else
           simpa [hij, hgjgn, hxj] using W.A.longTableauPivot_elem_in_pivot_col_eq_zero hij (hxj ▸ hx)
   obtain ⟨W, hVW, hWA, hGW, f, hf, hfW⟩ := indu #G (by rfl)

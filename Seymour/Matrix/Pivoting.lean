@@ -275,21 +275,25 @@ def Matrix.longTableauPivot [One F] [SMul F F] [Div F] [Sub F] [DecidableEq X] (
     else
       A i - (A i y / A x y) • A x
 
-lemma Matrix.longTableauPivot_elem_pivot [DecidableEq X] [DivisionSemiring F] [Sub F] (A : Matrix X Y F) {x : X} {y : Y}
+/-- Long-tableau pivoting changes the nonzero pivot to one. -/
+lemma Matrix.longTableauPivot_elem_pivot_eq_one [DecidableEq X] [DivisionSemiring F] [Sub F] (A : Matrix X Y F) {x : X} {y : Y}
     (hAxy : A x y ≠ 0) :
     (A.longTableauPivot x y) x y = 1 := by
   simp [hAxy, Matrix.longTableauPivot]
 
+/-- Long-tableau pivoting changes all nonpivot elements in the pivot column to zeros. -/
 lemma Matrix.longTableauPivot_elem_in_pivot_col_eq_zero [DecidableEq X] [DivisionRing F] (A : Matrix X Y F) {x i : X} {y : Y}
     (hix : i ≠ x) (hAxy : A x y ≠ 0) :
     (A.longTableauPivot x y) i y = 0 := by
   simp [hix, hAxy, Matrix.longTableauPivot]
 
+/-- Long-tableau pivoting preserves zeros of all nonpivot elements in the pivot row. -/
 lemma Matrix.longTableauPivot_elem_in_pivot_row_eq_zero [DecidableEq X] [NonAssocSemiring F] [Sub F] [Div F] (A : Matrix X Y F)
     {x : X} {j : Y} (hAxj : A x j = 0) (y : Y) :
     (A.longTableauPivot x y) x j = 0 := by
   simp [hAxj, Matrix.longTableauPivot]
 
+/-- Long-tableau pivoting preserves the original values in the nonpivot row whereëver the pivot row has zeros. -/
 lemma Matrix.longTableauPivot_elem_of_zero_in_pivot_row [DecidableEq X] [NonAssocRing F] [Div F] (A : Matrix X Y F)
     {x i : X} {j : Y} (hix : i ≠ x) (hAxj : A x j = 0) (y : Y) :
     (A.longTableauPivot x y) i j = A i j := by
