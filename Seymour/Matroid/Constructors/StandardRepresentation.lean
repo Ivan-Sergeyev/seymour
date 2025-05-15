@@ -32,6 +32,19 @@ variable {α : Type}
 private noncomputable abbrev Set.equivFin (S : Set α) [Fintype S] : Fin #S ≃ S :=
   (Fintype.equivFin S.Elem).symm
 
+@[app_unexpander Set.equivFin]
+def Set.equivFin_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $x) => `($(x).$(Lean.mkIdent `equivFin))
+  | _ => throw ()
+
+private abbrev Equiv.leftCongr {ι₁ ι₂ : Type} (e : ι₁ ≃ ι₂) : ι₁ ⊕ α ≃ ι₂ ⊕ α :=
+  Equiv.sumCongr e (Equiv.refl α)
+
+@[app_unexpander Equiv.leftCongr]
+def Equiv.leftCongr_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $x) => `($(x).$(Lean.mkIdent `leftCongr))
+  | _ => throw ()
+
 variable [DecidableEq α]
 
 noncomputable abbrev StandardRepr.loopy (R : Type) (Y : Set α) : StandardRepr α R where
@@ -539,7 +552,7 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
             obtain ⟨i, hi⟩ := hgf x hx
             have hiG' : G.equivFin ⟨i.val, by omega⟩ ∈ G'
             · use i, hi ▸ hx
-            rw [Finset.sum_of_single_nonzero G'.toFinset.attach _ ⟨G.equivFin ⟨i.val, by omega⟩, G'.mem_toFinset.← hiG'⟩]
+            rw [G'.toFinset.attach.sum_of_single_nonzero _ ⟨G.equivFin ⟨i.val, by omega⟩, G'.mem_toFinset.← hiG'⟩]
             · specialize hfA i
               simp [hi] at hfA
               rw [hfA]
@@ -704,7 +717,7 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
     exact ⟨hi.choose_spec.choose, hi.choose_spec.choose_spec.choose⟩
   classical
   let e : (Subtype.val '' g.toFun.range) ⊕ (W.X \ g.toFun.range).Elem ≃ W.X :=
-    (Subtype.coe_image_subset W.X g.toFun.range).myEquiv
+    (Subtype.coe_image_subset W.X g.toFun.range).equiv
   let e' : G ≃ (Subtype.val '' g.toFun.range) := ⟨
     g',
     g'',
@@ -739,9 +752,9 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
       · simp at hi
         aesop
       simpa [hij] using hfA ⟨i, hiX⟩ ((Fintype.equivFin G) j)
-    have hA₂₂ : W.A.submatrix g hYGY.elem = 0
+    have hA₂₂ : W.A.submatrix hXgX.elem hYGY.elem = 0
     · ext ⟨i, hi⟩ ⟨j, hj⟩
-      have hiX : i ∈ W.X := sorry -- sus
+      have hiX : i ∈ W.X := hXgX hi
       have hjY : j ∈ W.Y := hYGY hj
       simp
       by_contra hAij
@@ -761,12 +774,12 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
         if hzj : z = j then
           have hsci := congr_fun hsc ⟨i, hiX⟩
           simp at hsci
-          rw [Finset.sum_of_single_nonzero _ _ ⟨z, hz⟩ hzs] at hsci
-          · -- `hsci` contradicts `hcz` and `hzj ▸ hAij`
-            sorry
+          rw [s.sum_of_single_nonzero _ ⟨z, hz⟩ hzs] at hsci
+          · simp [hcz] at hsci
+            apply hAij
+            simpa [hcz, hzj] using hsci
           · intro a ha haz
-            convert mul_zero _
-            specialize hfA ⟨i, hiX⟩ (Fintype.equivFin G ⟨a, by
+            have hfAa := hfA ⟨i, hiX⟩ (Fintype.equivFin G ⟨a, by
               specialize hs' a ha
               cases hs' with
               | inl haj =>
@@ -776,31 +789,56 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
                 exact SetCoe.ext haj
               | inr haG => exact haG
             ⟩)
-            generalize_proofs haG haGG at hfA
-            have hifa : ⟨i, hiX⟩ ≠ f ((Fintype.equivFin G) ⟨a.val, haG⟩)
-            · intro hia
-              sorry
-            simpa [hifa] using hfA
+            generalize_proofs haG haGG at hfAa
+            if hifa : ⟨i, hiX⟩ = f ((Fintype.equivFin G) ⟨a.val, haG⟩) then
+              simp [hifa] at hfA
+              simp [hifa, hfA]
+              by_contra hca
+              rw [s.sum_of_single_nonzero _ a ha] at hsci
+              · rw [←hifa] at hfAa
+                apply hca
+                simp [hfAa] at hsci
+                cases hsci with
+                | inl h0 =>
+                  left
+                  exact h0
+                | inr h0 =>
+                  right
+                  convert h0
+                  rw [←hifa]
+              · intro y hys hya
+                if hyj : y.val = j then
+                  sorry
+                else
+                  have hyG : y.val ∈ G := Set.mem_of_mem_insert_of_ne (hs' y hys) hyj
+                  specialize hfA i hiX (Fintype.equivFin G ⟨y, hyG⟩)
+                  have hiGy : ⟨i, hiX⟩ ≠ f (Fintype.equivFin G ⟨y, hyG⟩)
+                  · rw [hifa]
+                    intro hff
+                    apply hya
+                    apply hf at hff
+                    apply (Fintype.equivFin G).injective at hff
+                    ext
+                    exact (congr_arg Subtype.val hff).symm
+                  simp [hiGy] at hfA
+                  simp [hfA]
+            else
+              convert mul_zero _
+              simpa [hifa] using hfAa
         else
+          have hzG : z ∈ G := Set.mem_of_mem_insert_of_ne (hs' ⟨z, hz⟩ hzs) hzj
           sorry
       apply W.toMatroid.base_not_ssubset_indep hWG hWjG
       exact ⟨G.subset_insert j, Set.not_subset.← ⟨j, G.mem_insert j, hj.right⟩⟩
     classical
-    have hA : W.A.submatrix ((Equiv.sumCongr e' (Equiv.refl _)).trans e) hGY.myEquiv = ⊞
-        (W.A.submatrix g hGY.elem) (W.A.submatrix g hYGY.elem)
-        (W.A.submatrix hXgX.elem hGY.elem) (W.A.submatrix hXgX.elem hYGY.elem)
-    · rw [←(W.A.submatrix ((Equiv.sumCongr e' (Equiv.refl _)).trans e) hGY.myEquiv).fromBlocks_toBlocks]
-      rw [Matrix.fromBlocks_inj]
-      constructor
-      · ext i j
-        simp [e, e', g, g', Matrix.toBlocks₁₁, HasSubset.Subset.myEquiv]
-      constructor
-      · ext i j
-        simp [e, e', g, g', Matrix.toBlocks₁₂, HasSubset.Subset.myEquiv]
-      constructor
-      <;> ext
-      <;> rfl
-    rw [hA₁₁, hA₂₁, hA₂₂] at hA
+    let γ := hXgX.elem
+    have hA :
+      W.A.submatrix (e'.leftCongr.trans e) hGY.equiv =
+      ⊞ (W.A.submatrix g hGY.elem) (W.A.submatrix g hYGY.elem)
+        (W.A.submatrix γ hGY.elem) (W.A.submatrix γ hYGY.elem)
+    · rw [←(W.A.submatrix (e'.leftCongr.trans e) hGY.equiv).fromBlocks_toBlocks, Matrix.fromBlocks_inj]
+      refine ⟨?_, ?_, ?_, ?_⟩ <;> ext <;> rfl
+    rw [hA₁₁, hA₂₁, hA₂₂, ←Matrix.fromRows_fromCols_eq_fromBlocks, Matrix.fromCols_zero] at hA
     constructor
     · intro ⟨hIGY, hRWI⟩
       use hGYY ▸ hIGY
