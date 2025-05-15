@@ -27,7 +27,12 @@ structure StandardRepr (α R : Type) [DecidableEq α] where
 attribute [instance] StandardRepr.decmemX
 attribute [instance] StandardRepr.decmemY
 
-variable {α : Type} [DecidableEq α]
+variable {α : Type}
+
+private noncomputable abbrev Set.equivFin (S : Set α) [Fintype S] : Fin #S ≃ S :=
+  (Fintype.equivFin S.Elem).symm
+
+variable [DecidableEq α]
 
 noncomputable abbrev StandardRepr.loopy (R : Type) (Y : Set α) : StandardRepr α R where
   X := ∅
@@ -428,15 +433,13 @@ lemma VectorMatroid.longTableauPivot [Field R] (V : VectorMatroid α R) {x : V.X
 set_option maxHeartbeats 666666 in
 private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [Field R] {G : Set α} [Fintype G]
     (V : VectorMatroid α R) (hVG : V.toMatroid.IsBase G) (hVA : V.A.IsTotallyUnimodular) {k : ℕ} (hk : k ≤ #G) :
-    let g : Fin #G → G := (Fintype.equivFin G).invFun
     ∃ W : VectorMatroid α R,
       W.toMatroid = V.toMatroid ∧ W.A.IsTotallyUnimodular ∧ ∃ hGY : G ⊆ W.Y, ∃ f : Fin k → W.X, f.Injective ∧
         ∀ i : W.X, ∀ j : Fin k,
           if i = f j
-          then W.A i (hGY.elem (g ⟨j.val, by omega⟩)) = 1
-          else W.A i (hGY.elem (g ⟨j.val, by omega⟩)) = 0
+          then W.A i (hGY.elem (G.equivFin ⟨j.val, by omega⟩)) = 1
+          else W.A i (hGY.elem (G.equivFin ⟨j.val, by omega⟩)) = 0
     := by
-  intro g
   induction k with
   | zero =>
     use V, rfl, hVA, hVG.subset_ground, (Nat.not_succ_le_zero _ ·.isLt |>.elim), ↓↓↓(by omega)
@@ -446,15 +449,15 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
     obtain ⟨W, hWV, hWA, hGY, f, hf, hfA⟩ := ih (by omega)
     have hnG : n < #G
     · omega
-    wlog hgf : ∃ x : W.X, W.A x (hGY.elem (g ⟨n, hnG⟩)) ≠ 0 ∧ x ∉ f.range
+    wlog hgf : ∃ x : W.X, W.A x (hGY.elem (G.equivFin ⟨n, hnG⟩)) ≠ 0 ∧ x ∉ f.range
     · push_neg at hgf
       exfalso
-      let X' := { x : W.X | W.A x (hGY.elem (g ⟨n, hnG⟩)) ≠ 0 }
-      let G' := { g ⟨i.val, by omega⟩ | (i : Fin n) (hi : f i ∈ X') } -- essentially `G' = g (f⁻¹ X')`
-      let G'' : Set G := g ⟨n, hnG⟩ ᕃ G' -- essentially `G'' = g (n ᕃ f⁻¹ X')`
-      have hgG' : g ⟨n, hnG⟩ ∉ G'
+      let X' := { x : W.X | W.A x (hGY.elem (G.equivFin ⟨n, hnG⟩)) ≠ 0 }
+      let G' := { G.equivFin ⟨i.val, by omega⟩ | (i : Fin n) (hi : f i ∈ X') } -- essentially `G' = g (f⁻¹ X')`
+      let G'' : Set G := G.equivFin ⟨n, hnG⟩ ᕃ G' -- essentially `G'' = g (n ᕃ f⁻¹ X')`
+      have hgG' : G.equivFin ⟨n, hnG⟩ ∉ G'
       · intro ⟨i, hfi, hgi⟩
-        apply (Fintype.equivFin G).symm.injective at hgi
+        apply G.equivFin.injective at hgi
         exact (congr_arg Fin.val hgi ▸ i.isLt).false
       have hG'' : ¬ W.toMatroid.Indep G''
       · simp
@@ -464,8 +467,8 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
         let c : W.Y → R := fun j : W.Y =>
           if hjG : j.val ∈ G then
             let j' : G := ⟨j.val, hjG⟩
-            if hj' : j' ∈ G' then W.A (f hj'.choose) (hGY.elem (g ⟨n, hnG⟩))
-            else if j' = g ⟨n, hnG⟩ then -1 else 0
+            if hj' : j' ∈ G' then W.A (f hj'.choose) (hGY.elem (G.equivFin ⟨n, hnG⟩))
+            else if j' = G.equivFin ⟨n, hnG⟩ then -1 else 0
           else 0
         have hc : c.support = hGY.elem '' G''
         · ext j
@@ -481,7 +484,7 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
                 exact hf.choose_spec.left
               · aesop
               rfl
-            by_cases hj'' : j' = g ⟨n, hnG⟩
+            by_cases hj'' : j' = G.equivFin ⟨n, hnG⟩
             · convert_to True ↔ True
               · rw [iff_true, dite_of_false hj']
                 simp
@@ -505,7 +508,7 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
             use hjG
             right
             exact hj'
-          else if hj'' : j' = g ⟨n, hnG⟩ then
+          else if hj'' : j' = G.equivFin ⟨n, hnG⟩ then
             use hjG
             left
             exact hj''
@@ -523,7 +526,7 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
           ext x
           rw [Finset.sum_apply]
           show ∑ j ∈ hGY.elem '' G'', c j • W.Aᵀ j x = 0
-          have hG'' : (hGY.elem '' G'').toFinset = hGY.elem (g ⟨n, hnG⟩) ᕃ G'.toFinset.map ⟨hGY.elem, hGY.elem_injective⟩
+          have hG'' : (hGY.elem '' G'').toFinset = hGY.elem (G.equivFin ⟨n, hnG⟩) ᕃ G'.toFinset.map ⟨hGY.elem, hGY.elem_injective⟩
           · simp only [G'']
             clear * -
             aesop
@@ -534,16 +537,16 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
             simp [c, hgG']
             conv_lhs => congr; rfl; ext x; rw [dite_of_true (Set.mem_toFinset.→ x.property)]
             obtain ⟨i, hi⟩ := hgf x hx
-            have hiG' : g ⟨i.val, by omega⟩ ∈ G'
+            have hiG' : G.equivFin ⟨i.val, by omega⟩ ∈ G'
             · use i, hi ▸ hx
-            rw [Finset.sum_of_single_nonzero G'.toFinset.attach _ ⟨g ⟨i.val, by omega⟩, G'.mem_toFinset.← hiG'⟩]
+            rw [Finset.sum_of_single_nonzero G'.toFinset.attach _ ⟨G.equivFin ⟨i.val, by omega⟩, G'.mem_toFinset.← hiG'⟩]
             · specialize hfA i
               simp [hi] at hfA
               rw [hfA]
               convert mul_one _
               generalize_proofs _ _ _ _ hgi
               obtain ⟨_, hgg⟩ := hgi.choose_spec
-              apply (Fintype.equivFin G).symm.injective at hgg
+              apply G.equivFin.injective at hgg
               rw [←hi]
               apply congr_arg
               ext
@@ -579,15 +582,11 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
                 apply smul_eq_zero_of_left
                 simp [c, ←hgja]
                 rw [dite_of_false]
-                · generalize_proofs hjG
-                  have hgjgn : g ⟨j, hjG⟩ ≠ g ⟨n, hnG⟩
-                  · intro hgg
-                    apply (Fintype.equivFin G).symm.injective at hgg
-                    exact (congr_arg Fin.val hgg ▸ j.isLt).false
-                  simp [hgjgn]
+                · simp
+                  omega
                 intro ⟨z, hz, hgz⟩
                 have hzj : z = j
-                · apply (Fintype.equivFin G).symm.injective at hgz
+                · apply G.equivFin.injective at hgz
                   ext
                   simpa using hgz
                 exact (hzj ▸ hz) (hxj ▸ hx)
@@ -596,14 +595,14 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
         · simp only [Finsupp.ofSupportFinite, ne_eq, id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int]
           intro hc0
           rw [Finsupp.ext_iff] at hc0
-          specialize hc0 (hGY.elem (g ⟨n, hnG⟩))
+          specialize hc0 (hGY.elem (G.equivFin ⟨n, hnG⟩))
           simp [c, hgG'] at hc0
       have hGG'' : Subtype.val '' G'' ⊆ G
       · simp
       exact hG'' (hWV ▸ hVG.indep.subset hGG'')
     obtain ⟨x, hx, hxf⟩ := hgf
     let f' : Fin n.succ → W.X := Fin.snoc f x
-    use ⟨W.X, W.Y, W.A.longTableauPivot x (hGY.elem (g ⟨n, hnG⟩))⟩,
+    use ⟨W.X, W.Y, W.A.longTableauPivot x (hGY.elem (G.equivFin ⟨n, hnG⟩))⟩,
       hWV ▸ W.longTableauPivot hx, hWA.longTableauPivot _ _ hx, hGY, f'
     constructor
     · intro a b hab
@@ -677,7 +676,7 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
     else
       have hjn : j.val = n
       · omega
-      have hgjgn : g ⟨j.val, by omega⟩ = g ⟨n, hnG⟩
+      have hgjgn : G.equivFin ⟨j.val, by omega⟩ = G.equivFin ⟨n, hnG⟩
       · simp [hjn]
       have hxj : x = f' j
       · simp [f', hjn, Fin.snoc]
@@ -696,7 +695,6 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
   have hWG := hWV ▸ hVG
   rw [←hWV] at *
   clear hVA hVG hWV V
-  -- The following injection `g` is different from the `g` of the lemma above!
   let g : G ↪ W.X := ⟨f ∘ Fintype.equivFin G, ((Fintype.equivFin G).injective_comp f).← hf⟩
   have hgf : g.toFun.range = f.range := EquivLike.range_comp f (Fintype.equivFin G)
   let g' : G.Elem → (Subtype.val '' g.toFun.range).Elem := (⟨g ·, by simp⟩)
