@@ -696,49 +696,57 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
   have hWG := hWV ▸ hVG
   rw [←hWV] at *
   clear hVA hVG hWV V
-  have hGX : G ⊆ W.X
-  · have := hWG.indep
-    sorry -- Cannot be proved as such !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  let gₓ : G ↪ W.X := ⟨f ∘ Fintype.equivFin G, ((Fintype.equivFin G).injective_comp f).← hf⟩
-  -- TODO refactor the rest of the proof with `gₓ`
+  -- The following injection `g` is different from the `g` of the lemma above!
+  let g : G ↪ W.X := ⟨f ∘ Fintype.equivFin G, ((Fintype.equivFin G).injective_comp f).← hf⟩
+  have hgf : g.toFun.range = f.range := EquivLike.range_comp f (Fintype.equivFin G)
+  let g' : G.Elem → (Subtype.val '' g.toFun.range).Elem := (⟨g ·, by simp⟩)
+  let g'' : (Subtype.val '' g.toFun.range).Elem → G.Elem
+  · intro ⟨i, hi⟩
+    simp only [Set.mem_image, Set.mem_range, Subtype.exists, exists_and_right, exists_eq_right] at hi
+    exact ⟨hi.choose_spec.choose, hi.choose_spec.choose_spec.choose⟩
+  classical
+  let e : (Subtype.val '' g.toFun.range) ⊕ (W.X \ g.toFun.range).Elem ≃ W.X :=
+    (Subtype.coe_image_subset W.X g.toFun.range).myEquiv
+  let e' : G ≃ (Subtype.val '' g.toFun.range) := ⟨
+    g',
+    g'',
+    ↓(by simp [g'', g']),
+    fun ⟨i, hi⟩ => by simp [g'', g']; simp at hi; have := hi.choose_spec.choose_spec; aesop
+  ⟩
+  have hXgX : W.X \ g.toFun.range ⊆ W.X := Set.diff_subset
   have hYGY : W.Y \ G ⊆ W.Y := Set.diff_subset
-  use ⟨G, W.Y \ G, Set.disjoint_sdiff_right, W.A.submatrix (f ∘ Fintype.equivFin G) hYGY.elem,
+  use ⟨G, W.Y \ G, Set.disjoint_sdiff_right, W.A.submatrix g hYGY.elem,
     G.decidableMemOfFintype, (Classical.propDecidable <| · ∈ W.Y \ G)⟩
-  refine ⟨by simp, ?_, hWA.submatrix (f ∘ Fintype.equivFin G) hYGY.elem⟩
+  refine ⟨by simp, ?_, hWA.submatrix g hYGY.elem⟩
   have hGYY : G ∪ W.Y = W.Y := Set.union_eq_self_of_subset_left hGY
   ext I hIGYG
   · simpa using (hGY ·)
   · dsimp at hIGYG
     simp only [StandardRepr.toMatroid_indep_iff_elem', VectorMatroid.toMatroid_indep_iff_elem, Set.union_diff_self,
       Matrix.one_fromCols_transpose, Matrix.transpose_submatrix]
-    have hXfX : W.X \ (f ∘ Fintype.equivFin G).range ⊆ W.X := Set.diff_subset
-    have hfX : Subtype.val '' (f ∘ Fintype.equivFin G).range ⊆ W.X :=
-      Subtype.coe_image_subset W.X (f ∘ ⇑(Fintype.equivFin ↑G)).range
-    have hA₁₁ : W.A.submatrix (f ∘ Fintype.equivFin G) hGY.elem = 1
+    have hA₁₁ : W.A.submatrix g hGY.elem = 1
     · ext i j
       if hij : i = j then
-        rw [hij, Matrix.one_apply_eq, Matrix.submatrix_apply, Function.comp_apply]
-        simpa using hfA (f ((Fintype.equivFin G) j)) ((Fintype.equivFin G) j)
+        rw [hij, Matrix.one_apply_eq]
+        simpa [g] using hfA (g j) ((Fintype.equivFin G) j)
       else
-        rw [Matrix.one_apply_ne hij, Matrix.submatrix_apply, Function.comp_apply]
+        rw [Matrix.one_apply_ne hij]
         have hfifj : f ((Fintype.equivFin G) i) ≠ f ((Fintype.equivFin G) j)
         · exact (hij <| by simpa using hf ·)
         simpa [hfifj] using hfA (f ((Fintype.equivFin G) i)) ((Fintype.equivFin G) j)
-    have hA₂₁ : W.A.submatrix hXfX.elem hGY.elem = 0
+    have hA₂₁ : W.A.submatrix hXgX.elem hGY.elem = 0
     · ext ⟨i, hi⟩ j
-      have hiX : i ∈ W.X := hXfX hi
+      have hiX : i ∈ W.X := hXgX hi
       have hij : ⟨i, hiX⟩ ≠ f ((Fintype.equivFin G) j)
       · simp at hi
-        intro hifj
-        apply hi.right ((Fintype.equivFin G) j)
-        rw [←hifj]
+        aesop
       simpa [hij] using hfA ⟨i, hiX⟩ ((Fintype.equivFin G) j)
-    have hA₂₂ : W.A.submatrix hXfX.elem hYGY.elem = 0
+    have hA₂₂ : W.A.submatrix g hYGY.elem = 0
     · ext ⟨i, hi⟩ ⟨j, hj⟩
-      have hiX : i ∈ W.X := hXfX hi
+      have hiX : i ∈ W.X := sorry -- sus
       have hjY : j ∈ W.Y := hYGY hj
       simp
-      by_contra! hAij
+      by_contra hAij
       have hWjG : W.toMatroid.Indep (j ᕃ G)
       · simp
         have hjGY : j ᕃ G ⊆ W.Y := Set.insert_subset (hYGY hj) hGY
@@ -776,36 +784,21 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
               sorry
             simpa [hifa] using hfA
         else
-          have hzG : z ∈ G
-          · sorry -- follows from `hs'`
-          have hscz := congr_fun hsc ⟨z, hGX hzG⟩
-          simp at hscz
-          let J : W.Y := ⟨j, hjY⟩
-          specialize hfA ⟨z, hGX hzG⟩
           sorry
       apply W.toMatroid.base_not_ssubset_indep hWG hWjG
       exact ⟨G.subset_insert j, Set.not_subset.← ⟨j, G.mem_insert j, hj.right⟩⟩
     classical
-    have hfG : #(f ∘ Fintype.equivFin G).range = #G
-    · sorry
-    have hfG' : #(Subtype.val '' (f ∘ Fintype.equivFin G).range) = #G
-    · sorry
-    let e : G ≃ Subtype.val '' (f ∘ Fintype.equivFin G).range := Fintype.equivOfCardEq hfG'.symm -- not sure
-    have hA : W.A.submatrix ((e.sumCongr (Equiv.refl _)).trans hfX.myEquiv) hGY.myEquiv = ⊞
-        (W.A.submatrix (f ∘ Fintype.equivFin G) hGY.elem) (W.A.submatrix (f ∘ Fintype.equivFin G) hYGY.elem)
-        (W.A.submatrix hXfX.elem hGY.elem) (W.A.submatrix hXfX.elem hYGY.elem)
-    · rw [←(W.A.submatrix ((e.sumCongr (Equiv.refl _)).trans hfX.myEquiv) hGY.myEquiv ).fromBlocks_toBlocks]
+    have hA : W.A.submatrix ((Equiv.sumCongr e' (Equiv.refl _)).trans e) hGY.myEquiv = ⊞
+        (W.A.submatrix g hGY.elem) (W.A.submatrix g hYGY.elem)
+        (W.A.submatrix hXgX.elem hGY.elem) (W.A.submatrix hXgX.elem hYGY.elem)
+    · rw [←(W.A.submatrix ((Equiv.sumCongr e' (Equiv.refl _)).trans e) hGY.myEquiv).fromBlocks_toBlocks]
       rw [Matrix.fromBlocks_inj]
       constructor
-      · sorry
+      · ext i j
+        simp [e, e', g, g', Matrix.toBlocks₁₁, HasSubset.Subset.myEquiv]
       constructor
       · ext i j
-        simp [Matrix.toBlocks₁₂]
-        congr
-        simp [HasSubset.Subset.myEquiv, e]
-        generalize_proofs hhG hhi
-        simp [Fintype.equivOfCardEq] at hhi
-        sorry
+        simp [e, e', g, g', Matrix.toBlocks₁₂, HasSubset.Subset.myEquiv]
       constructor
       <;> ext
       <;> rfl
