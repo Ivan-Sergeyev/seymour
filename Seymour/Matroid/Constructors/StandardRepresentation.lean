@@ -426,276 +426,278 @@ lemma VectorMatroid.longTableauPivot [Field R] (V : VectorMatroid α R) {x : V.X
     exact ↓(V.A.longTableauPivot_linearIndepenOn hVxy _)
 
 set_option maxHeartbeats 666666 in
+private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [Field R] {G : Set α} [Fintype G]
+    (V : VectorMatroid α R) (hVG : V.toMatroid.IsBase G) (hVA : V.A.IsTotallyUnimodular) {k : ℕ} (hk : k ≤ #G) :
+    let g : Fin #G → G := (Fintype.equivFin G).invFun
+    ∃ W : VectorMatroid α R,
+      W.toMatroid = V.toMatroid ∧ W.A.IsTotallyUnimodular ∧ ∃ hGY : G ⊆ W.Y, ∃ f : Fin k → W.X, f.Injective ∧
+        ∀ i : W.X, ∀ j : Fin k,
+          if i = f j
+          then W.A i (hGY.elem (g ⟨j.val, by omega⟩)) = 1
+          else W.A i (hGY.elem (g ⟨j.val, by omega⟩)) = 0
+    := by
+  intro g
+  induction k with
+  | zero =>
+    use V, rfl, hVA, hVG.subset_ground, (Nat.not_succ_le_zero _ ·.isLt |>.elim), ↓↓↓(by omega)
+    intro _ ⟨_, _⟩
+    omega
+  | succ n ih =>
+    obtain ⟨W, hWV, hWA, hGY, f, hf, hfA⟩ := ih (by omega)
+    have hnG : n < #G
+    · omega
+    wlog hgf : ∃ x : W.X, W.A x (hGY.elem (g ⟨n, hnG⟩)) ≠ 0 ∧ x ∉ f.range
+    · push_neg at hgf
+      exfalso
+      let X' := { x : W.X | W.A x (hGY.elem (g ⟨n, hnG⟩)) ≠ 0 }
+      let G' := { g ⟨i.val, by omega⟩ | (i : Fin n) (hi : f i ∈ X') } -- essentially `G' = g (f⁻¹ X')`
+      let G'' : Set G := g ⟨n, hnG⟩ ᕃ G' -- essentially `G'' = g (n ᕃ f⁻¹ X')`
+      have hgG' : g ⟨n, hnG⟩ ∉ G'
+      · intro ⟨i, hfi, hgi⟩
+        apply (Fintype.equivFin G).symm.injective at hgi
+        exact (congr_arg Fin.val hgi ▸ i.isLt).false
+      have hG'' : ¬ W.toMatroid.Indep G''
+      · simp
+        intro _
+        rw [linearDepOn_iff]
+        classical
+        let c : W.Y → R := fun j : W.Y =>
+          if hjG : j.val ∈ G then
+            let j' : G := ⟨j.val, hjG⟩
+            if hj' : j' ∈ G' then W.A (f hj'.choose) (hGY.elem (g ⟨n, hnG⟩))
+            else if j' = g ⟨n, hnG⟩ then -1 else 0
+          else 0
+        have hc : c.support = hGY.elem '' G''
+        · ext j
+          simp [G'', c, Function.support]
+          clear * -
+          by_cases hjG : j.val ∈ G
+          · simp [hjG]
+            let j' : G := ⟨j.val, hjG⟩
+            by_cases hj' : j' ∈ G'
+            · convert_to True ↔ True
+              · rw [iff_true, dite_of_true hj']
+                generalize_proofs _ hf
+                exact hf.choose_spec.left
+              · aesop
+              rfl
+            by_cases hj'' : j' = g ⟨n, hnG⟩
+            · convert_to True ↔ True
+              · rw [iff_true, dite_of_false hj']
+                simp
+                exact hj''
+              · rw [iff_true]
+                left
+                ext
+                exact (congr_arg Subtype.val hj'').symm
+              rfl
+            · convert_to False ↔ False
+              · simp_all [j']
+              · aesop
+              rfl
+          · aesop
+        use Finsupp.ofSupportFinite c (hc ▸ (hGY.elem '' G'').toFinite)
+        constructor
+        · simp [c, Finsupp.supported, Finsupp.ofSupportFinite]
+          intro j hjY hjG hj
+          let j' : G := ⟨j, hjG⟩
+          if hj' : j' ∈ G' then
+            use hjG
+            right
+            exact hj'
+          else if hj'' : j' = g ⟨n, hnG⟩ then
+            use hjG
+            left
+            exact hj''
+          else
+            exfalso
+            apply hj
+            split
+            · contradiction
+            · rfl
+        constructor
+        · have hc' : (Finsupp.ofSupportFinite c (hc ▸ (hGY.elem '' G'').toFinite)).support = (hGY.elem '' G'').toFinset
+          · apply eq_toFinset_of_toSet_eq
+            exact ofSupportFinite_support_eq (Finite.Set.finite_image G'' hGY.elem) hc
+          rw [Finsupp.ofSupportFinite_coe, hc']
+          ext x
+          rw [Finset.sum_apply]
+          show ∑ j ∈ hGY.elem '' G'', c j • W.Aᵀ j x = 0
+          have hG'' : (hGY.elem '' G'').toFinset = hGY.elem (g ⟨n, hnG⟩) ᕃ G'.toFinset.map ⟨hGY.elem, hGY.elem_injective⟩
+          · simp only [G'']
+            clear * -
+            aesop
+          rw [hG'', Finset.sum_insert (hgG' <| by simpa using ·)]
+          if hx : x ∈ X' then
+            rw [add_eq_zero_iff_eq_neg', Finset.sum_map, ←Finset.sum_attach]
+            specialize hfA x
+            simp [c, hgG']
+            conv_lhs => congr; rfl; ext x; rw [dite_of_true (Set.mem_toFinset.→ x.property)]
+            obtain ⟨i, hi⟩ := hgf x hx
+            have hiG' : g ⟨i.val, by omega⟩ ∈ G'
+            · use i, hi ▸ hx
+            rw [Finset.sum_of_single_nonzero G'.toFinset.attach _ ⟨g ⟨i.val, by omega⟩, G'.mem_toFinset.← hiG'⟩]
+            · specialize hfA i
+              simp [hi] at hfA
+              rw [hfA]
+              convert mul_one _
+              generalize_proofs _ _ _ _ hgi
+              obtain ⟨_, hgg⟩ := hgi.choose_spec
+              apply (Fintype.equivFin G).symm.injective at hgg
+              rw [←hi]
+              apply congr_arg
+              ext
+              exact (congr_arg Fin.val hgg).symm
+            · simp
+            · intro z _ hzi
+              convert mul_zero _
+              have hz := z.property
+              simp [G'] at hz
+              obtain ⟨a, ha, haz⟩ := hz
+              specialize hfA a
+              rw [←hi] at hfA ⊢
+              have hfifa : f i ≠ f a
+              · intro hia
+                apply hf at hia
+                apply hzi
+                ext
+                rw [←haz]
+                simp [hia]
+              simp [hfifa] at hfA
+              exact haz ▸ hfA
+          else
+            convert add_zero (0 : R)
+            · exact smul_eq_zero_of_right _ (by simpa [X'] using hx)
+            · rw [Finset.sum_map]
+              -- TODO prove using a variant of `sum_elem_smul_matrix_row_of_nmem` instead of the manual labor below
+              apply Finset.sum_eq_zero
+              intro a ha
+              simp [X'] at hx
+              rw [Set.mem_toFinset] at ha
+              obtain ⟨j, hfj, hgja⟩ := ha
+              if hxj : x = f j then
+                apply smul_eq_zero_of_left
+                simp [c, ←hgja]
+                rw [dite_of_false]
+                · generalize_proofs hjG
+                  have hgjgn : g ⟨j, hjG⟩ ≠ g ⟨n, hnG⟩
+                  · intro hgg
+                    apply (Fintype.equivFin G).symm.injective at hgg
+                    exact (congr_arg Fin.val hgg ▸ j.isLt).false
+                  simp [hgjgn]
+                intro ⟨z, hz, hgz⟩
+                have hzj : z = j
+                · apply (Fintype.equivFin G).symm.injective at hgz
+                  ext
+                  simpa using hgz
+                exact (hzj ▸ hz) (hxj ▸ hx)
+              else
+                exact smul_eq_zero_of_right _ (hgja ▸ (by simpa [hxj] using hfA x j))
+        · simp only [Finsupp.ofSupportFinite, ne_eq, id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int]
+          intro hc0
+          rw [Finsupp.ext_iff] at hc0
+          specialize hc0 (hGY.elem (g ⟨n, hnG⟩))
+          simp [c, hgG'] at hc0
+      have hGG'' : Subtype.val '' G'' ⊆ G
+      · simp
+      exact hG'' (hWV ▸ hVG.indep.subset hGG'')
+    obtain ⟨x, hx, hxf⟩ := hgf
+    let f' : Fin n.succ → W.X := Fin.snoc f x
+    use ⟨W.X, W.Y, W.A.longTableauPivot x (hGY.elem (g ⟨n, hnG⟩))⟩,
+      hWV ▸ W.longTableauPivot hx, hWA.longTableauPivot _ _ hx, hGY, f'
+    constructor
+    · intro a b hab
+      if ha : a.val = n then
+        if hb : b.val = n then
+          ext
+          rw [ha, hb]
+        else
+          have ha' : a = n
+          · ext
+            simp [ha]
+          exfalso
+          rw [ha'] at hab
+          simp only [f', Fin.snoc_last, Fin.natCast_eq_last] at hab
+          rw [hab] at hxf
+          apply hxf
+          have hb' : b.val < n
+          · omega
+          use ⟨b.val, hb'⟩
+          simp [hb', Fin.snoc]
+          rfl
+      else
+        if hb : b.val = n then
+          have hb' : b = n
+          · ext
+            simp [hb]
+          exfalso
+          rw [hb'] at hab
+          simp only [f', Fin.snoc_last, Fin.natCast_eq_last] at hab
+          rw [←hab] at hxf
+          apply hxf
+          have ha' : a.val < n
+          · omega
+          use ⟨a.val, ha'⟩
+          simp [ha', Fin.snoc]
+          rfl
+        else
+          have ha' : a.val < n
+          · omega
+          have hb' : b.val < n
+          · omega
+          simp [ha', hb', f', Fin.snoc] at hab
+          apply hf at hab
+          ext
+          simpa [Fin.castLT] using hab
+    intro i j
+    if hj : j.val < n then
+      have hxj : x ≠ f' j := (have hxf' := · ▸ hxf; by simp [f', hj, Fin.snoc] at hxf')
+      let jₙ : Fin n := ⟨j.val, by omega⟩
+      have hjjₙ : f' j = f jₙ
+      · simp [f', hj, Fin.snoc]
+        rfl
+      if hij : i = f' j then
+        have hijₙ : i = f jₙ := hjjₙ ▸ hij
+        have hxjₙ : x ≠ f jₙ := hijₙ ▸ hij ▸ hxj
+        simp [hij]
+        rw [W.A.longTableauPivot_elem_of_zero_in_pivot_row hxj.symm (by simpa [hxjₙ] using hfA x jₙ)]
+        simpa [hijₙ, hjjₙ] using hfA i jₙ
+      else
+        have hijₙ : i ≠ f jₙ := hjjₙ ▸ hij
+        have hxjₙ : x ≠ f jₙ := hjjₙ ▸ hxj
+        simp [hij]
+        if hix : i = x then
+          rw [←hix]
+          apply W.A.longTableauPivot_elem_in_pivot_row_eq_zero
+          simpa [hijₙ] using hfA i jₙ
+        else
+          rw [W.A.longTableauPivot_elem_of_zero_in_pivot_row hix]
+          · simpa [hijₙ] using hfA i jₙ
+          · simpa [hxjₙ] using hfA x jₙ
+    else
+      have hjn : j.val = n
+      · omega
+      have hgjgn : g ⟨j.val, by omega⟩ = g ⟨n, hnG⟩
+      · simp [hjn]
+      have hxj : x = f' j
+      · simp [f', hjn, Fin.snoc]
+      if hij : i = f' j then
+        simpa [hij, hgjgn, hxj] using W.A.longTableauPivot_elem_pivot_eq_one (hxj ▸ hx)
+      else
+        simpa [hij, hgjgn, hxj] using W.A.longTableauPivot_elem_in_pivot_col_eq_zero hij (hxj ▸ hx)
+
+set_option maxHeartbeats 666666 in
 /-- Every vector matroid whose full representation matrix is totally unimodular has a standard representation whose rows are
     a given base and the standard representation matrix is totally unimodular. -/
 lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G : Set α} [Fintype G]
     (V : VectorMatroid α R) (hVG : V.toMatroid.IsBase G) (hVA : V.A.IsTotallyUnimodular) :
     ∃ S : StandardRepr α R, S.X = G ∧ S.toMatroid = V.toMatroid ∧ S.B.IsTotallyUnimodular := by
-  have hGV : G ⊆ V.Y := hVG.subset_ground
-  let g : Fin #G → G := (Fintype.equivFin G).invFun
-  have indu : ∀ k : ℕ, ∀ hk : k ≤ #G, ∃ W : VectorMatroid α R,
-    W.toMatroid = V.toMatroid ∧ W.A.IsTotallyUnimodular ∧ ∃ hGY : G ⊆ W.Y, ∃ f : Fin k → W.X, f.Injective ∧
-      ∀ i : W.X, ∀ j : Fin k,
-        if i = f j
-        then W.A i (hGY.elem (g ⟨j.val, by omega⟩)) = 1
-        else W.A i (hGY.elem (g ⟨j.val, by omega⟩)) = 0
-  · intro k
-    induction k with
-    | zero =>
-      intro _
-      use V, rfl, hVA, hGV, (Nat.not_succ_le_zero _ ·.isLt |>.elim), ↓↓↓(by omega)
-      intro _ ⟨_, _⟩
-      omega
-    | succ n ih =>
-      intro hn
-      obtain ⟨W, hWV, hWA, hGY, f, hf, hfA⟩ := ih (by omega)
-      have hnG : n < #G
-      · omega
-      wlog hgf : ∃ x : W.X, W.A x (hGY.elem (g ⟨n, hnG⟩)) ≠ 0 ∧ x ∉ f.range
-      · push_neg at hgf
-        exfalso
-        let X' := { x : W.X | W.A x (hGY.elem (g ⟨n, hnG⟩)) ≠ 0 }
-        let G' := { g ⟨i.val, by omega⟩ | (i : Fin n) (hi : f i ∈ X') } -- essentially `G' = g (f⁻¹ X')`
-        let G'' : Set G := g ⟨n, hnG⟩ ᕃ G' -- essentially `G'' = g (n ᕃ f⁻¹ X')`
-        have hgG' : g ⟨n, hnG⟩ ∉ G'
-        · intro ⟨i, hfi, hgi⟩
-          apply (Fintype.equivFin G).symm.injective at hgi
-          exact (congr_arg Fin.val hgi ▸ i.isLt).false
-        have hG'' : ¬ W.toMatroid.Indep G''
-        · simp
-          intro _
-          rw [linearDepOn_iff]
-          classical
-          let c : W.Y → R := fun j : W.Y =>
-            if hjG : j.val ∈ G then
-              let j' : G := ⟨j.val, hjG⟩
-              if hj' : j' ∈ G' then W.A (f hj'.choose) (hGY.elem (g ⟨n, hnG⟩))
-              else if j' = g ⟨n, hnG⟩ then -1 else 0
-            else 0
-          have hc : c.support = hGY.elem '' G''
-          · ext j
-            simp [G'', c, Function.support]
-            clear * -
-            by_cases hjG : j.val ∈ G
-            · simp [hjG]
-              let j' : G := ⟨j.val, hjG⟩
-              by_cases hj' : j' ∈ G'
-              · convert_to True ↔ True
-                · rw [iff_true, dite_of_true hj']
-                  generalize_proofs _ hf
-                  exact hf.choose_spec.left
-                · aesop
-                rfl
-              by_cases hj'' : j' = g ⟨n, hnG⟩
-              · convert_to True ↔ True
-                · rw [iff_true, dite_of_false hj']
-                  simp
-                  exact hj''
-                · rw [iff_true]
-                  left
-                  ext
-                  exact (congr_arg Subtype.val hj'').symm
-                rfl
-              · convert_to False ↔ False
-                · simp_all [j']
-                · aesop
-                rfl
-            · aesop
-          use Finsupp.ofSupportFinite c (hc ▸ (hGY.elem '' G'').toFinite)
-          constructor
-          · simp [c, Finsupp.supported, Finsupp.ofSupportFinite]
-            intro j hjY hjG hj
-            let j' : G := ⟨j, hjG⟩
-            if hj' : j' ∈ G' then
-              use hjG
-              right
-              exact hj'
-            else if hj'' : j' = g ⟨n, hnG⟩ then
-              use hjG
-              left
-              exact hj''
-            else
-              exfalso
-              apply hj
-              split
-              · contradiction
-              · rfl
-          constructor
-          · have hc' : (Finsupp.ofSupportFinite c (hc ▸ (hGY.elem '' G'').toFinite)).support = (hGY.elem '' G'').toFinset
-            · apply eq_toFinset_of_toSet_eq
-              exact ofSupportFinite_support_eq (Finite.Set.finite_image G'' hGY.elem) hc
-            rw [Finsupp.ofSupportFinite_coe, hc']
-            ext x
-            rw [Finset.sum_apply]
-            show ∑ j ∈ hGY.elem '' G'', c j • W.Aᵀ j x = 0
-            have hG'' : (hGY.elem '' G'').toFinset = hGY.elem (g ⟨n, hnG⟩) ᕃ G'.toFinset.map ⟨hGY.elem, hGY.elem_injective⟩
-            · simp only [G'']
-              clear * -
-              aesop
-            rw [hG'', Finset.sum_insert (hgG' <| by simpa using ·)]
-            if hx : x ∈ X' then
-              rw [add_eq_zero_iff_eq_neg', Finset.sum_map, ←Finset.sum_attach]
-              specialize hfA x
-              simp [c, hgG']
-              conv_lhs => congr; rfl; ext x; rw [dite_of_true (Set.mem_toFinset.→ x.property)]
-              obtain ⟨i, hi⟩ := hgf x hx
-              have hiG' : g ⟨i.val, by omega⟩ ∈ G'
-              · use i, hi ▸ hx
-              rw [Finset.sum_of_single_nonzero G'.toFinset.attach _ ⟨g ⟨i.val, by omega⟩, G'.mem_toFinset.← hiG'⟩]
-              · specialize hfA i
-                simp [hi] at hfA
-                rw [hfA]
-                convert mul_one _
-                generalize_proofs _ _ _ _ hgi
-                obtain ⟨_, hgg⟩ := hgi.choose_spec
-                apply (Fintype.equivFin G).symm.injective at hgg
-                rw [←hi]
-                apply congr_arg
-                ext
-                exact (congr_arg Fin.val hgg).symm
-              · simp
-              · intro z _ hzi
-                convert mul_zero _
-                have hz := z.property
-                simp [G'] at hz
-                obtain ⟨a, ha, haz⟩ := hz
-                specialize hfA a
-                rw [←hi] at hfA ⊢
-                have hfifa : f i ≠ f a
-                · intro hia
-                  apply hf at hia
-                  apply hzi
-                  ext
-                  rw [←haz]
-                  simp [hia]
-                simp [hfifa] at hfA
-                exact haz ▸ hfA
-            else
-              convert add_zero (0 : R)
-              · exact smul_eq_zero_of_right _ (by simpa [X'] using hx)
-              · rw [Finset.sum_map]
-                -- TODO prove using a variant of `sum_elem_smul_matrix_row_of_nmem` instead of the manual labor below
-                apply Finset.sum_eq_zero
-                intro a ha
-                simp [X'] at hx
-                rw [Set.mem_toFinset] at ha
-                obtain ⟨j, hfj, hgja⟩ := ha
-                if hxj : x = f j then
-                  apply smul_eq_zero_of_left
-                  simp [c, ←hgja]
-                  rw [dite_of_false]
-                  · generalize_proofs hjG
-                    have hgjgn : g ⟨j, hjG⟩ ≠ g ⟨n, hnG⟩
-                    · intro hgg
-                      apply (Fintype.equivFin G).symm.injective at hgg
-                      exact (congr_arg Fin.val hgg ▸ j.isLt).false
-                    simp [hgjgn]
-                  intro ⟨z, hz, hgz⟩
-                  have hzj : z = j
-                  · apply (Fintype.equivFin G).symm.injective at hgz
-                    ext
-                    simpa using hgz
-                  exact (hzj ▸ hz) (hxj ▸ hx)
-                else
-                  exact smul_eq_zero_of_right _ (hgja ▸ (by simpa [hxj] using hfA x j))
-          · simp only [Finsupp.ofSupportFinite, ne_eq, id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int]
-            intro hc0
-            rw [Finsupp.ext_iff] at hc0
-            specialize hc0 (hGY.elem (g ⟨n, hnG⟩))
-            simp [c, hgG'] at hc0
-        have hGG'' : Subtype.val '' G'' ⊆ G
-        · simp
-        exact hG'' (hWV ▸ hVG.indep.subset hGG'')
-      obtain ⟨x, hx, hxf⟩ := hgf
-      let f' : Fin n.succ → W.X := Fin.snoc f x
-      use ⟨W.X, W.Y, W.A.longTableauPivot x (hGY.elem (g ⟨n, hnG⟩))⟩,
-        hWV ▸ W.longTableauPivot hx, hWA.longTableauPivot _ _ hx, hGY, f'
-      constructor
-      · intro a b hab
-        if ha : a.val = n then
-          if hb : b.val = n then
-            ext
-            rw [ha, hb]
-          else
-            have ha' : a = n
-            · ext
-              simp [ha]
-            exfalso
-            rw [ha'] at hab
-            simp only [f', Fin.snoc_last, Fin.natCast_eq_last] at hab
-            rw [hab] at hxf
-            apply hxf
-            have hb' : b.val < n
-            · omega
-            use ⟨b.val, hb'⟩
-            simp [hb', Fin.snoc]
-            rfl
-        else
-          if hb : b.val = n then
-            have hb' : b = n
-            · ext
-              simp [hb]
-            exfalso
-            rw [hb'] at hab
-            simp only [f', Fin.snoc_last, Fin.natCast_eq_last] at hab
-            rw [←hab] at hxf
-            apply hxf
-            have ha' : a.val < n
-            · omega
-            use ⟨a.val, ha'⟩
-            simp [ha', Fin.snoc]
-            rfl
-          else
-            have ha' : a.val < n
-            · omega
-            have hb' : b.val < n
-            · omega
-            simp [ha', hb', f', Fin.snoc] at hab
-            apply hf at hab
-            ext
-            simpa [Fin.castLT] using hab
-      intro i j
-      if hj : j.val < n then
-        have hxj : x ≠ f' j := (have hxf' := · ▸ hxf; by simp [f', hj, Fin.snoc] at hxf')
-        let jₙ : Fin n := ⟨j.val, by omega⟩
-        have hjjₙ : f' j = f jₙ
-        · simp [f', hj, Fin.snoc]
-          rfl
-        if hij : i = f' j then
-          have hijₙ : i = f jₙ := hjjₙ ▸ hij
-          have hxjₙ : x ≠ f jₙ := hijₙ ▸ hij ▸ hxj
-          simp [hij]
-          rw [W.A.longTableauPivot_elem_of_zero_in_pivot_row hxj.symm (by simpa [hxjₙ] using hfA x jₙ)]
-          simpa [hijₙ, hjjₙ] using hfA i jₙ
-        else
-          have hijₙ : i ≠ f jₙ := hjjₙ ▸ hij
-          have hxjₙ : x ≠ f jₙ := hjjₙ ▸ hxj
-          simp [hij]
-          if hix : i = x then
-            rw [←hix]
-            apply W.A.longTableauPivot_elem_in_pivot_row_eq_zero
-            simpa [hijₙ] using hfA i jₙ
-          else
-            rw [W.A.longTableauPivot_elem_of_zero_in_pivot_row hix]
-            · simpa [hijₙ] using hfA i jₙ
-            · simpa [hxjₙ] using hfA x jₙ
-      else
-        have hjn : j.val = n
-        · omega
-        have hgjgn : g ⟨j.val, by omega⟩ = g ⟨n, hnG⟩
-        · simp [hjn]
-        have hxj : x = f' j
-        · simp [f', hjn, Fin.snoc]
-        if hij : i = f' j then
-          simpa [hij, hgjgn, hxj] using W.A.longTableauPivot_elem_pivot_eq_one (hxj ▸ hx)
-        else
-          simpa [hij, hgjgn, hxj] using W.A.longTableauPivot_elem_in_pivot_col_eq_zero hij (hxj ▸ hx)
-  obtain ⟨W, hVW, hWA, hGW, f, hf, hfA⟩ := indu #G (by rfl)
+  obtain ⟨W, hWV, hWA, hGW, f, hf, hfA⟩ := V.exists_standardRepr_isBase_isTotallyUnimodular_aux hVG hVA (le_refl #↑G)
   have hYGY : W.Y \ G ⊆ W.Y := Set.diff_subset
   use ⟨G, W.Y \ G, Set.disjoint_sdiff_right, W.A.submatrix (f ∘ Fintype.equivFin G) hYGY.elem,
     G.decidableMemOfFintype, (Classical.propDecidable <| · ∈ W.Y \ G)⟩
   refine ⟨by simp, ?_, hWA.submatrix (f ∘ Fintype.equivFin G) hYGY.elem⟩
-  rw [←hVW]
+  rw [←hWV]
   have hGYY : G ∪ W.Y = W.Y := Set.union_eq_self_of_subset_left hGW
   ext I hIGYG
   · simpa using (hGW ·)
