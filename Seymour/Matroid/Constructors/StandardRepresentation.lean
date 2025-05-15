@@ -726,119 +726,120 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
   ⟩
   have hXgX : W.X \ g.toFun.range ⊆ W.X := Set.diff_subset
   have hYGY : W.Y \ G ⊆ W.Y := Set.diff_subset
+  have hGYY : G ∪ W.Y = W.Y := Set.union_eq_self_of_subset_left hGY
+  have hA₁₁ : W.A.submatrix g hGY.elem = 1
+  · ext i j
+    if hij : i = j then
+      rw [hij, Matrix.one_apply_eq]
+      simpa [g] using hfA (g j) ((Fintype.equivFin G) j)
+    else
+      rw [Matrix.one_apply_ne hij]
+      have hfifj : f ((Fintype.equivFin G) i) ≠ f ((Fintype.equivFin G) j)
+      · exact (hij <| by simpa using hf ·)
+      simpa [hfifj] using hfA (f ((Fintype.equivFin G) i)) ((Fintype.equivFin G) j)
+  have hA₂₁ : W.A.submatrix hXgX.elem hGY.elem = 0
+  · ext ⟨i, hi⟩ j
+    have hiX : i ∈ W.X := hXgX hi
+    have hij : ⟨i, hiX⟩ ≠ f ((Fintype.equivFin G) j)
+    · simp at hi
+      aesop
+    simpa [hij] using hfA ⟨i, hiX⟩ ((Fintype.equivFin G) j)
+  have hA₂₂ : W.A.submatrix hXgX.elem hYGY.elem = 0
+  · ext ⟨i, hi⟩ ⟨j, hj⟩
+    have hiX : i ∈ W.X := hXgX hi
+    have hjY : j ∈ W.Y := hYGY hj
+    simp
+    by_contra hAij
+    have hWjG : W.toMatroid.Indep (j ᕃ G)
+    · simp
+      have hjGY : j ᕃ G ⊆ W.Y := Set.insert_subset (hYGY hj) hGY
+      use hjGY
+      rw [linearIndepOn_iff']
+      intro s c hs hsc ⟨z, hz⟩ hzs
+      have hs' : ∀ a ∈ s, a.val ∈ j ᕃ G
+      · intro a ha
+        clear * - ha hs
+        rw [←Set.subset_toFinset] at hs
+        specialize hs ha
+        aesop
+      by_contra hcz
+      if hzj : z = j then
+        have hsci := congr_fun hsc ⟨i, hiX⟩
+        simp at hsci
+        rw [s.sum_of_single_nonzero _ ⟨z, hz⟩ hzs] at hsci
+        · simp [hcz] at hsci
+          apply hAij
+          simpa [hcz, hzj] using hsci
+        · intro a ha haz
+          have hfAa := hfA ⟨i, hiX⟩ (Fintype.equivFin G ⟨a, by
+            specialize hs' a ha
+            cases hs' with
+            | inl haj =>
+              exfalso
+              rw [←hzj] at haj
+              apply haz
+              exact SetCoe.ext haj
+            | inr haG => exact haG
+          ⟩)
+          generalize_proofs haG haGG at hfAa
+          if hifa : ⟨i, hiX⟩ = f ((Fintype.equivFin G) ⟨a.val, haG⟩) then
+            simp [hifa] at hfA
+            simp [hifa, hfA]
+            by_contra hca
+            rw [s.sum_of_single_nonzero _ a ha] at hsci
+            · rw [←hifa] at hfAa
+              apply hca
+              simp [hfAa] at hsci
+              cases hsci with
+              | inl h0 =>
+                left
+                exact h0
+              | inr h0 =>
+                right
+                convert h0
+                rw [←hifa]
+            · intro y hys hya
+              if hyj : y.val = j then
+                sorry
+              else
+                have hyG : y.val ∈ G := Set.mem_of_mem_insert_of_ne (hs' y hys) hyj
+                specialize hfA i hiX (Fintype.equivFin G ⟨y, hyG⟩)
+                have hiGy : ⟨i, hiX⟩ ≠ f (Fintype.equivFin G ⟨y, hyG⟩)
+                · rw [hifa]
+                  intro hff
+                  apply hya
+                  apply hf at hff
+                  apply (Fintype.equivFin G).injective at hff
+                  ext
+                  exact (congr_arg Subtype.val hff).symm
+                simp [hiGy] at hfA
+                simp [hfA]
+          else
+            convert mul_zero _
+            simpa [hifa] using hfAa
+      else
+        have hzG : z ∈ G := Set.mem_of_mem_insert_of_ne (hs' ⟨z, hz⟩ hzs) hzj
+        sorry
+    apply W.toMatroid.base_not_ssubset_indep hWG hWjG
+    exact ⟨G.subset_insert j, Set.not_subset.← ⟨j, G.mem_insert j, hj.right⟩⟩
+  classical
+  let γ := hXgX.elem
+  have hA :
+    W.A.submatrix (e'.leftCongr.trans e) hGY.equiv =
+    ⊞ (W.A.submatrix g hGY.elem) (W.A.submatrix g hYGY.elem)
+      (W.A.submatrix γ hGY.elem) (W.A.submatrix γ hYGY.elem)
+  · rw [←(W.A.submatrix (e'.leftCongr.trans e) hGY.equiv).fromBlocks_toBlocks, Matrix.fromBlocks_inj]
+    refine ⟨?_, ?_, ?_, ?_⟩ <;> ext <;> rfl
+  rw [hA₁₁, hA₂₁, hA₂₂, ←Matrix.fromRows_fromCols_eq_fromBlocks, Matrix.fromCols_zero] at hA
+  -- TODO maybe it is easier to reindex before taking `W.A.submatrix g hYGY.elem`
   use ⟨G, W.Y \ G, Set.disjoint_sdiff_right, W.A.submatrix g hYGY.elem,
     G.decidableMemOfFintype, (Classical.propDecidable <| · ∈ W.Y \ G)⟩
   refine ⟨by simp, ?_, hWA.submatrix g hYGY.elem⟩
-  have hGYY : G ∪ W.Y = W.Y := Set.union_eq_self_of_subset_left hGY
   ext I hIGYG
   · simpa using (hGY ·)
   · dsimp at hIGYG
     simp only [StandardRepr.toMatroid_indep_iff_elem', VectorMatroid.toMatroid_indep_iff_elem, Set.union_diff_self,
       Matrix.one_fromCols_transpose, Matrix.transpose_submatrix]
-    have hA₁₁ : W.A.submatrix g hGY.elem = 1
-    · ext i j
-      if hij : i = j then
-        rw [hij, Matrix.one_apply_eq]
-        simpa [g] using hfA (g j) ((Fintype.equivFin G) j)
-      else
-        rw [Matrix.one_apply_ne hij]
-        have hfifj : f ((Fintype.equivFin G) i) ≠ f ((Fintype.equivFin G) j)
-        · exact (hij <| by simpa using hf ·)
-        simpa [hfifj] using hfA (f ((Fintype.equivFin G) i)) ((Fintype.equivFin G) j)
-    have hA₂₁ : W.A.submatrix hXgX.elem hGY.elem = 0
-    · ext ⟨i, hi⟩ j
-      have hiX : i ∈ W.X := hXgX hi
-      have hij : ⟨i, hiX⟩ ≠ f ((Fintype.equivFin G) j)
-      · simp at hi
-        aesop
-      simpa [hij] using hfA ⟨i, hiX⟩ ((Fintype.equivFin G) j)
-    have hA₂₂ : W.A.submatrix hXgX.elem hYGY.elem = 0
-    · ext ⟨i, hi⟩ ⟨j, hj⟩
-      have hiX : i ∈ W.X := hXgX hi
-      have hjY : j ∈ W.Y := hYGY hj
-      simp
-      by_contra hAij
-      have hWjG : W.toMatroid.Indep (j ᕃ G)
-      · simp
-        have hjGY : j ᕃ G ⊆ W.Y := Set.insert_subset (hYGY hj) hGY
-        use hjGY
-        rw [linearIndepOn_iff']
-        intro s c hs hsc ⟨z, hz⟩ hzs
-        have hs' : ∀ a ∈ s, a.val ∈ j ᕃ G
-        · intro a ha
-          clear * - ha hs
-          rw [←Set.subset_toFinset] at hs
-          specialize hs ha
-          aesop
-        by_contra hcz
-        if hzj : z = j then
-          have hsci := congr_fun hsc ⟨i, hiX⟩
-          simp at hsci
-          rw [s.sum_of_single_nonzero _ ⟨z, hz⟩ hzs] at hsci
-          · simp [hcz] at hsci
-            apply hAij
-            simpa [hcz, hzj] using hsci
-          · intro a ha haz
-            have hfAa := hfA ⟨i, hiX⟩ (Fintype.equivFin G ⟨a, by
-              specialize hs' a ha
-              cases hs' with
-              | inl haj =>
-                exfalso
-                rw [←hzj] at haj
-                apply haz
-                exact SetCoe.ext haj
-              | inr haG => exact haG
-            ⟩)
-            generalize_proofs haG haGG at hfAa
-            if hifa : ⟨i, hiX⟩ = f ((Fintype.equivFin G) ⟨a.val, haG⟩) then
-              simp [hifa] at hfA
-              simp [hifa, hfA]
-              by_contra hca
-              rw [s.sum_of_single_nonzero _ a ha] at hsci
-              · rw [←hifa] at hfAa
-                apply hca
-                simp [hfAa] at hsci
-                cases hsci with
-                | inl h0 =>
-                  left
-                  exact h0
-                | inr h0 =>
-                  right
-                  convert h0
-                  rw [←hifa]
-              · intro y hys hya
-                if hyj : y.val = j then
-                  sorry
-                else
-                  have hyG : y.val ∈ G := Set.mem_of_mem_insert_of_ne (hs' y hys) hyj
-                  specialize hfA i hiX (Fintype.equivFin G ⟨y, hyG⟩)
-                  have hiGy : ⟨i, hiX⟩ ≠ f (Fintype.equivFin G ⟨y, hyG⟩)
-                  · rw [hifa]
-                    intro hff
-                    apply hya
-                    apply hf at hff
-                    apply (Fintype.equivFin G).injective at hff
-                    ext
-                    exact (congr_arg Subtype.val hff).symm
-                  simp [hiGy] at hfA
-                  simp [hfA]
-            else
-              convert mul_zero _
-              simpa [hifa] using hfAa
-        else
-          have hzG : z ∈ G := Set.mem_of_mem_insert_of_ne (hs' ⟨z, hz⟩ hzs) hzj
-          sorry
-      apply W.toMatroid.base_not_ssubset_indep hWG hWjG
-      exact ⟨G.subset_insert j, Set.not_subset.← ⟨j, G.mem_insert j, hj.right⟩⟩
-    classical
-    let γ := hXgX.elem
-    have hA :
-      W.A.submatrix (e'.leftCongr.trans e) hGY.equiv =
-      ⊞ (W.A.submatrix g hGY.elem) (W.A.submatrix g hYGY.elem)
-        (W.A.submatrix γ hGY.elem) (W.A.submatrix γ hYGY.elem)
-    · rw [←(W.A.submatrix (e'.leftCongr.trans e) hGY.equiv).fromBlocks_toBlocks, Matrix.fromBlocks_inj]
-      refine ⟨?_, ?_, ?_, ?_⟩ <;> ext <;> rfl
-    rw [hA₁₁, hA₂₁, hA₂₂, ←Matrix.fromRows_fromCols_eq_fromBlocks, Matrix.fromCols_zero] at hA
     constructor
     · intro ⟨hIGY, hRWI⟩
       use hGYY ▸ hIGY
