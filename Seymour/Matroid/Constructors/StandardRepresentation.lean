@@ -692,15 +692,17 @@ set_option maxHeartbeats 666666 in
 lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G : Set α} [Fintype G]
     (V : VectorMatroid α R) (hVG : V.toMatroid.IsBase G) (hVA : V.A.IsTotallyUnimodular) :
     ∃ S : StandardRepr α R, S.X = G ∧ S.toMatroid = V.toMatroid ∧ S.B.IsTotallyUnimodular := by
-  obtain ⟨W, hWV, hWA, hGW, f, hf, hfA⟩ := V.exists_standardRepr_isBase_isTotallyUnimodular_aux hVG hVA (le_refl #↑G)
+  obtain ⟨W, hWV, hWA, hGY, f, hf, hfA⟩ := V.exists_standardRepr_isBase_isTotallyUnimodular_aux hVG hVA (le_refl #G)
+  have hWG := hWV ▸ hVG
+  rw [←hWV] at *
+  clear hVA hVG hWV V
   have hYGY : W.Y \ G ⊆ W.Y := Set.diff_subset
   use ⟨G, W.Y \ G, Set.disjoint_sdiff_right, W.A.submatrix (f ∘ Fintype.equivFin G) hYGY.elem,
     G.decidableMemOfFintype, (Classical.propDecidable <| · ∈ W.Y \ G)⟩
   refine ⟨by simp, ?_, hWA.submatrix (f ∘ Fintype.equivFin G) hYGY.elem⟩
-  rw [←hWV]
-  have hGYY : G ∪ W.Y = W.Y := Set.union_eq_self_of_subset_left hGW
+  have hGYY : G ∪ W.Y = W.Y := Set.union_eq_self_of_subset_left hGY
   ext I hIGYG
-  · simpa using (hGW ·)
+  · simpa using (hGY ·)
   · dsimp at hIGYG
     simp only [StandardRepr.toMatroid_indep_iff_elem', VectorMatroid.toMatroid_indep_iff_elem, Set.union_diff_self,
       Matrix.one_fromCols_transpose, Matrix.transpose_submatrix]
