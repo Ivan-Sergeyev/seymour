@@ -708,8 +708,11 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
   have hWG := hWV ▸ hVG
   rw [←hWV] at *
   clear hVA hVG hWV V
+  have hYGY : W.Y \ G ⊆ W.Y := Set.diff_subset
+  have hGYY : G ∪ W.Y = W.Y := Set.union_eq_self_of_subset_left hGY
   let g : G ↪ W.X := ⟨f ∘ Fintype.equivFin G, ((Fintype.equivFin G).injective_comp f).← hf⟩
   have hgf : g.toFun.range = f.range := EquivLike.range_comp f (Fintype.equivFin G)
+  have hXgX : W.X \ g.toFun.range ⊆ W.X := Set.diff_subset
   let g' : G.Elem → (Subtype.val '' g.toFun.range).Elem := (⟨g ·, by simp⟩)
   let g'' : (Subtype.val '' g.toFun.range).Elem → G.Elem
   · intro ⟨i, hi⟩
@@ -724,9 +727,6 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
     ↓(by simp [g'', g']),
     fun ⟨i, hi⟩ => by simp [g'', g']; simp at hi; have := hi.choose_spec.choose_spec; aesop
   ⟩
-  have hXgX : W.X \ g.toFun.range ⊆ W.X := Set.diff_subset
-  have hYGY : W.Y \ G ⊆ W.Y := Set.diff_subset
-  have hGYY : G ∪ W.Y = W.Y := Set.union_eq_self_of_subset_left hGY
   have hA₁₁ : W.A.submatrix g hGY.elem = 1
   · ext i j
     if hij : i = j then
@@ -831,7 +831,8 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
   · rw [←(W.A.submatrix (e'.leftCongr.trans e) hGY.equiv).fromBlocks_toBlocks, Matrix.fromBlocks_inj]
     refine ⟨?_, ?_, ?_, ?_⟩ <;> ext <;> rfl
   rw [hA₁₁, hA₂₁, hA₂₂, ←Matrix.fromRows_fromCols_eq_fromBlocks, Matrix.fromCols_zero] at hA
-  -- TODO maybe it is easier to reindex before taking `W.A.submatrix g hYGY.elem`
+  have hA' : W.A = ((1 ◫ W.A.submatrix g hYGY.elem) ⊟ 0).reindex (e'.leftCongr.trans e) hGY.equiv
+  · exact ((Matrix.reindex (e'.leftCongr.trans e) hGY.equiv).symm_apply_eq).→ hA
   use ⟨G, W.Y \ G, Set.disjoint_sdiff_right, W.A.submatrix g hYGY.elem,
     G.decidableMemOfFintype, (Classical.propDecidable <| · ∈ W.Y \ G)⟩
   refine ⟨by simp, ?_, hWA.submatrix g hYGY.elem⟩
@@ -844,10 +845,12 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
     · intro ⟨hIGY, hRWI⟩
       use hGYY ▸ hIGY
       generalize_proofs hGYG at hRWI
+      rw [hA']
       sorry
     · intro ⟨hI, hRWI⟩
       use hGYY.symm ▸ hI
       generalize_proofs hGYG
+      rw [hA'] at hRWI
       sorry
 
 /-- The identity matrix has linearly independent rows. -/
