@@ -425,7 +425,7 @@ lemma VectorMatroid.longTableauPivot [Field R] (V : VectorMatroid α R) {x : V.X
       and_congr_right_iff]
     exact ↓(V.A.longTableauPivot_linearIndepenOn hVxy _)
 
-set_option maxHeartbeats 400000 in
+set_option maxHeartbeats 666666 in
 /-- Every vector matroid whose full representation matrix is totally unimodular has a standard representation whose rows are
     a given base and the standard representation matrix is totally unimodular. -/
 lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G : Set α} [Fintype G]
@@ -448,15 +448,15 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
       omega
     | succ n ih =>
       intro hn
-      obtain ⟨W, hWV, hWA, hGY, f, hf, hfW⟩ := ih (by omega)
+      obtain ⟨W, hWV, hWA, hGY, f, hf, hfA⟩ := ih (by omega)
       have hnG : n < #G
       · omega
       wlog hgf : ∃ x : W.X, W.A x (hGY.elem (g ⟨n, hnG⟩)) ≠ 0 ∧ x ∉ f.range
       · push_neg at hgf
         exfalso
         let X' := { x : W.X | W.A x (hGY.elem (g ⟨n, hnG⟩)) ≠ 0 }
-        let G' := { g ⟨i.val, by omega⟩ | (i : Fin n) (hi : f i ∈ X') }
-        let G'' : Set G := g ⟨n, hnG⟩ ᕃ G'
+        let G' := { g ⟨i.val, by omega⟩ | (i : Fin n) (hi : f i ∈ X') } -- essentially `G' = g (f⁻¹ X')`
+        let G'' : Set G := g ⟨n, hnG⟩ ᕃ G' -- essentially `G'' = g (n ᕃ f⁻¹ X')`
         have hgG' : g ⟨n, hnG⟩ ∉ G'
         · intro ⟨i, hfi, hgi⟩
           apply (Fintype.equivFin G).symm.injective at hgi
@@ -525,31 +525,62 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
             · apply eq_toFinset_of_toSet_eq
               exact ofSupportFinite_support_eq (Finite.Set.finite_image G'' hGY.elem) hc
             rw [Finsupp.ofSupportFinite_coe, hc']
-            ext i
+            ext x
             rw [Finset.sum_apply]
-            show ∑ j ∈ hGY.elem '' G'', c j • W.Aᵀ j i = 0
+            show ∑ j ∈ hGY.elem '' G'', c j • W.Aᵀ j x = 0
             have hG'' : (hGY.elem '' G'').toFinset = hGY.elem (g ⟨n, hnG⟩) ᕃ G'.toFinset.map ⟨hGY.elem, hGY.elem_injective⟩
             · simp only [G'']
               clear * -
               aesop
             rw [hG'', Finset.sum_insert (hgG' <| by simpa using ·)]
-            if hi : i ∈ X' then
+            if hx : x ∈ X' then
               rw [add_eq_zero_iff_eq_neg', Finset.sum_map, ←Finset.sum_attach]
-              specialize hfW i
+              specialize hfA x
               simp [c, hgG']
               conv_lhs => congr; rfl; ext x; rw [dite_of_true (Set.mem_toFinset.→ x.property)]
-              generalize_proofs hhG hhg hhX' hhY
-              sorry
+              obtain ⟨i, hi⟩ := hgf x hx
+              have hiG' : g ⟨i.val, by omega⟩ ∈ G'
+              · use i, hi ▸ hx
+              rw [Finset.sum_of_single_nonzero G'.toFinset.attach _ ⟨g ⟨i.val, by omega⟩, G'.mem_toFinset.← hiG'⟩]
+              · specialize hfA i
+                simp [hi] at hfA
+                rw [hfA]
+                convert mul_one _
+                generalize_proofs _ _ _ _ hgi
+                obtain ⟨_, hgg⟩ := hgi.choose_spec
+                apply (Fintype.equivFin G).symm.injective at hgg
+                rw [←hi]
+                apply congr_arg
+                ext
+                exact (congr_arg Fin.val hgg).symm
+              · simp
+              · intro z _ hzi
+                convert mul_zero _
+                have hz := z.property
+                simp [G'] at hz
+                obtain ⟨a, ha, haz⟩ := hz
+                specialize hfA a
+                rw [←hi] at hfA ⊢
+                have hfifa : f i ≠ f a
+                · intro hia
+                  apply hf at hia
+                  apply hzi
+                  ext
+                  rw [←haz]
+                  simp [hia]
+                simp [hfifa] at hfA
+                exact haz ▸ hfA
             else
               convert add_zero (0 : R)
-              · exact smul_eq_zero_of_right _ (by simpa [X'] using hi)
+              · exact smul_eq_zero_of_right _ (by simpa [X'] using hx)
               · rw [Finset.sum_map]
+                -- TODO prove using a variant of `sum_elem_smul_matrix_row_of_nmem` instead of the manual labor below
                 apply Finset.sum_eq_zero
                 intro a ha
-                simp [X'] at hi
+                simp [X'] at hx
                 rw [Set.mem_toFinset] at ha
                 obtain ⟨j, hfj, hgja⟩ := ha
-                if hij : i = f j then
+                if hxj : x = f j then
                   apply smul_eq_zero_of_left
                   simp [c, ←hgja]
                   rw [dite_of_false]
@@ -564,9 +595,9 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
                   · apply (Fintype.equivFin G).symm.injective at hgz
                     ext
                     simpa using hgz
-                  exact (hzj ▸ hz) (hij ▸ hi)
+                  exact (hzj ▸ hz) (hxj ▸ hx)
                 else
-                  exact smul_eq_zero_of_right _ (hgja ▸ (by simpa [hij] using hfW i j))
+                  exact smul_eq_zero_of_right _ (hgja ▸ (by simpa [hxj] using hfA x j))
           · simp only [Finsupp.ofSupportFinite, ne_eq, id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int]
             intro hc0
             rw [Finsupp.ext_iff] at hc0
@@ -634,8 +665,8 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
           have hijₙ : i = f jₙ := hjjₙ ▸ hij
           have hxjₙ : x ≠ f jₙ := hijₙ ▸ hij ▸ hxj
           simp [hij]
-          rw [W.A.longTableauPivot_elem_of_zero_in_pivot_row hxj.symm (by simpa [hxjₙ] using hfW x jₙ)]
-          simpa [hijₙ, hjjₙ] using hfW i jₙ
+          rw [W.A.longTableauPivot_elem_of_zero_in_pivot_row hxj.symm (by simpa [hxjₙ] using hfA x jₙ)]
+          simpa [hijₙ, hjjₙ] using hfA i jₙ
         else
           have hijₙ : i ≠ f jₙ := hjjₙ ▸ hij
           have hxjₙ : x ≠ f jₙ := hjjₙ ▸ hxj
@@ -643,11 +674,11 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
           if hix : i = x then
             rw [←hix]
             apply W.A.longTableauPivot_elem_in_pivot_row_eq_zero
-            simpa [hijₙ] using hfW i jₙ
+            simpa [hijₙ] using hfA i jₙ
           else
             rw [W.A.longTableauPivot_elem_of_zero_in_pivot_row hix]
-            · simpa [hijₙ] using hfW i jₙ
-            · simpa [hxjₙ] using hfW x jₙ
+            · simpa [hijₙ] using hfA i jₙ
+            · simpa [hxjₙ] using hfA x jₙ
       else
         have hjn : j.val = n
         · omega
@@ -659,7 +690,7 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
           simpa [hij, hgjgn, hxj] using W.A.longTableauPivot_elem_pivot_eq_one (hxj ▸ hx)
         else
           simpa [hij, hgjgn, hxj] using W.A.longTableauPivot_elem_in_pivot_col_eq_zero hij (hxj ▸ hx)
-  obtain ⟨W, hVW, hWA, hGW, f, hf, hfW⟩ := indu #G (by rfl)
+  obtain ⟨W, hVW, hWA, hGW, f, hf, hfA⟩ := indu #G (by rfl)
   have hYGY : W.Y \ G ⊆ W.Y := Set.diff_subset
   use ⟨G, W.Y \ G, Set.disjoint_sdiff_right, W.A.submatrix (f ∘ Fintype.equivFin G) hYGY.elem,
     G.decidableMemOfFintype, (Classical.propDecidable <| · ∈ W.Y \ G)⟩
