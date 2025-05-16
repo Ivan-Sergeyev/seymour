@@ -1,4 +1,4 @@
-import Seymour.Matroid.Properties.Regularity
+import Seymour.Matroid.Regular
 
 
 -- ## Incidence matrix

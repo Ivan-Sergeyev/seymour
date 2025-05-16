@@ -1,4 +1,4 @@
-import Seymour.Matroid.Operations.Sum3Helper
+import Seymour.Matroid.Sum3Helper
 
 
 -- ## Convenient API

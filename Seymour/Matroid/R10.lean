@@ -1,5 +1,5 @@
 import Seymour.Matrix.TotalUnimodularityTest
-import Seymour.Matroid.Properties.Regularity
+import Seymour.Matroid.Regular
 
 
 def matrixR10_Z2 : Matrix (Fin 5) (Fin 5) Z2 :=

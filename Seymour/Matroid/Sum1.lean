@@ -1,5 +1,5 @@
 import Mathlib.Data.Matroid.Sum
-import Seymour.Matroid.Properties.Regularity
+import Seymour.Matroid.Regular
 
 
 -- ## 1-sum of matrices

@@ -1,5 +1,4 @@
--- import Seymour.Matroid.Properties.Regularity
-import Seymour.Matroid.Constructors.VectorMatroid
+import Seymour.Matroid.VectorMatroid
 
 
 -- ## Vector matroid defined by its standard matrix representation

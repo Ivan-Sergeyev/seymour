@@ -1,6 +1,6 @@
 import Seymour.Matrix.LinearIndependence
 import Seymour.Matrix.TotalUnimodularity
-import Seymour.Matroid.Constructors.StandardRepr
+import Seymour.Matroid.StandardRepr
 
 
 -- ## Definition of regularity via TU full matrix representation

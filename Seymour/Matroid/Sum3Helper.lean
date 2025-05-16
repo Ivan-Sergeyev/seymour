@@ -1,5 +1,5 @@
 import Seymour.Matrix.Pivoting
-import Seymour.Matroid.Properties.Regularity
+import Seymour.Matroid.Regular
 
 
 variable {α : Type}
