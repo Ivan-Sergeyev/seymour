@@ -4,9 +4,6 @@
 \usepackage{amssymb} % \mathbb, etc.
 
 \usepackage{amsthm} % Theorem environments
-
-\usepackage{hyperref} % Clickable links
-
 \newtheorem{theorem}{Theorem}
 \theoremstyle{definition}
 \newtheorem{lemma}[theorem]{Lemma}
@@ -14,14 +11,15 @@
 \newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{remark}[theorem]{Remark}
 
+\usepackage[inline]{enumitem} % Inline lists
 \usepackage[margin=2.5cm]{geometry} % Page margins
-
 \usepackage{graphicx} % Inserting images
+\usepackage{hyperref} % Clickable links
 \usepackage{nicematrix} % Typesetting advanced matrices % Manual: https://mirror.kumi.systems/ctan/macros/latex/contrib/nicematrix/nicematrix.pdf
 \usepackage{todonotes} % Todos
 
 % Header
-\title{Proof of Regularity of 1-, 2-, and 3-Sum of Matroids}
+\title{Proof of Regularity of 1-, 2-, and 3-Sums of Matroids}
 \author{Ivan Sergeev}
 \date{March-- 2025}
 
@@ -29,9 +27,12 @@
 
 \maketitle
 
-\input{regularity.tex}
-\input{1_sum.tex}
-\input{2_sum.tex}
-\input{3_sum.tex}
+\input{preliminaries}
+\newpage
+\input{1_sum}
+\newpage
+\input{2_sum}
+\newpage
+\input{3_sum}
 
 \end{document}
