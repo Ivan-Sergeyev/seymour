@@ -52,7 +52,7 @@ lemma VectorMatroid.dual_exists_standardRepr [Field R] (M : VectorMatroid α R) 
   ⟨S✶, hS ▸ S.dual_toMatroid⟩
 
 lemma Matroid.IsRegular.dual {M : Matroid α} (hM : M.IsRegular) : M✶.IsRegular := by
-  obtain ⟨S, rfl⟩ := hM.hasBinaryStandardRepr
+  obtain ⟨S, rfl⟩ := hM.hasStandardReprZ2
   have : Finite S.X := sorry
   have : Finite S✶.X := sorry
   rw [←S.dual_toMatroid]
