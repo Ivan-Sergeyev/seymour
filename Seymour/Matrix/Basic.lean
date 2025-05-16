@@ -7,6 +7,26 @@ open scoped Matrix
 variable {α : Type}
 
 @[simp]
+lemma Matrix.zero_fromCols_transpose [Zero α] {m n : Type} (A : Matrix m n α) :
+    (0 ◫ A)ᵀ = (0 : Matrix m m α) ⊟ Aᵀ := by
+  rw [←Matrix.transpose_zero, ←Matrix.transpose_fromCols, Matrix.transpose_zero]
+
+@[simp]
+lemma Matrix.zero_fromRows_transpose [Zero α] {m n : Type} (A : Matrix m n α) :
+    (0 ⊟ A)ᵀ = ((0 : Matrix n n α) ◫ Aᵀ : Matrix ..) := by
+  rw [←Matrix.transpose_zero, ←Matrix.transpose_fromRows, Matrix.transpose_zero]
+
+@[simp]
+lemma Matrix.fromCols_zero_transpose [Zero α] {m n : Type} (A : Matrix m n α) :
+    (A ◫ 0)ᵀ = Aᵀ ⊟ (0 : Matrix m m α) := by
+  rw [←Matrix.transpose_zero, ←Matrix.transpose_fromCols, Matrix.transpose_zero]
+
+@[simp]
+lemma Matrix.fromRows_zero_transpose [Zero α] {m n : Type} (A : Matrix m n α) :
+    (A ⊟ 0)ᵀ = (Aᵀ ◫ (0 : Matrix n n α) : Matrix ..) := by
+  rw [←Matrix.transpose_zero, ←Matrix.transpose_fromRows, Matrix.transpose_zero]
+
+@[simp]
 lemma Matrix.one_fromCols_transpose [Zero α] [One α] {m n : Type} [DecidableEq m] (A : Matrix m n α) :
     (1 ◫ A)ᵀ = (1 : Matrix m m α) ⊟ Aᵀ := by
   rw [←Matrix.transpose_one, ←Matrix.transpose_fromCols, Matrix.transpose_one]

@@ -435,6 +435,43 @@ lemma VectorMatroid.exists_standardRepr [DivisionRing R] (M : VectorMatroid α R
   peel M.exists_standardRepr_isBase M.toMatroid.exists_isBase.choose_spec with hS
   exact hS.right
 
+lemma Matrix.linearIndependent_iff_fromCols_zero {X Y : Type} [Ring R] (A : Matrix X Y R) (Y₀ : Type) :
+    LinearIndependent R A ↔ LinearIndependent R (A ◫ (0 : Matrix X Y₀ R)) := by
+  simp only [linearIndependent_iff']
+  constructor
+  <;> intro hA s c hscA
+  <;> apply hA
+  <;> ext j
+  · simpa using congr_fun hscA ◩j
+  · exact j.casesOn (by simpa using congr_fun hscA ·) (by simp)
+
+omit [DecidableEq α] in
+lemma VectorMatroid.fromRows_zero [DivisionRing R] (V : VectorMatroid α R) {X₀ : Set α} (hXX : V.X ⫗ X₀)
+    [∀ a, Decidable (a ∈ V.X)] [∀ a, Decidable (a ∈ X₀)] :
+    (VectorMatroid.mk (V.X ∪ X₀) V.Y ((V.A ⊟ 0) ∘ Subtype.toSum)).toMatroid = V.toMatroid := by
+  ext I hI
+  · rfl
+  · simp only [VectorMatroid.toMatroid_indep_iff_submatrix']
+    constructor
+    <;> intro ⟨hI, hAI⟩
+    <;> use hI
+    · rw [(V.Aᵀ.submatrix hI.elem id).linearIndependent_iff_fromCols_zero X₀]
+      have hAI' : LinearIndependent R ((V.Aᵀ ◫ (0 : Matrix V.Y X₀ R)).submatrix hI.elem Subtype.toSum)
+      · convert hAI
+        ext i j
+        cases hj : j.toSum <;> simp [hj]
+      let f : (V.X ⊕ X₀ → R) →ₗ[R] ((V.X ∪ X₀).Elem → R) := ⟨⟨(· ·.toSum), ↓↓rfl⟩, ↓↓rfl⟩
+      exact hAI'.of_comp f
+    · rw [(V.Aᵀ.submatrix hI.elem id).linearIndependent_iff_fromCols_zero X₀] at hAI
+      convert_to LinearIndependent R ((V.Aᵀ ◫ (0 : Matrix V.Y X₀ R)).submatrix hI.elem Subtype.toSum)
+      · ext i j
+        cases hj : j.toSum <;> simp [hj]
+      let f : ((V.X ∪ X₀).Elem → R) →ₗ[R] (V.X ⊕ X₀ → R) := ⟨⟨(· ·.toUnion), ↓↓rfl⟩, ↓↓rfl⟩
+      apply LinearIndependent.of_comp f
+      convert hAI
+      ext i j
+      exact j.casesOn (by simp [f]) (by simp [f, hXX.symm.not_mem_of_mem_left ·.coe_prop])
+
 lemma VectorMatroid.longTableauPivot [Field R] (V : VectorMatroid α R) {x : V.X} {y : V.Y} (hVxy : V.A x y ≠ 0) :
     (VectorMatroid.mk V.X V.Y (V.A.longTableauPivot x y)).toMatroid = V.toMatroid := by
   ext
