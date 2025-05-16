@@ -456,8 +456,3 @@ lemma Matrix.IsTotallyUnimodular.toMatroid_eq_support_toMatroid {α : Type} {X Y
   constructor <;> intro ⟨hIY, hAI⟩ <;> use hIY
   · rwa [(hA.submatrix hIY.elem id).linearIndependent_iff_support_linearIndependent] at hAI
   · rwa [(hA.submatrix hIY.elem id).linearIndependent_iff_support_linearIndependent]
-
--- lemma Matrix.IsTotallyUnimodular.toMatroid_eq_of_support {α : Type} {X Y : Set α} [DecidableEq X] [DecidableEq Y]
---     {A : Matrix X Y ℚ} {U : Matrix X Y Z2} (hA : A.IsTotallyUnimodular) (hAU : A.support = U) :
---     A.toMatroid = U.toMatroid :=
---   hAU ▸ hA.toMatroid_eq_support_toMatroid

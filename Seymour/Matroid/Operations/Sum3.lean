@@ -1,40 +1,31 @@
 import Seymour.Matroid.Operations.Sum3Helper
 
 
-variable {α : Type}
+-- ## Convenient API
 
-section experimental_lemmas
--- experimental lemmas to help state lemma 19
-
-variable {Zₗ Zᵣ : Set α} {a₀ a₁ a₂ : α}
-
-private lemma Eq.mem3₀ₗ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₀ ∈ Zₗ :=
+private lemma Eq.mem3₀ₗ {α : Type} {Zₗ Zᵣ : Set α} {a₀ a₁ a₂ : α} (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₀ ∈ Zₗ :=
   hZZ.symm.subset.trans Set.inter_subset_left (Set.mem_insert a₀ {a₁, a₂})
 
-private lemma Eq.mem3₁ₗ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₁ ∈ Zₗ :=
+private lemma Eq.mem3₁ₗ {α : Type} {Zₗ Zᵣ : Set α} {a₀ a₁ a₂ : α} (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₁ ∈ Zₗ :=
   hZZ.symm.subset.trans Set.inter_subset_left (Set.insert_comm a₀ a₁ {a₂} ▸ Set.mem_insert a₁ {a₀, a₂})
 
-private lemma Eq.mem3₂ₗ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₂ ∈ Zₗ :=
+private lemma Eq.mem3₂ₗ {α : Type} {Zₗ Zᵣ : Set α} {a₀ a₁ a₂ : α} (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₂ ∈ Zₗ :=
   hZZ.symm.subset.trans Set.inter_subset_left (by simp)
 
-private lemma Eq.mem3₀ᵣ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₀ ∈ Zᵣ :=
+private lemma Eq.mem3₀ᵣ {α : Type} {Zₗ Zᵣ : Set α} {a₀ a₁ a₂ : α} (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₀ ∈ Zᵣ :=
   hZZ.symm.subset.trans Set.inter_subset_right (Set.mem_insert a₀ {a₁, a₂})
 
-private lemma Eq.mem3₁ᵣ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₁ ∈ Zᵣ :=
+private lemma Eq.mem3₁ᵣ {α : Type} {Zₗ Zᵣ : Set α} {a₀ a₁ a₂ : α} (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₁ ∈ Zᵣ :=
   hZZ.symm.subset.trans Set.inter_subset_right (Set.insert_comm a₀ a₁ {a₂} ▸ Set.mem_insert a₁ {a₀, a₂})
 
-private lemma Eq.mem3₂ᵣ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₂ ∈ Zᵣ :=
+private lemma Eq.mem3₂ᵣ {α : Type} {Zₗ Zᵣ : Set α} {a₀ a₁ a₂ : α} (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₂ ∈ Zᵣ :=
   hZZ.symm.subset.trans Set.inter_subset_right (by simp)
 
-end experimental_lemmas
 
-
-variable [DecidableEq α]
-
-section StandardMatrixDefinition
+-- ## 3-sum of matrices
 
 /-- The 3-sum composition of two matrices. -/
-noncomputable def matrix3sumComposition_standard {F : Type} [Field F] {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
+noncomputable def Matrix.ThreeSum {F : Type} [Field F] {α : Type} [DecidableEq α] {x₀ x₁ x' y₀ y₁ y' : α} {Xₗ Yₗ Xᵣ Yᵣ : Set α}
     [∀ x, Decidable (x ∈ Xₗ \ {x₀, x₁, x'})] [∀ x, Decidable (x ∈ Xᵣ \ {x₀, x₁, x'})] -- for reindexing of `D`
     [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
     (Bₗ : Matrix Xₗ Yₗ F) (Bᵣ : Matrix Xᵣ Yᵣ F) (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x'}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y'}) :
@@ -114,15 +105,11 @@ noncomputable def matrix3sumComposition_standard {F : Type} [Field F] {Xₗ Yₗ
     ∧ (∀ y, ∀ hy : y ∈ Yᵣ, y ≠ y₀ ∧ y ≠ y₁ → Bᵣ x'ᵣ ⟨y, hy⟩ = 0)
   ⟩
 
--- todo: lemmas about parts of the correctness Prop
 
-end StandardMatrixDefinition
-
-
-section MatroidThreeSum
+-- ## 3-sum of standard representations
 
 /-- The 3-sum composition of two binary matroids given by their stanard representations. -/
-noncomputable def standardRepr3sumComposition_standard {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x' y₀ y₁ y' : α}
+noncomputable def standardReprThreeSum {α : Type} [DecidableEq α] {x₀ x₁ x' y₀ y₁ y' : α} {Sₗ Sᵣ : StandardRepr α Z2}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x'}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y'}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
     StandardRepr α Z2 × Prop :=
   ⟨
@@ -134,65 +121,69 @@ noncomputable def standardRepr3sumComposition_standard {Sₗ Sᵣ : StandardRepr
         exact
           ⟨⟨Sₗ.hXY.disjoint_sdiff_left.disjoint_sdiff_right, hYX.symm.disjoint_sdiff_left.disjoint_sdiff_right⟩,
           ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right, Sᵣ.hXY.disjoint_sdiff_left.disjoint_sdiff_right⟩⟩,
-      (matrix3sumComposition_standard Sₗ.B Sᵣ.B hXX hYY).fst.toMatrixUnionUnion,
+      (
+        -- let _ := fun i => Classical.propDecidable (i = x₀);
+        (Matrix.ThreeSum Sₗ.A Sᵣ.A hXX hYY).fst.toMatrixUnionUnion),
+      inferInstance,
+      inferInstance,
       inferInstance,
       inferInstance,
     ⟩,
-    (matrix3sumComposition_standard Sₗ.B Sᵣ.B hXX hYY).snd
+    (Matrix.ThreeSum Sₗ.A Sᵣ.A hXX hYY).snd
   ⟩
 
-lemma standardRepr3sumComposition_standard_X {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x' y₀ y₁ y' : α}
+lemma standardReprThreeSum_X {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x' y₀ y₁ y' : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x'}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y'}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
-    (standardRepr3sumComposition_standard hXX hYY hXY hYX).fst.X = (Sₗ.X \ {x₀, x₁}) ∪ (Sᵣ.X \ {x'}) :=
+    (standardReprThreeSum hXX hYY hXY hYX).fst.X = (Sₗ.X \ {x₀, x₁}) ∪ (Sᵣ.X \ {x'}) :=
   rfl
 
-lemma standardRepr3sumComposition_standard_Y {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x' y₀ y₁ y' : α}
+lemma standardReprThreeSum_Y {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x' y₀ y₁ y' : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x'}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y'}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
-    (standardRepr3sumComposition_standard hXX hYY hXY hYX).fst.Y = (Sₗ.Y \ {y'}) ∪ (Sᵣ.Y \ {y₀, y₁}) :=
+    (standardReprThreeSum hXX hYY hXY hYX).fst.Y = (Sₗ.Y \ {y'}) ∪ (Sᵣ.Y \ {y₀, y₁}) :=
   rfl
 
-/-- Decomposition of (binary) matroid `M` as a 3-sum of (binary) matroids `Mₗ` and `Mᵣ`. -/
-structure Matroid.Is3sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) where
-  S : StandardRepr α Z2
-  Sₗ : StandardRepr α Z2
-  Sᵣ : StandardRepr α Z2
-  hSₗ : Finite Sₗ.X
-  hSᵣ : Finite Sᵣ.X
-  hM : S.toMatroid = M
-  hMₗ : Sₗ.toMatroid = Mₗ
-  hMᵣ : Sᵣ.toMatroid = Mᵣ
-  (x₁ x₂ x₃ y₁ y₂ y₃ : α)
-  hXX : Sₗ.X ∩ Sᵣ.X = {x₁, x₂, x₃}
-  hYY : Sₗ.Y ∩ Sᵣ.Y = {y₁, y₂, y₃}
-  hXY : Sₗ.X ⫗ Sᵣ.Y
-  hYX : Sₗ.Y ⫗ Sᵣ.X
-  IsSum : (standardRepr3sumComposition_standard hXX hYY hXY hYX).fst = S
-  IsValid : (standardRepr3sumComposition_standard hXX hYY hXY hYX).snd
-
-instance Matroid.Is3sumOf.finS {M Mₗ Mᵣ : Matroid α} (hM : M.Is3sumOf Mₗ Mᵣ) : Finite hM.S.X := by
-  obtain ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, rfl, _⟩ := hM
-  rw [standardRepr3sumComposition_standard_X]
-  apply Finite.Set.finite_union
-
-lemma standardRepr3sumComposition_hasTuSigning {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x' y₀ y₁ y' : α}
+lemma standardReprThreeSum_hasTuSigning {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x' y₀ y₁ y' : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x'}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y'}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X)
-    (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) :
-    (standardRepr3sumComposition_standard hXX hYY hXY hYX).fst.B.HasTuSigning := by
+    (hSₗ : Sₗ.A.HasTuSigning) (hSᵣ : Sᵣ.A.HasTuSigning) :
+    (standardReprThreeSum hXX hYY hXY hYX).fst.A.HasTuSigning := by
   obtain ⟨Bₗ, hBₗ, hBBₗ⟩ := hSₗ
   obtain ⟨Bᵣ, hBᵣ, hBBᵣ⟩ := hSᵣ
   -- use matrix3sumComposition_toCanonicalSigning
   sorry
 
+
+-- ## 3-sum of matroids
+
+/-- Decomposition of (binary) matroid `M` as a 3-sum of (binary) matroids `Mₗ` and `Mᵣ`. -/
+structure Matroid.IsThreeSumOf {α : Type} [DecidableEq α] (M Mₗ Mᵣ : Matroid α) where
+  Sₗ : StandardRepr α Z2
+  Sᵣ : StandardRepr α Z2
+  hSₗ : Fintype Sₗ.Y
+  hSᵣ : Fintype Sᵣ.Y
+  (x₁ x₂ x₃ y₁ y₂ y₃ : α)
+  hXX : Sₗ.X ∩ Sᵣ.X = {x₁, x₂, x₃}
+  hYY : Sₗ.Y ∩ Sᵣ.Y = {y₁, y₂, y₃}
+  hXY : Sₗ.X ⫗ Sᵣ.Y
+  hYX : Sₗ.Y ⫗ Sᵣ.X
+  hMₗ : Mₗ = Sₗ.toMatroid
+  hMᵣ : Mᵣ = Sᵣ.toMatroid
+  hM : M = (standardReprThreeSum hXX hYY hXY hYX).fst.toMatroid
+  IsValid : (standardReprThreeSum hXX hYY hXY hYX).snd
+
+noncomputable instance Matroid.IsThreeSumOf.finY {α : Type} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} (hM : M.IsThreeSumOf Mₗ Mᵣ) :
+    Fintype (standardReprThreeSum hM.hXX hM.hYY hM.hXY hM.hYX).fst.Y :=
+  have := hM.hSₗ
+  have := hM.hSᵣ
+  Fintype.ofFinite ↑(hM.Sₗ.Y \ {hM.y₃} ∪ hM.Sᵣ.Y \ (hM.y₁ ᕃ {hM.y₂}))
+
 /-- Any 3-sum of regular matroids is a regular matroid.
     This is the final part of the easy direction of the Seymour's theorem. -/
-theorem Matroid.Is3sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
-    (hM : M.Is3sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
+theorem Matroid.IsThreeSumOf.isRegular {α : Type} [DecidableEq α] {M Mₗ Mᵣ : Matroid α}
+    (hM : M.IsThreeSumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
-  have := hM.finS
-  obtain ⟨_, _, _, _, _, rfl, rfl, rfl, _, _, _, _, _, _, _, _, _, _, rfl, _⟩ := hM
+  have := hM.finY
+  obtain ⟨Sₗ, Sᵣ, hSₗ, hSᵣ, x₁, x₂, x₃, y₁, y₂, y₃, hXX, hYY, hXY, hYX, rfl, rfl, rfl, IsValid⟩ := hM
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
-  apply standardRepr3sumComposition_hasTuSigning
+  apply standardReprThreeSum_hasTuSigning
   · exact hMₗ
   · exact hMᵣ
-
-end MatroidThreeSum

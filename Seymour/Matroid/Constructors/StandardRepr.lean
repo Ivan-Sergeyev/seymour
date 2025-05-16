@@ -1,3 +1,4 @@
+-- import Seymour.Matroid.Properties.Regularity
 import Seymour.Matroid.Constructors.VectorMatroid
 
 
@@ -9,18 +10,18 @@ structure StandardRepr (α R : Type) where
   X : Set α
   /-- Column indices. -/
   Y : Set α
+  /-- Row and column indices are disjoint. -/
+  hXY : X ⫗ Y
+  /-- Standard representation matrix. -/
+  A : Matrix X Y R
   /-- The computer can determine whether elements of `X` are equal. -/
   deqX : DecidableEq X
   /-- The computer can determine whether elements of `Y` are equal. -/
   deqY : DecidableEq Y
   /-- The computer can determine whether certain element is a row. -/
-  dmemX : ∀ a, Decidable (a ∈ X)
+  dmemX : ∀ i, Decidable (i ∈ X)
   /-- The computer can determine whether certain element is a col. -/
-  dmemY : ∀ a, Decidable (a ∈ Y)
-  /-- Row and column indices are disjoint. -/
-  hXY : X ⫗ Y
-  /-- Standard representation matrix. -/
-  A : Matrix X Y R
+  dmemY : ∀ i, Decidable (i ∈ Y)
 
 -- Turn decidability into instance attributes
 attribute [instance] StandardRepr.deqX
@@ -36,12 +37,12 @@ def Matrix.toStandardRepr {α R : Type} {X Y : Set α} [DecidableEq X] [Decidabl
     [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (A : Matrix X Y R) (hXY : X ⫗ Y) : StandardRepr α R where
   X := X
   Y := Y
+  hXY := hXY
+  A := A
   deqX := inferInstance
   deqY := inferInstance
   dmemX := inferInstance
   dmemY := inferInstance
-  hXY := hXY
-  A := A
 
 /-- Conversion from standard to full matrix representation. -/
 def StandardRepr.toFullRepr {α R : Type} [Zero R] [One R] (S : StandardRepr α R) :
@@ -610,55 +611,47 @@ lemma Matrix.fromFullToStandardRepr_exists {α R : Type} [DivisionRing R] {X Y B
 
 -- ## Dual of standard-representation vector matroid
 
--- import Seymour.Matroid.Properties.Regularity
+open scoped Matrix
 
--- open scoped Matrix
+/-- The dual of standard representation (transpose the matrix and flip its signs). -/
+def StandardRepr.dual {α R : Type} [DivisionRing R] (S : StandardRepr α R) : StandardRepr α R where
+  X := S.Y
+  Y := S.X
+  hXY := S.hXY.symm
+  A := -S.Aᵀ -- the sign is chosen following Oxley (it does not change the resulting matroid)
+  deqX := S.deqY
+  deqY := S.deqX
+  dmemX := S.dmemY
+  dmemY := S.dmemX
 
--- variable {α R : Type} [DecidableEq α]
+postfix:max "✶" => StandardRepr.dual
 
--- /-- The dual of standard representation (transpose the matrix and flip its signs). -/
--- def StandardRepr.dual [DivisionRing R] (S : StandardRepr α R) : StandardRepr α R where
---   X := S.Y
---   Y := S.X
---   hXY := S.hXY.symm
---   B := - S.Bᵀ -- the sign is chosen following Oxley (it does not change the resulting matroid)
---   decmemX := S.decmemY
---   decmemY := S.decmemX
+/-- The dual of dual is the original standard representation. -/
+lemma StandardRepr.dual_dual {α R : Type} [DivisionRing R] (S : StandardRepr α R) : S✶✶ = S := by
+  simp [StandardRepr.dual]
 
--- postfix:max "✶" => StandardRepr.dual
+lemma StandardRepr.dual_indices_union_eq {α R : Type} [DivisionRing R] (S : StandardRepr α R) : S✶.X ∪ S✶.Y = S.X ∪ S.Y :=
+  Set.union_comm S.Y S.X
 
--- /-- The dual of dual is the original standard representation. -/
--- lemma StandardRepr.dual_dual [DivisionRing R] (S : StandardRepr α R) : S✶✶ = S := by
---   simp [StandardRepr.dual]
+@[simp]
+lemma StandardRepr.dual_E {α R : Type} [DivisionRing R] (S : StandardRepr α R) : S✶.toMatroid.E = S.toMatroid.E :=
+  S.dual_indices_union_eq
 
--- lemma StandardRepr.dual_indices_union_eq [DivisionRing R] (S : StandardRepr α R) : S✶.X ∪ S✶.Y = S.X ∪ S.Y :=
---   Set.union_comm S.Y S.X
+lemma StandardRepr.dual_isBase_iff {α R : Type} [DivisionRing R] {S : StandardRepr α R} {B : Set α} (hB : B ⊆ S✶.toMatroid.E) :
+    S✶.toMatroid.IsBase B ↔ S.toMatroid✶.IsBase B := by
+  rw [StandardRepr.dual_E] at hB
+  rw [Matroid.dual_isBase_iff']
+  simp only [hB, and_true]
+  sorry -- Theorem 2.2.8 in Oxley
 
--- @[simp]
--- lemma StandardRepr.dual_ground [DivisionRing R] (S : StandardRepr α R) : S✶.toMatroid.E = S.toMatroid.E :=
---   S.dual_indices_union_eq
-
--- lemma StandardRepr.dual_isBase_iff [DivisionRing R] {S : StandardRepr α R} {G : Set α} (hG : G ⊆ S✶.toMatroid.E) :
---     S✶.toMatroid.IsBase G ↔ S.toMatroid✶.IsBase G := by
---   rw [StandardRepr.dual_ground] at hG
---   rw [Matroid.dual_isBase_iff']
---   simp only [hG, and_true]
---   sorry -- Theorem 2.2.8 in Oxley
-
--- /-- The dual of standard representation gives a dual matroid. -/
--- lemma StandardRepr.dual_toMatroid [DivisionRing R] (S : StandardRepr α R) :
---     S✶.toMatroid = S.toMatroid✶ := by
---   rw [←Matroid.dual_inj, Matroid.dual_dual, Matroid.ext_iff_isBase]
---   constructor
---   · rw [Matroid.dual_ground, StandardRepr.dual_ground]
---   · intro G hG
---     rw [Matroid.dual_ground] at hG
---     simp_rw [Matroid.dual_isBase_iff hG, S.dual_isBase_iff Set.diff_subset]
---     rw [StandardRepr.dual_ground] at hG ⊢
---     rw [Matroid.dual_isBase_iff Set.diff_subset, Set.diff_diff_cancel_left hG]
-
--- /-- Every vector matroid's dual has a standard representation. -/
--- lemma VectorMatroid.dual_exists_standardRepr [Field R] (M : VectorMatroid α R) :
---     ∃ S' : StandardRepr α R, S'.toMatroid = M.toMatroid✶ :=
---   have ⟨S, hS⟩ := M.exists_standardRepr
---   ⟨S✶, hS ▸ S.dual_toMatroid⟩
+/-- The dual of standard-represented vector matroid is the dual matroid. -/
+lemma StandardRepr.dual_toMatroid {α R : Type} [DivisionRing R] (S : StandardRepr α R) :
+    S✶.toMatroid = S.toMatroid✶ := by
+  rw [←Matroid.dual_inj, Matroid.dual_dual, Matroid.ext_iff_isBase]
+  constructor
+  · rw [Matroid.dual_ground, StandardRepr.dual_E]
+  · intro G hG
+    rw [Matroid.dual_ground] at hG
+    simp_rw [Matroid.dual_isBase_iff hG, S.dual_isBase_iff Set.diff_subset]
+    rw [StandardRepr.dual_E] at hG ⊢
+    rw [Matroid.dual_isBase_iff Set.diff_subset, Set.diff_diff_cancel_left hG]
