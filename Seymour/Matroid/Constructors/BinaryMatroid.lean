@@ -2,7 +2,7 @@ import Mathlib.Data.Matroid.IndepAxioms
 import Mathlib.Data.Matroid.Dual
 import Mathlib.Data.Matroid.Map
 import Mathlib.Data.Matroid.Sum
-import Seymour.Basic.Basic
+import Seymour.Matrix.LinearIndependence
 
 open scoped Matrix Set.Notation
 
@@ -243,3 +243,29 @@ lemma VectorMatroid.toMatroid_indep_iff_submatrix [DivisionRing R] (M : VectorMa
 lemma VectorMatroid.toMatroid_indep_iff_submatrix' [DivisionRing R] (M : VectorMatroid α R) (I : Set α) :
     M.toMatroid.Indep I ↔ ∃ hI : I ⊆ M.Y, LinearIndependent R (M.Aᵀ.submatrix hI.elem id) :=
   M.indepCols_iff_submatrix' I
+
+lemma VectorMatroid.fromRows_zero [DivisionRing R] (V : VectorMatroid α R) {X₀ : Set α} (hXX : V.X ⫗ X₀)
+    [∀ a, Decidable (a ∈ V.X)] [∀ a, Decidable (a ∈ X₀)] :
+    (VectorMatroid.mk (V.X ∪ X₀) V.Y ((V.A ⊟ 0) ∘ Subtype.toSum)).toMatroid = V.toMatroid := by
+  ext I hI
+  · rfl
+  · simp only [VectorMatroid.toMatroid_indep_iff_submatrix']
+    constructor
+    <;> intro ⟨hI, hAI⟩
+    <;> use hI
+    · rw [(V.Aᵀ.submatrix hI.elem id).linearIndependent_iff_fromCols_zero X₀]
+      have hAI' : LinearIndependent R ((V.Aᵀ ◫ (0 : Matrix V.Y X₀ R)).submatrix hI.elem Subtype.toSum)
+      · convert hAI
+        ext i j
+        cases hj : j.toSum <;> simp [hj]
+      let f : (V.X ⊕ X₀ → R) →ₗ[R] ((V.X ∪ X₀).Elem → R) := ⟨⟨(· ·.toSum), ↓↓rfl⟩, ↓↓rfl⟩
+      exact hAI'.of_comp f
+    · rw [(V.Aᵀ.submatrix hI.elem id).linearIndependent_iff_fromCols_zero X₀] at hAI
+      convert_to LinearIndependent R ((V.Aᵀ ◫ (0 : Matrix V.Y X₀ R)).submatrix hI.elem Subtype.toSum)
+      · ext i j
+        cases hj : j.toSum <;> simp [hj]
+      let f : ((V.X ∪ X₀).Elem → R) →ₗ[R] (V.X ⊕ X₀ → R) := ⟨⟨(· ·.toUnion), ↓↓rfl⟩, ↓↓rfl⟩
+      apply LinearIndependent.of_comp f
+      convert hAI
+      ext i j
+      exact j.casesOn (by simp [f]) (by simp [f, hXX.symm.not_mem_of_mem_left ·.coe_prop])
