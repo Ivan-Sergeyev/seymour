@@ -271,10 +271,11 @@ lemma VectorMatroid.fromRows_zero [DivisionRing R] (V : VectorMatroid α R) {X�
       ext i j
       exact j.casesOn (by simp [f]) (by simp [f, hXX.symm.not_mem_of_mem_left ·.coe_prop])
 
-lemma lll [Field R] (G X Y : Set α) [Fintype G] [DecidableEq G] [∀ a : α, Decidable (a ∈ G)] [∀ a : α, Decidable (a ∈ Y \ G)]
-    (hGY : G ⊆ Y) (A : Matrix G (G ⊕ (Y \ G).Elem) R) {Z : Type} (e : G ⊕ Z ≃ X) :
+lemma Matrix.fromRows_zero_reindex_toMatroid [DivisionRing R] {G X Y : Set α} [Fintype G]
+    [∀ a, Decidable (a ∈ G)] [∀ a, Decidable (a ∈ Y \ G)]
+    (A : Matrix G (G ⊕ (Y \ G).Elem) R) (hGY : G ⊆ Y) {Z : Type} (e : G ⊕ Z ≃ X) :
     (VectorMatroid.mk G (G ∪ Y \ G) (fun i : G => A i ∘ Subtype.toSum)).toMatroid =
-    (VectorMatroid.mk X Y ((Matrix.reindex e hGY.equiv) (A ⊟ 0))).toMatroid := by
+    (VectorMatroid.mk X Y ((A ⊟ 0).reindex e hGY.equiv)).toMatroid := by
   ext I
   · simp [Set.union_diff_cancel' (by rfl) hGY]
   have hIGYG : I ⊆ G ∪ Y \ G := by assumption
@@ -296,8 +297,8 @@ lemma lll [Field R] (G X Y : Set α) [Fintype G] [DecidableEq G] [∀ a : α, De
     if hi : i.val ∈ G then
       cases j <;> simp [hi, f, HasSubset.Subset.equiv]
     else
-      have hiY : i.val ∈ Y \ G := by aesop
-      cases j <;> simp [hi, f, HasSubset.Subset.equiv, hiY]
+      have hiY : i.val ∈ Y \ G := Set.mem_diff_of_mem (hIY i.property) hi
+      cases j <;> simp [hi, hiY, f, HasSubset.Subset.equiv]
   · use hIGYG
     simp at hAI
     rw [Matrix.linearIndependent_iff_fromCols_zero _ Z]
@@ -306,9 +307,7 @@ lemma lll [Field R] (G X Y : Set α) [Fintype G] [DecidableEq G] [∀ a : α, De
     convert hAI
     ext i j
     if hi : i.val ∈ G then
-      simp [hi, f, HasSubset.Subset.equiv]
-      cases hj : e.symm j <;> simp_all
+      cases hj : e.symm j <;> simp [hi, hj, f, HasSubset.Subset.equiv]
     else
-      have hiY : i.val ∈ Y \ G := by aesop
-      simp [hi, f, HasSubset.Subset.equiv, hiY]
-      cases hj : e.symm j <;> simp_all
+      have hiY : i.val ∈ Y \ G := Set.mem_diff_of_mem (hIY i.property) hi
+      cases hj : e.symm j <;> simp [hi, hiY, hj, f, HasSubset.Subset.equiv]

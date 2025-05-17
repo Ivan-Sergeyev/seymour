@@ -697,7 +697,7 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
       else
         simpa [hij, hgjgn, hxj] using W.A.longTableauPivot_elem_in_pivot_col_eq_zero hij (hxj ▸ hx)
 
-set_option maxHeartbeats 666666 in
+set_option maxHeartbeats 300000 in
 /-- Every vector matroid whose full representation matrix is totally unimodular has a standard representation whose rows are
     a given base and the standard representation matrix is totally unimodular. -/
 lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G : Set α} [Fintype G]
@@ -710,13 +710,13 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
   have hYGY : W.Y \ G ⊆ W.Y := Set.diff_subset
   have hGYY : G ∪ W.Y = W.Y := Set.union_eq_self_of_subset_left hGY
   let g : G ↪ W.X := ⟨f ∘ Fintype.equivFin G, ((Fintype.equivFin G).injective_comp f).← hf⟩
-  have hgf : g.toFun.range = f.range := EquivLike.range_comp f (Fintype.equivFin G)
-  have hXgX : W.X \ g.toFun.range ⊆ W.X := Set.diff_subset
   let g' : G.Elem → (Subtype.val '' g.toFun.range).Elem := (⟨g ·, by simp⟩)
   let g'' : (Subtype.val '' g.toFun.range).Elem → G.Elem
   · intro ⟨i, hi⟩
     simp only [Set.mem_image, Set.mem_range, Subtype.exists, exists_and_right, exists_eq_right] at hi
     exact ⟨hi.choose_spec.choose, hi.choose_spec.choose_spec.choose⟩
+  have hXgX : W.X \ g.toFun.range ⊆ W.X := Set.diff_subset
+  let ξ : (W.X \ g.toFun.range).Elem → W.X := hXgX.elem
   classical
   let e : (Subtype.val '' g.toFun.range) ⊕ (W.X \ g.toFun.range).Elem ≃ W.X :=
     (Subtype.coe_image_subset W.X g.toFun.range).equiv
@@ -736,14 +736,14 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
       have hfifj : f ((Fintype.equivFin G) i) ≠ f ((Fintype.equivFin G) j)
       · exact (hij <| by simpa using hf ·)
       simpa [hfifj] using hfA (f ((Fintype.equivFin G) i)) ((Fintype.equivFin G) j)
-  have hA₂₁ : W.A.submatrix hXgX.elem hGY.elem = 0
+  have hA₂₁ : W.A.submatrix ξ hGY.elem = 0
   · ext ⟨i, hi⟩ j
     have hiX : i ∈ W.X := hXgX hi
     have hij : ⟨i, hiX⟩ ≠ f ((Fintype.equivFin G) j)
     · simp at hi
       aesop
     simpa [hij] using hfA ⟨i, hiX⟩ ((Fintype.equivFin G) j)
-  have hA₂₂ : W.A.submatrix hXgX.elem hYGY.elem = 0
+  have hA₂₂ : W.A.submatrix ξ hYGY.elem = 0
   · ext ⟨i, hi⟩ ⟨j, hj⟩
     have hiX : i ∈ W.X := hXgX hi
     have hjY : j ∈ W.Y := hYGY hj
@@ -814,12 +814,10 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
           simpa [haz] using hfA
     apply W.toMatroid.base_not_ssubset_indep hWG hWjG
     exact ⟨G.subset_insert j, Set.not_subset.← ⟨j, G.mem_insert j, hj.right⟩⟩
-  classical
-  let γ := hXgX.elem
   have hA :
     W.A.submatrix (e'.leftCongr.trans e) hGY.equiv =
     ⊞ (W.A.submatrix g hGY.elem) (W.A.submatrix g hYGY.elem)
-      (W.A.submatrix γ hGY.elem) (W.A.submatrix γ hYGY.elem)
+      (W.A.submatrix ξ hGY.elem) (W.A.submatrix ξ hYGY.elem)
   · rw [←(W.A.submatrix (e'.leftCongr.trans e) hGY.equiv).fromBlocks_toBlocks, Matrix.fromBlocks_inj]
     refine ⟨?_, ?_, ?_, ?_⟩ <;> ext <;> rfl
   rw [hA₁₁, hA₂₁, hA₂₂, ←Matrix.fromRows_fromCols_eq_fromBlocks, Matrix.fromCols_zero] at hA
@@ -831,7 +829,7 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
   refine ⟨by simp, ?_, hWA.submatrix g hYGY.elem⟩
   rw [hW]
   simp only [StandardRepr.toMatroid, StandardRepr.toVectorMatroid]
-  convert lll G W.X W.Y hGY (1 ◫ W.A.submatrix g hYGY.elem) (e'.leftCongr.trans e)
+  convert (Matrix.fromCols 1 (W.A.submatrix g hYGY.elem)).fromRows_zero_reindex_toMatroid hGY (e'.leftCongr.trans e)
 
 /-- The identity matrix has linearly independent rows. -/
 lemma Matrix.one_linearIndependent [Ring R] : LinearIndependent R (1 : Matrix α α R) := by

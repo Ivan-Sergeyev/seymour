@@ -28,12 +28,6 @@ def HasSubset.Subset.equiv {A B : Set α} [∀ i, Decidable (i ∈ A)] (hAB : A 
   fun _ => by aesop,
   fun _ => by aesop⟩
 
-lemma HasSubset.Subset.equiv_val {A B : Set α} [∀ i, Decidable (i ∈ A)] (hAB : A ⊆ B) (x : A.Elem ⊕ (B \ A).Elem) :
-    (hAB.equiv x).val = x.elim Subtype.val Subtype.val := by
-  cases x with
-  | inl => rfl
-  | inr => rfl
-
 variable {β : Type}
 
 lemma ofSupportFinite_support_eq [Zero β] {f : α → β} {S : Set α} (hS : Finite S) (hfS : f.support = S) :
