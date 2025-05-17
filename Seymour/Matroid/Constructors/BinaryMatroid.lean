@@ -247,7 +247,7 @@ lemma VectorMatroid.toMatroid_indep_iff_submatrix' [DivisionRing R] (M : VectorM
 lemma VectorMatroid.fromRows_zero [DivisionRing R] (V : VectorMatroid α R) {X₀ : Set α} (hXX : V.X ⫗ X₀)
     [∀ a, Decidable (a ∈ V.X)] [∀ a, Decidable (a ∈ X₀)] :
     (VectorMatroid.mk (V.X ∪ X₀) V.Y ((V.A ⊟ 0) ∘ Subtype.toSum)).toMatroid = V.toMatroid := by
-  ext I hI
+  ext I
   · rfl
   · simp only [VectorMatroid.toMatroid_indep_iff_submatrix']
     constructor

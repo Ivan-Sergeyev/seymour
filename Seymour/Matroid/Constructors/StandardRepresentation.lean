@@ -698,6 +698,24 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
       else
         simpa [hij, hgjgn, hxj] using W.A.longTableauPivot_elem_in_pivot_col_eq_zero hij (hxj ▸ hx)
 
+lemma lll [Field R] (G X Y : Set α) [Fintype G] [DecidableEq G] [∀ a : α, Decidable (a ∈ G)] [∀ a : α, Decidable (a ∈ Y \ G)]
+    (hGY : G ⊆ Y) (A : Matrix G (G ⊕ (Y \ G).Elem) R) {D : Type} (e : G.Elem ⊕ D ≃ X.Elem) :
+    (VectorMatroid.mk G (G ∪ Y \ G) (fun i : G => A i ∘ Subtype.toSum)).toMatroid =
+    (VectorMatroid.mk X Y ((Matrix.reindex e hGY.equiv) (A ⊟ 0))).toMatroid := by
+  have hGYGY : G ∪ Y \ G = Y :=
+    Set.union_diff_cancel' (by rfl) hGY
+  ext I hI
+  · simp [hGYGY]
+  simp only [VectorMatroid.toMatroid_indep_iff_submatrix', Matrix.reindex_apply]
+  constructor
+  <;> intro ⟨hI', hAI⟩
+  · use hGYGY ▸ hI
+    simp
+    sorry
+  · use hI
+    simp at hAI
+    sorry
+
 set_option maxHeartbeats 666666 in
 /-- Every vector matroid whose full representation matrix is totally unimodular has a standard representation whose rows are
     a given base and the standard representation matrix is totally unimodular. -/
@@ -774,8 +792,7 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
             ext
             exact ·)
           have hiz : ⟨i, hiX⟩ ≠ f ((Fintype.equivFin G) ⟨z.val, hzG⟩)
-          · clear * - hi
-            intro hiXz
+          · intro hiXz
             have hifz := congr_arg (Subtype.val) hiXz
             simp at hifz
             simp [hifz, g] at hi
@@ -790,7 +807,7 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
       simp at hca0
       rw [c.support.sum_of_single_nonzero _ a] at hca0
       · simp at hca0
-        have hAaa : W.A (g (Subtype.mk (↑a) haG)) a ≠ 0
+        have hAaa : W.A (g ⟨a.val, haG⟩) a ≠ 0
         · intro h0
           specialize hfA (g ⟨a.val, haG⟩) ((Fintype.equivFin G) ⟨a.val, haG⟩)
           have haa : g ⟨a.val, haG⟩ = f ((Fintype.equivFin G) ⟨a.val, haG⟩)
@@ -825,27 +842,15 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
   · rw [←(W.A.submatrix (e'.leftCongr.trans e) hGY.equiv).fromBlocks_toBlocks, Matrix.fromBlocks_inj]
     refine ⟨?_, ?_, ?_, ?_⟩ <;> ext <;> rfl
   rw [hA₁₁, hA₂₁, hA₂₂, ←Matrix.fromRows_fromCols_eq_fromBlocks, Matrix.fromCols_zero] at hA
-  use ⟨G, W.Y \ G, Set.disjoint_sdiff_right, W.A.submatrix g hYGY.elem,
-    G.decidableMemOfFintype, (Classical.propDecidable <| · ∈ W.Y \ G)⟩
-  refine ⟨by simp, ?_, hWA.submatrix g hYGY.elem⟩
   have hW : W.toMatroid =
       (VectorMatroid.mk _ _ (((1 ◫ W.A.submatrix g hYGY.elem) ⊟ 0).reindex (e'.leftCongr.trans e) hGY.equiv)).toMatroid
   · rw [←((Matrix.reindex (e'.leftCongr.trans e) hGY.equiv).symm_apply_eq).→ hA]
+  use ⟨G, W.Y \ G, Set.disjoint_sdiff_right, W.A.submatrix g hYGY.elem,
+    G.decidableMemOfFintype, (Classical.propDecidable <| · ∈ W.Y \ G)⟩
+  refine ⟨by simp, ?_, hWA.submatrix g hYGY.elem⟩
   rw [hW]
-  ext I hIGYG
-  · simpa using (hGY ·)
-  · dsimp at hIGYG
-    simp only [StandardRepr.toMatroid_indep_iff_elem', VectorMatroid.toMatroid_indep_iff_elem, Set.union_diff_self,
-      Matrix.one_fromCols_transpose, Matrix.transpose_submatrix]
-    constructor
-    · intro ⟨hIGY, hRWI⟩
-      use hGYY ▸ hIGY
-      generalize_proofs hGYG at hRWI
-      sorry
-    · intro ⟨hI, hRWI⟩
-      use hGYY.symm ▸ hI
-      generalize_proofs hGYG
-      sorry
+  simp only [StandardRepr.toMatroid, StandardRepr.toVectorMatroid]
+  convert lll G W.X W.Y hGY (1 ◫ W.A.submatrix g hYGY.elem) (e'.leftCongr.trans e)
 
 /-- The identity matrix has linearly independent rows. -/
 lemma Matrix.one_linearIndependent [Ring R] : LinearIndependent R (1 : Matrix α α R) := by
