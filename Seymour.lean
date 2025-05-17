@@ -5,6 +5,8 @@ open scoped Matrix Set.Notation
 
 -- ## Summary of basic definitions
 
+recall Z2 := Fin 2
+
 recall VectorMatroid.X {α R : Type} : VectorMatroid α R → Set α
 recall VectorMatroid.Y {α R : Type} : VectorMatroid α R → Set α
 recall VectorMatroid.A {α R : Type} (M : VectorMatroid α R) : Matrix M.X M.Y R
@@ -49,7 +51,7 @@ recall matrix1sumComposition {R : Type} [Zero R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
   Matrix.fromBlocks Aₗ 0 0 Aᵣ
 
 recall standardRepr1sumComposition {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2}
-    (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
+    (hXY : Disjoint Sₗ.X Sᵣ.Y) (hYX : Disjoint Sₗ.Y Sᵣ.X) :
     StandardRepr α Z2 × Prop :=
   ⟨
     ⟨
@@ -60,7 +62,7 @@ recall standardRepr1sumComposition {α : Type} [DecidableEq α] {Sₗ Sᵣ : Sta
       inferInstance,
       inferInstance,
     ⟩,
-    Sₗ.X ⫗ Sᵣ.X ∧ Sₗ.Y ⫗ Sᵣ.Y
+    Disjoint Sₗ.X Sᵣ.X ∧ Disjoint Sₗ.Y Sᵣ.Y
   ⟩
 
 recall Matroid.Is1sumOf.S  {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) : M.Is1sumOf Mₗ Mᵣ → StandardRepr α Z2
@@ -94,10 +96,10 @@ recall matrix2sumComposition {R : Type} [Semiring R] {Xₗ Yₗ Xᵣ Yᵣ : Type
   Matrix.fromBlocks Aₗ 0 (fun i j => y i * x j) Aᵣ
 
 recall standardRepr2sumComposition {α : Type} [DecidableEq α] {a : α} {Sₗ Sᵣ : StandardRepr α Z2}
-    (ha : Sₗ.X ∩ Sᵣ.Y = {a}) (hXY : Sᵣ.X ⫗ Sₗ.Y) :
+    (ha : Sₗ.X ∩ Sᵣ.Y = {a}) (hXY : Disjoint Sᵣ.X Sₗ.Y) :
     StandardRepr α Z2 × Prop :=
-  let Aₗ : Matrix (Sₗ.X \ {a}).Elem Sₗ.Y.Elem Z2 := Sₗ.B ∘ Set.diff_subset.elem -- the top submatrix of `Bₗ`
-  let Aᵣ : Matrix Sᵣ.X.Elem (Sᵣ.Y \ {a}).Elem Z2 := (Sᵣ.B · ∘ Set.diff_subset.elem) -- the right submatrix of `Bᵣ`
+  let Aₗ : Matrix (Sₗ.X \ {a}).Elem Sₗ.Y.Elem Z2 := Sₗ.B.submatrix Set.diff_subset.elem id -- the top submatrix of `Bₗ`
+  let Aᵣ : Matrix Sᵣ.X.Elem (Sᵣ.Y \ {a}).Elem Z2 := Sᵣ.B.submatrix id Set.diff_subset.elem -- the right submatrix of `Bᵣ`
   let x : Sₗ.Y.Elem → Z2 := Sₗ.B ⟨a, Set.mem_of_mem_inter_left (by rw [ha]; rfl)⟩ -- the bottom row of `Bₗ`
   let y : Sᵣ.X.Elem → Z2 := (Sᵣ.B · ⟨a, Set.mem_of_mem_inter_right (by rw [ha]; rfl)⟩) -- the left column of `Bᵣ`
   ⟨
@@ -111,7 +113,7 @@ recall standardRepr2sumComposition {α : Type} [DecidableEq α] {a : α} {Sₗ S
       inferInstance,
       inferInstance,
     ⟩,
-    (Sₗ.X ⫗ Sᵣ.X ∧ Sₗ.Y ⫗ Sᵣ.Y) ∧ (x ≠ 0 ∧ y ≠ 0)
+    (Disjoint Sₗ.X Sᵣ.X ∧ Disjoint Sₗ.Y Sᵣ.Y) ∧ (x ≠ 0 ∧ y ≠ 0)
   ⟩
 
 recall Matroid.Is2sumOf.S  {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) : M.Is2sumOf Mₗ Mᵣ → StandardRepr α Z2
