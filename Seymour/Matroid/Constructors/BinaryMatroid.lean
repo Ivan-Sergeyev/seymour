@@ -238,10 +238,6 @@ lemma VectorMatroid.toMatroid_indep_iff_elem [DivisionRing R] (M : VectorMatroid
   M.indepCols_iff_elem I
 
 lemma VectorMatroid.toMatroid_indep_iff_submatrix [DivisionRing R] (M : VectorMatroid α R) (I : Set α) :
-    M.toMatroid.Indep I ↔ ∃ hI : I ⊆ M.Y, LinearIndependent R (M.A.submatrix id hI.elem)ᵀ :=
-  M.indepCols_iff_submatrix I
-
-lemma VectorMatroid.toMatroid_indep_iff_submatrix' [DivisionRing R] (M : VectorMatroid α R) (I : Set α) :
     M.toMatroid.Indep I ↔ ∃ hI : I ⊆ M.Y, LinearIndependent R (M.Aᵀ.submatrix hI.elem id) :=
   M.indepCols_iff_submatrix' I
 
@@ -250,7 +246,7 @@ lemma VectorMatroid.fromRows_zero [DivisionRing R] (V : VectorMatroid α R) {X�
     (VectorMatroid.mk (V.X ∪ X₀) V.Y ((V.A ⊟ 0) ∘ Subtype.toSum)).toMatroid = V.toMatroid := by
   ext I
   · rfl
-  · simp only [VectorMatroid.toMatroid_indep_iff_submatrix']
+  · simp only [VectorMatroid.toMatroid_indep_iff_submatrix]
     constructor
     <;> intro ⟨hI, hAI⟩
     <;> use hI
@@ -272,7 +268,7 @@ lemma VectorMatroid.fromRows_zero [DivisionRing R] (V : VectorMatroid α R) {X�
       exact j.casesOn (by simp [f]) (by simp [f, hXX.symm.not_mem_of_mem_left ·.coe_prop])
 
 lemma Matrix.fromRows_zero_reindex_toMatroid [DivisionRing R] {G X Y : Set α} [Fintype G]
-    [∀ a, Decidable (a ∈ G)] [∀ a, Decidable (a ∈ Y \ G)]
+    [∀ a, Decidable (a ∈ G)] [∀ a, Decidable (a ∈ Y)]
     (A : Matrix G (G ⊕ (Y \ G).Elem) R) (hGY : G ⊆ Y) {Z : Type} (e : G ⊕ Z ≃ X) :
     (VectorMatroid.mk G (G ∪ Y \ G) (fun i : G => A i ∘ Subtype.toSum)).toMatroid =
     (VectorMatroid.mk X Y ((A ⊟ 0).reindex e hGY.equiv)).toMatroid := by
@@ -280,13 +276,12 @@ lemma Matrix.fromRows_zero_reindex_toMatroid [DivisionRing R] {G X Y : Set α} [
   · simp [Set.union_diff_cancel' (by rfl) hGY]
   have hIGYG : I ⊆ G ∪ Y \ G := by assumption
   have hIY : I ⊆ Y := Set.union_diff_cancel' (by rfl) hGY ▸ hIGYG
-  simp only [VectorMatroid.toMatroid_indep_iff_submatrix', Matrix.reindex_apply]
+  simp only [VectorMatroid.toMatroid_indep_iff_submatrix, Matrix.reindex_apply]
   constructor <;> intro ⟨_, hAI⟩
   · use hIY
     simp
-    -- conv => congr; congr; rw [Matrix.fromRows_zero_transpose]
-    suffices : LinearIndependent (ι := ↑I) R ((Aᵀ ◫ 0).submatrix (hGY.equiv.symm ∘ hIY.elem) e.symm)
-    · convert this -- no idea why `Matrix.fromRows_zero_transpose` does not work here
+    suffices : LinearIndependent R ((Aᵀ ◫ 0).submatrix (hGY.equiv.symm ∘ hIY.elem) e.symm)
+    · convert this
       ext _ (_ | _) <;> simp
     have hA0I : LinearIndependent R ((Aᵀ.submatrix (Subtype.toSum ∘ hIGYG.elem) id) ◫ (0 : Matrix I Z R)) :=
       ((Aᵀ.submatrix (Subtype.toSum ∘ hIGYG.elem) id).linearIndependent_iff_fromCols_zero Z).→ hAI

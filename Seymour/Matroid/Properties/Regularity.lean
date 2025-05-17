@@ -63,11 +63,11 @@ lemma Matrix.isTuSigningOf_iff {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y
 
 variable {α : Type}
 
-lemma VectorMatroid_mapEquiv_eq {α β : Type} (X Y : Set α) (A : Matrix X Y ℚ) (e : α ≃ β) :
+lemma Matrix.toMatroid_mapEquiv {α β : Type} {X Y : Set α} (A : Matrix X Y ℚ) (e : α ≃ β) :
     (VectorMatroid.mk (e '' X) (e '' Y) (A.submatrix (e.image X).symm (e.image Y).symm)).toMatroid =
-      (VectorMatroid.mk X Y A).toMatroid.mapEquiv e := by
+    (VectorMatroid.mk X Y A).toMatroid.mapEquiv e := by
   let M := VectorMatroid.mk X Y A
-  let Mₑ := VectorMatroid.mk (e '' X) (e '' Y) (A.submatrix ⇑(e.image X).symm ⇑(e.image Y).symm)
+  let Mₑ := VectorMatroid.mk (e '' X) (e '' Y) (A.submatrix (e.image X).symm (e.image Y).symm)
   apply Matroid.ext_indep (M.toMatroid.mapEquiv_ground_eq e)
   intro I hI
   rw [M.toMatroid.mapEquiv_indep_iff, Mₑ.toMatroid_indep, M.toMatroid_indep,
@@ -121,12 +121,13 @@ lemma VectorMatroid_mapEquiv_eq {α β : Type} (X Y : Set α) (A : Matrix X Y �
 /-- Matroids are regular up to map equivalence. -/
 @[simp]
 lemma Matroid.isRegular_mapEquiv_iff {β : Type} (M : Matroid α) (e : α ≃ β) : (M.mapEquiv e).IsRegular ↔ M.IsRegular := by
-  constructor <;> intro ⟨X, Y, A, hA, hAM⟩
-  on_goal 1 => let f := e.symm
-  on_goal 2 => let f := e
-  all_goals
-    use f '' X, f '' Y, A.submatrix (f.image X).symm (f.image Y).symm, hA.submatrix _ _
-    rw [VectorMatroid_mapEquiv_eq X Y A f]
+  constructor
+  <;> intro ⟨X, Y, A, hA, hAM⟩
+  · use e.symm '' X, e.symm '' Y, A.submatrix (e.symm.image X).symm (e.symm.image Y).symm, hA.submatrix _ _
+    rw [A.toMatroid_mapEquiv e.symm]
+    aesop
+  · use e '' X, e '' Y, A.submatrix (e.image X).symm (e.image Y).symm, hA.submatrix _ _
+    rw [A.toMatroid_mapEquiv e]
     aesop
 
 variable [DecidableEq α]
@@ -281,7 +282,7 @@ private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_support_toMatroid {X Y : S
     (VectorMatroid.mk X Y A).toMatroid = (VectorMatroid.mk X Y A.support).toMatroid := by
   ext I hI
   · simp
-  simp_rw [VectorMatroid.toMatroid_indep_iff_submatrix', Matrix.support_transpose, Matrix.support_submatrix]
+  simp_rw [VectorMatroid.toMatroid_indep_iff_submatrix, Matrix.support_transpose, Matrix.support_submatrix]
   constructor <;> intro ⟨hIY, hAI⟩ <;> use hIY
   · rwa [(hA.transpose.submatrix hIY.elem id).linearIndependent_iff_support_linearIndependent] at hAI
   · rwa [(hA.transpose.submatrix hIY.elem id).linearIndependent_iff_support_linearIndependent]
@@ -291,13 +292,6 @@ lemma Matroid.IsRegular.isBinary {M : Matroid α} (hM : M.IsRegular) :
     ∃ V : VectorMatroid α Z2, V.toMatroid = M := by
   obtain ⟨X, Y, A, hA, rfl⟩ := hM
   exact ⟨⟨X, Y, A.support⟩, hA.toMatroid_eq_support_toMatroid.symm⟩
-
-/-- Every regular matroid has a standard binary representation. -/
-lemma Matroid.IsRegular.hasBinaryStandardRepr {M : Matroid α} (hM : M.IsRegular) :
-    ∃ S : StandardRepr α Z2, S.toMatroid = M := by
-  obtain ⟨V, hV⟩ := hM.isBinary
-  obtain ⟨S, hSV⟩ := V.exists_standardRepr
-  exact ⟨S, hSV ▸ hV⟩
 
 private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_of_support {X Y : Set α} {A : Matrix X Y ℚ} {U : Matrix X Y Z2}
     (hA : A.IsTotallyUnimodular) (hAU : A.support = U) :
