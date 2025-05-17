@@ -63,7 +63,7 @@ lemma Matrix.isTuSigningOf_iff {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y
 
 variable {α : Type}
 
-lemma Matrix.toMatroid_mapEquiv {α β : Type} {X Y : Set α} (A : Matrix X Y ℚ) (e : α ≃ β) :
+private lemma Matrix.toMatroid_mapEquiv {α β : Type} {X Y : Set α} (A : Matrix X Y ℚ) (e : α ≃ β) :
     (VectorMatroid.mk (e '' X) (e '' Y) (A.submatrix (e.image X).symm (e.image Y).symm)).toMatroid =
     (VectorMatroid.mk X Y A).toMatroid.mapEquiv e := by
   let M := VectorMatroid.mk X Y A
@@ -118,7 +118,7 @@ lemma Matrix.toMatroid_mapEquiv {α β : Type} {X Y : Set α} (A : Matrix X Y �
         by apply_fun (Equiv.Set.image e Y e.injective); simp,
       Equiv.apply_symm_apply]
 
-/-- Matroids are regular up to map equivalence. -/
+/-- Regularity of matroids is preserved under remapping. -/
 @[simp]
 lemma Matroid.isRegular_mapEquiv_iff {β : Type} (M : Matroid α) (e : α ≃ β) : (M.mapEquiv e).IsRegular ↔ M.IsRegular := by
   constructor

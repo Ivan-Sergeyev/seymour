@@ -318,5 +318,3 @@ theorem Matroid.Is2sumOf.isRegular {α : Type} [DecidableEq α] {M Mₗ Mᵣ : M
   apply standardRepr2sumComposition_hasTuSigning
   · exact hMₗ
   · exact hMᵣ
-
-#print axioms Matroid.Is2sumOf.isRegular

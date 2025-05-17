@@ -285,7 +285,9 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
           ext x
           rw [Finset.sum_apply]
           show ∑ j ∈ hGY.elem '' G'', c j • W.Aᵀ j x = 0
-          have hG'' : (hGY.elem '' G'').toFinset = hGY.elem (G.equivFin ⟨n, hnG⟩) ᕃ G'.toFinset.map ⟨hGY.elem, hGY.elem_injective⟩
+          have hG'' :
+              (hGY.elem '' G'').toFinset =
+              hGY.elem (G.equivFin ⟨n, hnG⟩) ᕃ G'.toFinset.map ⟨hGY.elem, hGY.elem_injective⟩
           · simp only [G'']
             clear * -
             aesop
@@ -305,11 +307,10 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
               convert mul_one _
               generalize_proofs _ _ _ _ hgi
               obtain ⟨_, hgg⟩ := hgi.choose_spec
-              apply G.equivFin.injective at hgg
               rw [←hi]
               apply congr_arg
               ext
-              exact (congr_arg Fin.val hgg).symm
+              exact (congr_arg Fin.val (G.equivFin.injective hgg)).symm
             · simp
             · intro z _ hzi
               convert mul_zero _
@@ -345,9 +346,8 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
                   omega
                 intro ⟨z, hz, hgz⟩
                 have hzj : z = j
-                · apply G.equivFin.injective at hgz
-                  ext
-                  simpa using hgz
+                · ext
+                  simpa using G.equivFin.injective hgz
                 exact (hzj ▸ hz) (hxj ▸ hx)
               else
                 exact smul_eq_zero_of_right _ (hgja ▸ (by simpa [hxj] using hfA x j))
@@ -494,7 +494,7 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
   · ext ⟨i, hi⟩ ⟨j, hj⟩
     have hiX : i ∈ W.X := hXgX hi
     have hjY : j ∈ W.Y := hYGY hj
-    simp
+    simp only [Function.Embedding.toFun_eq_coe, HasSubset.Subset.elem, Matrix.submatrix_apply, Matrix.zero_apply]
     by_contra hAij
     have hWjG : W.toMatroid.Indep (j ᕃ G)
     · simp only [VectorMatroid.toMatroid_indep_iff_elem]
@@ -532,9 +532,9 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
       have haj : a.val ≠ j := (by apply hca; subst ·; exact hcj)
       have haG : a.val ∈ G := Set.mem_of_mem_insert_of_ne (by have := hc (Finsupp.mem_support_iff.← hca); aesop) haj
       have hca0 := congr_fun hc0 (g ⟨a.val, haG⟩)
-      simp at hca0
+      simp only [Finset.sum_apply, smul_eq_mul, Pi.smul_apply, Pi.zero_apply] at hca0
       rw [c.support.sum_of_single_nonzero _ a] at hca0
-      · simp at hca0
+      · simp only [Matrix.transpose_apply, mul_eq_zero] at hca0
         have hAaa : W.A (g ⟨a.val, haG⟩) a ≠ 0
         · intro h0
           specialize hfA (g ⟨a.val, haG⟩) ((Fintype.equivFin G) ⟨a.val, haG⟩)
@@ -552,12 +552,10 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
           right
           have hzG : z.val ∈ G := Set.mem_of_mem_insert_of_ne (by have := hc hzc; aesop) hzj
           specialize hfA (g ⟨a.val, haG⟩) ((Fintype.equivFin G) ⟨z.val, hzG⟩)
-          have haz : g ⟨a.val, haG⟩ ≠ f ((Fintype.equivFin G) ⟨z.val, hzG⟩)
-          · intro hgg
+          have haz : g ⟨a.val, haG⟩ ≠ f ((Fintype.equivFin G) ⟨z.val, hzG⟩) := (by
             apply hza
-            apply g.injective at hgg
             ext
-            simpa using hgg.symm
+            simpa using g.injective ·.symm)
           simpa [haz] using hfA
     apply W.toMatroid.base_not_ssubset_indep hWG hWjG
     exact ⟨G.subset_insert j, Set.not_subset.← ⟨j, G.mem_insert j, hj.right⟩⟩
@@ -622,13 +620,13 @@ private lemma sum_support_image_subtype_eq_zero {X Y : Set α} {F : Type} [Field
       Subtype.exists, Subtype.coe_prop, Set.mem_union, exists_and_right, exists_true_left, exists_eq_right, true_or]
     use z
     simp only [exists_prop, and_true]
-    refine ⟨?_, (l.mem_support_toFun z).→ (by simp)⟩
+    refine ⟨?_, (l.mem_support_toFun z).→ (Finset.coe_mem z)⟩
     have hzD : z.val.val ∈ Subtype.val '' D
     · cases hl z (by simp) with
       | inl hp =>
         have hzy : z.val = hYXY.elem y := Subtype.coe_inj.→ hp
         rw [←hzy] at hly
-        exact absurd hly (l.mem_support_iff.→ (by simp))
+        exact absurd hly (l.mem_support_iff.→ (Finset.coe_mem z))
       | inr hp => exact hp
     have hDX : Subtype.val '' D ⊆ X
     · rw [Set.image, Set.setOf_subset]
@@ -728,8 +726,7 @@ private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type} [Field F
       intro l hl hlB
       have hl' : l.support.toSet ⊆ hyDXY.elem.range
       · rwa [Finsupp.mem_supported] at hl
-      have hl'' : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' Dₒ :=
-        fun e he => (hyDXY.elem_range ▸ hl') he
+      have hl'' : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' Dₒ := ↓((hyDXY.elem_range ▸ hl') ·)
       if hly : l (hYXY.elem y) = 0 then
         ext i
         if hil : i ∈ l.support then
