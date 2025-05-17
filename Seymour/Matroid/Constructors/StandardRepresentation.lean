@@ -1,5 +1,4 @@
 import Seymour.Basic.Fin
-import Seymour.Basic.Sets
 import Seymour.Matrix.LinearIndependence
 import Seymour.Matrix.Pivoting
 import Seymour.Matrix.Support
@@ -697,24 +696,6 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
         simpa [hij, hgjgn, hxj] using W.A.longTableauPivot_elem_pivot_eq_one (hxj ▸ hx)
       else
         simpa [hij, hgjgn, hxj] using W.A.longTableauPivot_elem_in_pivot_col_eq_zero hij (hxj ▸ hx)
-
-lemma lll [Field R] (G X Y : Set α) [Fintype G] [DecidableEq G] [∀ a : α, Decidable (a ∈ G)] [∀ a : α, Decidable (a ∈ Y \ G)]
-    (hGY : G ⊆ Y) (A : Matrix G (G ⊕ (Y \ G).Elem) R) {D : Type} (e : G.Elem ⊕ D ≃ X.Elem) :
-    (VectorMatroid.mk G (G ∪ Y \ G) (fun i : G => A i ∘ Subtype.toSum)).toMatroid =
-    (VectorMatroid.mk X Y ((Matrix.reindex e hGY.equiv) (A ⊟ 0))).toMatroid := by
-  have hGYGY : G ∪ Y \ G = Y :=
-    Set.union_diff_cancel' (by rfl) hGY
-  ext I hI
-  · simp [hGYGY]
-  simp only [VectorMatroid.toMatroid_indep_iff_submatrix', Matrix.reindex_apply]
-  constructor
-  <;> intro ⟨hI', hAI⟩
-  · use hGYGY ▸ hI
-    simp
-    sorry
-  · use hI
-    simp at hAI
-    sorry
 
 set_option maxHeartbeats 666666 in
 /-- Every vector matroid whose full representation matrix is totally unimodular has a standard representation whose rows are

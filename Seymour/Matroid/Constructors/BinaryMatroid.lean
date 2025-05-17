@@ -2,6 +2,7 @@ import Mathlib.Data.Matroid.IndepAxioms
 import Mathlib.Data.Matroid.Dual
 import Mathlib.Data.Matroid.Map
 import Mathlib.Data.Matroid.Sum
+import Seymour.Basic.Sets
 import Seymour.Matrix.LinearIndependence
 
 open scoped Matrix Set.Notation
@@ -269,3 +270,45 @@ lemma VectorMatroid.fromRows_zero [DivisionRing R] (V : VectorMatroid α R) {X�
       convert hAI
       ext i j
       exact j.casesOn (by simp [f]) (by simp [f, hXX.symm.not_mem_of_mem_left ·.coe_prop])
+
+lemma lll [Field R] (G X Y : Set α) [Fintype G] [DecidableEq G] [∀ a : α, Decidable (a ∈ G)] [∀ a : α, Decidable (a ∈ Y \ G)]
+    (hGY : G ⊆ Y) (A : Matrix G (G ⊕ (Y \ G).Elem) R) {Z : Type} (e : G ⊕ Z ≃ X) :
+    (VectorMatroid.mk G (G ∪ Y \ G) (fun i : G => A i ∘ Subtype.toSum)).toMatroid =
+    (VectorMatroid.mk X Y ((Matrix.reindex e hGY.equiv) (A ⊟ 0))).toMatroid := by
+  ext I
+  · simp [Set.union_diff_cancel' (by rfl) hGY]
+  have hIGYG : I ⊆ G ∪ Y \ G := by assumption
+  have hIY : I ⊆ Y := Set.union_diff_cancel' (by rfl) hGY ▸ hIGYG
+  simp only [VectorMatroid.toMatroid_indep_iff_submatrix', Matrix.reindex_apply]
+  constructor <;> intro ⟨_, hAI⟩
+  · use hIY
+    simp
+    -- conv => congr; congr; rw [Matrix.fromRows_zero_transpose]
+    suffices : LinearIndependent (ι := ↑I) R ((Aᵀ ◫ 0).submatrix (hGY.equiv.symm ∘ hIY.elem) e.symm)
+    · convert this -- no idea why `Matrix.fromRows_zero_transpose` does not work here
+      ext _ (_ | _) <;> simp
+    have hA0I : LinearIndependent R ((Aᵀ.submatrix (Subtype.toSum ∘ hIGYG.elem) id) ◫ (0 : Matrix I Z R)) :=
+      ((Aᵀ.submatrix (Subtype.toSum ∘ hIGYG.elem) id).linearIndependent_iff_fromCols_zero Z).→ hAI
+    let f : (X → R) →ₗ[R] (G ⊕ Z → R) := ⟨⟨(· <| e ·), ↓↓rfl⟩, ↓↓rfl⟩
+    apply LinearIndependent.of_comp f
+    convert hA0I
+    ext i j
+    if hi : i.val ∈ G then
+      cases j <;> simp [hi, f, HasSubset.Subset.equiv]
+    else
+      have hiY : i.val ∈ Y \ G := by aesop
+      cases j <;> simp [hi, f, HasSubset.Subset.equiv, hiY]
+  · use hIGYG
+    simp at hAI
+    rw [Matrix.linearIndependent_iff_fromCols_zero _ Z]
+    let f : (G ⊕ Z → R) →ₗ[R] (X → R) := ⟨⟨(· <| e.symm ·), ↓↓rfl⟩, ↓↓rfl⟩
+    apply LinearIndependent.of_comp f
+    convert hAI
+    ext i j
+    if hi : i.val ∈ G then
+      simp [hi, f, HasSubset.Subset.equiv]
+      cases hj : e.symm j <;> simp_all
+    else
+      have hiY : i.val ∈ Y \ G := by aesop
+      simp [hi, f, HasSubset.Subset.equiv, hiY]
+      cases hj : e.symm j <;> simp_all
