@@ -8,6 +8,7 @@ import Seymour.Matroid.Constructors.StandardRepresentation
 /-- Matroid is regular iff it can be constructed from a `VectorMatroid` with a rational TU matrix. -/
 def Matroid.IsRegular {α : Type} (M : Matroid α) : Prop :=
   ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsTotallyUnimodular ∧ (VectorMatroid.mk X Y A).toMatroid = M
+-- Possible refactor: `∃ V : VectorMatroid α ℚ, V.A.IsTotallyUnimodular ∧ V.toMatroid = M`
 
 
 -- ## Secondary definition of regularity (LI over Z2 while TU over ℚ)

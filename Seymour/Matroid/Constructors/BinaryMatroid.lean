@@ -232,6 +232,10 @@ lemma vectorMatroid_toMatroid_Y_congr [DivisionRing R] {V W : VectorMatroid α R
 lemma VectorMatroid.toMatroid_indep [DivisionRing R] (M : VectorMatroid α R) : M.toMatroid.Indep = M.IndepCols :=
   rfl
 
+lemma VectorMatroid.toMatroid_indep_iff [DivisionRing R] (M : VectorMatroid α R) (I : Set α) :
+    M.toMatroid.Indep I ↔ I ⊆ M.Y ∧ LinearIndepOn R M.Aᵀ (M.Y ↓∩ I) := by
+  rfl
+
 @[simp]
 lemma VectorMatroid.toMatroid_indep_iff_elem [DivisionRing R] (M : VectorMatroid α R) (I : Set α) :
     M.toMatroid.Indep I ↔ ∃ hI : I ⊆ M.Y, LinearIndepOn R M.Aᵀ hI.elem.range :=
