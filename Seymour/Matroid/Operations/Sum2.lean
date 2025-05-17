@@ -2,7 +2,7 @@ import Seymour.Basic.FunctionToHalfSum
 import Seymour.Matrix.Pivoting
 import Seymour.Matroid.Properties.Regularity
 import Seymour.Matrix.Determinants
-import Seymour.Matrix.PreTUness
+import Seymour.Matrix.PartialUnimodularity
 
 
 -- ## Shorthands for convenience
@@ -222,10 +222,10 @@ private lemma matrix2sumComposition_bottom_isTotallyUnimodular {Xₗ Yₗ Xᵣ Y
 
 -- ## Proof of regularity of the 2-sum
 
-private lemma matrix2sumComposition_isPreTU_1 {α : Type} {Xₗ Yₗ Xᵣ Yᵣ : Set α}
+private lemma matrix2sumComposition_isPartiallyUnimodular_1 {α : Type} {Xₗ Yₗ Xᵣ Yᵣ : Set α}
     {Aₗ : Matrix Xₗ Yₗ ℚ} {r : Yₗ → ℚ} {Aᵣ : Matrix Xᵣ Yᵣ ℚ} {c : Xᵣ → ℚ}
     (hAr : (Aₗ ⊟ ▬r).IsTotallyUnimodular) (hAc : (▮c ◫ Aᵣ).IsTotallyUnimodular) :
-    (matrix2sumComposition Aₗ r Aᵣ c).IsPreTU 1 := by
+    (matrix2sumComposition Aₗ r Aᵣ c).isPartiallyUnimodular 1 := by
   intro f g
   rw [Matrix.det_unique, Fin.default_eq_zero, Matrix.submatrix_apply]
   cases f 0 with
@@ -240,12 +240,12 @@ private lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq
     {Aₗ : Matrix Xₗ Yₗ ℚ} {r : Yₗ → ℚ} {Aᵣ : Matrix Xᵣ Yᵣ ℚ} {c : Xᵣ → ℚ}
     (hAr : (Aₗ ⊟ ▬r).IsTotallyUnimodular) (hAc : (▮c ◫ Aᵣ).IsTotallyUnimodular) :
     (matrix2sumComposition Aₗ r Aᵣ c).IsTotallyUnimodular := by
-  rw [Matrix.isTotallyUnimodular_iff_forall_IsPreTU]
+  rw [Matrix.isTotallyUnimodular_iff_forall_isPartiallyUnimodular]
   intro k
   cases k with
-  | zero => simp [Matrix.IsPreTU]
+  | zero => simp [Matrix.isPartiallyUnimodular]
   | succ m => induction m generalizing Aₗ r Aᵣ c with
-    | zero => exact matrix2sumComposition_isPreTU_1 hAr hAc
+    | zero => exact matrix2sumComposition_isPartiallyUnimodular_1 hAr hAc
     | succ n ih =>
       intro f g
       wlog hf : f.Injective

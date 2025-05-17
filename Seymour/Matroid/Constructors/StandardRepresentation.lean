@@ -189,7 +189,7 @@ lemma VectorMatroid.longTableauPivot [Field R] (V : VectorMatroid α R) {x : V.X
     exact ↓(V.A.longTableauPivot_linearIndepenOn hVxy _)
 
 set_option maxHeartbeats 666666 in
-/-- Implicit Gaussian elimination for the proof of the lemma below. -/
+-- Implicit Gaussian elimination for the proof of the lemma below.
 private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [Field R] {G : Set α} [Fintype G]
     (V : VectorMatroid α R) (hVG : V.toMatroid.IsBase G) (hVA : V.A.IsTotallyUnimodular) {k : ℕ} (hk : k ≤ #G) :
     ∃ W : VectorMatroid α R,
