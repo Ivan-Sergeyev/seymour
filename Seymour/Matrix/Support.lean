@@ -1,3 +1,4 @@
+import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 import Seymour.Basic.Fin
 
 
@@ -19,3 +20,17 @@ omit R
 
 lemma Matrix.support_Z2 (A : Matrix X Y Z2) : A.support = A := by
   aesop
+
+lemma Matrix.IsTotallyUnimodular.abs_eq_support_val {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
+    ∀ i : X, ∀ j : Y, |A i j| = (A.support i j).val := by
+  intro i j
+  obtain ⟨s, hs⟩ := hA.apply i j
+  rw [Matrix.support, Matrix.of_apply, ZMod.natCast_val, ←hs]
+  cases s <;> rfl
+
+lemma Matrix.IsTotallyUnimodular.abs_cast_eq_support {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
+    ∀ i : X, ∀ j : Y, |A i j|.cast = A.support i j := by
+  intro i j
+  obtain ⟨s, hs⟩ := hA.apply i j
+  rw [Matrix.support, Matrix.of_apply, ←hs]
+  cases s <;> simp

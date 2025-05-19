@@ -10,13 +10,17 @@ recall Z2 := Fin 2
 recall VectorMatroid.X {α R : Type} : VectorMatroid α R → Set α
 recall VectorMatroid.Y {α R : Type} : VectorMatroid α R → Set α
 recall VectorMatroid.A {α R : Type} (M : VectorMatroid α R) : Matrix M.X M.Y R
+/--
+info: VectorMatroid.mk {α R : Type} (X Y : Set α) (A : Matrix (↑X) (↑Y) R) : VectorMatroid α R
+-/
+#guard_msgs in
+#check VectorMatroid.mk
 
 recall VectorMatroid.toMatroid_indep_iff {α R : Type} [DivisionRing R] (M : VectorMatroid α R) (I : Set α) :
   M.toMatroid.Indep I ↔ I ⊆ M.Y ∧ LinearIndepOn R M.Aᵀ (M.Y ↓∩ I)
 
 recall Matrix.IsTotallyUnimodular {X Y R : Type*} [CommRing R] (A : Matrix X Y R) : Prop :=
-  ∀ k : ℕ, ∀ f : Fin k → X, ∀ g : Fin k → Y, f.Injective → g.Injective →
-    (A.submatrix f g).det ∈ Set.range SignType.cast
+  ∀ k : ℕ, ∀ f : Fin k → X, ∀ g : Fin k → Y, f.Injective → g.Injective → (A.submatrix f g).det ∈ Set.range SignType.cast
 
 recall Matroid.IsRegular {α : Type} (M : Matroid α) : Prop :=
   ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsTotallyUnimodular ∧ (VectorMatroid.mk X Y A).toMatroid = M
@@ -25,12 +29,20 @@ recall StandardRepr.X {α R : Type} [DecidableEq α] : StandardRepr α R → Set
 recall StandardRepr.Y {α R : Type} [DecidableEq α] : StandardRepr α R → Set α
 recall StandardRepr.B {α R : Type} [DecidableEq α] (S : StandardRepr α R) : Matrix S.X S.Y R
 recall StandardRepr.hXY {α R : Type} [DecidableEq α] (S : StandardRepr α R) : Disjoint S.X S.Y
+recall StandardRepr.decmemX {α R : Type} [DecidableEq α] (S : StandardRepr α R) : ∀ a, Decidable (a ∈ S.X)
+recall StandardRepr.decmemY {α R : Type} [DecidableEq α] (S : StandardRepr α R) : ∀ a, Decidable (a ∈ S.Y)
+/--
+info: StandardRepr.mk {α R : Type} [DecidableEq α] (X Y : Set α) (hXY : X ⫗ Y) (B : Matrix (↑X) (↑Y) R)
+  (decmemX : (a : α) → Decidable (a ∈ X)) (decmemY : (a : α) → Decidable (a ∈ Y)) : StandardRepr α R
+-/
+#guard_msgs in
+#check StandardRepr.mk
 
-recall StandardRepr.toMatroid_indep_iff {α : Type} [DecidableEq α] {R : Type} [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
+recall StandardRepr.toMatroid_indep_iff {α : Type} [DecidableEq α] {R : Type} [DivisionRing R]
+    (S : StandardRepr α R) (I : Set α) :
   S.toMatroid.Indep I ↔ I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R ((Matrix.fromCols 1 S.B).submatrix id Subtype.toSum)ᵀ ((S.X ∪ S.Y) ↓∩ I)
 
-recall Subtype.toSum {α : Type} {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)]
-    (i : (X ∪ Y).Elem) :
+recall Subtype.toSum {α : Type} {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) :
     X.Elem ⊕ Y.Elem :=
   if hiX : i.val ∈ X then ◩⟨i, hiX⟩ else
   if hiY : i.val ∈ Y then ◪⟨i, hiY⟩ else
@@ -65,27 +77,19 @@ recall standardRepr1sumComposition {α : Type} [DecidableEq α] {Sₗ Sᵣ : Sta
     Disjoint Sₗ.X Sᵣ.X ∧ Disjoint Sₗ.Y Sᵣ.Y
   ⟩
 
-recall Matroid.Is1sumOf.S  {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) : M.Is1sumOf Mₗ Mᵣ → StandardRepr α Z2
-recall Matroid.Is1sumOf.Sₗ {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) : M.Is1sumOf Mₗ Mᵣ → StandardRepr α Z2
-recall Matroid.Is1sumOf.Sᵣ {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) : M.Is1sumOf Mₗ Mᵣ → StandardRepr α Z2
-recall Matroid.Is1sumOf.hSₗ {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hM : M.Is1sumOf Mₗ Mᵣ) : Finite hM.Sₗ.X
-recall Matroid.Is1sumOf.hSᵣ {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hM : M.Is1sumOf Mₗ Mᵣ) : Finite hM.Sᵣ.X
-recall Matroid.Is1sumOf.hM  {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hM : M.Is1sumOf Mₗ Mᵣ) : hM.S.toMatroid = M
-recall Matroid.Is1sumOf.hMₗ {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hM : M.Is1sumOf Mₗ Mᵣ) : hM.Sₗ.toMatroid = Mₗ
-recall Matroid.Is1sumOf.hMᵣ {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hM : M.Is1sumOf Mₗ Mᵣ) : hM.Sᵣ.toMatroid = Mᵣ
-recall Matroid.Is1sumOf.hXY {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hM : M.Is1sumOf Mₗ Mᵣ) : Disjoint hM.Sₗ.X hM.Sᵣ.Y
-recall Matroid.Is1sumOf.hYX {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hM : M.Is1sumOf Mₗ Mᵣ) : Disjoint hM.Sₗ.Y hM.Sᵣ.X
-recall Matroid.Is1sumOf.IsSum {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hM : M.Is1sumOf Mₗ Mᵣ) : (standardRepr1sumComposition hM.hXY hM.hYX).fst = hM.S
-recall Matroid.Is1sumOf.IsValid {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hM : M.Is1sumOf Mₗ Mᵣ) : (standardRepr1sumComposition hM.hXY hM.hYX).snd
-
-recall Matroid.Is1sumOf.isRegular {α : Type} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} :
-  M.Is1sumOf Mₗ Mᵣ → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
+private theorem Matroid_Is1sumOf_isRegular {α : Type} [DecidableEq α] (Sₗ Sᵣ S : StandardRepr α Z2)
+    [Finite Sₗ.X] [Finite Sᵣ.X] (hXY : Disjoint Sₗ.X Sᵣ.Y) (hYX : Disjoint Sₗ.Y Sᵣ.X)
+    (hS : S = (standardRepr1sumComposition hXY hYX).fst) (hSₗ : Sₗ.toMatroid.IsRegular) (hSᵣ : Sᵣ.toMatroid.IsRegular) :
+    S.toMatroid.IsRegular := by
+  have : Finite S.X := hS ▸ Finite.Set.finite_union Sₗ.X Sᵣ.X
+  rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hSₗ hSᵣ ⊢
+  exact hS ▸ standardRepr1sumComposition_hasTuSigning hXY hYX hSₗ hSᵣ
 
 /--
-info: 'Matroid.Is1sumOf.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: '_private.Seymour.0.Matroid_Is1sumOf_isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
 -/
 #guard_msgs in
-#print axioms Matroid.Is1sumOf.isRegular
+#print axioms Matroid_Is1sumOf_isRegular
 
 
 -- ## Summary of 2-sum
@@ -116,25 +120,16 @@ recall standardRepr2sumComposition {α : Type} [DecidableEq α] {a : α} {Sₗ S
     (Disjoint Sₗ.X Sᵣ.X ∧ Disjoint Sₗ.Y Sᵣ.Y) ∧ (x ≠ 0 ∧ y ≠ 0)
   ⟩
 
-recall Matroid.Is2sumOf.S  {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) : M.Is2sumOf Mₗ Mᵣ → StandardRepr α Z2
-recall Matroid.Is2sumOf.Sₗ {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) : M.Is2sumOf Mₗ Mᵣ → StandardRepr α Z2
-recall Matroid.Is2sumOf.Sᵣ {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) : M.Is2sumOf Mₗ Mᵣ → StandardRepr α Z2
-recall Matroid.Is2sumOf.a  {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) : M.Is2sumOf Mₗ Mᵣ → α
-recall Matroid.Is2sumOf.hSₗ {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hM : M.Is2sumOf Mₗ Mᵣ) : Finite hM.Sₗ.X
-recall Matroid.Is2sumOf.hSᵣ {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hM : M.Is2sumOf Mₗ Mᵣ) : Finite hM.Sᵣ.X
-recall Matroid.Is2sumOf.hM  {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hM : M.Is2sumOf Mₗ Mᵣ) : hM.S.toMatroid = M
-recall Matroid.Is2sumOf.hMₗ {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hM : M.Is2sumOf Mₗ Mᵣ) : hM.Sₗ.toMatroid = Mₗ
-recall Matroid.Is2sumOf.hMᵣ {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hM : M.Is2sumOf Mₗ Mᵣ) : hM.Sᵣ.toMatroid = Mᵣ
-recall Matroid.Is2sumOf.ha {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hM : M.Is2sumOf Mₗ Mᵣ) : hM.Sₗ.X ∩ hM.Sᵣ.Y = {hM.a}
-recall Matroid.Is2sumOf.hXY {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hM : M.Is2sumOf Mₗ Mᵣ) : Disjoint hM.Sᵣ.X hM.Sₗ.Y
-recall Matroid.Is2sumOf.IsSum {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hM : M.Is2sumOf Mₗ Mᵣ) : (standardRepr2sumComposition hM.ha hM.hXY).fst = hM.S
-recall Matroid.Is2sumOf.IsValid {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hM : M.Is2sumOf Mₗ Mᵣ) : (standardRepr2sumComposition hM.ha hM.hXY).snd
-
-recall Matroid.Is2sumOf.isRegular {α : Type} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} :
-  M.Is2sumOf Mₗ Mᵣ → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
+private theorem Matroid_Is2sumOf_isRegular {α : Type} [DecidableEq α] (Sₗ Sᵣ S : StandardRepr α Z2) (a : α)
+    [Finite Sₗ.X] [Finite Sᵣ.X] (ha : Sₗ.X ∩ Sᵣ.Y = {a}) (hXY : Disjoint Sᵣ.X Sₗ.Y)
+    (hS : S = (standardRepr2sumComposition ha hXY).fst) (hSₗ : Sₗ.toMatroid.IsRegular) (hSᵣ : Sᵣ.toMatroid.IsRegular) :
+    S.toMatroid.IsRegular := by
+  have : Finite S.X := hS ▸ Finite.Set.finite_union (Sₗ.X \ {a}) Sᵣ.X
+  rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hSₗ hSᵣ ⊢
+  exact hS ▸ standardRepr2sumComposition_hasTuSigning ha hXY hSₗ hSᵣ
 
 /--
-info: 'Matroid.Is2sumOf.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: '_private.Seymour.0.Matroid_Is2sumOf_isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
 -/
 #guard_msgs in
-#print axioms Matroid.Is2sumOf.isRegular
+#print axioms Matroid_Is2sumOf_isRegular

@@ -185,7 +185,7 @@ The guideline below is written primarily to assist you in reading the code.
 
 ### Stability and readability
 
-- Do not open namespaces.
+- Do not open namespaces (but `open scoped` is fine).
 - Do not utilize automatic opening of a namespace for the declaration's name prefix.
 
   For example, do not write:
