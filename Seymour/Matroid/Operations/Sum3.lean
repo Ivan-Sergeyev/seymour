@@ -1,4 +1,4 @@
-import Seymour.Matroid.Operations.Sum3Helper
+import Seymour.Matroid.Operations.Sum3helper
 
 
 variable {α : Type}

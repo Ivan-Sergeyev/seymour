@@ -8,6 +8,7 @@ import Seymour.Matroid.Constructors.StandardRepresentation
 /-- Matroid is regular iff it can be constructed from a `VectorMatroid` with a rational TU matrix. -/
 def Matroid.IsRegular {α : Type} (M : Matroid α) : Prop :=
   ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsTotallyUnimodular ∧ (VectorMatroid.mk X Y A).toMatroid = M
+-- Possible refactor: `∃ V : VectorMatroid α ℚ, V.A.IsTotallyUnimodular ∧ V.toMatroid = M`
 
 
 -- ## Secondary definition of regularity (LI over Z2 while TU over ℚ)
@@ -30,20 +31,6 @@ def Matrix.HasTuSigning {X Y : Type} (U : Matrix X Y Z2) : Prop :=
 
 -- ## Auxiliary stuff
 
-lemma Matrix.IsTotallyUnimodular.abs_eq_support_val {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
-    ∀ i : X, ∀ j : Y, |A i j| = (A.support i j).val := by
-  intro i j
-  obtain ⟨s, hs⟩ := hA.apply i j
-  rw [Matrix.support, Matrix.of_apply, ZMod.natCast_val, ←hs]
-  cases s <;> rfl
-
-lemma Matrix.IsTotallyUnimodular.abs_cast_eq_support {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
-    ∀ i : X, ∀ j : Y, |A i j|.cast = A.support i j := by
-  intro i j
-  obtain ⟨s, hs⟩ := hA.apply i j
-  rw [Matrix.support, Matrix.of_apply, ←hs]
-  cases s <;> simp
-
 lemma Matrix.IsTotallyUnimodular.isTuSigningOf_support {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
     A.IsTuSigningOf A.support :=
   ⟨hA, hA.abs_eq_support_val⟩
@@ -61,13 +48,11 @@ lemma Matrix.isTuSigningOf_iff {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y
   · intro ⟨hA, hAU⟩
     exact hAU ▸ hA.isTuSigningOf_support
 
-variable {α : Type}
-
-lemma VectorMatroid_mapEquiv_eq {α β : Type} (X Y : Set α) (A : Matrix X Y ℚ) (e : α ≃ β) :
+private lemma Matrix.toMatroid_mapEquiv {α β : Type} {X Y : Set α} (A : Matrix X Y ℚ) (e : α ≃ β) :
     (VectorMatroid.mk (e '' X) (e '' Y) (A.submatrix (e.image X).symm (e.image Y).symm)).toMatroid =
-      (VectorMatroid.mk X Y A).toMatroid.mapEquiv e := by
+    (VectorMatroid.mk X Y A).toMatroid.mapEquiv e := by
   let M := VectorMatroid.mk X Y A
-  let Mₑ := VectorMatroid.mk (e '' X) (e '' Y) (A.submatrix ⇑(e.image X).symm ⇑(e.image Y).symm)
+  let Mₑ := VectorMatroid.mk (e '' X) (e '' Y) (A.submatrix (e.image X).symm (e.image Y).symm)
   apply Matroid.ext_indep (M.toMatroid.mapEquiv_ground_eq e)
   intro I hI
   rw [M.toMatroid.mapEquiv_indep_iff, Mₑ.toMatroid_indep, M.toMatroid_indep,
@@ -118,18 +103,19 @@ lemma VectorMatroid_mapEquiv_eq {α β : Type} (X Y : Set α) (A : Matrix X Y �
         by apply_fun (Equiv.Set.image e Y e.injective); simp,
       Equiv.apply_symm_apply]
 
-/-- Matroids are regular up to map equivalence. -/
+/-- Regularity of matroids is preserved under remapping. -/
 @[simp]
-lemma Matroid.isRegular_mapEquiv_iff {β : Type} (M : Matroid α) (e : α ≃ β) : (M.mapEquiv e).IsRegular ↔ M.IsRegular := by
-  constructor <;> intro ⟨X, Y, A, hA, hAM⟩
-  on_goal 1 => let f := e.symm
-  on_goal 2 => let f := e
-  all_goals
-    use f '' X, f '' Y, A.submatrix (f.image X).symm (f.image Y).symm, hA.submatrix _ _
-    rw [VectorMatroid_mapEquiv_eq X Y A f]
+lemma Matroid.isRegular_mapEquiv_iff {α β : Type} (M : Matroid α) (e : α ≃ β) : (M.mapEquiv e).IsRegular ↔ M.IsRegular := by
+  constructor
+  <;> intro ⟨X, Y, A, hA, hAM⟩
+  · use e.symm '' X, e.symm '' Y, A.submatrix (e.symm.image X).symm (e.symm.image Y).symm, hA.submatrix _ _
+    rw [A.toMatroid_mapEquiv e.symm]
+    aesop
+  · use e '' X, e '' Y, A.submatrix (e.image X).symm (e.image Y).symm, hA.submatrix _ _
+    rw [A.toMatroid_mapEquiv e]
     aesop
 
-variable [DecidableEq α]
+variable {α : Type} [DecidableEq α]
 
 private lemma Matrix.IsTotallyUnimodular.intCast_det_eq_support_det [Fintype α] {A : Matrix α α ℤ}
     (hA : A.IsTotallyUnimodular) :
@@ -159,11 +145,6 @@ private lemma Matrix.IsTotallyUnimodular.det_eq_zero_iff_support [Fintype α] {A
   apply zero_iff_ratCast_zero_of_in_signTypeCastRange
   exact hA.det id id
 
-private lemma Matrix.IsTotallyUnimodular.det_ne_zero_iff_support [Fintype α] {A : Matrix α α ℚ}
-    (hA : A.IsTotallyUnimodular) :
-    A.det ≠ (0 : ℚ) ↔ A.support.det ≠ (0 : Z2) :=
-  hA.det_eq_zero_iff_support.ne
-
 private def Matrix.AllColsIn {X Y R : Type} (A : Matrix X Y R) (Y' : Set Y) : Prop :=
   ∀ y : Y, ∃ y' : Y', (A · y) = (A · y')
 
@@ -180,11 +161,11 @@ private lemma Matrix.exists_finite_allColsIn {X Y R : Type} [Fintype X] [Decidab
   use Y'
   constructor
   · let S : Set (X → V) := Set.univ
-    let S' : Set (X → R) := (fun v : X → V => fun x : X => (v x).val) '' S
+    let S' : Set (X → R) := (· · |>.val) '' S
     have hCS' : C ⊆ S' := by
       rintro - ⟨w, rfl⟩
-      exact ⟨(fun j => ⟨(A · w) j, hAV j w⟩), trivial, rfl⟩
-    let e : Y' ↪ C := ⟨fun i : Y' => ⟨(A · i), by use i⟩, fun ⟨_, w₁, ⟨y₁, hy₁⟩, _⟩ ⟨_, w₂, ⟨y₂, hy₂⟩, _⟩ _ => by
+      exact ⟨(⟨_, hAV · w⟩), trivial, rfl⟩
+    let e : Y' ↪ C := ⟨fun j : Y' => ⟨(A · j), by use j⟩, fun ⟨_, w₁, ⟨y₁, hy₁⟩, _⟩ ⟨_, w₂, ⟨y₂, hy₂⟩, _⟩ _ => by
       simp_all only [Subtype.mk.injEq, C, Y']
       subst hy₁ hy₂
       have := Classical.choose_spec (⟨y₁, rfl⟩ : ∃ y : Y, (A · y) = (A · y₁))
@@ -193,10 +174,9 @@ private lemma Matrix.exists_finite_allColsIn {X Y R : Type} [Fintype X] [Decidab
     have S_finite : S.Finite := Subtype.finite
     have S'_finite : S'.Finite := S_finite.image (fun i : X => · i |>.val)
     exact (S'_finite.subset hCS').finite_of_encard_le e.encard_le
-  · intro i
-    have hi : (A · i) ∈ C := by use i
-    use ⟨hi.choose, by aesop⟩
-    exact hi.choose_spec.symm
+  · intro j
+    have hj : (A · j) ∈ C := by use j
+    exact ⟨⟨hj.choose, by aesop⟩, hj.choose_spec.symm⟩
 
 private lemma Matrix.linearIndependent_if_LinearIndependent_subset_cols {X Y R : Type} [Ring R]
     (A : Matrix X Y R) {Y' : Set Y} (hA : LinearIndependent R (A.submatrix id (fun y' : Y' => y'.val))) :
@@ -241,7 +221,7 @@ private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearInd
   <;> rw [Matrix.linearIndependent_iff_exists_submatrix_det] at lin_indep ⊢
   <;> obtain ⟨g, hAg⟩ := lin_indep
   <;> use g
-  <;> have result := (hA.submatrix id g).det_ne_zero_iff_support
+  <;> have result := (hA.submatrix id g).det_eq_zero_iff_support.ne
   · exact A.support_submatrix id g ▸ (result.→ hAg)
   · exact result.← (A.support_submatrix id g ▸ hAg)
 
@@ -281,23 +261,10 @@ private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_support_toMatroid {X Y : S
     (VectorMatroid.mk X Y A).toMatroid = (VectorMatroid.mk X Y A.support).toMatroid := by
   ext I hI
   · simp
-  simp_rw [VectorMatroid.toMatroid_indep_iff_submatrix', Matrix.support_transpose, Matrix.support_submatrix]
+  simp_rw [VectorMatroid.toMatroid_indep_iff_submatrix, Matrix.support_transpose, Matrix.support_submatrix]
   constructor <;> intro ⟨hIY, hAI⟩ <;> use hIY
   · rwa [(hA.transpose.submatrix hIY.elem id).linearIndependent_iff_support_linearIndependent] at hAI
   · rwa [(hA.transpose.submatrix hIY.elem id).linearIndependent_iff_support_linearIndependent]
-
-/-- Every regular matroid is binary. -/
-lemma Matroid.IsRegular.isBinary {M : Matroid α} (hM : M.IsRegular) :
-    ∃ V : VectorMatroid α Z2, V.toMatroid = M := by
-  obtain ⟨X, Y, A, hA, rfl⟩ := hM
-  exact ⟨⟨X, Y, A.support⟩, hA.toMatroid_eq_support_toMatroid.symm⟩
-
-/-- Every regular matroid has a standard binary representation. -/
-lemma Matroid.IsRegular.hasBinaryStandardRepr {M : Matroid α} (hM : M.IsRegular) :
-    ∃ S : StandardRepr α Z2, S.toMatroid = M := by
-  obtain ⟨V, hV⟩ := hM.isBinary
-  obtain ⟨S, hSV⟩ := V.exists_standardRepr
-  exact ⟨S, hSV ▸ hV⟩
 
 private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_of_support {X Y : Set α} {A : Matrix X Y ℚ} {U : Matrix X Y Z2}
     (hA : A.IsTotallyUnimodular) (hAU : A.support = U) :
@@ -323,7 +290,14 @@ private lemma VectorMatroid.toMatroid_isRegular_if_hasTuSigning (V : VectorMatro
     simp only [ZMod.val_one_eq_one_mod] at hSV
     norm_num at hSV
 
--- ## Main result of this file
+
+-- ## Main results of this file
+
+/-- Every regular matroid is binary. -/
+lemma Matroid.IsRegular.isBinary {M : Matroid α} (hM : M.IsRegular) :
+    ∃ V : VectorMatroid α Z2, V.toMatroid = M := by
+  obtain ⟨X, Y, A, hA, rfl⟩ := hM
+  exact ⟨⟨X, Y, A.support⟩, hA.toMatroid_eq_support_toMatroid.symm⟩
 
 /-- Binary matroid constructed from a standard representation is regular iff the binary matrix has a TU signing. -/
 lemma StandardRepr.toMatroid_isRegular_iff_hasTuSigning (S : StandardRepr α Z2) [Finite S.X] :

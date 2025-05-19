@@ -3,6 +3,17 @@ import Seymour.Matrix.Basic
 import Mathlib.Data.Matrix.Rank
 
 
+lemma Matrix.linearIndependent_iff_fromCols_zero {X Y R : Type} [Ring R] (A : Matrix X Y R) (Y₀ : Type) :
+    LinearIndependent R A ↔ LinearIndependent R (A ◫ (0 : Matrix X Y₀ R)) := by
+  simp only [linearIndependent_iff']
+  constructor
+  <;> intro hA s c hscA
+  <;> apply hA
+  <;> ext j
+  · simpa using congr_fun hscA ◩j
+  · exact j.casesOn (by simpa using congr_fun hscA ·) (by simp)
+
+
 section fromPeterNelson
 
 private lemma LinearIndepOn.exists_maximal {ι R O : Type} [DivisionRing R] [AddCommGroup O] [Module R O] {t : Set ι}

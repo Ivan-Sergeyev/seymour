@@ -171,9 +171,3 @@ theorem Matroid.IsGraphic.isRegular {M : Matroid α} (hM : M.IsGraphic) :
     M.IsRegular := by
   obtain ⟨X, Y, A, hA, hMA⟩ := hM
   exact ⟨X, Y, A, hA.isTotallyUnimodular, hMA⟩
-
-/-- Cographic matroid is regular. -/
-theorem Matroid.IsCographic.isRegular {M : Matroid α} (hM : M.IsCographic) :
-    M.IsRegular := by
-  unfold Matroid.IsCographic at hM
-  exact hM.isRegular.of_dual

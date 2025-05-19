@@ -1,67 +1,26 @@
 \section{Regularity of 2-Sum}
 
-\subsection{Preliminaries: Properties of Matrices}
-
-\begin{lemma}\label{lem:pivot_nz_abs_det_eq}
-    Let $k \in \mathbb{Z}_{\geq 1}$, let $A \in \mathbb{Q}^{k \times k}$, and let $A'$ be the result of pivoting in $A$ on $A (x, y) \neq 0$ where $x, y \in \{1, \dots, k\}$. Then $A'$ contains a submatrix $A''$ of size $(k - 1) \times (k - 1)$ with $|\det A''| = |\det A| / |A (x, y)|$.
-\end{lemma}
-
-\begin{proof}
-    Let $X = \{1, \dots, k\} \setminus \{x\}$ and $Y = \{1, \dots, k\} \setminus \{y\}$, and let $A'' = A' (X, Y)$. Since $A''$ does not contain the pivot row or the pivot column, $\forall (i, j) \in X \times Y$ we have $A'' (i, j) = A (i, j) - \frac{A (i, y) \cdot A (x, j)}{A (x, y)}$. For $\forall j \in Y$, let $B_{j}$ be the matrix obtained from $A$ by removing row $x$ and column $j$, and let $B_{j}''$ be the matrix obtained from $A''$ by replacing column $j$ with $A (X, y)$ (i.e., the pivot column without the pivot element). The cofactor expansion along row $x$ in $A$ yields
-    \[
-        \det A = \sum_{j = 1}^{k} (-1)^{y + j} \cdot A (x, j) \cdot \det B_{j}.
-    \]
-    By reordering columns of every $B_{j}$ to match their order in $B_{j}''$, we get
-    \[
-        \det A = (-1)^{x + y} \cdot \left( A (x, y) \cdot \det A' - \sum_{j \in Y} A (x, j) \cdot \det B_{j}'' \right).
-    \]
-    By linearity of the determinant applied to $\det A''$, we have
-    \[
-        \det A'' = \det A' - \sum_{j \in Y} \frac{A (x, j)}{A (x, y)} \cdot \det B_{j}''
-    \]
-    Therefore, $|\det A''| = |\det A| / |A (x, y)|$.
-\end{proof}
-
-\begin{lemma}\label{lem:pivot_pn_abs_det_eq}
-    Let $k \in \mathbb{Z}_{\geq 1}$, let $A \in \mathbb{Q}^{k \times k}$, and let $A'$ be the result of pivoting in $A$ on $A (x, y) \in \{\pm 1\}$ where $x, y \in \{1, \dots, k\}$. Then $A'$ contains a submatrix $A''$ of size $(k - 1) \times (k - 1)$ with $|\det A''| = |\det A|$.
-\end{lemma}
-
-\begin{proof}
-    Apply Lemma~\ref{lem:pivot_nz_abs_det_eq} to $A$ and use that $A (x, y) \in \{\pm 1\}$.
-\end{proof}
-
-\subsection{Partial Unimodularity}
-
-\begin{definition}\label{def:p_tu}
-    Given $k \in \mathbb{Z}_{\geq 1}$, we say that a matrix $A$ is $k$-partially unimodular, $k$-PU for short, if every $k \times k$ submatrix $T$ of $A$ has $\det T \in \{0, \pm 1\}$.
-\end{definition}
-
-\begin{lemma}\label{lem:tu_iff_all_p_tu}
-    A matrix $A$ is TU if and only if $A$ is $k$-PU for every $k \in \mathbb{Z}_{\geq 1}$.
-\end{lemma}
-
-\begin{proof}
-    This follows from the definitions of TUness and $k$-PUness.
-\end{proof}
-
-
-\subsection{Matrix TUness is Closed Under 2-sum}
-
-\begin{definition}\label{def:two_sum}
+\begin{definition}\label{def:two_sum_matrix}
     Let $R$ be a semiring (we will use $R = \mathbb{Z}_{2}$ and $R = \mathbb{Q}$). Let $B_{\ell} \in R^{(X_{\ell} \cup \{x\}) \times Y_{\ell}}$ and $B_{r} \in R^{X_{r} \times (Y_{r} \cup \{y\})}$ be matrices of the form
     \[
         B_{\ell} = \begin{NiceArray}{c}[hvlines] A_{\ell} \\ r \\ \end{NiceArray}, \quad
         B_{r} = \begin{NiceArray}{cc}[hvlines] c & A_{r} \\ \end{NiceArray}.
     \]
-    Let $D = c \cdot r$ be the outer product of $c$ and $r$. Then the $2$-sum of $B_{\ell}$ and $B_{r}$ is
+    The $2$-sum $B = B_{\ell} \oplus_{2, x, y} B_{r}$ of $B_{\ell}$ and $B_{r}$ is defined as
     \[
-        B = B_{\ell} \oplus_{2, x, y} B_{r} = \begin{NiceArray}{cc}[hvlines] A_{\ell} & 0 \\ D & A_{r} \\ \end{NiceArray}.
+        B = \begin{NiceArray}{cc}[hvlines] A_{\ell} & 0 \\ D & A_{r} \\ \end{NiceArray}
+        \quad \text{where} \quad
+        D = c \otimes r.
     \]
     Here $A_{\ell} \in R^{X_{\ell} \times Y_{\ell}}$, $A_{r} \in R^{X_{r} \times Y_{r}}$, $r \in R^{Y_{\ell}}$, $c \in R^{X_{r}}$, $D \in R^{X_{r} \times Y_{\ell}}$, and the indexing is consistent everywhere.
 \end{definition}
 
+\begin{definition}\label{def:two_sum_matroid}
+    A matroid $M$ is a $2$-sum of matroids $M_{\ell}$ and $M_{r}$ if there exist standard $\mathbb{Z}_{2}$ representation matrices $B$, $B_{\ell}$, and $B_{r}$ (for $M$, $M_{\ell}$, and $M_{r}$, respectively) of the form given in Definition~\ref{def:two_sum_matrix}.
+\end{definition}
+
 \begin{lemma}\label{lem:two_sum_bottom_tu}
-    Let $B_{\ell}$ and $B_{r}$ from Definition~\ref{def:two_sum} be TU matrices (over $\mathbb{Q}$). Then $C = \begin{NiceArray}{cc}[hvlines] D & A_{r} \\ \end{NiceArray}$ is TU.
+    Let $B_{\ell}$ and $B_{r}$ from Definition~\ref{def:two_sum_matrix} be TU matrices (over $\mathbb{Q}$). Then $C = \begin{NiceArray}{cc}[hvlines] D & A_{r} \\ \end{NiceArray}$ is TU.
 \end{lemma}
 
 \begin{proof}
@@ -69,7 +28,7 @@
 \end{proof}
 
 \begin{lemma}\label{lem:two_sum_pivot}
-    Let $B_{\ell}$ and $B_{r}$ be matrices from Definition~\ref{def:two_sum}. Let $B_{\ell}'$ and $B'$ be the matrices obtained by pivoting on entry $(x_{\ell}, y_{\ell}) \in X_{\ell} \times Y_{\ell}$ in $B_{\ell}$ and $B$, respectively. Then $B' = B_{\ell}' \oplus_{2, x, y} B_{r}$.
+    Let $B_{\ell}$ and $B_{r}$ be matrices from Definition~\ref{def:two_sum_matrix}. Let $B_{\ell}'$ and $B'$ be the matrices obtained by performing a short tableau pivot on $(x_{\ell}, y_{\ell}) \in X_{\ell} \times Y_{\ell}$ in $B_{\ell}$ and $B$, respectively. Then $B' = B_{\ell}' \oplus_{2, x, y} B_{r}$.
 \end{lemma}
 
 \begin{proof}
@@ -78,36 +37,29 @@
         B_{\ell}' = \begin{NiceArray}{c}[hvlines] A_{\ell}' \\ r' \\ \end{NiceArray}, \quad
         B' = \begin{NiceArray}{cc}[hvlines] B_{11}' & B_{12}' \\ B_{21}' & B_{22}' \\ \end{NiceArray}
     \]
-    where the blocks have the same dimensions as in $B_{\ell}$ and $B$, respectively. Since $A_{\ell}$ is a submatrix of $B$, we have $B_{11}' = A_{\ell}'$. A direct calculation shows that $B_{12}' = 0$ and $B_{21}' = A_{r}$ (they remain unchanged because of the $0$ block in $B$). Finally, $B_{21}' = c \cdot r'$ is also verified via a direct calculation. Thus, $B' = B_{\ell}' \oplus_{2, x, y} B_{r}$.
+    where the blocks have the same dimensions as in $B_{\ell}$ and $B$, respectively. By Lemma~\ref{lem:stp_block_zero}, $B_{11}' = A_{\ell}'$, $B_{12}' = 0$, and $B_{22}' = A_{r}$. Equality $B_{21}' = c \otimes r'$ can be verified via a direct calculation. Thus, $B' = B_{\ell}' \oplus_{2, x, y} B_{r}$.
 \end{proof}
 
 \begin{lemma}\label{lem:two_sum_tu}
-    Let $B_{\ell}$ and $B_{r}$ from Definition~\ref{def:two_sum} be TU matrices (over $\mathbb{Q}$). Then $B_{\ell} \oplus_{2, x, y} B_{r}$ is TU.
+    Let $B_{\ell}$ and $B_{r}$ from Definition~\ref{def:two_sum_matrix} be TU matrices (over $\mathbb{Q}$). Then $B_{\ell} \oplus_{2, x, y} B_{r}$ is TU.
 \end{lemma}
 
 \begin{proof}
-    By Lemma~\ref{lem:tu_iff_all_p_tu}, it suffices to show that $B_{\ell} \oplus_{2, x, y} B_{r}$ is $k$-PU for every $k \in \mathbb{Z}_{\geq 1}$. We prove this claim by induction on $k$. The base case with $k = 1$ holds, since all entries of $B_{\ell} \oplus_{2, x, y} B_{r}$ are in $\{0, \pm 1\}$ by construction.
+    By Lemma~\ref{lem:tu_iff_all_pu}, it suffices to show that $B_{\ell} \oplus_{2, x, y} B_{r}$ is $k$-PU for every $k \in \mathbb{Z}_{\geq 1}$. We prove this claim by induction on $k$. The base case with $k = 1$ holds, since all entries of $B_{\ell} \oplus_{2, x, y} B_{r}$ are in $\{0, \pm 1\}$ by construction.
 
-    Suppose that for some $k \in \mathbb{Z}_{\geq 1}$ we know that for any TU matrices $B_{\ell}'$ and $B_{r}'$ (from Definition~\ref{def:two_sum}) their $2$-sum $B_{\ell}' \oplus_{2, x, y} B_{r}'$ is $k$-PU. Now, given TU matrices $B_{\ell}$ and $B_{r}$ (from Definition~\ref{def:two_sum}), our goal is to show that $B = B_{\ell} \oplus_{2, x, y} B_{r}$ is $(k + 1)$-PU, i.e., that every $(k + 1) \times (k + 1)$ submatrix $T$ of $B$ has $\det T \in \{0, \pm 1\}$.
+    Suppose that for some $k \in \mathbb{Z}_{\geq 1}$ we know that for any TU matrices $B_{\ell}'$ and $B_{r}'$ (from Definition~\ref{def:two_sum_matrix}) their $2$-sum $B_{\ell}' \oplus_{2, x, y} B_{r}'$ is $k$-PU. Now, given TU matrices $B_{\ell}$ and $B_{r}$ (from Definition~\ref{def:two_sum_matrix}), our goal is to show that $B = B_{\ell} \oplus_{2, x, y} B_{r}$ is $(k + 1)$-PU, i.e., that every $(k + 1) \times (k + 1)$ submatrix $T$ of $B$ has $\det T \in \{0, \pm 1\}$.
 
     First, suppose that $T$ has no rows in $X_{\ell}$. Then $T$ is a submatrix of $\begin{NiceArray}{cc}[hvlines] D & A_{r} \\ \end{NiceArray}$, which is TU by Lemma~\ref{lem:two_sum_bottom_tu}, so $\det T \in \{0, \pm 1\}$. Thus, we may assume that $T$ contains a row $x_{\ell} \in X_{\ell}$.
 
     Next, note that without loss of generality we may assume that there exists $y_{\ell} \in Y_{\ell}$ such that $T (x_{\ell}, y_{\ell}) \neq 0$. Indeed, if $T (x_{\ell}, y) = 0$ for all $y$, then $\det T = 0$ and we are done, and $T (x_{\ell}, y) = 0$ holds whenever $y \in Y_{r}$.
 
-    Since $B$ is $1$-PU, all entries of $T$ are in $\{0, \pm 1\}$, and hence $T (x_{\ell}, y_{\ell}) \in \{\pm 1\}$. Thus, by Lemma~\ref{lem:pivot_pn_abs_det_eq}, pivoting in $T$ on $(x_{\ell}, y_{\ell})$ yields a matrix that contains a $k \times k$ submatrix $T''$ such that $|\det T| = |\det T''|$. Since $T$ is a submatrix of $B$, matrix $T''$ is a submatrix of the matrix $B'$ resulting from pivoting in $B$ on the same entry $(x_{\ell}, y_{\ell})$. By Lemma~\ref{lem:two_sum_pivot}, we have $B' = B_{\ell}' \oplus_{2, x, y} B_{r}$ where $B_{\ell}'$ is the result of pivoting in $B_{\ell}$ on $(x_{\ell}, y_{\ell})$. Since TUness is preserved by pivoting and $B_{\ell}$ is TU, $B_{\ell}'$ is also TU. Thus, by the inductive hypothesis applied to $T''$ and $B_{\ell}' \oplus_{2, x, y} B_{r}$, we have $\det T'' \in \{0, \pm 1\}$. Since $|\det T| = |\det T''|$, we conclude that $\det T \in \{0, \pm 1\}$.
+    Since $B$ is $1$-PU, all entries of $T$ are in $\{0, \pm 1\}$, and hence $T (x_{\ell}, y_{\ell}) \in \{\pm 1\}$. Thus, by Lemma~\ref{lem:pivot_pn_abs_det_eq}, performing a short tableau pivot in $T$ on $(x_{\ell}, y_{\ell})$ yields a matrix that contains a $k \times k$ submatrix $T''$ such that $|\det T| = |\det T''|$. Since $T$ is a submatrix of $B$, matrix $T''$ is a submatrix of the matrix $B'$ resulting from performing a short tableau pivot in $B$ on the same entry $(x_{\ell}, y_{\ell})$. By Lemma~\ref{lem:two_sum_pivot}, we have $B' = B_{\ell}' \oplus_{2, x, y} B_{r}$ where $B_{\ell}'$ is the result of performing a short tableau pivot in $B_{\ell}$ on $(x_{\ell}, y_{\ell})$. Since TUness is preserved by pivoting and $B_{\ell}$ is TU, $B_{\ell}'$ is also TU. Thus, by the inductive hypothesis applied to $T''$ and $B_{\ell}' \oplus_{2, x, y} B_{r}$, we have $\det T'' \in \{0, \pm 1\}$. Since $|\det T| = |\det T''|$, we conclude that $\det T \in \{0, \pm 1\}$.
 \end{proof}
 
-
-\subsection{Matroid Regularity is Closed Under 2-sum}
-
-\begin{definition}\label{def:matroid_two_sum}
-    A matroid $M$ is a $2$-sum of matroids $M_{\ell}$ and $M_{r}$ if there exist standard $\mathbb{Z}_{2}$ representation matrices $B$, $B_{\ell}$, and $B_{r}$ (for $M$, $M_{\ell}$, and $M_{r}$, respectively) of the form give in Definition~\ref{def:two_sum}.
-\end{definition}
-
-\begin{lemma}\label{lem:matroid_two_sum_reg}
-    Suppose a matroid $M$ is a $2$-sum of regular matroids $M_{\ell}$ and $M_{r}$. Then $M$ is also regular.
+\begin{lemma}\label{lem:two_sum_regular}
+    Let $M$ be a $2$-sum of regular matroids $M_{\ell}$ and $M_{r}$. Then $M$ is also regular.
 \end{lemma}
 
 \begin{proof}
-    Let $B$, $B_{\ell}$, and $B_{r}$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{def:matroid_two_sum}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{lem:regular_defs_equiv}, $B_{\ell}$ and $B_{r}$ have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Then $B' = B_{\ell}' \oplus_{2, x, y} B_{r}'$ is a TU signing of $B$. Indeed, $B'$ is TU by Lemma~\ref{lem:two_sum_tu}, and a direct calculation verifies that $B'$ is a signing of $B$. Thus, $M$ is regular by Lemma~\ref{lem:regular_defs_equiv}.
+    Let $B$, $B_{\ell}$, and $B_{r}$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{def:two_sum_matroid}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{lem:regular_defs_equiv}, $B_{\ell}$ and $B_{r}$ have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Then $B' = B_{\ell}' \oplus_{2, x, y} B_{r}'$ is a TU signing of $B$. Indeed, $B'$ is TU by Lemma~\ref{lem:two_sum_tu}, and a direct calculation verifies that $B'$ is a signing of $B$. Thus, $M$ is regular by Lemma~\ref{lem:regular_defs_equiv}.
 \end{proof}

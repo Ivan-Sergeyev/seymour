@@ -2,7 +2,8 @@ import Mathlib.Data.Matroid.IndepAxioms
 import Mathlib.Data.Matroid.Dual
 import Mathlib.Data.Matroid.Map
 import Mathlib.Data.Matroid.Sum
-import Seymour.Basic.Basic
+import Seymour.Basic.Sets
+import Seymour.Matrix.LinearIndependence
 
 open scoped Matrix Set.Notation
 
@@ -231,15 +232,81 @@ lemma vectorMatroid_toMatroid_Y_congr [DivisionRing R] {V W : VectorMatroid α R
 lemma VectorMatroid.toMatroid_indep [DivisionRing R] (M : VectorMatroid α R) : M.toMatroid.Indep = M.IndepCols :=
   rfl
 
+lemma VectorMatroid.toMatroid_indep_iff [DivisionRing R] (M : VectorMatroid α R) (I : Set α) :
+    M.toMatroid.Indep I ↔ I ⊆ M.Y ∧ LinearIndepOn R M.Aᵀ (M.Y ↓∩ I) := by
+  rfl
+
 @[simp]
 lemma VectorMatroid.toMatroid_indep_iff_elem [DivisionRing R] (M : VectorMatroid α R) (I : Set α) :
     M.toMatroid.Indep I ↔ ∃ hI : I ⊆ M.Y, LinearIndepOn R M.Aᵀ hI.elem.range :=
   M.indepCols_iff_elem I
 
 lemma VectorMatroid.toMatroid_indep_iff_submatrix [DivisionRing R] (M : VectorMatroid α R) (I : Set α) :
-    M.toMatroid.Indep I ↔ ∃ hI : I ⊆ M.Y, LinearIndependent R (M.A.submatrix id hI.elem)ᵀ :=
-  M.indepCols_iff_submatrix I
-
-lemma VectorMatroid.toMatroid_indep_iff_submatrix' [DivisionRing R] (M : VectorMatroid α R) (I : Set α) :
     M.toMatroid.Indep I ↔ ∃ hI : I ⊆ M.Y, LinearIndependent R (M.Aᵀ.submatrix hI.elem id) :=
   M.indepCols_iff_submatrix' I
+
+lemma VectorMatroid.fromRows_zero [DivisionRing R] (V : VectorMatroid α R) {X₀ : Set α} (hXX : V.X ⫗ X₀)
+    [∀ a, Decidable (a ∈ V.X)] [∀ a, Decidable (a ∈ X₀)] :
+    (VectorMatroid.mk (V.X ∪ X₀) V.Y ((V.A ⊟ 0) ∘ Subtype.toSum)).toMatroid = V.toMatroid := by
+  ext I
+  · rfl
+  · simp only [VectorMatroid.toMatroid_indep_iff_submatrix]
+    constructor
+    <;> intro ⟨hI, hAI⟩
+    <;> use hI
+    · rw [(V.Aᵀ.submatrix hI.elem id).linearIndependent_iff_fromCols_zero X₀]
+      have hAI' : LinearIndependent R ((V.Aᵀ ◫ (0 : Matrix V.Y X₀ R)).submatrix hI.elem Subtype.toSum)
+      · convert hAI
+        ext i j
+        cases hj : j.toSum <;> simp [hj]
+      let f : (V.X ⊕ X₀ → R) →ₗ[R] ((V.X ∪ X₀).Elem → R) := ⟨⟨(· ·.toSum), ↓↓rfl⟩, ↓↓rfl⟩
+      exact hAI'.of_comp f
+    · rw [(V.Aᵀ.submatrix hI.elem id).linearIndependent_iff_fromCols_zero X₀] at hAI
+      convert_to LinearIndependent R ((V.Aᵀ ◫ (0 : Matrix V.Y X₀ R)).submatrix hI.elem Subtype.toSum)
+      · ext i j
+        cases hj : j.toSum <;> simp [hj]
+      let f : ((V.X ∪ X₀).Elem → R) →ₗ[R] (V.X ⊕ X₀ → R) := ⟨⟨(· ·.toUnion), ↓↓rfl⟩, ↓↓rfl⟩
+      apply LinearIndependent.of_comp f
+      convert hAI
+      ext i j
+      exact j.casesOn (by simp [f]) (by simp [f, hXX.symm.not_mem_of_mem_left ·.coe_prop])
+
+lemma Matrix.fromRows_zero_reindex_toMatroid [DivisionRing R] {G X Y : Set α} [Fintype G]
+    [∀ a, Decidable (a ∈ G)] [∀ a, Decidable (a ∈ Y)]
+    (A : Matrix G (G ⊕ (Y \ G).Elem) R) (hGY : G ⊆ Y) {Z : Type} (e : G ⊕ Z ≃ X) :
+    (VectorMatroid.mk G (G ∪ Y \ G) (fun i : G => A i ∘ Subtype.toSum)).toMatroid =
+    (VectorMatroid.mk X Y ((A ⊟ 0).reindex e hGY.equiv)).toMatroid := by
+  ext I
+  · simp [Set.union_diff_cancel' (by rfl) hGY]
+  have hIGYG : I ⊆ G ∪ Y \ G := by assumption
+  have hIY : I ⊆ Y := Set.union_diff_cancel' (by rfl) hGY ▸ hIGYG
+  simp only [VectorMatroid.toMatroid_indep_iff_submatrix, Matrix.reindex_apply]
+  constructor <;> intro ⟨_, hAI⟩
+  · use hIY
+    simp
+    suffices : LinearIndependent R ((Aᵀ ◫ 0).submatrix (hGY.equiv.symm ∘ hIY.elem) e.symm)
+    · convert this
+      ext _ (_ | _) <;> simp
+    have hA0I : LinearIndependent R ((Aᵀ.submatrix (Subtype.toSum ∘ hIGYG.elem) id) ◫ (0 : Matrix I Z R)) :=
+      ((Aᵀ.submatrix (Subtype.toSum ∘ hIGYG.elem) id).linearIndependent_iff_fromCols_zero Z).→ hAI
+    let f : (X → R) →ₗ[R] (G ⊕ Z → R) := ⟨⟨(· <| e ·), ↓↓rfl⟩, ↓↓rfl⟩
+    apply LinearIndependent.of_comp f
+    convert hA0I
+    ext i j
+    if hi : i.val ∈ G then
+      cases j <;> simp [hi, f, HasSubset.Subset.equiv]
+    else
+      have hiY : i.val ∈ Y \ G := Set.mem_diff_of_mem (hIY i.property) hi
+      cases j <;> simp [hi, hiY, f, HasSubset.Subset.equiv]
+  · use hIGYG
+    simp at hAI
+    rw [Matrix.linearIndependent_iff_fromCols_zero _ Z]
+    let f : (G ⊕ Z → R) →ₗ[R] (X → R) := ⟨⟨(· <| e.symm ·), ↓↓rfl⟩, ↓↓rfl⟩
+    apply LinearIndependent.of_comp f
+    convert hAI
+    ext i j
+    if hi : i.val ∈ G then
+      cases hj : e.symm j <;> simp [hi, hj, f, HasSubset.Subset.equiv]
+    else
+      have hiY : i.val ∈ Y \ G := Set.mem_diff_of_mem (hIY i.property) hi
+      cases hj : e.symm j <;> simp [hi, hiY, hj, f, HasSubset.Subset.equiv]
