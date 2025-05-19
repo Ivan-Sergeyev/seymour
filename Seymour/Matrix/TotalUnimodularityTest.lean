@@ -64,7 +64,7 @@ def Matrix.testTotallyUnimodularFast {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ
     (A.squareSetSubmatrix hXY).det ∈ SignType.cast.range
 
 lemma Matrix.abs_det_reindex_self_self {m n : Type} [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
-    {R : Type} [LinearOrderedCommRing R] (A : Matrix m m R) (e₁ e₂ : m ≃ n) :
+    {R : Type} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (A : Matrix m m R) (e₁ e₂ : m ≃ n) :
     |(A.reindex e₁ e₂).det| = |A.det| :=
   A.abs_det_submatrix_equiv_equiv e₁.symm e₂.symm
 

@@ -411,12 +411,12 @@ private lemma Fin.reindexFun_bijective {n : ℕ} (i : Fin n.succ) : i.reindexFun
       | inr bₙ =>
         symm at hab
         absurd i.succAbove_ne bₙ
-        simpa using hab
+        simp at hab
     | inr aₙ =>
       cases b with
       | inl b₁ =>
         absurd i.succAbove_ne aₙ
-        simpa using hab
+        simp at hab
       | inr bₙ =>
         simpa using hab,
     (by
@@ -503,7 +503,9 @@ private noncomputable instance invertible_matrix_fin1_of_ne_zero [Field F] {A : 
     rw [i.eq_zero, j.eq_zero]
     simp [IsUnit.inv_mul_cancel (IsUnit.mk0 _ hA0.out)])
 
-private lemma shortTableauPivot_submatrix_succAbove_succAbove_det_abs_eq_div [LinearOrderedField F] {k : ℕ}
+variable [Field F] [LinearOrder F] [IsStrictOrderedRing F] {k : ℕ}
+
+private lemma shortTableauPivot_submatrix_succAbove_succAbove_det_abs_eq_div
     {A : Matrix (Fin k.succ) (Fin k.succ) F} {x y : Fin k.succ} (hAxy : A x y ≠ 0) :
     |((A.shortTableauPivot x y).submatrix x.succAbove y.succAbove).det| = |A.det| / |A x y| := by
   have : NeZero (A.block₁₁ x y 0 0) := ⟨by simpa⟩
@@ -515,7 +517,7 @@ private lemma shortTableauPivot_submatrix_succAbove_succAbove_det_abs_eq_div [Li
   exact (Matrix.abs_det_submatrix_equiv_equiv ..).symm
 
 /-- Lemma 1. -/
-lemma shortTableauPivot_submatrix_det_abs_eq_div [LinearOrderedField F] {k : ℕ}
+lemma shortTableauPivot_submatrix_det_abs_eq_div
     {A : Matrix (Fin k.succ) (Fin k.succ) F} {x y : Fin k.succ} (hAxy : A x y ≠ 0) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
       |((A.shortTableauPivot x y).submatrix f g).det| = |A.det| / |A x y| :=
@@ -523,7 +525,7 @@ lemma shortTableauPivot_submatrix_det_abs_eq_div [LinearOrderedField F] {k : ℕ
     shortTableauPivot_submatrix_succAbove_succAbove_det_abs_eq_div hAxy⟩
 
 /-- Corollary 1. -/
-lemma shortTableauPivot_submatrix_det_ni_signTypeCastRange [LinearOrderedField F] {k : ℕ}
+lemma shortTableauPivot_submatrix_det_ni_signTypeCastRange
     {A : Matrix (Fin k.succ) (Fin k.succ) F}
     (hA : A.det ∉ SignType.cast.range) (x y : Fin k.succ) (hAxy : A x y = 1 ∨ A x y = -1) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧

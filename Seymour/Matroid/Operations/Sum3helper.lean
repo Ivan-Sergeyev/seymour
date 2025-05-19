@@ -267,6 +267,7 @@ private lemma Matrix.IsTuCanonicallySignable₁.toCanonicalSigning {X Y : Set α
   have ⟨hQtu, hxx, hyy, _⟩ := hQ
   ⟨hQtu.toCanonicalSigning x₀ x₁ x' y₀ y₁ y', hxx, hyy, hQ.toCanonicalSigning_submatrix3x3⟩
 
+set_option maxHeartbeats 1000000 in
 -- lemma 15.a
 private lemma Matrix.IsTotallyUnimodular.signing_expansion₀ {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
     {x' y₀ y₁ : α} (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy : y₀ ≠ y₁)
@@ -309,6 +310,7 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion₀ {X Y : Set α} {Q 
   convert hQcc.mul_cols hq
   ext _ ((_|_)|_) <;> simp [q]
 
+set_option maxHeartbeats 666666 in
 -- lemma 15.b
 private lemma Matrix.IsTotallyUnimodular.signing_expansion₁ {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
     {x' y₀ y₁ : α} (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy : y₀ ≠ y₁)

@@ -88,7 +88,7 @@ lemma sum_elem_smul_matrix_row_of_nmem [DecidableEq α] {β : Type} [NonAssocSem
   apply smul_zero
 
 /-- The absolute value of a matrix is a matrix made of absolute values of respective elements. -/
-def Matrix.abs [LinearOrderedAddCommGroup α] {m n : Type} (A : Matrix m n α) : Matrix m n α :=
+def Matrix.abs [LinearOrder α] [AddCommGroup α] {m n : Type} (A : Matrix m n α) : Matrix m n α :=
   Matrix.of (|A · ·|)
 
 -- We redeclare `|·|` instead of using the existing notation because the official `abs` requires a lattice.

@@ -72,6 +72,7 @@ theorem VectorMatroid.indepCols_subset [Semiring R] (M : VectorMatroid α R) (I 
     M.IndepCols I :=
   M.indepCols_eq_indepColsOld ▸ M.indepColsOld_subset I J (M.indepCols_eq_indepColsOld ▸ hMJ) hIJ
 
+set_option maxHeartbeats 1000000 in
 /-- A non-maximal independent set of columns can be augmented with another independent column. To see why `DivisionRing` is
     necessary, consider `(!![0, 1, 2, 3; 1, 0, 3, 2] : Matrix (Fin 2) (Fin 4) (ZMod 6))` as a counterexample.
     The set `{0}` is nonmaximal independent.

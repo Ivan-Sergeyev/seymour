@@ -5,6 +5,8 @@ import Seymour.Matrix.Support
 import Seymour.Matroid.Constructors.BinaryMatroid
 import Seymour.Matroid.Elementary.Basic
 
+import Mathlib.Data.Fin.Tuple.Basic
+
 open scoped Matrix Set.Notation
 
 
@@ -272,8 +274,7 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
             left
             exact hj''
           else
-            exfalso
-            apply hj
+            absurd hj
             split
             · contradiction
             · rfl
@@ -351,7 +352,7 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
                 exact (hzj ▸ hz) (hxj ▸ hx)
               else
                 exact smul_eq_zero_of_right _ (hgja ▸ (by simpa [hxj] using hfA x j))
-        · simp only [Finsupp.ofSupportFinite, ne_eq, id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int]
+        · simp only [Finsupp.ofSupportFinite, ne_eq, id_eq, Int.reduceNeg]
           intro hc0
           rw [Finsupp.ext_iff] at hc0
           specialize hc0 (hGY.elem (G.equivFin ⟨n, hnG⟩))
@@ -363,50 +364,7 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
     let f' : Fin n.succ → W.X := Fin.snoc f x
     use ⟨W.X, W.Y, W.A.longTableauPivot x (hGY.elem (G.equivFin ⟨n, hnG⟩))⟩,
       hWV ▸ W.longTableauPivot hx, hWA.longTableauPivot _ _ hx, hGY, f'
-    constructor
-    · intro a b hab
-      if ha : a.val = n then
-        if hb : b.val = n then
-          ext
-          rw [ha, hb]
-        else
-          have ha' : a = n
-          · ext
-            simp [ha]
-          exfalso
-          rw [ha'] at hab
-          simp only [f', Fin.snoc_last, Fin.natCast_eq_last] at hab
-          rw [hab] at hxf
-          apply hxf
-          have hb' : b.val < n
-          · omega
-          use ⟨b.val, hb'⟩
-          simp [hb', Fin.snoc]
-          rfl
-      else
-        if hb : b.val = n then
-          have hb' : b = n
-          · ext
-            simp [hb]
-          exfalso
-          rw [hb'] at hab
-          simp only [f', Fin.snoc_last, Fin.natCast_eq_last] at hab
-          rw [←hab] at hxf
-          apply hxf
-          have ha' : a.val < n
-          · omega
-          use ⟨a.val, ha'⟩
-          simp [ha', Fin.snoc]
-          rfl
-        else
-          have ha' : a.val < n
-          · omega
-          have hb' : b.val < n
-          · omega
-          simp [ha', hb', f', Fin.snoc] at hab
-          apply hf at hab
-          ext
-          simpa [Fin.castLT] using hab
+    refine ⟨Fin.snoc_injective_of_injective hf hxf, ?_⟩
     intro i j
     if hj : j.val < n then
       have hxj : x ≠ f' j := (have hxf' := · ▸ hxf; by simp [f', hj, Fin.snoc] at hxf')
@@ -444,7 +402,7 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
       else
         simpa [hij, hgjgn, hxj] using W.A.longTableauPivot_elem_in_pivot_col_eq_zero hij (hxj ▸ hx)
 
-set_option maxHeartbeats 300000 in
+set_option maxHeartbeats 1000000 in
 /-- Every vector matroid whose full representation matrix is totally unimodular has a standard representation whose rows are
     a given base and the standard representation matrix is totally unimodular. -/
 lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G : Set α} [Fintype G]
@@ -697,7 +655,7 @@ private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type} [Field F
         rw [add_zero]
   have hM : (StandardRepr.mk X Y hXY B hX hY).toMatroid.Indep (y.val ᕃ Dₒ)
   · obtain ⟨d, hd, hd₀⟩ := hD
-    simp_rw [StandardRepr.toMatroid_indep_iff_elem', Matrix.one_fromCols_transpose, Function.range, Dₒ]
+    simp_rw [StandardRepr.toMatroid_indep_iff_elem, Matrix.one_fromCols_transpose, Function.range, Dₒ]
     have hDXY : Subtype.val '' Dₒ ⊆ X ∪ Y := (Subtype.coe_image_subset X Dₒ).trans hXXY
     have hyXY : y.val ∈ X ∪ Y := hYXY y.property
     have hyDXY : y.val ᕃ Subtype.val '' Dₒ ⊆ X ∪ Y := Set.insert_subset hyXY hDXY

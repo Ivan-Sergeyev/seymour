@@ -64,7 +64,7 @@ lemma Int.neg_one_ne_zero : -1 ≠ 0 := by
 
 lemma exists_minimal_nat_le_of_exists {n : ℕ} (P : { a : ℕ | a ≤ n } → Prop) (hP : P ⟨n, le_refl n⟩) :
     ∃ n : { a : ℕ | a ≤ n }, Minimal P n := by
-  obtain ⟨b, -, hb⟩ := Finite.exists_minimal_le hP
+  obtain ⟨b, -, hb⟩ := Finite.exists_le_minimal hP
   exact ⟨b, hb⟩
 
 lemma exists_minimal_nat_of_exists {P : ℕ → Prop} (hP : ∃ n : ℕ, P n) : ∃ n : ℕ, Minimal P n := by
