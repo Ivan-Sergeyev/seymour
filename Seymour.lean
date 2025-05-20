@@ -19,6 +19,10 @@ info: VectorMatroid.mk {α R : Type} (X Y : Set α) (A : Matrix (↑X) (↑Y) R)
 recall VectorMatroid.toMatroid_indep_iff {α R : Type} [DivisionRing R] (M : VectorMatroid α R) (I : Set α) :
   M.toMatroid.Indep I ↔ I ⊆ M.Y ∧ LinearIndepOn R M.Aᵀ (M.Y ↓∩ I)
 
+example {X X' Y Y' R : Type*} (A : Matrix X Y R) (f : X' → X) (g : Y' → Y) (i : X') (j : Y') :
+    (A.submatrix f g) i j = A (f i) (g j) :=
+  rfl
+
 recall Matrix.IsTotallyUnimodular {X Y R : Type*} [CommRing R] (A : Matrix X Y R) : Prop :=
   ∀ k : ℕ, ∀ f : Fin k → X, ∀ g : Fin k → Y, f.Injective → g.Injective → (A.submatrix f g).det ∈ Set.range SignType.cast
 
@@ -44,8 +48,8 @@ recall StandardRepr.toMatroid_indep_iff {α : Type} [DecidableEq α] {R : Type} 
 
 recall Subtype.toSum {α : Type} {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) :
     X.Elem ⊕ Y.Elem :=
-  if hiX : i.val ∈ X then ◩⟨i, hiX⟩ else
-  if hiY : i.val ∈ Y then ◪⟨i, hiY⟩ else
+  if hiX : i.val ∈ X then Sum.inl ⟨i, hiX⟩ else
+  if hiY : i.val ∈ Y then Sum.inr ⟨i, hiY⟩ else
   (i.property.elim hiX hiY).elim
 
 recall Matrix.toMatrixUnionUnion {α : Type} {T₁ T₂ S₁ S₂ : Set α} {β : Type}
