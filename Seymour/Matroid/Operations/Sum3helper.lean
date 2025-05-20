@@ -4,7 +4,7 @@ import Seymour.Matroid.Properties.Regularity
 
 variable {α : Type}
 
-section InterEqToMem
+section members_of_intersection
 
 variable {Zₗ Zᵣ : Set α} {a₀ a₁ a₂ : α}
 
@@ -26,10 +26,10 @@ private lemma Eq.mem3₁ᵣ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₁ �
 private lemma Eq.mem3₂ᵣ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₂ ∈ Zᵣ :=
   hZZ.symm.subset.trans Set.inter_subset_right (by simp)
 
-end InterEqToMem
+end members_of_intersection
 
 
-section Submatrix3x3
+-- ## Submatrix 3×3
 
 @[simp] private abbrev matrix3x3unsigned₀ : Matrix (Fin 3) (Fin 3) ℚ := !![1, 0, 1; 0, 1, 1; 1, 1, 0]
 @[simp] private abbrev matrix3x3unsigned₁ : Matrix (Fin 3) (Fin 3) ℚ := !![1, 1, 1; 0, 1, 1; 1, 1, 0]
@@ -43,8 +43,7 @@ private abbrev Matrix.submatrix3x3 {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x�
   !![
     Q x₀ y₀, Q x₀ y₁, Q x₀ y';
     Q x₁ y₀, Q x₁ y₁, Q x₁ y';
-    Q x' y₀, Q x' y₁, Q x' y'
-  ]
+    Q x' y₀, Q x' y₁, Q x' y']
 
 private lemma submatrix3x3signed₀_abs {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x' : X} {y₀ y₁ y' : Y}
     (hQ : Q.submatrix3x3 x₀ x₁ x' y₀ y₁ y' = matrix3x3signed₀) :
@@ -67,7 +66,7 @@ private lemma Matrix.submatrix3x3_eq {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x
         | 0 => y₀
         | 1 => y₁
         | 2 => y') := by
-  ext i j
+  ext
   rw [Matrix.submatrix_apply]
   split <;> split <;> rfl
 
@@ -75,7 +74,7 @@ private lemma Matrix.IsTotallyUnimodular.submatrix3x3 {X Y : Set α} {Q : Matrix
     (hQ : Q.IsTotallyUnimodular) (x₀ x₁ x' : X) (y₀ y₁ y' : Y) :
     (Q.submatrix3x3 x₀ x₁ x' y₀ y₁ y').IsTotallyUnimodular := by
   rw [Matrix.submatrix3x3_eq]
-  exact hQ.submatrix _ _
+  apply hQ.submatrix
 
 -- we might need this, but later
 private def Matrix.submatrix3x3mems {X Y : Set α} (Q : Matrix X Y ℚ)
@@ -84,35 +83,18 @@ private def Matrix.submatrix3x3mems {X Y : Set α} (Q : Matrix X Y ℚ)
   !![
     Q ⟨x₀, hx₀⟩ ⟨y₀, hy₀⟩, Q ⟨x₀, hx₀⟩ ⟨y₁, hy₁⟩, Q ⟨x₀, hx₀⟩ ⟨y', hy'⟩;
     Q ⟨x₁, hx₁⟩ ⟨y₀, hy₀⟩, Q ⟨x₁, hx₁⟩ ⟨y₁, hy₁⟩, Q ⟨x₁, hx₁⟩ ⟨y', hy'⟩;
-    Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩, Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩, Q ⟨x', hx'⟩ ⟨y', hy'⟩
-  ]
+    Q ⟨x', hx'⟩ ⟨y₀, hy₀⟩, Q ⟨x', hx'⟩ ⟨y₁, hy₁⟩, Q ⟨x', hx'⟩ ⟨y', hy'⟩]
 
 private lemma Matrix.submatrix3x3mems_eq {X Y : Set α} (Q : Matrix X Y ℚ)
     {x₀ x₁ x' y₀ y₁ y' : α} (hx₀ : x₀ ∈ X) (hx₁ : x₁ ∈ X) (hx' : x' ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hy' : y' ∈ Y) :
     Q.submatrix3x3mems hx₀ hx₁ hx' hy₀ hy₁ hy' =
-    Q.submatrix3x3 ⟨x₀, hx₀⟩ ⟨x₁, hx₁⟩ ⟨x', hx'⟩ ⟨y₀, hy₀⟩ ⟨y₁, hy₁⟩ ⟨y', hy'⟩ := by
+    Q.submatrix3x3 ⟨x₀, hx₀⟩ ⟨x₁, hx₁⟩ ⟨x', hx'⟩ ⟨y₀, hy₀⟩ ⟨y₁, hy₁⟩ ⟨y', hy'⟩ :=
   rfl
-
-end Submatrix3x3
 
 
 variable [DecidableEq α]
 
-section CanonicalSigning
-
--- -- may require additional assumption in IsTuCanonicalSigning(s) and IsTuCanonicallySignable(s):
--- ∧ ((∀ y : Y, y ≠ y₀ ∧ y ≠ y₁ → Q x' y = 0) ∨ (∀ x : X, x ≠ x₀ ∧ x ≠ x₁ → Q x y' = 0))
-
--- -- reason: these lemmas
--- private lemma Matrix.toCanonicalSigning_row {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y)
---     (hQ : ∀ y : Y, y ≠ y₀ ∧ y ≠ y₁ → Q x' y = 0) :
---     ∀ y : Y, y ≠ y₀ ∧ y ≠ y₁ → (Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y') x' y = 0 := by
---   sorry
-
--- private lemma Matrix.toCanonicalSigning_col {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y)
---     (hQ : ∀ x : X, x ≠ x₀ ∧ x ≠ x₁ → Q x y' = 0) :
---     ∀ x : X, x ≠ x₀ ∧ x ≠ x₁ → (Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y') x y' = 0 := by
---   sorry
+-- ## Canonical signing
 
 /-- Proposition that `Q` is a TU canonical signing with `0` on the [0,1] position. -/
 def Matrix.IsTuCanonicalSigning₀ {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x' : X) (y₀ y₁ y' : Y) : Prop :=
@@ -155,8 +137,9 @@ private def Matrix.toCanonicalSigning {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ 
     if j = y₁ then Q x' y₁ else
     if j = y' then Q x₀ y₀ * Q x₀ y' * Q x' y₀ else
     1)
-  Matrix.of (fun i j => Q i j * u i * v j)
+  Q ⊡ u ⊗ v
 
+/-- Canonical signing of a TU matrix is TU. -/
 private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Set α} {Q : Matrix X Y ℚ}
     (hQ : Q.IsTotallyUnimodular) (x₀ x₁ x' : X) (y₀ y₁ y' : Y) :
     (Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y').IsTotallyUnimodular := by
@@ -168,7 +151,7 @@ private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Set α} {Q : 
       1) i ∈ SignType.cast.range
   · intro i
     if hix₀ : i = x₀ then
-      simp_rw [hix₀, ite_true];
+      simp_rw [hix₀, ite_true]
       apply in_signTypeCastRange_mul_in_signTypeCastRange
       all_goals apply hQ.apply
     else if hix₁ : i = x₁ then
@@ -189,7 +172,7 @@ private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Set α} {Q : 
       1) j ∈ SignType.cast.range
   · intro j
     if hjy₀ : j = y₀ then
-      simp_rw [hjy₀, ite_true];
+      simp_rw [hjy₀, ite_true]
       apply hQ.apply
     else if hjy₁ : j = y₁ then
       simp_rw [hjy₀, ite_false, hjy₁, ite_true]
@@ -201,7 +184,8 @@ private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Set α} {Q : 
     else
       simp_rw [hjy₀, ite_false, hjy₁, ite_false, hjy', ite_false]
       exact one_in_signTypeCastRange
-  exact (hQ.mul_rows hu).mul_cols hv
+  unfold Matrix.toCanonicalSigning
+  exact entryProd_outerProd_eq_mul_col_mul_row Q _ _ ▸ (hQ.mul_rows hu).mul_cols hv
 
 private lemma Matrix.IsTuCanonicallySignable₀.toCanonicalSigning_submatrix3x3 {X Y : Set α} {Q : Matrix X Y ℚ}
     {x₀ x₁ x' : X} {y₀ y₁ y' : Y} (hQ : Q.IsTuCanonicallySignable₀ x₀ x₁ x' y₀ y₁ y') :
@@ -250,7 +234,6 @@ private lemma Matrix.IsTuCanonicallySignable₁.toCanonicalSigning_submatrix3x3 
   obtain ⟨d₂, hd₂⟩ := (hQ3x3tu.submatrix ![0, 1] ![1, 2]) 2 id id Function.injective_id Function.injective_id
   simp [Matrix.det_fin_two] at hd₁ hd₂
   clear hQtu hQ3x3tu hQxy hQ₁₀ hQ₂₂ hx₀ hx₁ hx' hy₀ hy₁ hy'
-  ext i j
   cases hQ₀₀ <;> cases hQ₀₁ <;> cases hQ₀₂ <;> cases hQ₁₁ <;> cases hQ₁₂ <;> cases hQ₂₀ <;> cases hQ₂₁
   <;> simp only [mul_one, mul_neg, neg_zero, neg_neg, *]
   <;> simp [*] at hd₁ hd₂
@@ -258,14 +241,14 @@ private lemma Matrix.IsTuCanonicallySignable₁.toCanonicalSigning_submatrix3x3 
 private lemma Matrix.IsTuCanonicallySignable₀.toCanonicalSigning {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x' : X} {y₀ y₁ y' : Y}
     (hQ : Q.IsTuCanonicallySignable₀ x₀ x₁ x' y₀ y₁ y') :
     (Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y').IsTuCanonicalSigning₀ x₀ x₁ x' y₀ y₁ y' :=
-  have ⟨hQtu, hxx, hyy, _⟩ := hQ
-  ⟨hQtu.toCanonicalSigning x₀ x₁ x' y₀ y₁ y', hxx, hyy, hQ.toCanonicalSigning_submatrix3x3⟩
+  have ⟨hQtu, hxxx, hyyy, _⟩ := hQ
+  ⟨hQtu.toCanonicalSigning x₀ x₁ x' y₀ y₁ y', hxxx, hyyy, hQ.toCanonicalSigning_submatrix3x3⟩
 
 private lemma Matrix.IsTuCanonicallySignable₁.toCanonicalSigning {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x' : X} {y₀ y₁ y' : Y}
     (hQ : Q.IsTuCanonicallySignable₁ x₀ x₁ x' y₀ y₁ y') :
     (Q.toCanonicalSigning x₀ x₁ x' y₀ y₁ y').IsTuCanonicalSigning₁ x₀ x₁ x' y₀ y₁ y' :=
-  have ⟨hQtu, hxx, hyy, _⟩ := hQ
-  ⟨hQtu.toCanonicalSigning x₀ x₁ x' y₀ y₁ y', hxx, hyy, hQ.toCanonicalSigning_submatrix3x3⟩
+  have ⟨hQtu, hxxx, hyyy, _⟩ := hQ
+  ⟨hQtu.toCanonicalSigning x₀ x₁ x' y₀ y₁ y', hxxx, hyyy, hQ.toCanonicalSigning_submatrix3x3⟩
 
 -- lemma 15.a
 private lemma Matrix.IsTotallyUnimodular.signing_expansion₀ {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
@@ -493,14 +476,10 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Eq_SumOuterProducts {Xₗ 
     [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x'}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y'})
-    (hBₗ' : |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ|
-      = matrix3x3unsigned₀ ∨
-      |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ|
-      = matrix3x3unsigned₁)
-    (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ|
-      = matrix3x3unsigned₀ ∨
-      |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ|
-      = matrix3x3unsigned₁) :
+    (hBₗ' : |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₀ ∨
+            |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₁ )
+    (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₀ ∨
+            |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₁ ) :
     -- row membership
     let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
     let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
@@ -537,21 +516,12 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Eq_SumOuterProducts {Xₗ 
       if hi₀ : i.val = x₀ then ◩0 else
       if hi₁ : i.val = x₁ then ◩1 else
       if hi : i.val ∈ Xᵣ \ {x₀, x₁, x'} then ◪⟨i, hi⟩ else
-      False.elim (by
-        simp_all only [Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff, false_or, not_and, Decidable.not_not]
-        obtain ⟨_, _⟩ := i
-        simp_all only
-        simp_all only [Set.mem_diff, Set.mem_singleton_iff, imp_false, not_true_eq_false]))
+      (impossible_nmem_sdiff_triplet hi hi₀ hi₁).elim)
     let fₗ : (Yₗ \ {y'}).Elem → (Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2 := fun j => (
       if hj₀ : j.val = y₀ then ◪0 else
       if hj₁ : j.val = y₁ then ◪1 else
       if hj : j.val ∈ Yₗ \ {y₀, y₁, y'} then ◩⟨j, hj⟩ else
-      False.elim (by
-        simp_all only [Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff, false_or, not_and, Decidable.not_not]
-        obtain ⟨_, _⟩ := j
-        simp_all only
-        simp_all only [Set.mem_diff, Set.mem_singleton_iff, imp_false, not_true_eq_false]))
-    -- final bottom left submatrix
+      (impossible_nmem_sdiff_triplet hj hj₀ hj₁).elim)
     let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := D'.submatrix fᵣ fₗ
     -- special rows and columns
     let c₀ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) y₀ᵣ
@@ -585,7 +555,7 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Eq_SumOuterProducts {Xₗ 
         | inl => simp_all only [not_true_eq_false, D₀']
         | inr => simp_all only [not_true_eq_false, D₀']))
     -- actual statement
-    D = (c₀ · * r₀ ·) + (c₁ · * r₁ ·) :=
+    D = c₀ ⊗ r₀ + c₁ ⊗ r₁ :=
   sorry
 
 -- lemma 19.2
@@ -594,14 +564,10 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Rows {Xₗ Yₗ Xᵣ Yᵣ 
     [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x'}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y'})
-    (hBₗ' : |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ|
-      = matrix3x3unsigned₀ ∨
-      |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ|
-      = matrix3x3unsigned₁)
-    (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ|
-      = matrix3x3unsigned₀ ∨
-      |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ|
-      = matrix3x3unsigned₁) :
+    (hBₗ' : |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₀ ∨
+            |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₁ )
+    (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₀ ∨
+            |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₁ ) :
     -- row membership
     let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
     let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
@@ -638,20 +604,12 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Rows {Xₗ Yₗ Xᵣ Yᵣ 
       if hi₀ : i.val = x₀ then ◩0 else
       if hi₁ : i.val = x₁ then ◩1 else
       if hi : i.val ∈ Xᵣ \ {x₀, x₁, x'} then ◪⟨i, hi⟩ else
-      False.elim (by
-        simp_all only [Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff, false_or, not_and, Decidable.not_not]
-        obtain ⟨_, _⟩ := i
-        simp_all only
-        simp_all only [Set.mem_diff, Set.mem_singleton_iff, imp_false, not_true_eq_false]))
+      (impossible_nmem_sdiff_triplet hi hi₀ hi₁).elim)
     let fₗ : (Yₗ \ {y'}).Elem → (Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2 := fun j => (
       if hj₀ : j.val = y₀ then ◪0 else
       if hj₁ : j.val = y₁ then ◪1 else
       if hj : j.val ∈ Yₗ \ {y₀, y₁, y'} then ◩⟨j, hj⟩ else
-      False.elim (by
-        simp_all only [Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff, false_or, not_and, Decidable.not_not]
-        obtain ⟨_, _⟩ := j
-        simp_all only
-        simp_all only [Set.mem_diff, Set.mem_singleton_iff, imp_false, not_true_eq_false]))
+      (impossible_nmem_sdiff_triplet hj hj₀ hj₁).elim)
     -- final bottom left submatrix
     let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := D'.submatrix fᵣ fₗ
     -- special rows and columns
@@ -695,14 +653,10 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Cols {Xₗ Yₗ Xᵣ Yᵣ 
     [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x'}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y'})
-    (hBₗ' : |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ|
-      = matrix3x3unsigned₀ ∨
-      |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ|
-      = matrix3x3unsigned₁)
-    (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ|
-      = matrix3x3unsigned₀ ∨
-      |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ|
-      = matrix3x3unsigned₁) :
+    (hBₗ' : |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₀ ∨
+            |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₁ )
+    (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₀ ∨
+            |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₁ ) :
     -- row membership
     let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
     let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
@@ -739,20 +693,12 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Cols {Xₗ Yₗ Xᵣ Yᵣ 
       if hi₀ : i.val = x₀ then ◩0 else
       if hi₁ : i.val = x₁ then ◩1 else
       if hi : i.val ∈ Xᵣ \ {x₀, x₁, x'} then ◪⟨i, hi⟩ else
-      False.elim (by
-        simp_all only [Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff, false_or, not_and, Decidable.not_not]
-        obtain ⟨_, _⟩ := i
-        simp_all only
-        simp_all only [Set.mem_diff, Set.mem_singleton_iff, imp_false, not_true_eq_false]))
+      (impossible_nmem_sdiff_triplet hi hi₀ hi₁).elim)
     let fₗ : (Yₗ \ {y'}).Elem → (Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2 := fun j => (
       if hj₀ : j.val = y₀ then ◪0 else
       if hj₁ : j.val = y₁ then ◪1 else
       if hj : j.val ∈ Yₗ \ {y₀, y₁, y'} then ◩⟨j, hj⟩ else
-      False.elim (by
-        simp_all only [Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff, false_or, not_and, Decidable.not_not]
-        obtain ⟨_, _⟩ := j
-        simp_all only
-        simp_all only [Set.mem_diff, Set.mem_singleton_iff, imp_false, not_true_eq_false]))
+      (impossible_nmem_sdiff_triplet hj hj₀ hj₁).elim)
     -- final bottom left submatrix
     let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := D'.submatrix fᵣ fₗ
     -- special rows and columns
@@ -796,14 +742,10 @@ private lemma matrix3sumCompositionCanonicalSigning_Aᵣ_D_TU {Xₗ Yₗ Xᵣ Y�
     [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x'}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y'})
-    (hBₗ' : |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ|
-      = matrix3x3unsigned₀ ∨
-      |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ|
-      = matrix3x3unsigned₁)
-    (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ|
-      = matrix3x3unsigned₀ ∨
-      |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ|
-      = matrix3x3unsigned₁) :
+    (hBₗ' : |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₀ ∨
+            |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₁ )
+    (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₀ ∨
+            |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₁ ) :
     -- row membership
     let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
     let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
@@ -840,20 +782,12 @@ private lemma matrix3sumCompositionCanonicalSigning_Aᵣ_D_TU {Xₗ Yₗ Xᵣ Y�
       if hi₀ : i.val = x₀ then ◩0 else
       if hi₁ : i.val = x₁ then ◩1 else
       if hi : i.val ∈ Xᵣ \ {x₀, x₁, x'} then ◪⟨i, hi⟩ else
-      False.elim (by
-        simp_all only [Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff, false_or, not_and, Decidable.not_not]
-        obtain ⟨_, _⟩ := i
-        simp_all only
-        simp_all only [Set.mem_diff, Set.mem_singleton_iff, imp_false, not_true_eq_false]))
+      (impossible_nmem_sdiff_triplet hi hi₀ hi₁).elim)
     let fₗ : (Yₗ \ {y'}).Elem → (Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2 := fun j => (
       if hj₀ : j.val = y₀ then ◪0 else
       if hj₁ : j.val = y₁ then ◪1 else
       if hj : j.val ∈ Yₗ \ {y₀, y₁, y'} then ◩⟨j, hj⟩ else
-      False.elim (by
-        simp_all only [Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff, false_or, not_and, Decidable.not_not]
-        obtain ⟨_, _⟩ := j
-        simp_all only
-        simp_all only [Set.mem_diff, Set.mem_singleton_iff, imp_false, not_true_eq_false]))
+      (impossible_nmem_sdiff_triplet hj hj₀ hj₁).elim)
     -- final bottom left submatrix
     let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := D'.submatrix fᵣ fₗ
     -- special rows and columns
@@ -897,14 +831,10 @@ private lemma matrix3sumCompositionCanonicalSigning_Aₗ_D_TU {Xₗ Yₗ Xᵣ Y�
     [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x'}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y'})
-    (hBₗ' : |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ|
-      = matrix3x3unsigned₀ ∨
-      |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ|
-      = matrix3x3unsigned₁)
-    (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ|
-      = matrix3x3unsigned₀ ∨
-      |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ|
-      = matrix3x3unsigned₁) :
+    (hBₗ' : |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₀ ∨
+            |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₁ )
+    (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₀ ∨
+            |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₁ ) :
     -- row membership
     let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
     let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
@@ -941,20 +871,12 @@ private lemma matrix3sumCompositionCanonicalSigning_Aₗ_D_TU {Xₗ Yₗ Xᵣ Y�
       if hi₀ : i.val = x₀ then ◩0 else
       if hi₁ : i.val = x₁ then ◩1 else
       if hi : i.val ∈ Xᵣ \ {x₀, x₁, x'} then ◪⟨i, hi⟩ else
-      False.elim (by
-        simp_all only [Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff, false_or, not_and, Decidable.not_not]
-        obtain ⟨_, _⟩ := i
-        simp_all only
-        simp_all only [Set.mem_diff, Set.mem_singleton_iff, imp_false, not_true_eq_false]))
+      (impossible_nmem_sdiff_triplet hi hi₀ hi₁).elim)
     let fₗ : (Yₗ \ {y'}).Elem → (Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2 := fun j => (
       if hj₀ : j.val = y₀ then ◪0 else
       if hj₁ : j.val = y₁ then ◪1 else
       if hj : j.val ∈ Yₗ \ {y₀, y₁, y'} then ◩⟨j, hj⟩ else
-      False.elim (by
-        simp_all only [Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff, false_or, not_and, Decidable.not_not]
-        obtain ⟨_, _⟩ := j
-        simp_all only
-        simp_all only [Set.mem_diff, Set.mem_singleton_iff, imp_false, not_true_eq_false]))
+      (impossible_nmem_sdiff_triplet hj hj₀ hj₁).elim)
     -- final bottom left submatrix
     let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := D'.submatrix fᵣ fₗ
     -- special rows and columns
@@ -991,5 +913,3 @@ private lemma matrix3sumCompositionCanonicalSigning_Aₗ_D_TU {Xₗ Yₗ Xᵣ Y�
     -- actual statement
     (Aₗ ⊟ D).IsTotallyUnimodular := by
   sorry
-
-end CanonicalSigning

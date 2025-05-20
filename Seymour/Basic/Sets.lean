@@ -22,6 +22,11 @@ lemma right_eq_right_of_union_eq_union {A₁ A₂ B₁ B₂ : Set α}
 lemma eq_toFinset_of_toSet_eq {s : Finset α} {S : Set α} [Fintype S] (hsS : s.toSet = S) : s = S.toFinset := by
   aesop
 
+lemma impossible_nmem_sdiff_triplet {S : Set α} {a b c : α} {e : (S \ {c}).Elem}
+    (heS : e.val ∉ S \ {a, b, c}) (hea : e.val ≠ a) (heb : e.val ≠ b) :
+    False := by
+  aesop
+
 def HasSubset.Subset.equiv {A B : Set α} [∀ i, Decidable (i ∈ A)] (hAB : A ⊆ B) : A.Elem ⊕ (B \ A).Elem ≃ B.Elem :=
   ⟨(·.casesOn hAB.elem Set.diff_subset.elem),
   fun i => if hiA : i.val ∈ A then ◩⟨i.val, hiA⟩ else ◪⟨i.val, by simp [hiA]⟩,

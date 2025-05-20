@@ -64,7 +64,7 @@ private lemma Matrix.IsTotallyUnimodular.reglueCol {α R : Type} [CommRing R] {X
 abbrev matrix2sumComposition {R : Type} [Semiring R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
     (Aₗ : Matrix Xₗ Yₗ R) (r : Yₗ → R) (Aᵣ : Matrix Xᵣ Yᵣ R) (c : Xᵣ → R) :
     Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) R :=
-  ⊞ Aₗ 0 (c · * r ·) Aᵣ
+  ⊞ Aₗ 0 (c ⊗ r) Aᵣ
 
 /-- `StandardRepr`-level 2-sum of two matroids.
     The second part checks legitimacy: the ground sets of `Mₗ` and `Mᵣ` are disjoint except for the element `a ∈ Mₗ.X ∩ Mᵣ.Y`,
@@ -125,8 +125,8 @@ private lemma Matrix.shortTableauPivot_otherRow_eq {X Y Y' R : Type}
 
 private lemma Matrix.shortTableauPivot_outer {X Y X' Y' F : Type} [DecidableEq X] [DecidableEq Y] [DecidableEq Y'] [Field F]
     (A : Matrix X Y F) (x : X) (y' : Y') (f : X' → X) (g : Y' → Y) (hf : x ∉ f.range) (hg : g.Injective)
-    (r : Y' → F) (c : X' → F) (hBfg : A.submatrix f g = (c · * r ·)) :
-    (A.shortTableauPivot x (g y')).submatrix f g = (c · * (shortTableauPivotOtherRow (A x) r g y') ·) := by
+    (r : Y' → F) (c : X' → F) (hBfg : A.submatrix f g = (c ⊗ r)) :
+    (A.shortTableauPivot x (g y')).submatrix f g = (c ⊗ shortTableauPivotOtherRow (A x) r g y') := by
   ext i j
   have hfig : A (f i) ∘ g = (c i * r ·) := congr_fun hBfg i
   have hAgfg := hfig ▸ Function.comp_apply ▸
@@ -196,7 +196,7 @@ private lemma Matrix.IsTotallyUnimodular.fromCols_pnz {X Y : Type} [DecidableEq 
 private lemma Matrix.IsTotallyUnimodular.fromCols_outer {X Yᵣ Y' : Type} [DecidableEq Yᵣ]
     {A : Matrix X Yᵣ ℚ} {r : Y' → ℚ} {c : X → ℚ}
     (hAc : (A ◫ ▮c).IsTotallyUnimodular) (hr : ∀ j' : Y', r j' ∈ SignType.cast.range) :
-    (A ◫ (c · * r ·)).IsTotallyUnimodular := by
+    (A ◫ (c ⊗ r)).IsTotallyUnimodular := by
   convert hAc.fromCols_pnz.comp_cols
     (fun j : Yᵣ ⊕ Y' => j.casesOn (Sum.inl ∘ Sum.inl ∘ Sum.inl) (fun j : Y' =>
       if h0 : r j = 0 then ◪()
@@ -216,7 +216,7 @@ private lemma Matrix.IsTotallyUnimodular.fromCols_outer {X Yᵣ Y' : Type} [Deci
 private lemma matrix2sumComposition_bottom_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Yᵣ] [DecidableEq Yₗ]
     {Aₗ : Matrix Xₗ Yₗ ℚ} {r : Yₗ → ℚ} {Aᵣ : Matrix Xᵣ Yᵣ ℚ} {c : Xᵣ → ℚ}
     (hAr : (Aₗ ⊟ ▬r).IsTotallyUnimodular) (hAc : (▮c ◫ Aᵣ).IsTotallyUnimodular) :
-    ((c · * r ·) ◫ Aᵣ).IsTotallyUnimodular :=
+    ((c ⊗ r) ◫ Aᵣ).IsTotallyUnimodular :=
   (hAc.fromCols_comm.fromCols_outer (hAr.apply ◪())).fromCols_comm
 
 

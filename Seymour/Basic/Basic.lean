@@ -4,6 +4,8 @@ import Mathlib.Tactic
 import Linters
 
 
+-- ## Notation
+
 /-- The finite field on 2 elements; write `Z2` for "value" type but `Fin 2` for "indexing" type. -/
 abbrev Z2 : Type := ZMod 2
 
@@ -52,6 +54,29 @@ notation:64 "▬"r:81 => Matrix.replicateRow Unit r
 /-- Convert vector to a single-col matrix. -/
 notation:64 "▮"c:81 => Matrix.replicateCol Unit c
 
+/-- Outer product of two vectors (the column vector comes on left; the row vector comes on right). -/
+infix:67 " ⊗ " => fun {X Y α : Type} [Mul α] =>
+  (fun c : X → α => fun r : Y → α => Matrix.of (fun i : X => fun j : Y => c i * r j))
+
+/-- Element-wise product of two matrices (rarely used). -/
+infixr:66 " ⊡ " => fun {X Y α β : Type} [SMul α β] =>
+  (fun A : Matrix X Y α => fun B : Matrix X Y β => Matrix.of (fun i : X => fun j : Y => A i j • B i j))
+
+/-- The set of possible outputs of a function. -/
+abbrev Function.range {α ι : Type} (f : ι → α) : Set α := Set.range f
+
+@[app_unexpander Function.range]
+def Function.range_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $x) => `($(x).$(Lean.mkIdent `range))
+  | _ => throw ()
+
+@[app_unexpander Function.support]
+def Function.support_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $x) => `($(x).$(Lean.mkIdent `support))
+  | _ => throw ()
+
+
+-- ## Basic lemmas
 
 lemma and_congr_l {P₁ P₂ : Prop} (hP : P₁ ↔ P₂) (Q : Prop) : P₁ ∧ Q ↔ P₂ ∧ Q :=
   and_congr_left ↓hP
@@ -79,19 +104,6 @@ lemma dite_of_true {P : Prop} [Decidable P] (p : P) {f : P → α} {a : α} : (i
 
 lemma dite_of_false {P : Prop} [Decidable P] (p : ¬P) {f : P → α} {a : α} : (if hp : P then f hp else a) = a := by
   simp [p]
-
-@[simp]
-abbrev Function.range {ι : Type} (f : ι → α) : Set α := Set.range f
-
-@[app_unexpander Function.range]
-def Function.range_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $x) => `($(x).$(Lean.mkIdent `range))
-  | _ => throw ()
-
-@[app_unexpander Function.support]
-def Function.support_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $x) => `($(x).$(Lean.mkIdent `support))
-  | _ => throw ()
 
 lemma Function.range_eq {ι : Type} (f : ι → α) : f.range = { a : α | ∃ i : ι, f i = a } :=
   rfl
@@ -142,6 +154,9 @@ lemma sum_over_fin_succ_of_only_zeroth_nonzero {n : ℕ} [AddCommMonoid α] {f :
     Finset.univ.sum f = f 0 := by
   apply fintype_sum_of_single_nonzero
   exact hf
+
+
+-- ## Conversion between set-based notions and type-based notions
 
 variable {X Y : Set α}
 
@@ -213,7 +228,9 @@ lemma toUnion_toSum [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (h
   cases i <;> simp [hXY]
 
 
+-- ## Aesop modifiers
+
 attribute [aesop apply safe] Classical.choose_spec
 
-/-- Nonterminal `aesop` (strongly discouraged to use). -/
+/-- Nonterminal `aesop` (dangerous). -/
 macro "aesopnt" : tactic => `(tactic| aesop (config := {warnOnNonterminal := false}))

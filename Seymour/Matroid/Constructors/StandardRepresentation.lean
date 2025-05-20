@@ -26,6 +26,7 @@ structure StandardRepr (α R : Type) [DecidableEq α] where
 attribute [instance] StandardRepr.decmemX
 attribute [instance] StandardRepr.decmemY
 
+
 variable {α : Type}
 
 private noncomputable abbrev Set.equivFin (S : Set α) [Fintype S] : Fin #S ≃ S :=
@@ -43,6 +44,7 @@ private abbrev Equiv.leftCongr {ι₁ ι₂ : Type} (e : ι₁ ≃ ι₂) : ι�
 def Equiv.leftCongr_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $x) => `($(x).$(Lean.mkIdent `leftCongr))
   | _ => throw ()
+
 
 variable [DecidableEq α] {R : Type}
 
@@ -132,7 +134,7 @@ lemma standardRepr_eq_standardRepr_of_B_eq_B [DivisionRing R] {S₁ S₂ : Stand
 def StandardRepr.toMatroid [DivisionRing R] (S : StandardRepr α R) : Matroid α :=
   S.toVectorMatroid.toMatroid
 
-/-- Ground set of a vector matroid is union of row and column index sets of its standard matrix representation. -/
+/-- Ground set of a vector matroid is the union of row and column index sets of its standard matrix representation. -/
 @[simp high]
 lemma StandardRepr.toMatroid_E [DivisionRing R] (S : StandardRepr α R) :
     S.toMatroid.E = S.X ∪ S.Y :=
@@ -278,9 +280,8 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
             · contradiction
             · rfl
         constructor
-        · have hc' : (Finsupp.ofSupportFinite c (hc ▸ (hGY.elem '' G'').toFinite)).support = (hGY.elem '' G'').toFinset
-          · apply eq_toFinset_of_toSet_eq
-            exact ofSupportFinite_support_eq (Finite.Set.finite_image G'' hGY.elem) hc
+        · have hc' : (Finsupp.ofSupportFinite c (hc ▸ (hGY.elem '' G'').toFinite)).support = (hGY.elem '' G'').toFinset :=
+            eq_toFinset_of_toSet_eq (ofSupportFinite_support_eq (Finite.Set.finite_image G'' hGY.elem) hc)
           rw [Finsupp.ofSupportFinite_coe, hc']
           ext x
           rw [Finset.sum_apply]

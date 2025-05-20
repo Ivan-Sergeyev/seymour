@@ -137,6 +137,11 @@ end fromPeterNelson
 
 open scoped Matrix
 
+/-- Every invertible matrix has linearly independent rows (unapplied version). -/
+lemma IsUnit.linearIndependent_matrix {α R : Type} [DecidableEq α] [Fintype α] [Ring R] {A : Matrix α α R} (hA : IsUnit A) :
+    LinearIndependent R A :=
+  A.linearIndependent_rows_of_isUnit hA
+
 variable {X Y F : Type} [Fintype X] [Fintype Y] [Field F]
 
 lemma Matrix.not_linearIndependent_of_rank_lt (A : Matrix X Y F) (hA : A.rank < #X) :
@@ -149,8 +154,8 @@ lemma Matrix.not_linearIndependent_of_too_many_rows (A : Matrix X Y F) (hYX : #Y
 
 lemma Matrix.exists_submatrix_rank (A : Matrix X Y F) :
     ∃ r : Fin A.rank → X, (A.submatrix r id).rank = A.rank := by
-  obtain ⟨s, hs⟩ := Matrix.exists_isRowBasis F A
-  obtain ⟨t, ht⟩ := Matrix.exists_isColBasis F A
+  obtain ⟨s, hs⟩ := A.exists_isRowBasis F
+  obtain ⟨t, ht⟩ := A.exists_isColBasis F
   have hFt : (A.submatrix (fun x : s => x) id).IsColBasis F t := Matrix.IsColBasis.submatrix_isColBasis ht hs
   have hsA : s.ncard = A.rank
   · rw [show A.rank = A.eRank.toNat by rw [Matrix.eRank_toNat_eq_rank], Set.ncard, Matrix.IsRowBasis.encard_eq hs]

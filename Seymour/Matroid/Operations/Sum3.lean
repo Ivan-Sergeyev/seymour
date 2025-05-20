@@ -3,8 +3,7 @@ import Seymour.Matroid.Operations.Sum3helper
 
 variable {α : Type}
 
-section experimental_lemmas
--- experimental lemmas to help state lemma 19
+section members_of_intersection -- duplicate
 
 variable {Zₗ Zᵣ : Set α} {a₀ a₁ a₂ : α}
 
@@ -26,12 +25,12 @@ private lemma Eq.mem3₁ᵣ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₁ �
 private lemma Eq.mem3₂ᵣ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₂ ∈ Zᵣ :=
   hZZ.symm.subset.trans Set.inter_subset_right (by simp)
 
-end experimental_lemmas
+end members_of_intersection
 
 
 variable [DecidableEq α]
 
-section StandardMatrixDefinition
+-- ## The 3-sum of matrices
 
 /-- The 3-sum composition of two matrices. -/
 noncomputable def matrix3sumComposition_standard {F : Type} [Field F] {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
@@ -72,20 +71,12 @@ noncomputable def matrix3sumComposition_standard {F : Type} [Field F] {Xₗ Yₗ
     if hi₀ : i.val = x₀ then ◩0 else
     if hi₁ : i.val = x₁ then ◩1 else
     if hi : i.val ∈ Xᵣ \ {x₀, x₁, x'} then ◪⟨i, hi⟩ else
-    False.elim (by
-      simp_all only [Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff, false_or, not_and, Decidable.not_not]
-      obtain ⟨_, _⟩ := i
-      simp_all only
-      simp_all only [Set.mem_diff, Set.mem_singleton_iff, imp_false, not_true_eq_false]))
+    (impossible_nmem_sdiff_triplet hi hi₀ hi₁).elim)
   let fₗ : (Yₗ \ {y'}).Elem → (Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2 := fun j => (
     if hj₀ : j.val = y₀ then ◪0 else
     if hj₁ : j.val = y₁ then ◪1 else
     if hj : j.val ∈ Yₗ \ {y₀, y₁, y'} then ◩⟨j, hj⟩ else
-    False.elim (by
-      simp_all only [Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff, false_or, not_and, Decidable.not_not]
-      obtain ⟨_, _⟩ := j
-      simp_all only
-      simp_all only [Set.mem_diff, Set.mem_singleton_iff, imp_false, not_true_eq_false]))
+    (impossible_nmem_sdiff_triplet hj hj₀ hj₁).elim)
   -- final bottom left submatrix
   let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem F := D'.submatrix fᵣ fₗ
   -- actual definition
@@ -116,10 +107,8 @@ noncomputable def matrix3sumComposition_standard {F : Type} [Field F] {Xₗ Yₗ
 
 -- todo: lemmas about parts of the correctness Prop
 
-end StandardMatrixDefinition
 
-
-section MatroidThreeSum
+-- ## The 3-sum of matroids
 
 /-- The 3-sum composition of two binary matroids given by their stanard representations. -/
 noncomputable def standardRepr3sumComposition_standard {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x' y₀ y₁ y' : α}
@@ -180,7 +169,6 @@ lemma standardRepr3sumComposition_hasTuSigning {α : Type} [DecidableEq α] {S�
     (standardRepr3sumComposition_standard hXX hYY hXY hYX).fst.B.HasTuSigning := by
   obtain ⟨Bₗ, hBₗ, hBBₗ⟩ := hSₗ
   obtain ⟨Bᵣ, hBᵣ, hBBᵣ⟩ := hSᵣ
-  -- use matrix3sumComposition_toCanonicalSigning
   sorry
 
 /-- Any 3-sum of regular matroids is a regular matroid.
@@ -194,5 +182,3 @@ theorem Matroid.Is3sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
   apply standardRepr3sumComposition_hasTuSigning
   · exact hMₗ
   · exact hMᵣ
-
-end MatroidThreeSum
