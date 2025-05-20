@@ -8,13 +8,12 @@ import Seymour.Matroid.Constructors.StandardRepresentation
 /-- Matroid is regular iff it can be constructed from a `VectorMatroid` with a rational TU matrix. -/
 def Matroid.IsRegular {α : Type} (M : Matroid α) : Prop :=
   ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsTotallyUnimodular ∧ (VectorMatroid.mk X Y A).toMatroid = M
--- Possible refactor: `∃ V : VectorMatroid α ℚ, V.A.IsTotallyUnimodular ∧ V.toMatroid = M`
 
 
 -- ## Secondary definition of regularity (LI over Z2 while TU over ℚ)
 
 /-- `LinearOrderedRing`-valued matrix `A` is a signing of `U` (matrix of the same size but different type) iff `A` has
-    the same as entries in `U` on respective positions up to signs. -/
+    the same entries as `U` on respective positions up to signs. -/
 def Matrix.IsSigningOf {X Y R : Type} [LinearOrderedRing R] (A : Matrix X Y R) {n : ℕ} (U : Matrix X Y (ZMod n)) : Prop :=
   ∀ i : X, ∀ j : Y, |A i j| = (U i j).val
 
