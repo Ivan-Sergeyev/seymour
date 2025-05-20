@@ -65,13 +65,13 @@ private lemma IsColBasis.encard_eq [DivisionRing R] {t : Set n} {A : Matrix m n 
     t.encard = A.eRank := by
   simpa using congr_arg Cardinal.toENat hA.basis.mk_eq_rank
 
-private lemma exists_isRowBasis (R : Type) [DivisionRing R] (A : Matrix m n R) :
+private lemma exists_isRowBasis {R : Type} [DivisionRing R] (A : Matrix m n R) :
     ∃ s : Set m, A.IsRowBasis R s := by
   obtain ⟨s, -, hs⟩ := (linearIndepOn_empty R A).exists_maximal (Set.subset_univ _)
   exact ⟨s, by simpa using hs⟩
 
 private lemma exists_isColBasis (R : Type) [DivisionRing R] (A : Matrix m n R) : ∃ s : Set n, A.IsColBasis R s :=
-  Aᵀ.exists_isRowBasis R
+  Aᵀ.exists_isRowBasis
 
 /-- If the row space of `A₁` is a subspace of the row space of `A₂`, then independence of
     a set of columns of `A₁` implies independence in `A₂`. -/
@@ -154,8 +154,8 @@ lemma Matrix.not_linearIndependent_of_too_many_rows (A : Matrix X Y F) (hYX : #Y
 
 lemma Matrix.exists_submatrix_rank (A : Matrix X Y F) :
     ∃ r : Fin A.rank → X, (A.submatrix r id).rank = A.rank := by
-  obtain ⟨s, hs⟩ := A.exists_isRowBasis F
-  obtain ⟨t, ht⟩ := A.exists_isColBasis F
+  obtain ⟨s, hs⟩ := A.exists_isRowBasis
+  obtain ⟨t, ht⟩ := A.exists_isColBasis
   have hFt : (A.submatrix (fun x : s => x) id).IsColBasis F t := Matrix.IsColBasis.submatrix_isColBasis ht hs
   have hsA : s.ncard = A.rank
   · rw [show A.rank = A.eRank.toNat by rw [Matrix.eRank_toNat_eq_rank], Set.ncard, Matrix.IsRowBasis.encard_eq hs]
