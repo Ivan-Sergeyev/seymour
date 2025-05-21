@@ -26,6 +26,9 @@ private lemma Eq.mem3₁ᵣ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₁ �
 private lemma Eq.mem3₂ᵣ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₂ ∈ Zᵣ :=
   hZZ.symm.subset.trans Set.inter_subset_right (by simp)
 
+private def Eq.inter3all (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : (Zₗ × Zₗ × Zₗ) × (Zᵣ × Zᵣ × Zᵣ) :=
+  ⟨⟨⟨a₀, hZZ.mem3₀ₗ⟩, ⟨a₁, hZZ.mem3₁ₗ⟩, ⟨a₂, hZZ.mem3₂ₗ⟩⟩, ⟨⟨a₀, hZZ.mem3₀ᵣ⟩, ⟨a₁, hZZ.mem3₁ᵣ⟩, ⟨a₂, hZZ.mem3₂ᵣ⟩⟩⟩
+
 end members_of_intersection
 
 
@@ -74,20 +77,9 @@ noncomputable def matrix3sumComposition_standard [DecidableEq α] {F : Type} [Fi
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     (Bₗ : Matrix Xₗ Yₗ F) (Bᵣ : Matrix Xᵣ Yᵣ F) (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}) :
     Matrix ((Xₗ \ {x₀, x₁}).Elem ⊕ (Xᵣ \ {x₂}).Elem) ((Yₗ \ {y₂}).Elem ⊕ (Yᵣ \ {y₀, y₁}).Elem) F × Prop :=
-  -- row members
-  let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
-  let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
-  let x₁ₗ : Xₗ := ⟨x₁, hXX.mem3₁ₗ⟩
-  let x₁ᵣ : Xᵣ := ⟨x₁, hXX.mem3₁ᵣ⟩
-  let x₂ₗ : Xₗ := ⟨x₂, hXX.mem3₂ₗ⟩
-  let x₂ᵣ : Xᵣ := ⟨x₂, hXX.mem3₂ᵣ⟩
-  -- col members
-  let y₀ₗ : Yₗ := ⟨y₀, hYY.mem3₀ₗ⟩
-  let y₀ᵣ : Yᵣ := ⟨y₀, hYY.mem3₀ᵣ⟩
-  let y₁ₗ : Yₗ := ⟨y₁, hYY.mem3₁ₗ⟩
-  let y₁ᵣ : Yᵣ := ⟨y₁, hYY.mem3₁ᵣ⟩
-  let y₂ₗ : Yₗ := ⟨y₂, hYY.mem3₂ₗ⟩
-  let y₂ᵣ : Yᵣ := ⟨y₂, hYY.mem3₂ᵣ⟩
+  -- respective `x`s and `y`s as members of respective sets
+  let ⟨⟨x₀ₗ, x₁ₗ, x₂ₗ⟩, ⟨x₀ᵣ, x₁ᵣ, x₂ᵣ⟩⟩ := hXX.inter3all
+  let ⟨⟨y₀ₗ, y₁ₗ, y₂ₗ⟩, ⟨y₀ᵣ, y₁ᵣ, y₂ᵣ⟩⟩ := hYY.inter3all
   -- pieces of bottom left submatrix
   let D₀ₗ := Bₗ.submatrix2x2 x₀ₗ x₁ₗ y₀ₗ y₁ₗ
   let D₀ᵣ := Bᵣ.submatrix2x2 x₀ᵣ x₁ᵣ y₀ᵣ y₁ᵣ
@@ -508,20 +500,9 @@ private noncomputable def matrix3sumCompositionCanonicalSigning {Xₗ Yₗ Xᵣ 
     (Bₗ' : Matrix Xₗ Yₗ ℚ) (Bᵣ' : Matrix Xᵣ Yᵣ ℚ)
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}) :
     Matrix ((Xₗ \ {x₀, x₁}).Elem ⊕ (Xᵣ \ {x₂}).Elem) ((Yₗ \ {y₂}).Elem ⊕ (Yᵣ \ {y₀, y₁}).Elem) ℚ :=
-  -- row members
-  let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
-  let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
-  let x₁ₗ : Xₗ := ⟨x₁, hXX.mem3₁ₗ⟩
-  let x₁ᵣ : Xᵣ := ⟨x₁, hXX.mem3₁ᵣ⟩
-  let x₂ₗ : Xₗ := ⟨x₂, hXX.mem3₂ₗ⟩
-  let x₂ᵣ : Xᵣ := ⟨x₂, hXX.mem3₂ᵣ⟩
-  -- col members
-  let y₀ₗ : Yₗ := ⟨y₀, hYY.mem3₀ₗ⟩
-  let y₀ᵣ : Yᵣ := ⟨y₀, hYY.mem3₀ᵣ⟩
-  let y₁ₗ : Yₗ := ⟨y₁, hYY.mem3₁ₗ⟩
-  let y₁ᵣ : Yᵣ := ⟨y₁, hYY.mem3₁ᵣ⟩
-  let y₂ₗ : Yₗ := ⟨y₂, hYY.mem3₂ₗ⟩
-  let y₂ᵣ : Yᵣ := ⟨y₂, hYY.mem3₂ᵣ⟩
+  -- respective `x`s and `y`s as members of respective sets
+  let ⟨⟨x₀ₗ, x₁ₗ, x₂ₗ⟩, ⟨x₀ᵣ, x₁ᵣ, x₂ᵣ⟩⟩ := hXX.inter3all
+  let ⟨⟨y₀ₗ, y₁ₗ, y₂ₗ⟩, ⟨y₀ᵣ, y₁ᵣ, y₂ᵣ⟩⟩ := hYY.inter3all
   -- convert summands to canonical form
   let Bₗ := Bₗ'.toCanonicalSigning x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ
   let Bᵣ := Bᵣ'.toCanonicalSigning x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
@@ -561,20 +542,9 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Eq_SumOuterProducts {Xₗ 
             |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₁ )
     (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₀ ∨
             |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₁ ) :
-    -- row members
-    let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
-    let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
-    let x₁ₗ : Xₗ := ⟨x₁, hXX.mem3₁ₗ⟩
-    let x₁ᵣ : Xᵣ := ⟨x₁, hXX.mem3₁ᵣ⟩
-    let x₂ₗ : Xₗ := ⟨x₂, hXX.mem3₂ₗ⟩
-    let x₂ᵣ : Xᵣ := ⟨x₂, hXX.mem3₂ᵣ⟩
-    -- col members
-    let y₀ₗ : Yₗ := ⟨y₀, hYY.mem3₀ₗ⟩
-    let y₀ᵣ : Yᵣ := ⟨y₀, hYY.mem3₀ᵣ⟩
-    let y₁ₗ : Yₗ := ⟨y₁, hYY.mem3₁ₗ⟩
-    let y₁ᵣ : Yᵣ := ⟨y₁, hYY.mem3₁ᵣ⟩
-    let y₂ₗ : Yₗ := ⟨y₂, hYY.mem3₂ₗ⟩
-    let y₂ᵣ : Yᵣ := ⟨y₂, hYY.mem3₂ᵣ⟩
+    -- respective `x`s and `y`s as members of respective sets
+    let ⟨⟨x₀ₗ, x₁ₗ, x₂ₗ⟩, ⟨x₀ᵣ, x₁ᵣ, x₂ᵣ⟩⟩ := hXX.inter3all
+    let ⟨⟨y₀ₗ, y₁ₗ, y₂ₗ⟩, ⟨y₀ᵣ, y₁ᵣ, y₂ᵣ⟩⟩ := hYY.inter3all
     -- convert summands to canonical form
     let Bₗ := Bₗ'.toCanonicalSigning x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ
     let Bᵣ := Bᵣ'.toCanonicalSigning x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
@@ -620,20 +590,9 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Rows {Xₗ Yₗ Xᵣ Yᵣ 
             |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₁ )
     (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₀ ∨
             |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₁ ) :
-    -- row members
-    let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
-    let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
-    let x₁ₗ : Xₗ := ⟨x₁, hXX.mem3₁ₗ⟩
-    let x₁ᵣ : Xᵣ := ⟨x₁, hXX.mem3₁ᵣ⟩
-    let x₂ₗ : Xₗ := ⟨x₂, hXX.mem3₂ₗ⟩
-    let x₂ᵣ : Xᵣ := ⟨x₂, hXX.mem3₂ᵣ⟩
-    -- col members
-    let y₀ₗ : Yₗ := ⟨y₀, hYY.mem3₀ₗ⟩
-    let y₀ᵣ : Yᵣ := ⟨y₀, hYY.mem3₀ᵣ⟩
-    let y₁ₗ : Yₗ := ⟨y₁, hYY.mem3₁ₗ⟩
-    let y₁ᵣ : Yᵣ := ⟨y₁, hYY.mem3₁ᵣ⟩
-    let y₂ₗ : Yₗ := ⟨y₂, hYY.mem3₂ₗ⟩
-    let y₂ᵣ : Yᵣ := ⟨y₂, hYY.mem3₂ᵣ⟩
+    -- respective `x`s and `y`s as members of respective sets
+    let ⟨⟨x₀ₗ, x₁ₗ, x₂ₗ⟩, ⟨x₀ᵣ, x₁ᵣ, x₂ᵣ⟩⟩ := hXX.inter3all
+    let ⟨⟨y₀ₗ, y₁ₗ, y₂ₗ⟩, ⟨y₀ᵣ, y₁ᵣ, y₂ᵣ⟩⟩ := hYY.inter3all
     -- convert summands to canonical form
     let Bₗ := Bₗ'.toCanonicalSigning x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ
     let Bᵣ := Bᵣ'.toCanonicalSigning x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
@@ -679,20 +638,9 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Cols {Xₗ Yₗ Xᵣ Yᵣ 
             |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₁ )
     (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₀ ∨
             |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₁ ) :
-    -- row members
-    let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
-    let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
-    let x₁ₗ : Xₗ := ⟨x₁, hXX.mem3₁ₗ⟩
-    let x₁ᵣ : Xᵣ := ⟨x₁, hXX.mem3₁ᵣ⟩
-    let x₂ₗ : Xₗ := ⟨x₂, hXX.mem3₂ₗ⟩
-    let x₂ᵣ : Xᵣ := ⟨x₂, hXX.mem3₂ᵣ⟩
-    -- col members
-    let y₀ₗ : Yₗ := ⟨y₀, hYY.mem3₀ₗ⟩
-    let y₀ᵣ : Yᵣ := ⟨y₀, hYY.mem3₀ᵣ⟩
-    let y₁ₗ : Yₗ := ⟨y₁, hYY.mem3₁ₗ⟩
-    let y₁ᵣ : Yᵣ := ⟨y₁, hYY.mem3₁ᵣ⟩
-    let y₂ₗ : Yₗ := ⟨y₂, hYY.mem3₂ₗ⟩
-    let y₂ᵣ : Yᵣ := ⟨y₂, hYY.mem3₂ᵣ⟩
+    -- respective `x`s and `y`s as members of respective sets
+    let ⟨⟨x₀ₗ, x₁ₗ, x₂ₗ⟩, ⟨x₀ᵣ, x₁ᵣ, x₂ᵣ⟩⟩ := hXX.inter3all
+    let ⟨⟨y₀ₗ, y₁ₗ, y₂ₗ⟩, ⟨y₀ᵣ, y₁ᵣ, y₂ᵣ⟩⟩ := hYY.inter3all
     -- convert summands to canonical form
     let Bₗ := Bₗ'.toCanonicalSigning x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ
     let Bᵣ := Bᵣ'.toCanonicalSigning x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
@@ -718,20 +666,9 @@ private lemma matrix3sumCompositionCanonicalSigning_Aᵣ_D_TU {Xₗ Yₗ Xᵣ Y�
             |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₁ )
     (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₀ ∨
             |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₁ ) :
-    -- row members
-    let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
-    let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
-    let x₁ₗ : Xₗ := ⟨x₁, hXX.mem3₁ₗ⟩
-    let x₁ᵣ : Xᵣ := ⟨x₁, hXX.mem3₁ᵣ⟩
-    let x₂ₗ : Xₗ := ⟨x₂, hXX.mem3₂ₗ⟩
-    let x₂ᵣ : Xᵣ := ⟨x₂, hXX.mem3₂ᵣ⟩
-    -- col members
-    let y₀ₗ : Yₗ := ⟨y₀, hYY.mem3₀ₗ⟩
-    let y₀ᵣ : Yᵣ := ⟨y₀, hYY.mem3₀ᵣ⟩
-    let y₁ₗ : Yₗ := ⟨y₁, hYY.mem3₁ₗ⟩
-    let y₁ᵣ : Yᵣ := ⟨y₁, hYY.mem3₁ᵣ⟩
-    let y₂ₗ : Yₗ := ⟨y₂, hYY.mem3₂ₗ⟩
-    let y₂ᵣ : Yᵣ := ⟨y₂, hYY.mem3₂ᵣ⟩
+    -- respective `x`s and `y`s as members of respective sets
+    let ⟨⟨x₀ₗ, x₁ₗ, x₂ₗ⟩, ⟨x₀ᵣ, x₁ᵣ, x₂ᵣ⟩⟩ := hXX.inter3all
+    let ⟨⟨y₀ₗ, y₁ₗ, y₂ₗ⟩, ⟨y₀ᵣ, y₁ᵣ, y₂ᵣ⟩⟩ := hYY.inter3all
     -- convert summands to canonical form
     let Bₗ := Bₗ'.toCanonicalSigning x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ
     let Bᵣ := Bᵣ'.toCanonicalSigning x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
@@ -752,20 +689,9 @@ private lemma matrix3sumCompositionCanonicalSigning_Aₗ_D_TU {Xₗ Yₗ Xᵣ Y�
             |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₁ )
     (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₀ ∨
             |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₁ ) :
-    -- row members
-    let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
-    let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
-    let x₁ₗ : Xₗ := ⟨x₁, hXX.mem3₁ₗ⟩
-    let x₁ᵣ : Xᵣ := ⟨x₁, hXX.mem3₁ᵣ⟩
-    let x₂ₗ : Xₗ := ⟨x₂, hXX.mem3₂ₗ⟩
-    let x₂ᵣ : Xᵣ := ⟨x₂, hXX.mem3₂ᵣ⟩
-    -- col members
-    let y₀ₗ : Yₗ := ⟨y₀, hYY.mem3₀ₗ⟩
-    let y₀ᵣ : Yᵣ := ⟨y₀, hYY.mem3₀ᵣ⟩
-    let y₁ₗ : Yₗ := ⟨y₁, hYY.mem3₁ₗ⟩
-    let y₁ᵣ : Yᵣ := ⟨y₁, hYY.mem3₁ᵣ⟩
-    let y₂ₗ : Yₗ := ⟨y₂, hYY.mem3₂ₗ⟩
-    let y₂ᵣ : Yᵣ := ⟨y₂, hYY.mem3₂ᵣ⟩
+    -- respective `x`s and `y`s as members of respective sets
+    let ⟨⟨x₀ₗ, x₁ₗ, x₂ₗ⟩, ⟨x₀ᵣ, x₁ᵣ, x₂ᵣ⟩⟩ := hXX.inter3all
+    let ⟨⟨y₀ₗ, y₁ₗ, y₂ₗ⟩, ⟨y₀ᵣ, y₁ᵣ, y₂ᵣ⟩⟩ := hYY.inter3all
     -- convert summands to canonical form
     let Bₗ := Bₗ'.toCanonicalSigning x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ
     let Bᵣ := Bᵣ'.toCanonicalSigning x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
