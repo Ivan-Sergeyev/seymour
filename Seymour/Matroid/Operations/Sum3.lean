@@ -337,15 +337,39 @@ private lemma Matrix.IsTuCanonicallySignable₁.toCanonicalSigning {X Y : Set α
   have ⟨hQtu, hxxx, hyyy, _⟩ := hQ
   ⟨hQtu.toCanonicalSigning x₀ x₁ x₂ y₀ y₁ y₂, hxxx, hyyy, hQ.toCanonicalSigning_submatrix3x3⟩
 
+/-- `c₀` or `c₁` -/
+@[simp] private abbrev Matrix._col {X Y : Set α} {a : α} (B : Matrix X Y ℚ) (y : Y) (i : (X \ {a}).Elem) : ℚ :=
+  B (Set.diff_subset.elem i) y
+
+/-- `d₀` or `d₁` -/
+@[simp] private abbrev Matrix._row {X Y : Set α} {a : α} (B : Matrix X Y ℚ) (x : X) (j : (Y \ {a}).Elem) : ℚ :=
+  B x (Set.diff_subset.elem j)
+
+/-- `r₀` and `r₁` and `r₂` -/
+private abbrev Matrix._rrr {X Y : Set α} (B' : Matrix X Y ℚ) (x₀ x₁ x₂ : X) (y₀ y₁ y₂ : Y) :
+    let D₀ := |B'.submatrix3x3mems x₀.property x₁.property x₂.property y₀.property y₁.property y₂.property|
+    (D₀ = matrix3x3unsigned₀ ∨ D₀ = matrix3x3unsigned₁) →
+      (((Y \ {y₂.val}).Elem → ℚ) × ((Y \ {y₂.val}).Elem → ℚ) × ((Y \ {y₂.val}).Elem → ℚ)) :=
+  fun hB' =>
+    let B := B'.toCanonicalSigning x₀ x₁ x₂ y₀ y₁ y₂
+    let d₀ : (Y \ {y₂.val}).Elem → ℚ := B._row x₀
+    let d₁ : (Y \ {y₂.val}).Elem → ℚ := B._row x₁
+    let D₀ := |B'.submatrix3x3mems x₀.property x₁.property x₂.property y₀.property y₁.property y₂.property|
+    if hD₀₀ : D₀ = matrix3x3unsigned₀ then ⟨d₀, d₁, d₀ - d₁⟩ else
+    if hD₀₁ : D₀ = matrix3x3unsigned₁ then ⟨d₀ - d₁, d₁, d₀⟩ else
+    (False.elim (by
+      simp only [D₀, hD₀₀, hD₀₁] at hB'
+      exact hB'.casesOn id id))
+
 -- lemma 15.a
 private lemma Matrix.IsTotallyUnimodular.signing_expansion₀ {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
     {x₂ y₀ y₁ : α} (hx₂ : x₂ ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hyy : y₀ ≠ y₁)
     (hQy₀ : Q ⟨x₂, hx₂⟩ ⟨y₀, hy₀⟩ = 1)
     (hQy₁ : Q ⟨x₂, hx₂⟩ ⟨y₁, hy₁⟩ = 1)
     (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q ⟨x₂, hx₂⟩ y = 0) :
-    let c₀ : (X \ {x₂}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₀, hy₀⟩
-    let c₁ : (X \ {x₂}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
-    let Q' : Matrix (X \ {x₂}).Elem (Y \ {y₀, y₁}).Elem ℚ := Q.submatrix Set.diff_subset.elem Set.diff_subset.elem
+    let c₀ := Q._col ⟨y₀, hy₀⟩
+    let c₁ := Q._col ⟨y₁, hy₁⟩
+    let Q' := Q.drop1row2cols x₂ y₀ y₁
     (Q' ◫ ▮c₀ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular := by
   intro c₀ c₁ Q'
   let B : Matrix X Y ℚ := Q.shortTableauPivot ⟨x₂, hx₂⟩ ⟨y₀, hy₀⟩
@@ -385,9 +409,9 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion₁ {X Y : Set α} {Q 
     (hQy₀ : Q ⟨x₂, hx₂⟩ ⟨y₀, hy₀⟩ = 1)
     (hQy₁ : Q ⟨x₂, hx₂⟩ ⟨y₁, hy₁⟩ = 1)
     (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q ⟨x₂, hx₂⟩ y = 0) :
-    let c₀ : (X \ {x₂}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₀, hy₀⟩
-    let c₁ : (X \ {x₂}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
-    let Q' : Matrix (X \ {x₂}).Elem (Y \ {y₀, y₁}).Elem ℚ := Q.submatrix Set.diff_subset.elem Set.diff_subset.elem
+    let c₀ := Q._col ⟨y₀, hy₀⟩
+    let c₁ := Q._col ⟨y₁, hy₁⟩
+    let Q' := Q.drop1row2cols x₂ y₀ y₁
     (Q' ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular := by
   intro c₀ c₁ Q'
   let B := Q.shortTableauPivot ⟨x₂, hx₂⟩ ⟨y₁, hy₁⟩
@@ -426,8 +450,8 @@ omit [DecidableEq α] in
 private lemma Matrix.IsTotallyUnimodular.special_form_cols {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
     {x₂ y₀ y₁ : α} (hx₂ : x₂ ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y)
     (hQy₀ : Q ⟨x₂, hx₂⟩ ⟨y₀, hy₀⟩ = 1) (hQy₁ : Q ⟨x₂, hx₂⟩ ⟨y₁, hy₁⟩ = 1) :
-    let c₀ : (X \ {x₂}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₀, hy₀⟩
-    let c₁ : (X \ {x₂}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
+    let c₀ := Q._col ⟨y₀, hy₀⟩
+    let c₁ := Q._col ⟨y₁, hy₁⟩
     ∀ i : (X \ {x₂}).Elem, ![c₀ i, c₁ i] ≠ ![1, -1] ∧ ![c₀ i, c₁ i] ≠ ![-1, 1] := by
   intro c₀ c₁ i
   constructor <;>
@@ -444,9 +468,9 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols_weak {X Y : Set 
     (hQy₀ : Q ⟨x₂, hx₂⟩ ⟨y₀, hy₀⟩ = 1)
     (hQy₁ : Q ⟨x₂, hx₂⟩ ⟨y₁, hy₁⟩ = 1)
     (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q ⟨x₂, hx₂⟩ y = 0) :
-    let c₀ : (X \ {x₂}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₀, hy₀⟩
-    let c₁ : (X \ {x₂}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
-    let Q' : Matrix (X \ {x₂}).Elem (Y \ {y₀, y₁}).Elem ℚ := Q.submatrix Set.diff_subset.elem Set.diff_subset.elem
+    let c₀ := Q._col ⟨y₀, hy₀⟩
+    let c₁ := Q._col ⟨y₁, hy₁⟩
+    let Q' := Q.drop1row2cols x₂ y₀ y₁
     (Q' ◫ ▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular := by
   sorry
 
@@ -455,9 +479,9 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols_aux {X Y : Set �
     (hQy₀ : Q ⟨x₂, hx₂⟩ ⟨y₀, hy₀⟩ = 1)
     (hQy₁ : Q ⟨x₂, hx₂⟩ ⟨y₁, hy₁⟩ = 1)
     (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q ⟨x₂, hx₂⟩ y = 0) :
-    let c₀ : (X \ {x₂}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₀, hy₀⟩
-    let c₁ : (X \ {x₂}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
-    let Q' : Matrix (X \ {x₂}).Elem (Y \ {y₀, y₁}).Elem ℚ := Q.submatrix Set.diff_subset.elem Set.diff_subset.elem
+    let c₀ := Q._col ⟨y₀, hy₀⟩
+    let c₁ := Q._col ⟨y₁, hy₁⟩
+    let Q' := Q.drop1row2cols x₂ y₀ y₁
     (Q' ◫ ▮c₀ ◫ ▮c₀ ◫ ▮c₁ ◫ ▮c₁ ◫ ▮(c₀ - c₁) ◫ ▮(c₀ - c₁)).IsTotallyUnimodular := by
   intros
   convert (hQ.signing_expansion_cols_weak hx₂ hy₀ hy₁ hyy hQy₀ hQy₁ hQy).comp_cols
@@ -470,9 +494,9 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion_cols {X Y : Set α} {
     (hQy₀ : Q ⟨x₂, hx₂⟩ ⟨y₀, hy₀⟩ = 1)
     (hQy₁ : Q ⟨x₂, hx₂⟩ ⟨y₁, hy₁⟩ = 1)
     (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q ⟨x₂, hx₂⟩ y = 0) :
-    let c₀ : (X \ {x₂}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₀, hy₀⟩
-    let c₁ : (X \ {x₂}).Elem → ℚ := fun j => Q (Set.diff_subset.elem j) ⟨y₁, hy₁⟩
-    let Q' : Matrix (X \ {x₂}).Elem (Y \ {y₀, y₁}).Elem ℚ := Q.submatrix Set.diff_subset.elem Set.diff_subset.elem
+    let c₀ := Q._col ⟨y₀, hy₀⟩
+    let c₁ := Q._col ⟨y₁, hy₁⟩
+    let Q' := Q.drop1row2cols x₂ y₀ y₁
     (Q' ◫ ▮c₀ ◫ ▮(-c₀) ◫ ▮c₁ ◫ ▮(-c₁) ◫ ▮(c₀ - c₁) ◫ ▮(c₁ - c₀) ◫ ▮0).IsTotallyUnimodular := by
   intros
   convert ((hQ.signing_expansion_cols_aux hx₂ hy₀ hy₁ hyy hQy₀ hQy₁ hQy).mul_cols
@@ -486,9 +510,9 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion_rows {X Y : Set α} {
     (hQx₀ : Q ⟨x₀, hx₀⟩ ⟨y₂, hy₂⟩ = 1)
     (hQx₁ : Q ⟨x₁, hx₁⟩ ⟨y₂, hy₂⟩ = 1)
     (hQx : ∀ x : X, x.val ≠ x₀ ∧ x.val ≠ x₁ → Q x ⟨y₂, hy₂⟩ = 0) :
-    let d₀ : (Y \ {y₂}).Elem → ℚ := (Q ⟨x₀, hx₀⟩ <| Set.diff_subset.elem ·)
-    let d₁ : (Y \ {y₂}).Elem → ℚ := (Q ⟨x₁, hx₁⟩ <| Set.diff_subset.elem ·)
-    let Q' : Matrix (X \ {x₀, x₁}).Elem (Y \ {y₂}).Elem ℚ := Q.submatrix Set.diff_subset.elem Set.diff_subset.elem
+    let d₀ := Q._row ⟨x₀, hx₀⟩
+    let d₁ := Q._row ⟨x₁, hx₁⟩
+    let Q' := Q.drop2rows1col x₀ x₁ y₂
     (Q' ⊟ ▬d₀ ⊟ ▬(-d₀) ⊟ ▬d₁ ⊟ ▬(-d₁) ⊟ ▬(d₀ - d₁) ⊟ ▬(d₁ - d₀) ⊟ ▬0).IsTotallyUnimodular := by
   intros
   convert (hQ.transpose.signing_expansion_cols hy₂ hx₀ hx₁ hxx hQx₀ hQx₁ hQx).transpose
@@ -511,30 +535,6 @@ private noncomputable def matrix3sumCompositionCanonicalSigning {Xₗ Yₗ Xᵣ 
   let Dᵣ := Bᵣ.submatrix7x2 x₀ x₁ x₂ y₀ᵣ y₁ᵣ
   -- the actual definition
   ⊞ (Bₗ.drop2rows1col x₀ x₁ y₂) 0 ((⊞ Dₗ D₀ₗ (Dᵣ * D₀ₗ⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY) (Bᵣ.drop1row2cols x₂ y₀ y₁)
-
-/-- `c₀` or `c₁` -/
-private abbrev Matrix._col {X Y : Set α} {a : α} (B : Matrix X Y ℚ) (y : Y) (i : (X \ {a}).Elem) : ℚ :=
-  B (Set.diff_subset.elem i) y
-
-/-- `d₀` or `d₁` -/
-private abbrev Matrix._row {X Y : Set α} {a : α} (B : Matrix X Y ℚ) (x : X) (j : (Y \ {a}).Elem) : ℚ :=
-  B x (Set.diff_subset.elem j)
-
-/-- `r₀` and `r₁` and `r₂` -/
-private abbrev Matrix._rrr {X Y : Set α} (B' : Matrix X Y ℚ) (x₀ x₁ x₂ : X) (y₀ y₁ y₂ : Y) :
-    let D₀ := |B'.submatrix3x3mems x₀.property x₁.property x₂.property y₀.property y₁.property y₂.property|
-    (D₀ = matrix3x3unsigned₀ ∨ D₀ = matrix3x3unsigned₁) →
-      (((Y \ {y₂.val}).Elem → ℚ) × ((Y \ {y₂.val}).Elem → ℚ) × ((Y \ {y₂.val}).Elem → ℚ)) :=
-  fun hB' =>
-    let B := B'.toCanonicalSigning x₀ x₁ x₂ y₀ y₁ y₂
-    let d₀ : (Y \ {y₂.val}).Elem → ℚ := B._row x₀
-    let d₁ : (Y \ {y₂.val}).Elem → ℚ := B._row x₁
-    let D₀ := |B'.submatrix3x3mems x₀.property x₁.property x₂.property y₀.property y₁.property y₂.property|
-    if hD₀₀ : D₀ = matrix3x3unsigned₀ then ⟨d₀, d₁, d₀ - d₁⟩ else
-    if hD₀₁ : D₀ = matrix3x3unsigned₁ then ⟨d₀ - d₁, d₁, d₀⟩ else
-    (False.elim (by
-      simp only [D₀, hD₀₀, hD₀₁] at hB'
-      exact hB'.casesOn id id))
 
 -- lemma 19.1
 private lemma matrix3sumCompositionCanonicalSigning_D_Eq_SumOuterProducts {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
