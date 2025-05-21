@@ -497,8 +497,7 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion_rows {X Y : Set α} {
 -- canonical signing of 3-sum constructed from TU signings of summands
 private noncomputable def matrix3sumCompositionCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    (Bₗ' : Matrix Xₗ Yₗ ℚ) (Bᵣ' : Matrix Xᵣ Yᵣ ℚ)
-    (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}) :
+    (Bₗ' : Matrix Xₗ Yₗ ℚ) (Bᵣ' : Matrix Xᵣ Yᵣ ℚ) (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}) :
     Matrix ((Xₗ \ {x₀, x₁}).Elem ⊕ (Xᵣ \ {x₂}).Elem) ((Yₗ \ {y₂}).Elem ⊕ (Yᵣ \ {y₀, y₁}).Elem) ℚ :=
   -- respective `x`s and `y`s as members of respective sets
   let ⟨⟨x₀ₗ, x₁ₗ, x₂ₗ⟩, ⟨x₀ᵣ, x₁ᵣ, x₂ᵣ⟩⟩ := hXX.inter3all
@@ -513,47 +512,29 @@ private noncomputable def matrix3sumCompositionCanonicalSigning {Xₗ Yₗ Xᵣ 
   -- the actual definition
   ⊞ (Bₗ.drop2rows1col x₀ x₁ y₂) 0 ((⊞ Dₗ D₀ₗ (Dᵣ * D₀ₗ⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY) (Bᵣ.drop1row2cols x₂ y₀ y₁)
 
-
-section experimental
-
-variable {X Y : Set α} {a : α}
-
-private abbrev Matrix._col (B : Matrix X Y ℚ) (y : Y) (i : (X \ {a}).Elem) : ℚ :=
+/-- `c₀` or `c₁` -/
+private abbrev Matrix._col {X Y : Set α} {a : α} (B : Matrix X Y ℚ) (y : Y) (i : (X \ {a}).Elem) : ℚ :=
   B (Set.diff_subset.elem i) y
 
-private abbrev Matrix._row (B : Matrix X Y ℚ) (x : X) (j : (Y \ {a}).Elem) : ℚ :=
+/-- `d₀` or `d₁` -/
+private abbrev Matrix._row {X Y : Set α} {a : α} (B : Matrix X Y ℚ) (x : X) (j : (Y \ {a}).Elem) : ℚ :=
   B x (Set.diff_subset.elem j)
 
-private abbrev Matrix._rrr (B' : Matrix X Y ℚ) (x₀ x₁ x₂ : X) (y₀ y₁ y₂ : Y) :
+/-- `r₀` and `r₁` and `r₂` -/
+private abbrev Matrix._rrr {X Y : Set α} (B' : Matrix X Y ℚ) (x₀ x₁ x₂ : X) (y₀ y₁ y₂ : Y) :
     let D₀ := |B'.submatrix3x3mems x₀.property x₁.property x₂.property y₀.property y₁.property y₂.property|
-    (D₀ = matrix3x3unsigned₀ ∨ D₀ = matrix3x3unsigned₁) → ((Y \ {a}).Elem → ℚ) × ((Y \ {a}).Elem → ℚ) × ((Y \ {a}).Elem → ℚ) :=
+    (D₀ = matrix3x3unsigned₀ ∨ D₀ = matrix3x3unsigned₁) →
+      (((Y \ {y₂.val}).Elem → ℚ) × ((Y \ {y₂.val}).Elem → ℚ) × ((Y \ {y₂.val}).Elem → ℚ)) :=
   fun hB' =>
     let B := B'.toCanonicalSigning x₀ x₁ x₂ y₀ y₁ y₂
-    let d₀ : (Y \ {a}).Elem → ℚ := B._row x₀
-    let d₁ : (Y \ {a}).Elem → ℚ := B._row x₁
+    let d₀ : (Y \ {y₂.val}).Elem → ℚ := B._row x₀
+    let d₁ : (Y \ {y₂.val}).Elem → ℚ := B._row x₁
     let D₀ := |B'.submatrix3x3mems x₀.property x₁.property x₂.property y₀.property y₁.property y₂.property|
-    ⟨
-      if hD₀₀ : D₀ = matrix3x3unsigned₀ then d₀ else
-      if hD₀₁ : D₀ = matrix3x3unsigned₁ then d₀ - d₁ else
-      (False.elim (by
-        simp only [D₀, *] at hB'
-        exact hB'.casesOn id id)
-      ),
-      if hD₀₀ : D₀ = matrix3x3unsigned₀ then -d₁ else
-      if hD₀₁ : D₀ = matrix3x3unsigned₁ then d₁ else
-      (False.elim (by
-        simp only [D₀, *] at hB'
-        exact hB'.casesOn id id)
-      ),
-      if hD₀₀ : D₀ = matrix3x3unsigned₀ then d₀ - d₁ else
-      if hD₀₁ : D₀ = matrix3x3unsigned₁ then d₀ else
-      (False.elim (by
-        simp only [D₀, *] at hB'
-        exact hB'.casesOn id id)
-      )
-    ⟩
-
-end experimental
+    if hD₀₀ : D₀ = matrix3x3unsigned₀ then ⟨d₀, d₁, d₀ - d₁⟩ else
+    if hD₀₁ : D₀ = matrix3x3unsigned₁ then ⟨d₀ - d₁, d₁, d₀⟩ else
+    (False.elim (by
+      simp only [D₀, hD₀₀, hD₀₁] at hB'
+      exact hB'.casesOn id id))
 
 -- lemma 19.1
 private lemma matrix3sumCompositionCanonicalSigning_D_Eq_SumOuterProducts {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
