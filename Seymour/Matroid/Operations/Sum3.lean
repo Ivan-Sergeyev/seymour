@@ -644,8 +644,6 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Rows {Xₗ Yₗ Xᵣ Yᵣ 
     -- final bottom left submatrix
     let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := (⊞ Dₗ D₀ₗ (Dᵣ * D₀ₗ⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY
     -- special rows and columns
-    let c₀ : (Xᵣ \ {x'}).Elem → ℚ := Bᵣ._col y₀ᵣ
-    let c₁ : (Xᵣ \ {x'}).Elem → ℚ := Bᵣ._col y₁ᵣ
     let d₀ : (Yₗ \ {y'}).Elem → ℚ := Bₗ._row x₀ₗ
     let d₁ : (Yₗ \ {y'}).Elem → ℚ := Bₗ._row x₁ₗ
     let D₀' : Matrix (Fin 3) (Fin 3) ℚ :=
