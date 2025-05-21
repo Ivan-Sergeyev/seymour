@@ -29,60 +29,74 @@ private lemma Eq.mem3₂ᵣ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₂ �
 end members_of_intersection
 
 
+-- ## Experimental API
+
+private abbrev Matrix.submatrix2x2 {X Y : Set α} {F : Type} (B : Matrix X Y F) (x₀ x₁ : X) (y₀ y₁ : Y) :
+    Matrix (Fin 2) (Fin 2) F :=
+  !![B x₀ y₀, B x₀ y₁; B x₁ y₀, B x₁ y₁]
+
+private abbrev Matrix.submatrix2x7 {X Y : Set α} {F : Type} (B : Matrix X Y F) (x₀ x₁ : X) (a₀ a₁ a' : α) :
+    Matrix (Fin 2) (Y \ {a₀, a₁, a'}).Elem F :=
+  ![B x₀ ∘ Set.diff_subset.elem, B x₁ ∘ Set.diff_subset.elem]
+
+private abbrev Matrix.submatrix7x2 {X Y : Set α} {F : Type} (B : Matrix X Y F) (a₀ a₁ a' : α) (y₀ y₁ : Y) :
+    Matrix  (X \ {a₀, a₁, a'}).Elem (Fin 2) F :=
+  Matrix.of (fun i => ![B (Set.diff_subset.elem i) y₀, B (Set.diff_subset.elem i) y₁])
+
+private abbrev Matrix.drop2rows1col {X Y : Set α} {F : Type} (B : Matrix X Y F) (a₀ a₁ a' : α) :
+    Matrix (X \ {a₀, a₁}).Elem (Y \ {a'}).Elem F :=
+  B.submatrix Set.diff_subset.elem Set.diff_subset.elem
+
+private abbrev Matrix.drop1row2cols {X Y : Set α} {F : Type} (B : Matrix X Y F) (a' a₀ a₁ : α) :
+    Matrix (X \ {a'}).Elem (Y \ {a₀, a₁}).Elem F :=
+  B.submatrix Set.diff_subset.elem Set.diff_subset.elem
+
+private abbrev mapX [DecidableEq α] {X : Set α} {a₀ a₁ a' : α} [∀ x, Decidable (x ∈ X)] (i : (X \ {a'}).Elem) :
+      Fin 2 ⊕ (X \ {a₀, a₁, a'}).Elem :=
+    if hi₀ : i.val = a₀ then ◩0 else
+    if hi₁ : i.val = a₁ then ◩1 else
+    if hi : i.val ∈ X \ {a₀, a₁, a'} then ◪⟨i, hi⟩ else
+    (impossible_nmem_sdiff_triplet hi hi₀ hi₁).elim
+
+private abbrev mapY [DecidableEq α] {Y : Set α} {a₀ a₁ a' : α} [∀ x, Decidable (x ∈ Y)] (j : (Y \ {a'}).Elem) :
+      (Y \ {a₀, a₁, a'}).Elem ⊕ Fin 2 :=
+    if hj₀ : j.val = a₀ then ◪0 else
+    if hj₁ : j.val = a₁ then ◪1 else
+    if hj : j.val ∈ Y \ {a₀, a₁, a'} then ◩⟨j, hj⟩ else
+    (impossible_nmem_sdiff_triplet hj hj₀ hj₁).elim
+
+
 -- ## The 3-sum of matrices
 
 /-- The 3-sum composition of two matrices. -/
 noncomputable def matrix3sumComposition_standard [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
-    [∀ x, Decidable (x ∈ Xₗ \ {x₀, x₁, x'})] [∀ x, Decidable (x ∈ Xᵣ \ {x₀, x₁, x'})] -- for reindexing of `D`
-    [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
+    [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     (Bₗ : Matrix Xₗ Yₗ F) (Bᵣ : Matrix Xᵣ Yᵣ F) (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x'}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y'}) :
     Matrix ((Xₗ \ {x₀, x₁}).Elem ⊕ (Xᵣ \ {x'}).Elem) ((Yₗ \ {y'}).Elem ⊕ (Yᵣ \ {y₀, y₁}).Elem) F × Prop :=
-  -- row membership
+  -- row members
   let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
   let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
   let x₁ₗ : Xₗ := ⟨x₁, hXX.mem3₁ₗ⟩
   let x₁ᵣ : Xᵣ := ⟨x₁, hXX.mem3₁ᵣ⟩
   let x'ₗ : Xₗ := ⟨x', hXX.mem3₂ₗ⟩
   let x'ᵣ : Xᵣ := ⟨x', hXX.mem3₂ᵣ⟩
-  -- column membership
+  -- col members
   let y₀ₗ : Yₗ := ⟨y₀, hYY.mem3₀ₗ⟩
   let y₀ᵣ : Yᵣ := ⟨y₀, hYY.mem3₀ᵣ⟩
   let y₁ₗ : Yₗ := ⟨y₁, hYY.mem3₁ₗ⟩
   let y₁ᵣ : Yᵣ := ⟨y₁, hYY.mem3₁ᵣ⟩
   let y'ₗ : Yₗ := ⟨y', hYY.mem3₂ₗ⟩
   let y'ᵣ : Yᵣ := ⟨y', hYY.mem3₂ᵣ⟩
-  -- top left submatrix
-  let Aₗ : Matrix (Xₗ \ {x₀, x₁}).Elem (Yₗ \ {y'}).Elem F := Bₗ.submatrix Set.diff_subset.elem Set.diff_subset.elem
-  -- bottom right submatrix
-  let Aᵣ : Matrix (Xᵣ \ {x'}).Elem (Yᵣ \ {y₀, y₁}).Elem F := Bᵣ.submatrix Set.diff_subset.elem Set.diff_subset.elem
   -- pieces of bottom left submatrix
-  let D₀ₗ : Matrix (Fin 2) (Fin 2) F := !![Bₗ x₀ₗ y₀ₗ, Bₗ x₀ₗ y₁ₗ; Bₗ x₁ₗ y₀ₗ, Bₗ x₁ₗ y₁ₗ]
-  let D₀ᵣ : Matrix (Fin 2) (Fin 2) F := !![Bᵣ x₀ᵣ y₀ᵣ, Bᵣ x₀ᵣ y₁ᵣ; Bᵣ x₁ᵣ y₀ᵣ, Bᵣ x₁ᵣ y₁ᵣ]
-  let Dₗ : Matrix (Fin 2) (Yₗ \ {y₀, y₁, y'}).Elem F :=
-    ![Bₗ x₀ₗ ∘ Set.diff_subset.elem, Bₗ x₁ₗ ∘ Set.diff_subset.elem]
-  let Dᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Fin 2) F :=
-    Matrix.of (fun i => ![Bᵣ (Set.diff_subset.elem i) y₀ᵣ, Bᵣ (Set.diff_subset.elem i) y₁ᵣ])
-  let Dₗᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Yₗ \ {y₀, y₁, y'}).Elem F := Dᵣ * D₀ₗ⁻¹ * Dₗ
-  -- initial bottom left submatrix
-  let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) F := ⊞ Dₗ D₀ₗ Dₗᵣ Dᵣ
-  -- reindexing for bottom left submatrix
-  let fᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
-    if hi₀ : i.val = x₀ then ◩0 else
-    if hi₁ : i.val = x₁ then ◩1 else
-    if hi : i.val ∈ Xᵣ \ {x₀, x₁, x'} then ◪⟨i, hi⟩ else
-    (impossible_nmem_sdiff_triplet hi hi₀ hi₁).elim)
-  let fₗ : (Yₗ \ {y'}).Elem → (Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2 := fun j => (
-    if hj₀ : j.val = y₀ then ◪0 else
-    if hj₁ : j.val = y₁ then ◪1 else
-    if hj : j.val ∈ Yₗ \ {y₀, y₁, y'} then ◩⟨j, hj⟩ else
-    (impossible_nmem_sdiff_triplet hj hj₀ hj₁).elim)
-  -- final bottom left submatrix
-  let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem F := D'.submatrix fᵣ fₗ
+  let D₀ₗ := Bₗ.submatrix2x2 x₀ₗ x₁ₗ y₀ₗ y₁ₗ
+  let D₀ᵣ := Bᵣ.submatrix2x2 x₀ᵣ x₁ᵣ y₀ᵣ y₁ᵣ
+  let Dₗ := Bₗ.submatrix2x7 x₀ₗ x₁ₗ y₀ y₁ y'
+  let Dᵣ := Bᵣ.submatrix7x2 x₀ x₁ x' y₀ᵣ y₁ᵣ
   -- actual definition
   ⟨
     -- 3-sum defined as a block matrix
-    ⊞ Aₗ 0 D Aᵣ,
+    ⊞ (Bₗ.drop2rows1col x₀ x₁ y') 0 ((⊞ Dₗ D₀ₗ (Dᵣ * D₀ₗ⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY) (Bᵣ.drop1row2cols x' y₀ y₁),
     -- the special elements are all distinct
     ((x₀ ≠ x₁ ∧ x₀ ≠ x' ∧ x₁ ≠ x') ∧ (y₀ ≠ y₁ ∧ y₀ ≠ y' ∧ y₁ ≠ y'))
     -- index sets of rows and columns do not overlap
@@ -490,19 +504,18 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion_rows {X Y : Set α} {
 
 -- canonical signing of 3-sum constructed from TU signings of summands
 private noncomputable def matrix3sumCompositionCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
-    [∀ x, Decidable (x ∈ Xₗ \ {x₀, x₁, x'})] [∀ x, Decidable (x ∈ Xᵣ \ {x₀, x₁, x'})] -- for reindexing of `D`
-    [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
+    [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     (Bₗ' : Matrix Xₗ Yₗ ℚ) (Bᵣ' : Matrix Xᵣ Yᵣ ℚ)
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x'}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y'}) :
     Matrix ((Xₗ \ {x₀, x₁}).Elem ⊕ (Xᵣ \ {x'}).Elem) ((Yₗ \ {y'}).Elem ⊕ (Yᵣ \ {y₀, y₁}).Elem) ℚ :=
-  -- row membership
+  -- row members
   let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
   let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
   let x₁ₗ : Xₗ := ⟨x₁, hXX.mem3₁ₗ⟩
   let x₁ᵣ : Xᵣ := ⟨x₁, hXX.mem3₁ᵣ⟩
   let x'ₗ : Xₗ := ⟨x', hXX.mem3₂ₗ⟩
   let x'ᵣ : Xᵣ := ⟨x', hXX.mem3₂ᵣ⟩
-  -- column membership
+  -- col members
   let y₀ₗ : Yₗ := ⟨y₀, hYY.mem3₀ₗ⟩
   let y₀ᵣ : Yᵣ := ⟨y₀, hYY.mem3₀ᵣ⟩
   let y₁ₗ : Yₗ := ⟨y₁, hYY.mem3₁ₗ⟩
@@ -512,53 +525,30 @@ private noncomputable def matrix3sumCompositionCanonicalSigning {Xₗ Yₗ Xᵣ 
   -- convert summands to canonical form
   let Bₗ := Bₗ'.toCanonicalSigning x₀ₗ x₁ₗ x'ₗ y₀ₗ y₁ₗ y'ₗ
   let Bᵣ := Bᵣ'.toCanonicalSigning x₀ᵣ x₁ᵣ x'ᵣ y₀ᵣ y₁ᵣ y'ᵣ
-  -- top left submatrix
-  let Aₗ : Matrix (Xₗ \ {x₀, x₁}).Elem (Yₗ \ {y'}).Elem ℚ := Bₗ.submatrix Set.diff_subset.elem Set.diff_subset.elem
-  -- bottom right submatrix
-  let Aᵣ : Matrix (Xᵣ \ {x'}).Elem (Yᵣ \ {y₀, y₁}).Elem ℚ := Bᵣ.submatrix Set.diff_subset.elem Set.diff_subset.elem
   -- pieces of bottom left submatrix
-  let D₀ₗ : Matrix (Fin 2) (Fin 2) ℚ := !![Bₗ x₀ₗ y₀ₗ, Bₗ x₀ₗ y₁ₗ; Bₗ x₁ₗ y₀ₗ, Bₗ x₁ₗ y₁ₗ]
-  let Dₗ : Matrix (Fin 2) (Yₗ \ {y₀, y₁, y'}).Elem ℚ :=
-    ![Bₗ x₀ₗ ∘ Set.diff_subset.elem, Bₗ x₁ₗ ∘ Set.diff_subset.elem]
-  let Dᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Fin 2) ℚ :=
-    Matrix.of (fun i => ![Bᵣ (Set.diff_subset.elem i) y₀ᵣ, Bᵣ (Set.diff_subset.elem i) y₁ᵣ])
-  let Dₗᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Yₗ \ {y₀, y₁, y'}).Elem ℚ := Dᵣ * D₀ₗ⁻¹ * Dₗ
-  -- initial bottom left submatrix
-  let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := ⊞ Dₗ D₀ₗ Dₗᵣ Dᵣ
-  -- reindexing for bottom left submatrix
-  let fᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
-    if hi₀ : i.val = x₀ then ◩0 else
-    if hi₁ : i.val = x₁ then ◩1 else
-    if hi : i.val ∈ Xᵣ \ {x₀, x₁, x'} then ◪⟨i, hi⟩ else
-    (impossible_nmem_sdiff_triplet hi hi₀ hi₁).elim)
-  let fₗ : (Yₗ \ {y'}).Elem → (Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2 := fun j => (
-    if hj₀ : j.val = y₀ then ◪0 else
-    if hj₁ : j.val = y₁ then ◪1 else
-    if hj : j.val ∈ Yₗ \ {y₀, y₁, y'} then ◩⟨j, hj⟩ else
-    (impossible_nmem_sdiff_triplet hj hj₀ hj₁).elim)
-  -- final bottom left submatrix
-  let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := D'.submatrix fᵣ fₗ
+  let D₀ₗ := Bₗ.submatrix2x2 x₀ₗ x₁ₗ y₀ₗ y₁ₗ
+  let Dₗ := Bₗ.submatrix2x7 x₀ₗ x₁ₗ y₀ y₁ y'
+  let Dᵣ := Bᵣ.submatrix7x2 x₀ x₁ x' y₀ᵣ y₁ᵣ
   -- actual definition
-  ⊞ Aₗ 0 D Aᵣ
+  ⊞ (Bₗ.drop2rows1col x₀ x₁ y') 0 ((⊞ Dₗ D₀ₗ (Dᵣ * D₀ₗ⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY) (Bᵣ.drop1row2cols x' y₀ y₁)
 
 -- lemma 19.1
 private lemma matrix3sumCompositionCanonicalSigning_D_Eq_SumOuterProducts {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
-    [∀ x, Decidable (x ∈ Xₗ \ {x₀, x₁, x'})] [∀ x, Decidable (x ∈ Xᵣ \ {x₀, x₁, x'})] -- for reindexing of `D`
-    [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
+    [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x'}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y'})
     (hBₗ' : |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₀ ∨
             |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₁ )
     (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₀ ∨
             |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₁ ) :
-    -- row membership
+    -- row members
     let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
     let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
     let x₁ₗ : Xₗ := ⟨x₁, hXX.mem3₁ₗ⟩
     let x₁ᵣ : Xᵣ := ⟨x₁, hXX.mem3₁ᵣ⟩
     let x'ₗ : Xₗ := ⟨x', hXX.mem3₂ₗ⟩
     let x'ᵣ : Xᵣ := ⟨x', hXX.mem3₂ᵣ⟩
-    -- column membership
+    -- col members
     let y₀ₗ : Yₗ := ⟨y₀, hYY.mem3₀ₗ⟩
     let y₀ᵣ : Yᵣ := ⟨y₀, hYY.mem3₀ᵣ⟩
     let y₁ₗ : Yₗ := ⟨y₁, hYY.mem3₁ₗ⟩
@@ -568,38 +558,16 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Eq_SumOuterProducts {Xₗ 
     -- convert summands to canonical form
     let Bₗ := Bₗ'.toCanonicalSigning x₀ₗ x₁ₗ x'ₗ y₀ₗ y₁ₗ y'ₗ
     let Bᵣ := Bᵣ'.toCanonicalSigning x₀ᵣ x₁ᵣ x'ᵣ y₀ᵣ y₁ᵣ y'ᵣ
-    -- top left submatrix
-    let Aₗ : Matrix (Xₗ \ {x₀, x₁}).Elem (Yₗ \ {y'}).Elem ℚ := Bₗ.submatrix Set.diff_subset.elem Set.diff_subset.elem
-    -- bottom right submatrix
-    let Aᵣ : Matrix (Xᵣ \ {x'}).Elem (Yᵣ \ {y₀, y₁}).Elem ℚ := Bᵣ.submatrix Set.diff_subset.elem Set.diff_subset.elem
     -- pieces of bottom left submatrix
-    let D₀ₗ : Matrix (Fin 2) (Fin 2) ℚ := !![Bₗ x₀ₗ y₀ₗ, Bₗ x₀ₗ y₁ₗ; Bₗ x₁ₗ y₀ₗ, Bₗ x₁ₗ y₁ₗ]
-    let D₀ᵣ : Matrix (Fin 2) (Fin 2) ℚ := !![Bᵣ x₀ᵣ y₀ᵣ, Bᵣ x₀ᵣ y₁ᵣ; Bᵣ x₁ᵣ y₀ᵣ, Bᵣ x₁ᵣ y₁ᵣ]
-    let Dₗ : Matrix (Fin 2) (Yₗ \ {y₀, y₁, y'}).Elem ℚ :=
-      ![Bₗ x₀ₗ ∘ Set.diff_subset.elem, Bₗ x₁ₗ ∘ Set.diff_subset.elem]
-    let Dᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Fin 2) ℚ :=
-      Matrix.of (fun i => ![Bᵣ (Set.diff_subset.elem i) y₀ᵣ, Bᵣ (Set.diff_subset.elem i) y₁ᵣ])
-    let Dₗᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Yₗ \ {y₀, y₁, y'}).Elem ℚ := Dᵣ * D₀ₗ⁻¹ * Dₗ
-    -- initial bottom left submatrix
-    let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := ⊞ Dₗ D₀ₗ Dₗᵣ Dᵣ
-    -- reindexing for bottom left submatrix
-    let fᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
-      if hi₀ : i.val = x₀ then ◩0 else
-      if hi₁ : i.val = x₁ then ◩1 else
-      if hi : i.val ∈ Xᵣ \ {x₀, x₁, x'} then ◪⟨i, hi⟩ else
-      (impossible_nmem_sdiff_triplet hi hi₀ hi₁).elim)
-    let fₗ : (Yₗ \ {y'}).Elem → (Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2 := fun j => (
-      if hj₀ : j.val = y₀ then ◪0 else
-      if hj₁ : j.val = y₁ then ◪1 else
-      if hj : j.val ∈ Yₗ \ {y₀, y₁, y'} then ◩⟨j, hj⟩ else
-      (impossible_nmem_sdiff_triplet hj hj₀ hj₁).elim)
-    let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := D'.submatrix fᵣ fₗ
+    let D₀ₗ := Bₗ.submatrix2x2 x₀ₗ x₁ₗ y₀ₗ y₁ₗ
+    let Dₗ := Bₗ.submatrix2x7 x₀ₗ x₁ₗ y₀ y₁ y'
+    let Dᵣ := Bᵣ.submatrix7x2 x₀ x₁ x' y₀ᵣ y₁ᵣ
     -- special rows and columns
     let c₀ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) y₀ᵣ
     let c₁ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) y₁ᵣ
     let d₀ : (Yₗ \ {y'}).Elem → ℚ := fun i => Bₗ x₀ₗ (Set.diff_subset.elem i)
     let d₁ : (Yₗ \ {y'}).Elem → ℚ := fun i => Bₗ x₁ₗ (Set.diff_subset.elem i)
-    let D₀': Matrix (Fin 3) (Fin 3) ℚ :=
+    let D₀' : Matrix (Fin 3) (Fin 3) ℚ :=
       |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ|
     let r₀ : (Yₗ \ {y'}).Elem → ℚ :=
       if hD₀₀ : D₀' = matrix3x3unsigned₀ then d₀ else
@@ -620,27 +588,26 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Eq_SumOuterProducts {Xₗ 
         simp only [D₀', *] at hBₗ'
         exact hBₗ'.casesOn id id))
     -- actual statement
-    D = c₀ ⊗ r₀ + c₁ ⊗ r₁ :=
+    ((⊞ Dₗ D₀ₗ (Dᵣ * D₀ₗ⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY) = c₀ ⊗ r₀ + c₁ ⊗ r₁ :=
   sorry
 
 -- lemma 19.2
 private lemma matrix3sumCompositionCanonicalSigning_D_Rows {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
-    [∀ x, Decidable (x ∈ Xₗ \ {x₀, x₁, x'})] [∀ x, Decidable (x ∈ Xᵣ \ {x₀, x₁, x'})] -- for reindexing of `D`
-    [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
+    [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x'}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y'})
     (hBₗ' : |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₀ ∨
             |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₁ )
     (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₀ ∨
             |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₁ ) :
-    -- row membership
+    -- row members
     let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
     let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
     let x₁ₗ : Xₗ := ⟨x₁, hXX.mem3₁ₗ⟩
     let x₁ᵣ : Xᵣ := ⟨x₁, hXX.mem3₁ᵣ⟩
     let x'ₗ : Xₗ := ⟨x', hXX.mem3₂ₗ⟩
     let x'ᵣ : Xᵣ := ⟨x', hXX.mem3₂ᵣ⟩
-    -- column membership
+    -- col members
     let y₀ₗ : Yₗ := ⟨y₀, hYY.mem3₀ₗ⟩
     let y₀ᵣ : Yᵣ := ⟨y₀, hYY.mem3₀ᵣ⟩
     let y₁ₗ : Yₗ := ⟨y₁, hYY.mem3₁ₗ⟩
@@ -650,33 +617,12 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Rows {Xₗ Yₗ Xᵣ Yᵣ 
     -- convert summands to canonical form
     let Bₗ := Bₗ'.toCanonicalSigning x₀ₗ x₁ₗ x'ₗ y₀ₗ y₁ₗ y'ₗ
     let Bᵣ := Bᵣ'.toCanonicalSigning x₀ᵣ x₁ᵣ x'ᵣ y₀ᵣ y₁ᵣ y'ᵣ
-    -- top left submatrix
-    let Aₗ : Matrix (Xₗ \ {x₀, x₁}).Elem (Yₗ \ {y'}).Elem ℚ := Bₗ.submatrix Set.diff_subset.elem Set.diff_subset.elem
-    -- bottom right submatrix
-    let Aᵣ : Matrix (Xᵣ \ {x'}).Elem (Yᵣ \ {y₀, y₁}).Elem ℚ := Bᵣ.submatrix Set.diff_subset.elem Set.diff_subset.elem
     -- pieces of bottom left submatrix
-    let D₀ₗ : Matrix (Fin 2) (Fin 2) ℚ := !![Bₗ x₀ₗ y₀ₗ, Bₗ x₀ₗ y₁ₗ; Bₗ x₁ₗ y₀ₗ, Bₗ x₁ₗ y₁ₗ]
-    let D₀ᵣ : Matrix (Fin 2) (Fin 2) ℚ := !![Bᵣ x₀ᵣ y₀ᵣ, Bᵣ x₀ᵣ y₁ᵣ; Bᵣ x₁ᵣ y₀ᵣ, Bᵣ x₁ᵣ y₁ᵣ]
-    let Dₗ : Matrix (Fin 2) (Yₗ \ {y₀, y₁, y'}).Elem ℚ :=
-      ![Bₗ x₀ₗ ∘ Set.diff_subset.elem, Bₗ x₁ₗ ∘ Set.diff_subset.elem]
-    let Dᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Fin 2) ℚ :=
-      Matrix.of (fun i => ![Bᵣ (Set.diff_subset.elem i) y₀ᵣ, Bᵣ (Set.diff_subset.elem i) y₁ᵣ])
-    let Dₗᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Yₗ \ {y₀, y₁, y'}).Elem ℚ := Dᵣ * D₀ₗ⁻¹ * Dₗ
-    -- initial bottom left submatrix
-    let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := ⊞ Dₗ D₀ₗ Dₗᵣ Dᵣ
-    -- reindexing for bottom left submatrix
-    let fᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
-      if hi₀ : i.val = x₀ then ◩0 else
-      if hi₁ : i.val = x₁ then ◩1 else
-      if hi : i.val ∈ Xᵣ \ {x₀, x₁, x'} then ◪⟨i, hi⟩ else
-      (impossible_nmem_sdiff_triplet hi hi₀ hi₁).elim)
-    let fₗ : (Yₗ \ {y'}).Elem → (Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2 := fun j => (
-      if hj₀ : j.val = y₀ then ◪0 else
-      if hj₁ : j.val = y₁ then ◪1 else
-      if hj : j.val ∈ Yₗ \ {y₀, y₁, y'} then ◩⟨j, hj⟩ else
-      (impossible_nmem_sdiff_triplet hj hj₀ hj₁).elim)
+    let D₀ₗ := Bₗ.submatrix2x2 x₀ₗ x₁ₗ y₀ₗ y₁ₗ
+    let Dₗ := Bₗ.submatrix2x7 x₀ₗ x₁ₗ y₀ y₁ y'
+    let Dᵣ := Bᵣ.submatrix7x2 x₀ x₁ x' y₀ᵣ y₁ᵣ
     -- final bottom left submatrix
-    let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := D'.submatrix fᵣ fₗ
+    let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := (⊞ Dₗ D₀ₗ (Dᵣ * D₀ₗ⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY
     -- special rows and columns
     let c₀ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) y₀ᵣ
     let c₁ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) y₁ᵣ
@@ -708,22 +654,21 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Rows {Xₗ Yₗ Xᵣ Yᵣ 
 
 -- lemma 19.3
 private lemma matrix3sumCompositionCanonicalSigning_D_Cols {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
-    [∀ x, Decidable (x ∈ Xₗ \ {x₀, x₁, x'})] [∀ x, Decidable (x ∈ Xᵣ \ {x₀, x₁, x'})] -- for reindexing of `D`
-    [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
+    [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x'}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y'})
     (hBₗ' : |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₀ ∨
             |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₁ )
     (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₀ ∨
             |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₁ ) :
-    -- row membership
+    -- row members
     let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
     let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
     let x₁ₗ : Xₗ := ⟨x₁, hXX.mem3₁ₗ⟩
     let x₁ᵣ : Xᵣ := ⟨x₁, hXX.mem3₁ᵣ⟩
     let x'ₗ : Xₗ := ⟨x', hXX.mem3₂ₗ⟩
     let x'ᵣ : Xᵣ := ⟨x', hXX.mem3₂ᵣ⟩
-    -- column membership
+    -- col members
     let y₀ₗ : Yₗ := ⟨y₀, hYY.mem3₀ₗ⟩
     let y₀ᵣ : Yᵣ := ⟨y₀, hYY.mem3₀ᵣ⟩
     let y₁ₗ : Yₗ := ⟨y₁, hYY.mem3₁ₗ⟩
@@ -733,80 +678,36 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Cols {Xₗ Yₗ Xᵣ Yᵣ 
     -- convert summands to canonical form
     let Bₗ := Bₗ'.toCanonicalSigning x₀ₗ x₁ₗ x'ₗ y₀ₗ y₁ₗ y'ₗ
     let Bᵣ := Bᵣ'.toCanonicalSigning x₀ᵣ x₁ᵣ x'ᵣ y₀ᵣ y₁ᵣ y'ᵣ
-    -- top left submatrix
-    let Aₗ : Matrix (Xₗ \ {x₀, x₁}).Elem (Yₗ \ {y'}).Elem ℚ := Bₗ.submatrix Set.diff_subset.elem Set.diff_subset.elem
-    -- bottom right submatrix
-    let Aᵣ : Matrix (Xᵣ \ {x'}).Elem (Yᵣ \ {y₀, y₁}).Elem ℚ := Bᵣ.submatrix Set.diff_subset.elem Set.diff_subset.elem
     -- pieces of bottom left submatrix
-    let D₀ₗ : Matrix (Fin 2) (Fin 2) ℚ := !![Bₗ x₀ₗ y₀ₗ, Bₗ x₀ₗ y₁ₗ; Bₗ x₁ₗ y₀ₗ, Bₗ x₁ₗ y₁ₗ]
-    let D₀ᵣ : Matrix (Fin 2) (Fin 2) ℚ := !![Bᵣ x₀ᵣ y₀ᵣ, Bᵣ x₀ᵣ y₁ᵣ; Bᵣ x₁ᵣ y₀ᵣ, Bᵣ x₁ᵣ y₁ᵣ]
-    let Dₗ : Matrix (Fin 2) (Yₗ \ {y₀, y₁, y'}).Elem ℚ :=
-      ![Bₗ x₀ₗ ∘ Set.diff_subset.elem, Bₗ x₁ₗ ∘ Set.diff_subset.elem]
-    let Dᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Fin 2) ℚ :=
-      Matrix.of (fun i => ![Bᵣ (Set.diff_subset.elem i) y₀ᵣ, Bᵣ (Set.diff_subset.elem i) y₁ᵣ])
-    let Dₗᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Yₗ \ {y₀, y₁, y'}).Elem ℚ := Dᵣ * D₀ₗ⁻¹ * Dₗ
-    -- initial bottom left submatrix
-    let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := ⊞ Dₗ D₀ₗ Dₗᵣ Dᵣ
-    -- reindexing for bottom left submatrix
-    let fᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
-      if hi₀ : i.val = x₀ then ◩0 else
-      if hi₁ : i.val = x₁ then ◩1 else
-      if hi : i.val ∈ Xᵣ \ {x₀, x₁, x'} then ◪⟨i, hi⟩ else
-      (impossible_nmem_sdiff_triplet hi hi₀ hi₁).elim)
-    let fₗ : (Yₗ \ {y'}).Elem → (Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2 := fun j => (
-      if hj₀ : j.val = y₀ then ◪0 else
-      if hj₁ : j.val = y₁ then ◪1 else
-      if hj : j.val ∈ Yₗ \ {y₀, y₁, y'} then ◩⟨j, hj⟩ else
-      (impossible_nmem_sdiff_triplet hj hj₀ hj₁).elim)
+    let D₀ₗ := Bₗ.submatrix2x2 x₀ₗ x₁ₗ y₀ₗ y₁ₗ
+    let Dₗ := Bₗ.submatrix2x7 x₀ₗ x₁ₗ y₀ y₁ y'
+    let Dᵣ := Bᵣ.submatrix7x2 x₀ x₁ x' y₀ᵣ y₁ᵣ
     -- final bottom left submatrix
-    let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := D'.submatrix fᵣ fₗ
+    let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := (⊞ Dₗ D₀ₗ (Dᵣ * D₀ₗ⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY
     -- special rows and columns
     let c₀ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) y₀ᵣ
     let c₁ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) y₁ᵣ
-    let d₀ : (Yₗ \ {y'}).Elem → ℚ := fun i => Bₗ x₀ₗ (Set.diff_subset.elem i)
-    let d₁ : (Yₗ \ {y'}).Elem → ℚ := fun i => Bₗ x₁ₗ (Set.diff_subset.elem i)
-    let D₀' : Matrix (Fin 3) (Fin 3) ℚ :=
-      |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ|
-    let r₀ : (Yₗ \ {y'}).Elem → ℚ :=
-      if hD₀₀ : D₀' = matrix3x3unsigned₀ then d₀ else
-      if hD₀₁ : D₀' = matrix3x3unsigned₁ then d₀ - d₁ else
-      (False.elim (by
-        simp only [D₀', *] at hBₗ'
-        exact hBₗ'.casesOn id id))
-    let r₁ : (Yₗ \ {y'}).Elem → ℚ :=
-      if hD₀₀ : D₀' = matrix3x3unsigned₀ then -d₁ else
-      if hD₀₁ : D₀' = matrix3x3unsigned₁ then d₁ else
-      (False.elim (by
-        simp only [D₀', *] at hBₗ'
-        exact hBₗ'.casesOn id id))
-    let r₂ : (Yₗ \ {y'}).Elem → ℚ :=
-      if hD₀₀ : D₀' = matrix3x3unsigned₀ then d₀ - d₁ else
-      if hD₀₁ : D₀' = matrix3x3unsigned₁ then d₀ else
-      (False.elim (by
-        simp only [D₀', *] at hBₗ'
-        exact hBₗ'.casesOn id id))
     -- actual statement
     ∀ j, (D · j) = c₀ ∨ (D · j) = -c₀ ∨ (D · j) = c₁ ∨ (D · j) = -c₁ ∨ (D · j) = c₀ - c₁ ∨ (D · j) = c₁ - c₀ ∨ (D · j) = 0 :=
   sorry
 
 -- lemma 19.5
 private lemma matrix3sumCompositionCanonicalSigning_Aᵣ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
-    [∀ x, Decidable (x ∈ Xₗ \ {x₀, x₁, x'})] [∀ x, Decidable (x ∈ Xᵣ \ {x₀, x₁, x'})] -- for reindexing of `D`
-    [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
+    [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x'}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y'})
     (hBₗ' : |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₀ ∨
             |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₁ )
     (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₀ ∨
             |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₁ ) :
-    -- row membership
+    -- row members
     let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
     let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
     let x₁ₗ : Xₗ := ⟨x₁, hXX.mem3₁ₗ⟩
     let x₁ᵣ : Xᵣ := ⟨x₁, hXX.mem3₁ᵣ⟩
     let x'ₗ : Xₗ := ⟨x', hXX.mem3₂ₗ⟩
     let x'ᵣ : Xᵣ := ⟨x', hXX.mem3₂ᵣ⟩
-    -- column membership
+    -- col members
     let y₀ₗ : Yₗ := ⟨y₀, hYY.mem3₀ₗ⟩
     let y₀ᵣ : Yᵣ := ⟨y₀, hYY.mem3₀ᵣ⟩
     let y₁ₗ : Yₗ := ⟨y₁, hYY.mem3₁ₗ⟩
@@ -816,80 +717,31 @@ private lemma matrix3sumCompositionCanonicalSigning_Aᵣ_D_TU {Xₗ Yₗ Xᵣ Y�
     -- convert summands to canonical form
     let Bₗ := Bₗ'.toCanonicalSigning x₀ₗ x₁ₗ x'ₗ y₀ₗ y₁ₗ y'ₗ
     let Bᵣ := Bᵣ'.toCanonicalSigning x₀ᵣ x₁ᵣ x'ᵣ y₀ᵣ y₁ᵣ y'ᵣ
-    -- top left submatrix
-    let Aₗ : Matrix (Xₗ \ {x₀, x₁}).Elem (Yₗ \ {y'}).Elem ℚ := Bₗ.submatrix Set.diff_subset.elem Set.diff_subset.elem
-    -- bottom right submatrix
-    let Aᵣ : Matrix (Xᵣ \ {x'}).Elem (Yᵣ \ {y₀, y₁}).Elem ℚ := Bᵣ.submatrix Set.diff_subset.elem Set.diff_subset.elem
     -- pieces of bottom left submatrix
-    let D₀ₗ : Matrix (Fin 2) (Fin 2) ℚ := !![Bₗ x₀ₗ y₀ₗ, Bₗ x₀ₗ y₁ₗ; Bₗ x₁ₗ y₀ₗ, Bₗ x₁ₗ y₁ₗ]
-    let D₀ᵣ : Matrix (Fin 2) (Fin 2) ℚ := !![Bᵣ x₀ᵣ y₀ᵣ, Bᵣ x₀ᵣ y₁ᵣ; Bᵣ x₁ᵣ y₀ᵣ, Bᵣ x₁ᵣ y₁ᵣ]
-    let Dₗ : Matrix (Fin 2) (Yₗ \ {y₀, y₁, y'}).Elem ℚ :=
-      ![Bₗ x₀ₗ ∘ Set.diff_subset.elem, Bₗ x₁ₗ ∘ Set.diff_subset.elem]
-    let Dᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Fin 2) ℚ :=
-      Matrix.of (fun i => ![Bᵣ (Set.diff_subset.elem i) y₀ᵣ, Bᵣ (Set.diff_subset.elem i) y₁ᵣ])
-    let Dₗᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Yₗ \ {y₀, y₁, y'}).Elem ℚ := Dᵣ * D₀ₗ⁻¹ * Dₗ
-    -- initial bottom left submatrix
-    let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := ⊞ Dₗ D₀ₗ Dₗᵣ Dᵣ
-    -- reindexing for bottom left submatrix
-    let fᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
-      if hi₀ : i.val = x₀ then ◩0 else
-      if hi₁ : i.val = x₁ then ◩1 else
-      if hi : i.val ∈ Xᵣ \ {x₀, x₁, x'} then ◪⟨i, hi⟩ else
-      (impossible_nmem_sdiff_triplet hi hi₀ hi₁).elim)
-    let fₗ : (Yₗ \ {y'}).Elem → (Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2 := fun j => (
-      if hj₀ : j.val = y₀ then ◪0 else
-      if hj₁ : j.val = y₁ then ◪1 else
-      if hj : j.val ∈ Yₗ \ {y₀, y₁, y'} then ◩⟨j, hj⟩ else
-      (impossible_nmem_sdiff_triplet hj hj₀ hj₁).elim)
-    -- final bottom left submatrix
-    let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := D'.submatrix fᵣ fₗ
-    -- special rows and columns
-    let c₀ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) y₀ᵣ
-    let c₁ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) y₁ᵣ
-    let d₀ : (Yₗ \ {y'}).Elem → ℚ := fun i => Bₗ x₀ₗ (Set.diff_subset.elem i)
-    let d₁ : (Yₗ \ {y'}).Elem → ℚ := fun i => Bₗ x₁ₗ (Set.diff_subset.elem i)
-    let D₀' : Matrix (Fin 3) (Fin 3) ℚ :=
-      |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ|
-    let r₀ : (Yₗ \ {y'}).Elem → ℚ :=
-      if hD₀₀ : D₀' = matrix3x3unsigned₀ then d₀ else
-      if hD₀₁ : D₀' = matrix3x3unsigned₁ then d₀ - d₁ else
-      (False.elim (by
-        simp only [D₀', *] at hBₗ'
-        exact hBₗ'.casesOn id id))
-    let r₁ : (Yₗ \ {y'}).Elem → ℚ :=
-      if hD₀₀ : D₀' = matrix3x3unsigned₀ then -d₁ else
-      if hD₀₁ : D₀' = matrix3x3unsigned₁ then d₁ else
-      (False.elim (by
-        simp only [D₀', *] at hBₗ'
-        exact hBₗ'.casesOn id id))
-    let r₂ : (Yₗ \ {y'}).Elem → ℚ :=
-      if hD₀₀ : D₀' = matrix3x3unsigned₀ then d₀ - d₁ else
-      if hD₀₁ : D₀' = matrix3x3unsigned₁ then d₀ else
-      (False.elim (by
-        simp only [D₀', *] at hBₗ'
-        exact hBₗ'.casesOn id id))
+    let D₀ᵣ := Bᵣ.submatrix2x2 x₀ᵣ x₁ᵣ y₀ᵣ y₁ᵣ
+    let Dₗ := Bₗ.submatrix2x7 x₀ₗ x₁ₗ y₀ y₁ y'
+    let Dᵣ := Bᵣ.submatrix7x2 x₀ x₁ x' y₀ᵣ y₁ᵣ
     -- actual statement
-    (Aᵣ ◫ D).IsTotallyUnimodular :=
+    (Bᵣ.drop1row2cols x' y₀ y₁ ◫ (⊞ Dₗ D₀ᵣ (Dᵣ * D₀ᵣ⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY).IsTotallyUnimodular :=
   sorry
 
 -- lemma 19.7
 private lemma matrix3sumCompositionCanonicalSigning_Aₗ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x' y₀ y₁ y' : α}
-    [∀ x, Decidable (x ∈ Xₗ \ {x₀, x₁, x'})] [∀ x, Decidable (x ∈ Xᵣ \ {x₀, x₁, x'})] -- for reindexing of `D`
-    [∀ y, Decidable (y ∈ Yₗ \ {y₀, y₁, y'})] [∀ y, Decidable (y ∈ Yᵣ \ {y₀, y₁, y'})] -- for reindexing of `D`
+    [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x'}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y'})
     (hBₗ' : |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₀ ∨
             |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₁ )
     (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₀ ∨
             |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₁ ) :
-    -- row membership
+    -- row members
     let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
     let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
     let x₁ₗ : Xₗ := ⟨x₁, hXX.mem3₁ₗ⟩
     let x₁ᵣ : Xᵣ := ⟨x₁, hXX.mem3₁ᵣ⟩
     let x'ₗ : Xₗ := ⟨x', hXX.mem3₂ₗ⟩
     let x'ᵣ : Xᵣ := ⟨x', hXX.mem3₂ᵣ⟩
-    -- column membership
+    -- col members
     let y₀ₗ : Yₗ := ⟨y₀, hYY.mem3₀ₗ⟩
     let y₀ᵣ : Yᵣ := ⟨y₀, hYY.mem3₀ᵣ⟩
     let y₁ₗ : Yₗ := ⟨y₁, hYY.mem3₁ₗ⟩
@@ -899,60 +751,12 @@ private lemma matrix3sumCompositionCanonicalSigning_Aₗ_D_TU {Xₗ Yₗ Xᵣ Y�
     -- convert summands to canonical form
     let Bₗ := Bₗ'.toCanonicalSigning x₀ₗ x₁ₗ x'ₗ y₀ₗ y₁ₗ y'ₗ
     let Bᵣ := Bᵣ'.toCanonicalSigning x₀ᵣ x₁ᵣ x'ᵣ y₀ᵣ y₁ᵣ y'ᵣ
-    -- top left submatrix
-    let Aₗ : Matrix (Xₗ \ {x₀, x₁}).Elem (Yₗ \ {y'}).Elem ℚ := Bₗ.submatrix Set.diff_subset.elem Set.diff_subset.elem
-    -- bottom right submatrix
-    let Aᵣ : Matrix (Xᵣ \ {x'}).Elem (Yᵣ \ {y₀, y₁}).Elem ℚ := Bᵣ.submatrix Set.diff_subset.elem Set.diff_subset.elem
     -- pieces of bottom left submatrix
-    let D₀ₗ : Matrix (Fin 2) (Fin 2) ℚ := !![Bₗ x₀ₗ y₀ₗ, Bₗ x₀ₗ y₁ₗ; Bₗ x₁ₗ y₀ₗ, Bₗ x₁ₗ y₁ₗ]
-    let D₀ᵣ : Matrix (Fin 2) (Fin 2) ℚ := !![Bᵣ x₀ᵣ y₀ᵣ, Bᵣ x₀ᵣ y₁ᵣ; Bᵣ x₁ᵣ y₀ᵣ, Bᵣ x₁ᵣ y₁ᵣ]
-    let Dₗ : Matrix (Fin 2) (Yₗ \ {y₀, y₁, y'}).Elem ℚ :=
-      ![Bₗ x₀ₗ ∘ Set.diff_subset.elem, Bₗ x₁ₗ ∘ Set.diff_subset.elem]
-    let Dᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Fin 2) ℚ :=
-      Matrix.of (fun i => ![Bᵣ (Set.diff_subset.elem i) y₀ᵣ, Bᵣ (Set.diff_subset.elem i) y₁ᵣ])
-    let Dₗᵣ : Matrix (Xᵣ \ {x₀, x₁, x'}).Elem (Yₗ \ {y₀, y₁, y'}).Elem ℚ := Dᵣ * D₀ₗ⁻¹ * Dₗ
-    -- initial bottom left submatrix
-    let D' : Matrix (Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem) ((Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2) ℚ := ⊞ Dₗ D₀ₗ Dₗᵣ Dᵣ
-    -- reindexing for bottom left submatrix
-    let fᵣ : (Xᵣ \ {x'}).Elem → Fin 2 ⊕ (Xᵣ \ {x₀, x₁, x'}).Elem := fun i => (
-      if hi₀ : i.val = x₀ then ◩0 else
-      if hi₁ : i.val = x₁ then ◩1 else
-      if hi : i.val ∈ Xᵣ \ {x₀, x₁, x'} then ◪⟨i, hi⟩ else
-      (impossible_nmem_sdiff_triplet hi hi₀ hi₁).elim)
-    let fₗ : (Yₗ \ {y'}).Elem → (Yₗ \ {y₀, y₁, y'}).Elem ⊕ Fin 2 := fun j => (
-      if hj₀ : j.val = y₀ then ◪0 else
-      if hj₁ : j.val = y₁ then ◪1 else
-      if hj : j.val ∈ Yₗ \ {y₀, y₁, y'} then ◩⟨j, hj⟩ else
-      (impossible_nmem_sdiff_triplet hj hj₀ hj₁).elim)
-    -- final bottom left submatrix
-    let D : Matrix (Xᵣ \ {x'}).Elem (Yₗ \ {y'}).Elem ℚ := D'.submatrix fᵣ fₗ
-    -- special rows and columns
-    let c₀ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) y₀ᵣ
-    let c₁ : (Xᵣ \ {x'}).Elem → ℚ := fun j => Bᵣ (Set.diff_subset.elem j) y₁ᵣ
-    let d₀ : (Yₗ \ {y'}).Elem → ℚ := fun i => Bₗ x₀ₗ (Set.diff_subset.elem i)
-    let d₁ : (Yₗ \ {y'}).Elem → ℚ := fun i => Bₗ x₁ₗ (Set.diff_subset.elem i)
-    let D₀' : Matrix (Fin 3) (Fin 3) ℚ :=
-      |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ|
-    let r₀ : (Yₗ \ {y'}).Elem → ℚ :=
-      if hD₀₀ : D₀' = matrix3x3unsigned₀ then d₀ else
-      if hD₀₁ : D₀' = matrix3x3unsigned₁ then d₀ - d₁ else
-      (False.elim (by
-        simp only [D₀', *] at hBₗ'
-        exact hBₗ'.casesOn id id))
-    let r₁ : (Yₗ \ {y'}).Elem → ℚ :=
-      if hD₀₀ : D₀' = matrix3x3unsigned₀ then -d₁ else
-      if hD₀₁ : D₀' = matrix3x3unsigned₁ then d₁ else
-      (False.elim (by
-        simp only [D₀', *] at hBₗ'
-        exact hBₗ'.casesOn id id))
-    let r₂ : (Yₗ \ {y'}).Elem → ℚ :=
-      if hD₀₀ : D₀' = matrix3x3unsigned₀ then d₀ - d₁ else
-      if hD₀₁ : D₀' = matrix3x3unsigned₁ then d₀ else
-      (False.elim (by
-        simp only [D₀', *] at hBₗ'
-        exact hBₗ'.casesOn id id))
+    let D₀ₗ := Bₗ.submatrix2x2 x₀ₗ x₁ₗ y₀ₗ y₁ₗ
+    let Dₗ := Bₗ.submatrix2x7 x₀ₗ x₁ₗ y₀ y₁ y'
+    let Dᵣ := Bᵣ.submatrix7x2 x₀ x₁ x' y₀ᵣ y₁ᵣ
     -- actual statement
-    (Aₗ ⊟ D).IsTotallyUnimodular := by
+    (Bₗ.drop2rows1col x₀ x₁ y' ⊟ (⊞ Dₗ D₀ₗ (Dᵣ * D₀ₗ⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY).IsTotallyUnimodular := by
   sorry
 
 
