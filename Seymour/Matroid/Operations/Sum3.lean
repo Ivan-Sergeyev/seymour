@@ -85,7 +85,7 @@ noncomputable def matrix3sumComposition_standard [DecidableEq α] {F : Type} [Fi
   let D₀ᵣ := Bᵣ.submatrix2x2 x₀ᵣ x₁ᵣ y₀ᵣ y₁ᵣ
   let Dₗ := Bₗ.submatrix2x7 x₀ₗ x₁ₗ y₀ y₁ y₂
   let Dᵣ := Bᵣ.submatrix7x2 x₀ x₁ x₂ y₀ᵣ y₁ᵣ
-  -- actual definition
+  -- the actual definition
   ⟨
     -- 3-sum defined as a block matrix
     ⊞ (Bₗ.drop2rows1col x₀ x₁ y₂) 0 ((⊞ Dₗ D₀ₗ (Dᵣ * D₀ₗ⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY) (Bᵣ.drop1row2cols x₂ y₀ y₁),
@@ -510,26 +510,48 @@ private noncomputable def matrix3sumCompositionCanonicalSigning {Xₗ Yₗ Xᵣ 
   let D₀ₗ := Bₗ.submatrix2x2 x₀ₗ x₁ₗ y₀ₗ y₁ₗ
   let Dₗ := Bₗ.submatrix2x7 x₀ₗ x₁ₗ y₀ y₁ y₂
   let Dᵣ := Bᵣ.submatrix7x2 x₀ x₁ x₂ y₀ᵣ y₁ᵣ
-  -- actual definition
+  -- the actual definition
   ⊞ (Bₗ.drop2rows1col x₀ x₁ y₂) 0 ((⊞ Dₗ D₀ₗ (Dᵣ * D₀ₗ⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY) (Bᵣ.drop1row2cols x₂ y₀ y₁)
 
 
 section experimental
 
-variable {X Y : Set α} {a' : α} {F : Type}
+variable {X Y : Set α} {a : α}
 
-private abbrev Matrix._col (B : Matrix X Y F) (y : Y) (i : (X \ {a'}).Elem) : F :=
+private abbrev Matrix._col (B : Matrix X Y ℚ) (y : Y) (i : (X \ {a}).Elem) : ℚ :=
   B (Set.diff_subset.elem i) y
 
-private abbrev Matrix._row (B : Matrix X Y F) (x : X) (j : (Y \ {a'}).Elem) : F :=
+private abbrev Matrix._row (B : Matrix X Y ℚ) (x : X) (j : (Y \ {a}).Elem) : ℚ :=
   B x (Set.diff_subset.elem j)
 
-private abbrev Matrix._row' (B : Matrix X Y F) (x : X) (j : (Y \ {a'}).Elem) (D₀' : Matrix (Fin 3) (Fin 3) ℚ) : F := sorry
-  -- if hD₀₀ : D₀' = matrix3x3unsigned₀ then d₀ else
-  -- if hD₀₁ : D₀' = matrix3x3unsigned₁ then d₀ - d₁ else
-  -- (False.elim (by
-  --   simp only [D₀', *] at hBₗ'
-  --   exact hBₗ'.casesOn id id))
+private abbrev Matrix._rrr (B' : Matrix X Y ℚ) (x₀ x₁ x₂ : X) (y₀ y₁ y₂ : Y) :
+    let D₀ := |B'.submatrix3x3mems x₀.property x₁.property x₂.property y₀.property y₁.property y₂.property|
+    (D₀ = matrix3x3unsigned₀ ∨ D₀ = matrix3x3unsigned₁) → ((Y \ {a}).Elem → ℚ) × ((Y \ {a}).Elem → ℚ) × ((Y \ {a}).Elem → ℚ) :=
+  fun hB' =>
+    let B := B'.toCanonicalSigning x₀ x₁ x₂ y₀ y₁ y₂
+    let d₀ : (Y \ {a}).Elem → ℚ := B._row x₀
+    let d₁ : (Y \ {a}).Elem → ℚ := B._row x₁
+    let D₀ := |B'.submatrix3x3mems x₀.property x₁.property x₂.property y₀.property y₁.property y₂.property|
+    ⟨
+      if hD₀₀ : D₀ = matrix3x3unsigned₀ then d₀ else
+      if hD₀₁ : D₀ = matrix3x3unsigned₁ then d₀ - d₁ else
+      (False.elim (by
+        simp only [D₀, *] at hB'
+        exact hB'.casesOn id id)
+      ),
+      if hD₀₀ : D₀ = matrix3x3unsigned₀ then -d₁ else
+      if hD₀₁ : D₀ = matrix3x3unsigned₁ then d₁ else
+      (False.elim (by
+        simp only [D₀, *] at hB'
+        exact hB'.casesOn id id)
+      ),
+      if hD₀₀ : D₀ = matrix3x3unsigned₀ then d₀ - d₁ else
+      if hD₀₁ : D₀ = matrix3x3unsigned₁ then d₀ else
+      (False.elim (by
+        simp only [D₀, *] at hB'
+        exact hB'.casesOn id id)
+      )
+    ⟩
 
 end experimental
 
@@ -542,9 +564,20 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Eq_SumOuterProducts {Xₗ 
             |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₁ )
     (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₀ ∨
             |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₁ ) :
-    -- respective `x`s and `y`s as members of respective sets
-    let ⟨⟨x₀ₗ, x₁ₗ, x₂ₗ⟩, ⟨x₀ᵣ, x₁ᵣ, x₂ᵣ⟩⟩ := hXX.inter3all
-    let ⟨⟨y₀ₗ, y₁ₗ, y₂ₗ⟩, ⟨y₀ᵣ, y₁ᵣ, y₂ᵣ⟩⟩ := hYY.inter3all
+    -- row membership
+    let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
+    let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
+    let x₁ₗ : Xₗ := ⟨x₁, hXX.mem3₁ₗ⟩
+    let x₁ᵣ : Xᵣ := ⟨x₁, hXX.mem3₁ᵣ⟩
+    let x₂ₗ : Xₗ := ⟨x₂, hXX.mem3₂ₗ⟩
+    let x₂ᵣ : Xᵣ := ⟨x₂, hXX.mem3₂ᵣ⟩
+    -- col membership
+    let y₀ₗ : Yₗ := ⟨y₀, hYY.mem3₀ₗ⟩
+    let y₀ᵣ : Yᵣ := ⟨y₀, hYY.mem3₀ᵣ⟩
+    let y₁ₗ : Yₗ := ⟨y₁, hYY.mem3₁ₗ⟩
+    let y₁ᵣ : Yᵣ := ⟨y₁, hYY.mem3₁ᵣ⟩
+    let y₂ₗ : Yₗ := ⟨y₂, hYY.mem3₂ₗ⟩
+    let y₂ᵣ : Yᵣ := ⟨y₂, hYY.mem3₂ᵣ⟩
     -- convert summands to canonical form
     let Bₗ := Bₗ'.toCanonicalSigning x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ
     let Bᵣ := Bᵣ'.toCanonicalSigning x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
@@ -552,32 +585,12 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Eq_SumOuterProducts {Xₗ 
     let D₀ₗ := Bₗ.submatrix2x2 x₀ₗ x₁ₗ y₀ₗ y₁ₗ
     let Dₗ := Bₗ.submatrix2x7 x₀ₗ x₁ₗ y₀ y₁ y₂
     let Dᵣ := Bᵣ.submatrix7x2 x₀ x₁ x₂ y₀ᵣ y₁ᵣ
-    -- special rows and columns
+    -- special columns
     let c₀ : (Xᵣ \ {x₂}).Elem → ℚ := Bᵣ._col y₀ᵣ
     let c₁ : (Xᵣ \ {x₂}).Elem → ℚ := Bᵣ._col y₁ᵣ
-    let d₀ : (Yₗ \ {y₂}).Elem → ℚ := Bₗ._row x₀ₗ
-    let d₁ : (Yₗ \ {y₂}).Elem → ℚ := Bₗ._row x₁ₗ
-    let D₀' : Matrix (Fin 3) (Fin 3) ℚ :=
-      |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ|
-    let r₀ : (Yₗ \ {y₂}).Elem → ℚ :=
-      if hD₀₀ : D₀' = matrix3x3unsigned₀ then d₀ else
-      if hD₀₁ : D₀' = matrix3x3unsigned₁ then d₀ - d₁ else
-      (False.elim (by
-        simp only [D₀', *] at hBₗ'
-        exact hBₗ'.casesOn id id))
-    let r₁ : (Yₗ \ {y₂}).Elem → ℚ :=
-      if hD₀₀ : D₀' = matrix3x3unsigned₀ then -d₁ else
-      if hD₀₁ : D₀' = matrix3x3unsigned₁ then d₁ else
-      (False.elim (by
-        simp only [D₀', *] at hBₗ'
-        exact hBₗ'.casesOn id id))
-    let r₂ : (Yₗ \ {y₂}).Elem → ℚ :=
-      if hD₀₀ : D₀' = matrix3x3unsigned₀ then d₀ - d₁ else
-      if hD₀₁ : D₀' = matrix3x3unsigned₁ then d₀ else
-      (False.elim (by
-        simp only [D₀', *] at hBₗ'
-        exact hBₗ'.casesOn id id))
-    -- actual statement
+    -- two just-constructed rows
+    let ⟨r₀, r₁, _⟩ := Bₗ'._rrr x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ hBₗ'
+    -- the actual statement
     ((⊞ Dₗ D₀ₗ (Dᵣ * D₀ₗ⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY) = c₀ ⊗ r₀ + c₁ ⊗ r₁ :=
   sorry
 
@@ -590,9 +603,20 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Rows {Xₗ Yₗ Xᵣ Yᵣ 
             |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₁ )
     (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₀ ∨
             |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₁ ) :
-    -- respective `x`s and `y`s as members of respective sets
-    let ⟨⟨x₀ₗ, x₁ₗ, x₂ₗ⟩, ⟨x₀ᵣ, x₁ᵣ, x₂ᵣ⟩⟩ := hXX.inter3all
-    let ⟨⟨y₀ₗ, y₁ₗ, y₂ₗ⟩, ⟨y₀ᵣ, y₁ᵣ, y₂ᵣ⟩⟩ := hYY.inter3all
+    -- row membership
+    let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
+    let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
+    let x₁ₗ : Xₗ := ⟨x₁, hXX.mem3₁ₗ⟩
+    let x₁ᵣ : Xᵣ := ⟨x₁, hXX.mem3₁ᵣ⟩
+    let x₂ₗ : Xₗ := ⟨x₂, hXX.mem3₂ₗ⟩
+    let x₂ᵣ : Xᵣ := ⟨x₂, hXX.mem3₂ᵣ⟩
+    -- col membership
+    let y₀ₗ : Yₗ := ⟨y₀, hYY.mem3₀ₗ⟩
+    let y₀ᵣ : Yᵣ := ⟨y₀, hYY.mem3₀ᵣ⟩
+    let y₁ₗ : Yₗ := ⟨y₁, hYY.mem3₁ₗ⟩
+    let y₁ᵣ : Yᵣ := ⟨y₁, hYY.mem3₁ᵣ⟩
+    let y₂ₗ : Yₗ := ⟨y₂, hYY.mem3₂ₗ⟩
+    let y₂ᵣ : Yᵣ := ⟨y₂, hYY.mem3₂ᵣ⟩
     -- convert summands to canonical form
     let Bₗ := Bₗ'.toCanonicalSigning x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ
     let Bᵣ := Bᵣ'.toCanonicalSigning x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
@@ -602,30 +626,9 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Rows {Xₗ Yₗ Xᵣ Yᵣ 
     let Dᵣ := Bᵣ.submatrix7x2 x₀ x₁ x₂ y₀ᵣ y₁ᵣ
     -- final bottom left submatrix
     let D : Matrix (Xᵣ \ {x₂}).Elem (Yₗ \ {y₂}).Elem ℚ := (⊞ Dₗ D₀ₗ (Dᵣ * D₀ₗ⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY
-    -- special rows and columns
-    let d₀ : (Yₗ \ {y₂}).Elem → ℚ := Bₗ._row x₀ₗ
-    let d₁ : (Yₗ \ {y₂}).Elem → ℚ := Bₗ._row x₁ₗ
-    let D₀' : Matrix (Fin 3) (Fin 3) ℚ :=
-      |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ|
-    let r₀ : (Yₗ \ {y₂}).Elem → ℚ :=
-      if hD₀₀ : D₀' = matrix3x3unsigned₀ then d₀ else
-      if hD₀₁ : D₀' = matrix3x3unsigned₁ then d₀ - d₁ else
-      (False.elim (by
-        simp only [D₀', *] at hBₗ'
-        exact hBₗ'.casesOn id id))
-    let r₁ : (Yₗ \ {y₂}).Elem → ℚ :=
-      if hD₀₀ : D₀' = matrix3x3unsigned₀ then -d₁ else
-      if hD₀₁ : D₀' = matrix3x3unsigned₁ then d₁ else
-      (False.elim (by
-        simp only [D₀', *] at hBₗ'
-        exact hBₗ'.casesOn id id))
-    let r₂ : (Yₗ \ {y₂}).Elem → ℚ :=
-      if hD₀₀ : D₀' = matrix3x3unsigned₀ then d₀ - d₁ else
-      if hD₀₁ : D₀' = matrix3x3unsigned₁ then d₀ else
-      (False.elim (by
-        simp only [D₀', *] at hBₗ'
-        exact hBₗ'.casesOn id id))
-    -- actual statement
+    -- three just-constructed rows
+    let ⟨r₀, r₁, r₂⟩ := Bₗ'._rrr x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ hBₗ'
+    -- the actual statement
     ∀ i, D i = r₀ ∨ D i = -r₀ ∨ D i = r₁ ∨ D i = -r₁ ∨ D i = r₂ ∨ D i = -r₂ ∨ D i = 0 :=
   sorry
 
@@ -650,10 +653,10 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Cols {Xₗ Yₗ Xᵣ Yᵣ 
     let Dᵣ := Bᵣ.submatrix7x2 x₀ x₁ x₂ y₀ᵣ y₁ᵣ
     -- final bottom left submatrix
     let D : Matrix (Xᵣ \ {x₂}).Elem (Yₗ \ {y₂}).Elem ℚ := (⊞ Dₗ D₀ₗ (Dᵣ * D₀ₗ⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY
-    -- special rows and columns
+    -- special columns
     let c₀ : (Xᵣ \ {x₂}).Elem → ℚ := Bᵣ._col y₀ᵣ
     let c₁ : (Xᵣ \ {x₂}).Elem → ℚ := Bᵣ._col y₁ᵣ
-    -- actual statement
+    -- the actual statement
     ∀ j, (D · j) = c₀ ∨ (D · j) = -c₀ ∨ (D · j) = c₁ ∨ (D · j) = -c₁ ∨ (D · j) = c₀ - c₁ ∨ (D · j) = c₁ - c₀ ∨ (D · j) = 0 :=
   sorry
 
@@ -676,7 +679,7 @@ private lemma matrix3sumCompositionCanonicalSigning_Aᵣ_D_TU {Xₗ Yₗ Xᵣ Y�
     let D₀ᵣ := Bᵣ.submatrix2x2 x₀ᵣ x₁ᵣ y₀ᵣ y₁ᵣ
     let Dₗ := Bₗ.submatrix2x7 x₀ₗ x₁ₗ y₀ y₁ y₂
     let Dᵣ := Bᵣ.submatrix7x2 x₀ x₁ x₂ y₀ᵣ y₁ᵣ
-    -- actual statement
+    -- the actual statement
     (Bᵣ.drop1row2cols x₂ y₀ y₁ ◫ (⊞ Dₗ D₀ᵣ (Dᵣ * D₀ᵣ⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY).IsTotallyUnimodular :=
   sorry
 
@@ -699,7 +702,7 @@ private lemma matrix3sumCompositionCanonicalSigning_Aₗ_D_TU {Xₗ Yₗ Xᵣ Y�
     let D₀ₗ := Bₗ.submatrix2x2 x₀ₗ x₁ₗ y₀ₗ y₁ₗ
     let Dₗ := Bₗ.submatrix2x7 x₀ₗ x₁ₗ y₀ y₁ y₂
     let Dᵣ := Bᵣ.submatrix7x2 x₀ x₁ x₂ y₀ᵣ y₁ᵣ
-    -- actual statement
+    -- the actual statement
     (Bₗ.drop2rows1col x₀ x₁ y₂ ⊟ (⊞ Dₗ D₀ₗ (Dᵣ * D₀ₗ⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY).IsTotallyUnimodular := by
   sorry
 
