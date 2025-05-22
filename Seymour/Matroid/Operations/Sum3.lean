@@ -411,7 +411,7 @@ private abbrev Matrix.submatrix3x3 {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x�
 
 @[app_unexpander Matrix.submatrix3x3]
 def Matrix.submatrix3x3_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $B) => `($(B).$(Lean.mkIdent `submatrix3x3))
+  | `($_ $Q) => `($(Q).$(Lean.mkIdent `submatrix3x3))
   | _ => throw ()
 
 private lemma submatrix3x3signed₀_abs {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y}
@@ -493,7 +493,7 @@ private def Matrix.IsTuCanonicallySignable₀ {X Y : Set α} (Q : Matrix X Y ℚ
 
 @[app_unexpander Matrix.IsTuCanonicallySignable₀]
 def Matrix.IsTuCanonicallySignable₀_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $A) => `($(A).$(Lean.mkIdent `IsTuCanonicallySignable₀))
+  | `($_ $Q) => `($(Q).$(Lean.mkIdent `IsTuCanonicallySignable₀))
   | _ => throw ()
 
 /-- Sufficient condition for `Q.toCanonicalSigning` being a TU canonical signing of `Q.support`. -/
@@ -505,7 +505,7 @@ private def Matrix.IsTuCanonicallySignable₁ {X Y : Set α} (Q : Matrix X Y ℚ
 
 @[app_unexpander Matrix.IsTuCanonicallySignable₁]
 def Matrix.IsTuCanonicallySignable₁_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $A) => `($(A).$(Lean.mkIdent `IsTuCanonicallySignable₁))
+  | `($_ $Q) => `($(Q).$(Lean.mkIdent `IsTuCanonicallySignable₁))
   | _ => throw ()
 
 /-- Converts a matrix to the form of canonical TU signing, does not check assumptions. -/
@@ -526,7 +526,7 @@ private def Matrix.toCanonicalSigning {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ 
 
 @[app_unexpander Matrix.toCanonicalSigning]
 def Matrix.toCanonicalSigning_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $A) => `($(A).$(Lean.mkIdent `toCanonicalSigning))
+  | `($_ $Q) => `($(Q).$(Lean.mkIdent `toCanonicalSigning))
   | _ => throw ()
 
 /-- Canonical signing of a TU matrix is TU. -/
@@ -856,7 +856,7 @@ private noncomputable def matrix3sumCompositionCanonicalSigning {Xₗ Yₗ Xᵣ 
   ⊞ (Bₗ.drop2rows1col x₀ x₁ y₂) 0 ((⊞ Dₗ D₀ₗ (Dᵣ * D₀ₗ⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY) (Bᵣ.drop1row2cols x₂ y₀ y₁)
 
 -- lemma 19.1
-private lemma matrix3sumCompositionCanonicalSigning_D_Eq_SumOuterProducts {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+private lemma matrix3sumCompositionCanonicalSigning_D_eq {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
@@ -895,7 +895,7 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Eq_SumOuterProducts {Xₗ 
   sorry
 
 -- lemma 19.2
-private lemma matrix3sumCompositionCanonicalSigning_D_Rows {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+private lemma matrix3sumCompositionCanonicalSigning_D_rows {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
@@ -933,7 +933,7 @@ private lemma matrix3sumCompositionCanonicalSigning_D_Rows {Xₗ Yₗ Xᵣ Yᵣ 
   sorry
 
 -- lemma 19.3
-private lemma matrix3sumCompositionCanonicalSigning_D_Cols {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+private lemma matrix3sumCompositionCanonicalSigning_D_cols {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
@@ -1010,7 +1010,7 @@ private lemma matrix3sumCompositionCanonicalSigning_Aₗ_D_TU {Xₗ Yₗ Xᵣ Y�
 -- ## The 3-sum of matroids
 
 /-- The 3-sum composition of two binary matroids given by their stanard representations. -/
-noncomputable def standardRepr3sumComposition_standard {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+noncomputable def standardRepr3sumComposition {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
     StandardRepr α Z2 × Prop :=
   ⟨
@@ -1029,14 +1029,14 @@ noncomputable def standardRepr3sumComposition_standard {Sₗ Sᵣ : StandardRepr
     (matrix3sumComposition Sₗ.B Sᵣ.B hXX hYY).snd
   ⟩
 
-lemma standardRepr3sumComposition_standard_X {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+lemma standardRepr3sumComposition_X {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
-    (standardRepr3sumComposition_standard hXX hYY hXY hYX).fst.X = (Sₗ.X \ {x₀, x₁}) ∪ (Sᵣ.X \ {x₂}) :=
+    (standardRepr3sumComposition hXX hYY hXY hYX).fst.X = (Sₗ.X \ {x₀, x₁}) ∪ (Sᵣ.X \ {x₂}) :=
   rfl
 
-lemma standardRepr3sumComposition_standard_Y {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+lemma standardRepr3sumComposition_Y {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
-    (standardRepr3sumComposition_standard hXX hYY hXY hYX).fst.Y = (Sₗ.Y \ {y₂}) ∪ (Sᵣ.Y \ {y₀, y₁}) :=
+    (standardRepr3sumComposition hXX hYY hXY hYX).fst.Y = (Sₗ.Y \ {y₂}) ∪ (Sᵣ.Y \ {y₀, y₁}) :=
   rfl
 
 /-- Decomposition of (binary) matroid `M` as a 3-sum of (binary) matroids `Mₗ` and `Mᵣ`. -/
@@ -1054,12 +1054,12 @@ structure Matroid.Is3sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) where
   hYY : Sₗ.Y ∩ Sᵣ.Y = {y₁, y₂, y₃}
   hXY : Sₗ.X ⫗ Sᵣ.Y
   hYX : Sₗ.Y ⫗ Sᵣ.X
-  IsSum : (standardRepr3sumComposition_standard hXX hYY hXY hYX).fst = S
-  IsValid : (standardRepr3sumComposition_standard hXX hYY hXY hYX).snd
+  IsSum : (standardRepr3sumComposition hXX hYY hXY hYX).fst = S
+  IsValid : (standardRepr3sumComposition hXX hYY hXY hYX).snd
 
 instance Matroid.Is3sumOf.finS {M Mₗ Mᵣ : Matroid α} (hM : M.Is3sumOf Mₗ Mᵣ) : Finite hM.S.X := by
   obtain ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, rfl, _⟩ := hM
-  rw [standardRepr3sumComposition_standard_X]
+  rw [standardRepr3sumComposition_X]
   apply Finite.Set.finite_union
 
 @[simp]
@@ -1068,14 +1068,14 @@ lemma cast_1_from_Z2_to_Rat : ZMod.cast (1 : Z2) = (1 : ℚ) := by
 
 lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X)
-    (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) (hSS : (standardRepr3sumComposition_standard hXX hYY hXY hYX).snd) :
-    (standardRepr3sumComposition_standard hXX hYY hXY hYX).fst.B.HasTuSigning := by
+    (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) (hSS : (standardRepr3sumComposition hXX hYY hXY hYX).snd) :
+    (standardRepr3sumComposition hXX hYY hXY hYX).fst.B.HasTuSigning := by
   obtain ⟨Bₗ, hBₗ, hBBₗ⟩ := hSₗ
   obtain ⟨Bᵣ, hBᵣ, hBBᵣ⟩ := hSᵣ
   use (matrix3sumCompositionCanonicalSigning Bₗ Bᵣ hXX hYY).toMatrixUnionUnion
   constructor
   · sorry
-  · dsimp [standardRepr3sumComposition_standard, matrix3sumComposition, Eq.inter3all]
+  · dsimp [standardRepr3sumComposition, matrix3sumComposition, Eq.inter3all]
     intro i j
     cases hi : i.toSum with
     | inl iₗ =>
