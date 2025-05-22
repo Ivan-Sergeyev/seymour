@@ -11,49 +11,115 @@ variable {Zₗ Zᵣ : Set α} {a₀ a₁ a₂ : α}
 private lemma Eq.mem3₀ₗ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₀ ∈ Zₗ :=
   hZZ.symm.subset.trans Set.inter_subset_left (Set.mem_insert a₀ {a₁, a₂})
 
+@[app_unexpander Eq.mem3₀ₗ]
+def Eq.mem3₀ₗ_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $e) => `($(e).$(Lean.mkIdent `mem3₀ₗ))
+  | _ => throw ()
+
 private lemma Eq.mem3₁ₗ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₁ ∈ Zₗ :=
   hZZ.symm.subset.trans Set.inter_subset_left (Set.insert_comm a₀ a₁ {a₂} ▸ Set.mem_insert a₁ {a₀, a₂})
+
+@[app_unexpander Eq.mem3₁ₗ]
+def Eq.mem3₁ₗ_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $e) => `($(e).$(Lean.mkIdent `mem3₁ₗ))
+  | _ => throw ()
 
 private lemma Eq.mem3₂ₗ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₂ ∈ Zₗ :=
   hZZ.symm.subset.trans Set.inter_subset_left (by simp)
 
+@[app_unexpander Eq.mem3₂ₗ]
+def Eq.mem3₂ₗ_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $e) => `($(e).$(Lean.mkIdent `mem3₂ₗ))
+  | _ => throw ()
+
 private lemma Eq.mem3₀ᵣ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₀ ∈ Zᵣ :=
   hZZ.symm.subset.trans Set.inter_subset_right (Set.mem_insert a₀ {a₁, a₂})
+
+@[app_unexpander Eq.mem3₀ᵣ]
+def Eq.mem3₀ᵣ_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $e) => `($(e).$(Lean.mkIdent `mem3₀ᵣ))
+  | _ => throw ()
 
 private lemma Eq.mem3₁ᵣ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₁ ∈ Zᵣ :=
   hZZ.symm.subset.trans Set.inter_subset_right (Set.insert_comm a₀ a₁ {a₂} ▸ Set.mem_insert a₁ {a₀, a₂})
 
+@[app_unexpander Eq.mem3₁ᵣ]
+def Eq.mem3₁ᵣ_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $e) => `($(e).$(Lean.mkIdent `mem3₁ᵣ))
+  | _ => throw ()
+
 private lemma Eq.mem3₂ᵣ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₂ ∈ Zᵣ :=
   hZZ.symm.subset.trans Set.inter_subset_right (by simp)
 
+@[app_unexpander Eq.mem3₂ᵣ]
+def Eq.mem3₂ᵣ_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $e) => `($(e).$(Lean.mkIdent `mem3₂ᵣ))
+  | _ => throw ()
+
 private def Eq.inter3all (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : (Zₗ × Zₗ × Zₗ) × (Zᵣ × Zᵣ × Zᵣ) :=
   ⟨⟨⟨a₀, hZZ.mem3₀ₗ⟩, ⟨a₁, hZZ.mem3₁ₗ⟩, ⟨a₂, hZZ.mem3₂ₗ⟩⟩, ⟨⟨a₀, hZZ.mem3₀ᵣ⟩, ⟨a₁, hZZ.mem3₁ᵣ⟩, ⟨a₂, hZZ.mem3₂ᵣ⟩⟩⟩
+
+@[app_unexpander Eq.inter3all]
+def Eq.inter3all_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $e) => `($(e).$(Lean.mkIdent `inter3all))
+  | _ => throw ()
 
 end members_of_intersection
 
 
 -- ## Internal API
 
+@[simp]
 private abbrev Matrix.submatrix2x2 {X Y : Set α} {F : Type} (B : Matrix X Y F) (x₀ x₁ : X) (y₀ y₁ : Y) :
     Matrix (Fin 2) (Fin 2) F :=
   !![B x₀ y₀, B x₀ y₁; B x₁ y₀, B x₁ y₁]
 
+@[app_unexpander Matrix.submatrix2x2]
+def Matrix.submatrix2x2_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $B) => `($(B).$(Lean.mkIdent `submatrix2x2))
+  | _ => throw ()
+
+@[simp]
 private abbrev Matrix.submatrix2x7 {X Y : Set α} {F : Type} (B : Matrix X Y F) (x₀ x₁ : X) (a₀ a₁ a' : α) :
     Matrix (Fin 2) (Y \ {a₀, a₁, a'}).Elem F :=
   ![B x₀ ∘ Set.diff_subset.elem, B x₁ ∘ Set.diff_subset.elem]
 
+@[app_unexpander Matrix.submatrix2x7]
+def Matrix.submatrix2x7_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $B) => `($(B).$(Lean.mkIdent `submatrix2x7))
+  | _ => throw ()
+
+@[simp]
 private abbrev Matrix.submatrix7x2 {X Y : Set α} {F : Type} (B : Matrix X Y F) (a₀ a₁ a' : α) (y₀ y₁ : Y) :
-    Matrix  (X \ {a₀, a₁, a'}).Elem (Fin 2) F :=
+    Matrix (X \ {a₀, a₁, a'}).Elem (Fin 2) F :=
   Matrix.of (fun i => ![B (Set.diff_subset.elem i) y₀, B (Set.diff_subset.elem i) y₁])
 
+@[app_unexpander Matrix.submatrix7x2]
+def Matrix.submatrix7x2_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $B) => `($(B).$(Lean.mkIdent `submatrix7x2))
+  | _ => throw ()
+
+@[simp]
 private abbrev Matrix.drop2rows1col {X Y : Set α} {F : Type} (B : Matrix X Y F) (a₀ a₁ a' : α) :
     Matrix (X \ {a₀, a₁}).Elem (Y \ {a'}).Elem F :=
   B.submatrix Set.diff_subset.elem Set.diff_subset.elem
 
+@[app_unexpander Matrix.drop2rows1col]
+def Matrix.drop2rows1col_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $B) => `($(B).$(Lean.mkIdent `drop2rows1col))
+  | _ => throw ()
+
+@[simp]
 private abbrev Matrix.drop1row2cols {X Y : Set α} {F : Type} (B : Matrix X Y F) (a' a₀ a₁ : α) :
     Matrix (X \ {a'}).Elem (Y \ {a₀, a₁}).Elem F :=
   B.submatrix Set.diff_subset.elem Set.diff_subset.elem
 
+@[app_unexpander Matrix.drop1row2cols]
+def Matrix.drop1row2cols_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $B) => `($(B).$(Lean.mkIdent `drop1row2cols))
+  | _ => throw ()
+
+@[simp]
 private abbrev mapX [DecidableEq α] {X : Set α} {a₀ a₁ a' : α} [∀ x, Decidable (x ∈ X)] (i : (X \ {a'}).Elem) :
     Fin 2 ⊕ (X \ {a₀, a₁, a'}).Elem :=
   if hi₀ : i.val = a₀ then ◩0 else
@@ -61,6 +127,7 @@ private abbrev mapX [DecidableEq α] {X : Set α} {a₀ a₁ a' : α} [∀ x, De
   if hi : i.val ∈ X \ {a₀, a₁, a'} then ◪⟨i, hi⟩ else
   (impossible_nmem_sdiff_triplet hi hi₀ hi₁).elim
 
+@[simp]
 private abbrev mapY [DecidableEq α] {Y : Set α} {a₀ a₁ a' : α} [∀ x, Decidable (x ∈ Y)] (j : (Y \ {a'}).Elem) :
     (Y \ {a₀, a₁, a'}).Elem ⊕ Fin 2 :=
   if hj₀ : j.val = a₀ then ◪0 else
@@ -116,8 +183,6 @@ noncomputable def matrix3sumComposition_standard [DecidableEq α] {F : Type} [Fi
 
 -- ## Lemmas
 
--- ## Submatrix 3×3
-
 @[simp] private abbrev matrix3x3unsigned₀ : Matrix (Fin 3) (Fin 3) ℚ := !![1, 0, 1; 0, 1, 1; 1, 1, 0]
 @[simp] private abbrev matrix3x3unsigned₁ : Matrix (Fin 3) (Fin 3) ℚ := !![1, 1, 1; 0, 1, 1; 1, 1, 0]
 
@@ -131,6 +196,11 @@ private abbrev Matrix.submatrix3x3 {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x�
     Q x₀ y₀, Q x₀ y₁, Q x₀ y₂;
     Q x₁ y₀, Q x₁ y₁, Q x₁ y₂;
     Q x₂ y₀, Q x₂ y₁, Q x₂ y₂]
+
+@[app_unexpander Matrix.submatrix3x3]
+def Matrix.submatrix3x3_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $B) => `($(B).$(Lean.mkIdent `submatrix3x3))
+  | _ => throw ()
 
 private lemma submatrix3x3signed₀_abs {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y}
     (hQ : Q.submatrix3x3 x₀ x₁ x₂ y₀ y₁ y₂ = matrix3x3signed₀) :
@@ -172,6 +242,11 @@ private def Matrix.submatrix3x3mems {X Y : Set α} (Q : Matrix X Y ℚ)
     Q ⟨x₁, hx₁⟩ ⟨y₀, hy₀⟩, Q ⟨x₁, hx₁⟩ ⟨y₁, hy₁⟩, Q ⟨x₁, hx₁⟩ ⟨y₂, hy₂⟩;
     Q ⟨x₂, hx₂⟩ ⟨y₀, hy₀⟩, Q ⟨x₂, hx₂⟩ ⟨y₁, hy₁⟩, Q ⟨x₂, hx₂⟩ ⟨y₂, hy₂⟩]
 
+@[app_unexpander Matrix.submatrix3x3mems]
+def Matrix.submatrix3x3mems_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $Q) => `($(Q).$(Lean.mkIdent `submatrix3x3mems))
+  | _ => throw ()
+
 private lemma Matrix.submatrix3x3mems_eq {X Y : Set α} (Q : Matrix X Y ℚ)
     {x₀ x₁ x₂ y₀ y₁ y₂ : α} (hx₀ : x₀ ∈ X) (hx₁ : x₁ ∈ X) (hx₂ : x₂ ∈ X) (hy₀ : y₀ ∈ Y) (hy₁ : y₁ ∈ Y) (hy₂ : y₂ ∈ Y) :
     Q.submatrix3x3mems hx₀ hx₁ hx₂ hy₀ hy₁ hy₂ =
@@ -204,6 +279,11 @@ private def Matrix.IsTuCanonicallySignable₀ {X Y : Set α} (Q : Matrix X Y ℚ
   ∧ (y₁ ≠ y₀ ∧ y₂ ≠ y₀ ∧ y₂ ≠ y₁)
   ∧ |Q.submatrix3x3 x₀ x₁ x₂ y₀ y₁ y₂| = matrix3x3unsigned₀
 
+@[app_unexpander Matrix.IsTuCanonicallySignable₀]
+def Matrix.IsTuCanonicallySignable₀_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $A) => `($(A).$(Lean.mkIdent `IsTuCanonicallySignable₀))
+  | _ => throw ()
+
 /-- Sufficient condition for `Q.toCanonicalSigning` being a TU canonical signing of `Q.support`. -/
 private def Matrix.IsTuCanonicallySignable₁ {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x₂ : X) (y₀ y₁ y₂ : Y) : Prop :=
   Q.IsTotallyUnimodular
@@ -211,7 +291,13 @@ private def Matrix.IsTuCanonicallySignable₁ {X Y : Set α} (Q : Matrix X Y ℚ
   ∧ (y₁ ≠ y₀ ∧ y₂ ≠ y₀ ∧ y₂ ≠ y₁)
   ∧ |Q.submatrix3x3 x₀ x₁ x₂ y₀ y₁ y₂| = matrix3x3unsigned₁
 
+@[app_unexpander Matrix.IsTuCanonicallySignable₁]
+def Matrix.IsTuCanonicallySignable₁_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $A) => `($(A).$(Lean.mkIdent `IsTuCanonicallySignable₁))
+  | _ => throw ()
+
 /-- Converts a matrix to the form of canonical TU signing, does not check assumptions. -/
+@[simp]
 private def Matrix.toCanonicalSigning {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x₂ : X) (y₀ y₁ y₂ : Y) :
     Matrix X Y ℚ :=
   let u : X → ℚ := (fun i : X =>
@@ -225,6 +311,11 @@ private def Matrix.toCanonicalSigning {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ 
     if j = y₂ then Q x₀ y₀ * Q x₀ y₂ * Q x₂ y₀ else
     1)
   Q ⊡ u ⊗ v
+
+@[app_unexpander Matrix.toCanonicalSigning]
+def Matrix.toCanonicalSigning_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $A) => `($(A).$(Lean.mkIdent `toCanonicalSigning))
+  | _ => throw ()
 
 /-- Canonical signing of a TU matrix is TU. -/
 private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Set α} {Q : Matrix X Y ℚ}
@@ -341,9 +432,19 @@ private lemma Matrix.IsTuCanonicallySignable₁.toCanonicalSigning {X Y : Set α
 @[simp] private abbrev Matrix._col {X Y : Set α} {a : α} (B : Matrix X Y ℚ) (y : Y) (i : (X \ {a}).Elem) : ℚ :=
   B (Set.diff_subset.elem i) y
 
+@[app_unexpander Matrix._col]
+def Matrix._col_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $B) => `($(B).$(Lean.mkIdent `_col))
+  | _ => throw ()
+
 /-- `d₀` or `d₁` -/
 @[simp] private abbrev Matrix._row {X Y : Set α} {a : α} (B : Matrix X Y ℚ) (x : X) (j : (Y \ {a}).Elem) : ℚ :=
   B x (Set.diff_subset.elem j)
+
+@[app_unexpander Matrix._row]
+def Matrix._row_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $B) => `($(B).$(Lean.mkIdent `_row))
+  | _ => throw ()
 
 /-- `r₀` and `r₁` and `r₂` -/
 private abbrev Matrix._rrr {X Y : Set α} (B' : Matrix X Y ℚ) (x₀ x₁ x₂ : X) (y₀ y₁ y₂ : Y) :
@@ -360,6 +461,11 @@ private abbrev Matrix._rrr {X Y : Set α} (B' : Matrix X Y ℚ) (x₀ x₁ x₂ 
     (False.elim (by
       simp only [D₀, hD₀₀, hD₀₁] at hB'
       exact hB'.casesOn id id))
+
+@[app_unexpander Matrix._rrr]
+def Matrix._rrr_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $B) => `($(B).$(Lean.mkIdent `_rrr))
+  | _ => throw ()
 
 -- lemma 15.a
 private lemma Matrix.IsTotallyUnimodular.signing_expansion₀ {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
@@ -518,7 +624,8 @@ private lemma Matrix.IsTotallyUnimodular.signing_expansion_rows {X Y : Set α} {
   convert (hQ.transpose.signing_expansion_cols hy₂ hx₀ hx₁ hxx hQx₀ hQx₁ hQx).transpose
   aesop
 
--- canonical signing of 3-sum constructed from TU signings of summands
+/-- Canonical signing of 3-sum constructed from TU signings of summands. -/
+@[simp]
 private noncomputable def matrix3sumCompositionCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     (Bₗ' : Matrix Xₗ Yₗ ℚ) (Bᵣ' : Matrix Xᵣ Yᵣ ℚ) (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}) :
@@ -743,13 +850,61 @@ instance Matroid.Is3sumOf.finS {M Mₗ Mᵣ : Matroid α} (hM : M.Is3sumOf Mₗ 
   rw [standardRepr3sumComposition_standard_X]
   apply Finite.Set.finite_union
 
+@[simp]
+lemma cast_1_from_Z2_to_Rat : ZMod.cast (1 : Z2) = (1 : ℚ) := by
+  decide
+
 lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X)
-    (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) :
+    (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) (hSS : (standardRepr3sumComposition_standard hXX hYY hXY hYX).snd) :
     (standardRepr3sumComposition_standard hXX hYY hXY hYX).fst.B.HasTuSigning := by
   obtain ⟨Bₗ, hBₗ, hBBₗ⟩ := hSₗ
   obtain ⟨Bᵣ, hBᵣ, hBBᵣ⟩ := hSᵣ
-  sorry
+  use (matrix3sumCompositionCanonicalSigning Bₗ Bᵣ hXX hYY).toMatrixUnionUnion
+  constructor
+  · sorry
+  · dsimp [standardRepr3sumComposition_standard, matrix3sumComposition_standard, Eq.inter3all] at hSS ⊢
+    intro i j
+    cases hi : i.toSum with
+    | inl iₗ =>
+      cases hj : j.toSum with
+      | inl jₗ =>
+        simp [hi, hj, Matrix.toMatrixUnionUnion] at hSS ⊢
+        if hjy₀ : jₗ.val = y₀ then
+          simp [hjy₀]
+          if hix₀ : iₗ.val = x₀ then
+            simp [hix₀] at hSS ⊢
+            generalize_proofs hhx₀ hhy₀ hhx₂
+            have h1x₀ : Sₗ.B ⟨x₀, hhx₀⟩ ⟨y₀, hhy₀⟩ = 1
+            · cases hSS.right.right.right.left with
+              | inl h1001 => exact congr_fun (congr_fun h1001 0) 0
+              | inr h1101 => exact congr_fun (congr_fun h1101 0) 0
+            have h1x₂ : Sₗ.B ⟨x₂, hhx₂⟩ ⟨y₀, hhy₀⟩ = 1 := hSS.right.right.right.right.right.right.left
+            have h1x₀' := h1x₀ ▸ hBBₗ ⟨x₀, hhx₀⟩ ⟨y₀, hhy₀⟩
+            have h1x₂' := h1x₂ ▸ hBBₗ ⟨x₂, hhx₂⟩ ⟨y₀, hhy₀⟩
+            rw [abs_eq (by norm_num)] at h1x₀' h1x₂'
+            cases' h1x₀' with hx₀' hx₀' <;> cases' h1x₂' with hx₂' hx₂' <;> simp [h1x₀, h1x₂, hx₀', hx₂']
+          else if hix₁ : iₗ.val = x₁ then
+            have hxx : x₁ ≠ x₀ := Ne.symm hSS.left.left.left
+            simp [hix₁, hxx] at hSS ⊢
+            generalize_proofs hhx₁ hhy₀ hhx₀ hhy₂ hhx₂ hhhx₁ hhhy₀
+            have h1x₀ : Sₗ.B ⟨x₀, hhx₀⟩ ⟨y₀, hhy₀⟩ = 1
+            · cases hSS.right.right.right.left with
+              | inl h1001 => exact congr_fun (congr_fun h1001 0) 0
+              | inr h1101 => exact congr_fun (congr_fun h1101 0) 0
+            have h1x₂ : Sₗ.B ⟨x₂, hhx₂⟩ ⟨y₀, hhy₀⟩ = 1 := hSS.right.right.right.right.right.right.left
+            have h1x₁' := h1x₀ ▸ hBBₗ ⟨x₀, hhx₀⟩ ⟨y₀, hhy₀⟩
+            have h1x₂' := h1x₂ ▸ hBBₗ ⟨x₂, hhx₂⟩ ⟨y₀, hhy₀⟩
+            sorry
+          else
+            sorry
+        else
+          sorry
+      | inr jᵣ => sorry
+    | inr iᵣ =>
+      cases hj : j.toSum with
+      | inl jₗ => sorry
+      | inr jᵣ => sorry
 
 /-- Any 3-sum of regular matroids is a regular matroid.
     This is the final part of the easy direction of the Seymour's theorem. -/
@@ -757,8 +912,9 @@ theorem Matroid.Is3sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
     (hM : M.Is3sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
   have := hM.finS
-  obtain ⟨_, _, _, _, _, rfl, rfl, rfl, _, _, _, _, _, _, _, _, _, _, rfl, _⟩ := hM
+  obtain ⟨_, _, _, _, _, rfl, rfl, rfl, _, _, _, _, _, _, _, _, _, _, rfl, hMMM⟩ := hM
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
   apply standardRepr3sumComposition_hasTuSigning
   · exact hMₗ
   · exact hMᵣ
+  · exact hMMM
