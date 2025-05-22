@@ -67,12 +67,12 @@ abbrev Function.range {α ι : Type} (f : ι → α) : Set α := Set.range f
 
 @[app_unexpander Function.range]
 def Function.range_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $x) => `($(x).$(Lean.mkIdent `range))
+  | `($_ $f) => `($(f).$(Lean.mkIdent `range))
   | _ => throw ()
 
 @[app_unexpander Function.support]
 def Function.support_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $x) => `($(x).$(Lean.mkIdent `support))
+  | `($_ $f) => `($(f).$(Lean.mkIdent `support))
   | _ => throw ()
 
 
@@ -181,7 +181,7 @@ def Subtype.toSum [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i :
 
 @[app_unexpander Subtype.toSum]
 def Subtype.toSum_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $x) => `($(x).$(Lean.mkIdent `toSum))
+  | `($_ $i) => `($(i).$(Lean.mkIdent `toSum))
   | _ => throw ()
 
 @[simp]

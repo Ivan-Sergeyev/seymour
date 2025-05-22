@@ -149,7 +149,7 @@ private def Matrix.AllColsIn {X Y R : Type} (A : Matrix X Y R) (Y' : Set Y) : Pr
 
 @[app_unexpander Matrix.AllColsIn]
 private def Matrix.AllColsIn_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $x) => `($(x).$(Lean.mkIdent `AllColsIn))
+  | `($_ $A) => `($(A).$(Lean.mkIdent `AllColsIn))
   | _ => throw ()
 
 private lemma Matrix.exists_finite_allColsIn {X Y R : Type} [Fintype X] [DecidableEq Y] (A : Matrix X Y R) (V : Finset R)

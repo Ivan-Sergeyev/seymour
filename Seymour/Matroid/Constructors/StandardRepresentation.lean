@@ -34,7 +34,7 @@ private noncomputable abbrev Set.equivFin (S : Set α) [Fintype S] : Fin #S ≃ 
 
 @[app_unexpander Set.equivFin]
 def Set.equivFin_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $x) => `($(x).$(Lean.mkIdent `equivFin))
+  | `($_ $S) => `($(S).$(Lean.mkIdent `equivFin))
   | _ => throw ()
 
 private abbrev Equiv.leftCongr {ι₁ ι₂ : Type} (e : ι₁ ≃ ι₂) : ι₁ ⊕ α ≃ ι₂ ⊕ α :=
@@ -42,7 +42,7 @@ private abbrev Equiv.leftCongr {ι₁ ι₂ : Type} (e : ι₁ ≃ ι₂) : ι�
 
 @[app_unexpander Equiv.leftCongr]
 def Equiv.leftCongr_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $x) => `($(x).$(Lean.mkIdent `leftCongr))
+  | `($_ $S) => `($(S).$(Lean.mkIdent `leftCongr))
   | _ => throw ()
 
 

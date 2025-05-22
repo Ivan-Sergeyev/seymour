@@ -29,7 +29,7 @@ def Function.decomposeSum (f : α → β₁ ⊕ β₂) :
 
 @[app_unexpander Function.decomposeSum]
 def Function.decomposeSum_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $x) => `($(x).$(Lean.mkIdent `decomposeSum))
+  | `($_ $f) => `($(f).$(Lean.mkIdent `decomposeSum))
   | _ => throw ()
 
 @[simp ←]
