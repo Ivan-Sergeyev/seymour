@@ -186,9 +186,7 @@ lemma VectorMatroid.longTableauPivot [Field R] (V : VectorMatroid α R) {x : V.X
     (VectorMatroid.mk V.X V.Y (V.A.longTableauPivot x y)).toMatroid = V.toMatroid := by
   ext
   · rfl
-  · rw [VectorMatroid.toMatroid_indep, VectorMatroid.toMatroid_indep, VectorMatroid.IndepCols, VectorMatroid.IndepCols,
-      and_congr_right_iff]
-    exact ↓(V.A.longTableauPivot_linearIndepenOn hVxy _)
+  · exact and_congr_right_iff.← ↓(V.A.longTableauPivot_linearIndepenOn hVxy _)
 
 set_option maxHeartbeats 666666 in
 -- Implicit Gaussian elimination for the proof of the lemma below.
@@ -333,7 +331,6 @@ private lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular_aux [
             convert add_zero (0 : R)
             · exact smul_eq_zero_of_right _ (by simpa [X'] using hx)
             · rw [Finset.sum_map]
-              -- TODO prove using a variant of `sum_elem_smul_matrix_row_of_nmem` instead of the manual labor below
               apply Finset.sum_eq_zero
               intro a ha
               simp [X'] at hx
