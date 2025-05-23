@@ -1074,7 +1074,11 @@ lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} 
   obtain ⟨Bᵣ, hBᵣ, hBBᵣ⟩ := hSᵣ
   use (matrix3sumCompositionCanonicalSigning Bₗ Bᵣ hXX hYY).toMatrixUnionUnion
   constructor
-  · sorry
+  · convert_to Matrix.IsTotallyUnimodular <| (matrix3sumCompositionCanonicalSigning Bₗ Bᵣ hXX hYY).submatrix
+        (fun (x : ↑(Sₗ.X \ (x₀ ᕃ {x₁}) ∪ Sᵣ.X \ {x₂})) => x.toSum)
+        fun (y : ↑(Sₗ.Y \ {y₂} ∪ Sᵣ.Y \ (y₀ ᕃ {y₁}))) => y.toSum
+    apply Matrix.IsTotallyUnimodular.submatrix
+    sorry
   · dsimp [standardRepr3sumComposition, matrix3sumComposition, Eq.inter3all]
     intro i j
     cases hi : i.toSum with
