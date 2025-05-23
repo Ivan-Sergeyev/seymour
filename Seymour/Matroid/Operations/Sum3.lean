@@ -56,6 +56,7 @@ def Eq.mem3₂ᵣ_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $e) => `($(e).$(Lean.mkIdent `mem3₂ᵣ))
   | _ => throw ()
 
+@[simp]
 private def Eq.inter3all (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : (Zₗ × Zₗ × Zₗ) × (Zᵣ × Zᵣ × Zᵣ) :=
   ⟨⟨⟨a₀, hZZ.mem3₀ₗ⟩, ⟨a₁, hZZ.mem3₁ₗ⟩, ⟨a₂, hZZ.mem3₂ₗ⟩⟩, ⟨⟨a₀, hZZ.mem3₀ᵣ⟩, ⟨a₁, hZZ.mem3₁ᵣ⟩, ⟨a₂, hZZ.mem3₂ᵣ⟩⟩⟩
 
@@ -181,7 +182,7 @@ noncomputable def matrix3sumComposition [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_x₁_ne_x₀ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     x₁ ≠ x₀ :=
   Ne.symm hBB.left.left.left
@@ -189,7 +190,7 @@ lemma matrix3sumComposition_x₁_ne_x₀ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_x₂_ne_x₀ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     x₂ ≠ x₀ :=
   Ne.symm hBB.left.left.right.left
@@ -197,7 +198,7 @@ lemma matrix3sumComposition_x₂_ne_x₀ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_x₂_ne_x₁ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     x₂ ≠ x₁ :=
   Ne.symm hBB.left.left.right.right
@@ -205,7 +206,7 @@ lemma matrix3sumComposition_x₂_ne_x₁ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_y₁_ne_y₀ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     y₁ ≠ y₀ :=
   Ne.symm hBB.left.right.left
@@ -213,7 +214,7 @@ lemma matrix3sumComposition_y₁_ne_y₀ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_y₂_ne_y₀ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     y₂ ≠ y₀ :=
   Ne.symm hBB.left.right.right.left
@@ -221,7 +222,7 @@ lemma matrix3sumComposition_y₂_ne_y₀ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_y₂_ne_y₁ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     y₂ ≠ y₁ :=
   Ne.symm hBB.left.right.right.right
@@ -229,7 +230,7 @@ lemma matrix3sumComposition_y₂_ne_y₁ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_Xₗ_disj_Yₗ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     Xₗ ⫗ Yₗ :=
   hBB.right.left.left
@@ -237,7 +238,7 @@ lemma matrix3sumComposition_Xₗ_disj_Yₗ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_Xₗ_disj_Yᵣ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     Xₗ ⫗ Yᵣ :=
   hBB.right.left.right.left
@@ -245,7 +246,7 @@ lemma matrix3sumComposition_Xₗ_disj_Yᵣ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_Xᵣ_disj_Yₗ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     Xᵣ ⫗ Yₗ :=
   hBB.right.left.right.right.left
@@ -253,7 +254,7 @@ lemma matrix3sumComposition_Xᵣ_disj_Yₗ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_Xᵣ_disj_Yᵣ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     Xᵣ ⫗ Yᵣ :=
   hBB.right.left.right.right.right
@@ -261,7 +262,7 @@ lemma matrix3sumComposition_Xᵣ_disj_Yᵣ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_Bₗ_x₀_y₀ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     Bₗ ⟨x₀, hXX.mem3₀ₗ⟩ ⟨y₀, hYY.mem3₀ₗ⟩ = 1 := by
   cases hBB.right.right.right.left with
@@ -271,7 +272,7 @@ lemma matrix3sumComposition_Bₗ_x₀_y₀ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_Bₗ_x₁_y₀ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     Bₗ ⟨x₁, hXX.mem3₁ₗ⟩ ⟨y₀, hYY.mem3₀ₗ⟩ = 0 := by
   cases hBB.right.right.right.left with
@@ -281,7 +282,7 @@ lemma matrix3sumComposition_Bₗ_x₁_y₀ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_Bₗ_x₁_y₁ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     Bₗ ⟨x₁, hXX.mem3₁ₗ⟩ ⟨y₁, hYY.mem3₁ₗ⟩ = 1 := by
   cases hBB.right.right.right.left with
@@ -291,31 +292,31 @@ lemma matrix3sumComposition_Bₗ_x₁_y₁ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_Bᵣ_x₀_y₀ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     Bᵣ ⟨x₀, hXX.mem3₀ᵣ⟩ ⟨y₀, hYY.mem3₀ᵣ⟩ = 1 :=
-  (by simpa using congr_fun (congr_fun hBB.right.right.left 0) 0) ▸ matrix3sumComposition_Bₗ_x₀_y₀ hXX hYY hBB
+  (by simpa using congr_fun (congr_fun hBB.right.right.left 0) 0) ▸ matrix3sumComposition_Bₗ_x₀_y₀ hBB
 
 lemma matrix3sumComposition_Bᵣ_x₁_y₀ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     Bᵣ ⟨x₁, hXX.mem3₁ᵣ⟩ ⟨y₀, hYY.mem3₀ᵣ⟩ = 0 :=
-  (by simpa using congr_fun (congr_fun hBB.right.right.left 1) 0) ▸ matrix3sumComposition_Bₗ_x₁_y₀ hXX hYY hBB
+  (by simpa using congr_fun (congr_fun hBB.right.right.left 1) 0) ▸ matrix3sumComposition_Bₗ_x₁_y₀ hBB
 
 lemma matrix3sumComposition_Bᵣ_x₁_y₁ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     Bᵣ ⟨x₁, hXX.mem3₁ᵣ⟩ ⟨y₁, hYY.mem3₁ᵣ⟩ = 1 :=
-  (by simpa using congr_fun (congr_fun hBB.right.right.left 1) 1) ▸ matrix3sumComposition_Bₗ_x₁_y₁ hXX hYY hBB
+  (by simpa using congr_fun (congr_fun hBB.right.right.left 1) 1) ▸ matrix3sumComposition_Bₗ_x₁_y₁ hBB
 
 lemma matrix3sumComposition_Bₗ_x₀_y₂ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     Bₗ ⟨x₀, hXX.mem3₀ₗ⟩ ⟨y₂, hYY.mem3₂ₗ⟩ = 1 :=
   hBB.right.right.right.right.left
@@ -323,7 +324,7 @@ lemma matrix3sumComposition_Bₗ_x₀_y₂ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_Bₗ_x₁_y₂ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     Bₗ ⟨x₁, hXX.mem3₁ₗ⟩ ⟨y₂, hYY.mem3₂ₗ⟩ = 1 :=
   hBB.right.right.right.right.right.left
@@ -331,7 +332,7 @@ lemma matrix3sumComposition_Bₗ_x₁_y₂ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_Bₗ_x₂_y₀ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     Bₗ ⟨x₂, hXX.mem3₂ₗ⟩ ⟨y₀, hYY.mem3₀ₗ⟩ = 1 :=
   hBB.right.right.right.right.right.right.left
@@ -339,7 +340,7 @@ lemma matrix3sumComposition_Bₗ_x₂_y₀ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_Bₗ_x₂_y₁ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     Bₗ ⟨x₂, hXX.mem3₂ₗ⟩ ⟨y₁, hYY.mem3₁ₗ⟩ = 1 :=
   hBB.right.right.right.right.right.right.right.left
@@ -347,7 +348,7 @@ lemma matrix3sumComposition_Bₗ_x₂_y₁ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_Bᵣ_x₀_y₂ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     Bᵣ ⟨x₀, hXX.mem3₀ᵣ⟩ ⟨y₂, hYY.mem3₂ᵣ⟩ = 1 :=
   hBB.right.right.right.right.right.right.right.right.right.left
@@ -355,7 +356,7 @@ lemma matrix3sumComposition_Bᵣ_x₀_y₂ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_Bᵣ_x₁_y₂ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     Bᵣ ⟨x₁, hXX.mem3₁ᵣ⟩ ⟨y₂, hYY.mem3₂ᵣ⟩ = 1 :=
   hBB.right.right.right.right.right.right.right.right.right.right.left
@@ -363,7 +364,7 @@ lemma matrix3sumComposition_Bᵣ_x₁_y₂ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_Bᵣ_x₂_y₀ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     Bᵣ ⟨x₂, hXX.mem3₂ᵣ⟩ ⟨y₀, hYY.mem3₀ᵣ⟩ = 1 :=
   hBB.right.right.right.right.right.right.right.right.right.right.right.left
@@ -371,7 +372,7 @@ lemma matrix3sumComposition_Bᵣ_x₂_y₀ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_Bᵣ_x₂_y₁ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     Bᵣ ⟨x₂, hXX.mem3₂ᵣ⟩ ⟨y₁, hYY.mem3₁ᵣ⟩ = 1 :=
   hBB.right.right.right.right.right.right.right.right.right.right.right.right.left
@@ -379,7 +380,7 @@ lemma matrix3sumComposition_Bᵣ_x₂_y₁ [DecidableEq α] {F : Type} [Field F]
 lemma matrix3sumComposition_Bₗ_other_y₂ [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) (x : α) (hx : x ∈ Xₗ) (hx₀ : x ≠ x₀) (hx₁ : x ≠ x₁) :
     Bₗ ⟨x, hx⟩ ⟨y₂, hYY.mem3₂ₗ⟩ = 0 :=
   hBB.right.right.right.right.right.right.right.right.left x hx ⟨hx₀, hx₁⟩
@@ -387,7 +388,7 @@ lemma matrix3sumComposition_Bₗ_other_y₂ [DecidableEq α] {F : Type} [Field F
 lemma matrix3sumComposition_Bᵣ_x₂_other [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    {Bₗ : Matrix Xₗ Yₗ F} {Bᵣ : Matrix Xᵣ Yᵣ F} {hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}} {hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}}
     (hBB : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) (y : α) (hy : y ∈ Yᵣ) (hy₀ : y ≠ y₀) (hy₁ : y ≠ y₁) :
     Bᵣ ⟨x₂, hXX.mem3₂ᵣ⟩ ⟨y, hy⟩ = 0 :=
   hBB.right.right.right.right.right.right.right.right.right.right.right.right.right y hy ⟨hy₀, hy₁⟩
@@ -941,9 +942,20 @@ private lemma matrix3sumCompositionCanonicalSigning_D_cols {Xₗ Yₗ Xᵣ Yᵣ 
             |Bₗ'.submatrix3x3mems hXX.mem3₀ₗ hXX.mem3₁ₗ hXX.mem3₂ₗ hYY.mem3₀ₗ hYY.mem3₁ₗ hYY.mem3₂ₗ| = matrix3x3unsigned₁ )
     (hBᵣ' : |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₀ ∨
             |Bᵣ'.submatrix3x3mems hXX.mem3₀ᵣ hXX.mem3₁ᵣ hXX.mem3₂ᵣ hYY.mem3₀ᵣ hYY.mem3₁ᵣ hYY.mem3₂ᵣ| = matrix3x3unsigned₁ ) :
-    -- respective `x`s and `y`s as members of respective sets
-    let ⟨⟨x₀ₗ, x₁ₗ, x₂ₗ⟩, ⟨x₀ᵣ, x₁ᵣ, x₂ᵣ⟩⟩ := hXX.inter3all
-    let ⟨⟨y₀ₗ, y₁ₗ, y₂ₗ⟩, ⟨y₀ᵣ, y₁ᵣ, y₂ᵣ⟩⟩ := hYY.inter3all
+    -- row membership
+    let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
+    let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
+    let x₁ₗ : Xₗ := ⟨x₁, hXX.mem3₁ₗ⟩
+    let x₁ᵣ : Xᵣ := ⟨x₁, hXX.mem3₁ᵣ⟩
+    let x₂ₗ : Xₗ := ⟨x₂, hXX.mem3₂ₗ⟩
+    let x₂ᵣ : Xᵣ := ⟨x₂, hXX.mem3₂ᵣ⟩
+    -- col membership
+    let y₀ₗ : Yₗ := ⟨y₀, hYY.mem3₀ₗ⟩
+    let y₀ᵣ : Yᵣ := ⟨y₀, hYY.mem3₀ᵣ⟩
+    let y₁ₗ : Yₗ := ⟨y₁, hYY.mem3₁ₗ⟩
+    let y₁ᵣ : Yᵣ := ⟨y₁, hYY.mem3₁ᵣ⟩
+    let y₂ₗ : Yₗ := ⟨y₂, hYY.mem3₂ₗ⟩
+    let y₂ᵣ : Yᵣ := ⟨y₂, hYY.mem3₂ᵣ⟩
     -- convert summands to canonical form
     let Bₗ := Bₗ'.toCanonicalSigning x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ
     let Bᵣ := Bᵣ'.toCanonicalSigning x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
@@ -1066,26 +1078,68 @@ instance Matroid.Is3sumOf.finS {M Mₗ Mᵣ : Matroid α} (hM : M.Is3sumOf Mₗ 
 lemma cast_1_from_Z2_to_Rat : ZMod.cast (1 : Z2) = (1 : ℚ) := by
   decide
 
+@[simp]
+lemma cast_Z2_nonneg (a : Z2) : (0 : ℚ) ≤ ZMod.cast a := by
+  fin_cases a <;> decide
+
 lemma matrix3sumComposition_hasTuSigning {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ : Matrix Xₗ Yₗ Z2} {Bᵣ : Matrix Xᵣ Yᵣ Z2}
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}) (hXY : Xₗ ⫗ Yᵣ) (hYX : Yₗ ⫗ Xᵣ)
     (hBₗ : Bₗ.HasTuSigning) (hBᵣ : Bᵣ.HasTuSigning) (hSS : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     (matrix3sumComposition Bₗ Bᵣ hXX hYY).fst.HasTuSigning := by
-  obtain ⟨Aₗ, hABₗ⟩ := hBₗ
-  obtain ⟨Aᵣ, hABᵣ⟩ := hBᵣ
-  let ⟨⟨x₀ₗ, x₁ₗ, x₂ₗ⟩, ⟨x₀ᵣ, x₁ᵣ, x₂ᵣ⟩⟩ := hXX.inter3all
-  let ⟨⟨y₀ₗ, y₁ₗ, y₂ₗ⟩, ⟨y₀ᵣ, y₁ᵣ, y₂ᵣ⟩⟩ := hYY.inter3all
+  obtain ⟨Aₗ, hAₗ, hABₗ⟩ := hBₗ
+  obtain ⟨Aᵣ, hAᵣ, hABᵣ⟩ := hBᵣ
+  have hxx₂ := matrix3sumComposition_x₁_ne_x₀ hSS
+  have hxx₁ := matrix3sumComposition_x₂_ne_x₀ hSS
+  have hxx₀ := matrix3sumComposition_x₂_ne_x₁ hSS
+  have hyy₂ := matrix3sumComposition_y₁_ne_y₀ hSS
+  have hyy₁ := matrix3sumComposition_y₂_ne_y₀ hSS
+  have hyy₀ := matrix3sumComposition_y₂_ne_y₁ hSS
   use matrix3sumCompositionCanonicalSigning Aₗ Aᵣ hXX hYY
   constructor
   · sorry
   · rintro (iₗ | iᵣ) (jₗ | jᵣ)
-    · sorry
     · if hx₂ : iₗ.val = x₂ then
-        have hx₂' : iₗ = ⟨x₂, hx₂ ▸ iₗ.property⟩ := SetCoe.ext hx₂
+        if hy₀ : jₗ.val = y₀ then
+          have h1 := matrix3sumComposition_Bₗ_x₂_y₀ hSS
+          specialize hABₗ ⟨x₂, hXX.mem3₂ₗ⟩ ⟨y₀, hYY.mem3₀ₗ⟩
+          rw [h1, abs_eq (by norm_num)] at hABₗ
+          cases' hABₗ with hAB hAB <;> simp [hAB, h1, hx₂, hy₀, hxx₀, hxx₁, matrix3sumComposition]
+        else if hy₁ : jₗ.val = y₁ then
+          have h1 := matrix3sumComposition_Bₗ_x₂_y₁ hSS
+          specialize hABₗ ⟨x₂, hXX.mem3₂ₗ⟩ ⟨y₁, hYY.mem3₁ₗ⟩
+          rw [h1, abs_eq (by norm_num)] at hABₗ
+          cases' hABₗ with hAB hAB <;> simp [hAB, h1, hx₂, hy₁, hxx₀, hxx₁, hyy₂, matrix3sumComposition]
+        else
+          have hjₗ : jₗ.val ≠ y₂ := (by simpa [·] using jₗ.property)
+          specialize hABₗ ⟨x₂, hXX.mem3₂ₗ⟩ ⟨jₗ.val, Set.mem_of_mem_diff jₗ.property⟩
+          simp [*, matrix3sumComposition]
+      else
+        have hiₗ₀ : iₗ.val ≠ x₀ := (by simpa [·] using iₗ.property)
+        have hiₗ₁ : iₗ.val ≠ x₁ := (by simpa [·] using iₗ.property)
+        simp [*]
+        if hy₀ : jₗ.val = y₀ then
+          have h1 := matrix3sumComposition_Bₗ_x₂_y₀ hSS
+          have h19 := hABₗ ⟨x₂, hXX.mem3₂ₗ⟩ ⟨y₀, hYY.mem3₀ₗ⟩
+          rw [h1, abs_eq (by linarith)] at h19
+          specialize hABₗ ⟨iₗ, Set.mem_of_mem_diff iₗ.property⟩ ⟨y₀, hYY.mem3₀ₗ⟩
+          rw [abs_eq (by linarith)] at hABₗ
+          cases hABₗ <;> cases h19 <;> simp [*, matrix3sumComposition]
+        else if hy₁ : jₗ.val = y₁ then
+          have h1 := matrix3sumComposition_Bₗ_x₂_y₁ hSS
+          have h19 := hABₗ ⟨x₂, hXX.mem3₂ₗ⟩ ⟨y₁, hYY.mem3₁ₗ⟩
+          rw [h1, abs_eq (by linarith)] at h19
+          specialize hABₗ ⟨iₗ, Set.mem_of_mem_diff iₗ.property⟩ ⟨y₁, hYY.mem3₁ₗ⟩
+          rw [abs_eq (by linarith)] at hABₗ
+          cases hABₗ <;> cases h19 <;> simp [*, matrix3sumComposition]
+        else
+          have hjₗ : jₗ.val ≠ y₂ := (by simpa [·] using jₗ.property)
+          specialize hABₗ ⟨iₗ, Set.mem_of_mem_diff iₗ.property⟩ ⟨jₗ.val, Set.mem_of_mem_diff jₗ.property⟩
+          simp [*, matrix3sumComposition]
+    · if hx₂ : iₗ.val = x₂ then
         if hy₂ : jᵣ.val = y₂ then
-          have hy₂' : jᵣ = ⟨y₂, hy₂ ▸ jᵣ.property⟩ := SetCoe.ext hy₂
-          simp [hx₂', hy₂', matrix3sumComposition]
+          simp [hx₂, hy₂, matrix3sumComposition]
         else
           sorry
       else
