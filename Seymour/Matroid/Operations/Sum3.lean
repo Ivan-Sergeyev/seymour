@@ -1066,51 +1066,39 @@ instance Matroid.Is3sumOf.finS {M Mₗ Mᵣ : Matroid α} (hM : M.Is3sumOf Mₗ 
 lemma cast_1_from_Z2_to_Rat : ZMod.cast (1 : Z2) = (1 : ℚ) := by
   decide
 
+lemma matrix3sumComposition_hasTuSigning {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+    [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
+    {Bₗ : Matrix Xₗ Yₗ Z2} {Bᵣ : Matrix Xᵣ Yᵣ Z2}
+    (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}) (hXY : Xₗ ⫗ Yᵣ) (hYX : Yₗ ⫗ Xᵣ)
+    (hBₗ : Bₗ.HasTuSigning) (hBᵣ : Bᵣ.HasTuSigning) (hSS : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
+    (matrix3sumComposition Bₗ Bᵣ hXX hYY).fst.HasTuSigning := by
+  sorry
+
 lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X)
     (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) (hSS : (standardRepr3sumComposition hXX hYY hXY hYX).snd) :
     (standardRepr3sumComposition hXX hYY hXY hYX).fst.B.HasTuSigning := by
-  obtain ⟨Bₗ, hBₗ, hBBₗ⟩ := hSₗ
-  obtain ⟨Bᵣ, hBᵣ, hBBᵣ⟩ := hSᵣ
-  use (matrix3sumCompositionCanonicalSigning Bₗ Bᵣ hXX hYY).toMatrixUnionUnion
-  constructor
-  · sorry
-  · dsimp [standardRepr3sumComposition, matrix3sumComposition, Eq.inter3all]
-    intro i j
-    cases hi : i.toSum with
-    | inl iₗ =>
-      cases hj : j.toSum with
-      | inl jₗ =>
-        simp [hi, hj, Matrix.toMatrixUnionUnion]
-        if hjy₀ : jₗ.val = y₀ then
-          simp [hjy₀]
-          if hix₀ : iₗ.val = x₀ then
-            simp [hix₀]
-            generalize_proofs hhx₀ hhy₀ hhx₂
-            have h1x₀ : Sₗ.B ⟨x₀, hhx₀⟩ ⟨y₀, hhy₀⟩ = 1 := matrix3sumComposition_Bₗ_x₀_y₀ hXX hYY hSS
-            have h1x₂ : Sₗ.B ⟨x₂, hhx₂⟩ ⟨y₀, hhy₀⟩ = 1 := matrix3sumComposition_Bₗ_x₂_y₀ hXX hYY hSS
-            have h1x₀' := h1x₀ ▸ hBBₗ ⟨x₀, hhx₀⟩ ⟨y₀, hhy₀⟩
-            have h1x₂' := h1x₂ ▸ hBBₗ ⟨x₂, hhx₂⟩ ⟨y₀, hhy₀⟩
-            rw [abs_eq (by norm_num)] at h1x₀' h1x₂'
-            cases' h1x₀' with hx₀' hx₀' <;> cases' h1x₂' with hx₂' hx₂' <;> simp [h1x₀, h1x₂, hx₀', hx₂']
-          else if hix₁ : iₗ.val = x₁ then
-            have hxx : x₁ ≠ x₀ := matrix3sumComposition_x₁_ne_x₀ hXX hYY hSS
-            simp [hix₁, hxx] at hSS ⊢
-            generalize_proofs hhx₁ hhy₀ hhx₀ hhy₂ hhx₂ hhhx₁ hhhy₀
-            have h1x₀ : Sₗ.B ⟨x₀, hhx₀⟩ ⟨y₀, hhy₀⟩ = 1 := matrix3sumComposition_Bₗ_x₀_y₀ hXX hYY hSS
-            have h1x₂ : Sₗ.B ⟨x₂, hhx₂⟩ ⟨y₀, hhy₀⟩ = 1 := matrix3sumComposition_Bₗ_x₂_y₀ hXX hYY hSS
-            have h1x₁' := h1x₀ ▸ hBBₗ ⟨x₀, hhx₀⟩ ⟨y₀, hhy₀⟩
-            have h1x₂' := h1x₂ ▸ hBBₗ ⟨x₂, hhx₂⟩ ⟨y₀, hhy₀⟩
-            sorry
-          else
-            sorry
-        else
-          sorry
-      | inr jᵣ => sorry
-    | inr iᵣ =>
-      cases hj : j.toSum with
-      | inl jₗ => sorry
-      | inr jᵣ => sorry
+  obtain ⟨B, hB, hBBB⟩ := matrix3sumComposition_hasTuSigning hXX hYY hXY hYX hSₗ hSᵣ hSS
+  refine ⟨B.toMatrixUnionUnion, hB.toMatrixUnionUnion, fun i j => ?_⟩
+  cases hi : i.toSum with
+  | inl iₗ =>
+    specialize hBBB ◩iₗ
+    cases hj : j.toSum with
+    | inl jₗ =>
+      specialize hBBB ◩jₗ
+      rwa [←hi, ←hj] at hBBB
+    | inr jᵣ =>
+      specialize hBBB ◪jᵣ
+      rwa [←hi, ←hj] at hBBB
+  | inr iᵣ =>
+    specialize hBBB ◪iᵣ
+    cases hj : j.toSum with
+    | inl jₗ =>
+      specialize hBBB ◩jₗ
+      rwa [←hi, ←hj] at hBBB
+    | inr jᵣ =>
+      specialize hBBB ◪jᵣ
+      rwa [←hi, ←hj] at hBBB
 
 /-- Any 3-sum of regular matroids is a regular matroid.
     This is the final part of the easy direction of the Seymour's theorem. -/
