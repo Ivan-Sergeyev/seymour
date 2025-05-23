@@ -1072,7 +1072,22 @@ lemma matrix3sumComposition_hasTuSigning {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x�
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}) (hXY : Xₗ ⫗ Yᵣ) (hYX : Yₗ ⫗ Xᵣ)
     (hBₗ : Bₗ.HasTuSigning) (hBᵣ : Bᵣ.HasTuSigning) (hSS : (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd) :
     (matrix3sumComposition Bₗ Bᵣ hXX hYY).fst.HasTuSigning := by
-  sorry
+  obtain ⟨Aₗ, hABₗ⟩ := hBₗ
+  obtain ⟨Aᵣ, hABᵣ⟩ := hBᵣ
+  use matrix3sumCompositionCanonicalSigning Aₗ Aᵣ hXX hYY
+  constructor
+  · sorry
+  · rintro (iₗ | iᵣ) (jₗ | jᵣ)
+    · sorry
+    · sorry
+    · if hx₂ : iᵣ.val = x₂ then
+        if hy₂ : jₗ.val = y₂ then
+          sorry
+        else
+          sorry
+      else
+        sorry
+    · sorry
 
 lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X)
