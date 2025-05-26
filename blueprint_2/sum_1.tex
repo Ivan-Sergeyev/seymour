@@ -1,0 +1,49 @@
+\section{Regularity of 1-Sum}
+
+\begin{definition}\label{def:one_sum_matrix}
+    Let $R$ be a semiring (we will use $R = \mathbb{Z}_{2}$ and $R = \mathbb{Q}$). Let $B_{\ell} \in R^{X_{\ell} \times Y_{\ell}}$ and $B_{r} \in R^{X_{r} \times Y_{r}}$ be matrices where $X_{\ell}, Y_{\ell}, X_{r}, Y_{r}$ are pairwise disjoint sets. The $1$-sum $B = B_{\ell} \oplus_{1} B_{r}$ of $B_{\ell}$ and $B_{r}$ is
+    \[
+        B = \begin{NiceArray}{cc}[hvlines] B_{\ell} & 0 \\ 0 & B_{r} \\ \end{NiceArray} \in R^{(X_{\ell} \cup X_{r}) \times (Y_{\ell} \cup Y_{r})}.
+    \]
+\end{definition}
+
+\begin{definition}\label{def:one_sum_matroid}
+    A matroid $M$ is a $1$-sum of matroids $M_{\ell}$ and $M_{r}$ if there exist standard $\mathbb{Z}_{2}$ representation matrices $B$, $B_{\ell}$, and $B_{r}$ (for $M$, $M_{\ell}$, and $M_{r}$, respectively) of the form given in Definition~\ref{def:one_sum_matrix}.
+\end{definition}
+
+\begin{lemma}\label{lem:det_lower_left_zero}
+    Let $A$ be a square matrix of the form $A = \begin{NiceArray}{cc}[hvlines] A_{11} & A_{12} \\ 0 & A_{22} \\ \end{NiceArray}$. Then $\det A = \det A_{11} \cdot \det A_{22}$.
+\end{lemma}
+
+\begin{proof}
+    This lemma is proved in MathLib.
+\end{proof}
+
+\begin{lemma}\label{lem:one_sum_tu}
+    Let $B_{\ell}$ and $B_{r}$ from Definition~\ref{def:one_sum_matrix} be TU matrices (over $\mathbb{Q}$). Then $B = B_{\ell} \oplus_{1} B_{r}$ is TU.
+\end{lemma}
+
+\begin{proof}
+    We prove that $B$ is TU by Definition~\ref{def:tu}. To this end, let $T$ be a square submatrix of $B$. Our goal is to show that $\det T \in \{0, \pm 1\}$.
+
+    Let $T_{\ell}$ and $T_{r}$ denote the submatrices in the intersection of $T$ with $B_{\ell}$ and $B_{r}$, respectively. Then $T$ has the form
+    \[
+        T = \begin{NiceArray}{cc}[hvlines] T_{\ell} & 0 \\ 0 & T_{r} \\ \end{NiceArray}.
+    \]
+
+    First, suppose that $T_{\ell}$ and $T_{r}$ are square. Then $\det T = \det T_{\ell} \cdot \det T_{r}$ by Lemma~\ref{lem:det_lower_left_zero}. Moreover, $\det T_{\ell}, \det T_{r} \in \{0, \pm 1\}$, since $T_{\ell}$ and $T_{r}$ are square submatrices of TU matrices $B_{\ell}$ and $B_{r}$, respectively. Thus, $\det T \in \{0, \pm 1\}$, as desired.
+
+    Without loss of generality we may assume that $T_{\ell}$ has fewer rows than columns. Otherwise we can transpose all matrices and use the same proof, since TUness and determinants are preserved under transposition. Thus, $T$ can be represented in the form
+    \[
+        T = \begin{NiceArray}{cc}[hvlines] T_{11} & T_{12} \\ 0 & T_{22} \\ \end{NiceArray},
+    \]
+    where $T_{11}$ contains $T_{\ell}$ and some zero rows, $T_{22}$ is a submatrix of $T_{r}$, and $T_{12}$ contains the rest of the rows of $T_{r}$ (not contained in $T_{22}$) and some zero rows. By Lemma~\ref{lem:det_lower_left_zero}, we have $\det T = \det T_{11} \cdot \det T_{22}$. Since $T_{11}$ contains at least one zero row, $\det T_{11} = 0$. Thus, $\det T = 0 \in \{0, \pm 1\}$, as desired.
+\end{proof}
+
+\begin{lemma}\label{lem:one_sum_regular}
+    Let $M$ be a $1$-sum of regular matroids $M_{\ell}$ and $M_{r}$. Then $M$ is also regular.
+\end{lemma}
+
+\begin{proof}
+    Let $B$, $B_{\ell}$, and $B_{r}$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{def:one_sum_matroid}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{lem:regular_defs_equiv}, $B_{\ell}$ and $B_{r}$ have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Then $B' = B_{\ell}' \oplus_{1} B_{r}'$ is a TU signing of $B$. Indeed, $B'$ is TU by Lemma~\ref{lem:one_sum_tu}, and a direct calculation shows that $B'$ is a signing of $B$. Thus, $M$ is regular by Lemma~\ref{lem:regular_defs_equiv}.
+\end{proof}
