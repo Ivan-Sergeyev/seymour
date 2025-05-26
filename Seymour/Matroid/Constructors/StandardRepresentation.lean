@@ -33,7 +33,7 @@ private noncomputable abbrev Set.equivFin (S : Set α) [Fintype S] : Fin #S ≃ 
   (Fintype.equivFin S.Elem).symm
 
 @[app_unexpander Set.equivFin]
-def Set.equivFin_unexpand : Lean.PrettyPrinter.Unexpander
+private def Set.equivFin_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $S) => `($(S).$(Lean.mkIdent `equivFin))
   | _ => throw ()
 
@@ -41,7 +41,7 @@ private abbrev Equiv.leftCongr {ι₁ ι₂ : Type} (e : ι₁ ≃ ι₂) : ι�
   Equiv.sumCongr e (Equiv.refl α)
 
 @[app_unexpander Equiv.leftCongr]
-def Equiv.leftCongr_unexpand : Lean.PrettyPrinter.Unexpander
+private def Equiv.leftCongr_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $S) => `($(S).$(Lean.mkIdent `leftCongr))
   | _ => throw ()
 

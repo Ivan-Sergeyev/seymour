@@ -12,7 +12,7 @@ private lemma Eq.mem3₀ₗ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₀ �
   hZZ.symm.subset.trans Set.inter_subset_left (Set.mem_insert a₀ {a₁, a₂})
 
 @[app_unexpander Eq.mem3₀ₗ]
-def Eq.mem3₀ₗ_unexpand : Lean.PrettyPrinter.Unexpander
+private def Eq.mem3₀ₗ_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $e) => `($(e).$(Lean.mkIdent `mem3₀ₗ))
   | _ => throw ()
 
@@ -20,7 +20,7 @@ private lemma Eq.mem3₁ₗ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₁ �
   hZZ.symm.subset.trans Set.inter_subset_left (Set.insert_comm a₀ a₁ {a₂} ▸ Set.mem_insert a₁ {a₀, a₂})
 
 @[app_unexpander Eq.mem3₁ₗ]
-def Eq.mem3₁ₗ_unexpand : Lean.PrettyPrinter.Unexpander
+private def Eq.mem3₁ₗ_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $e) => `($(e).$(Lean.mkIdent `mem3₁ₗ))
   | _ => throw ()
 
@@ -28,7 +28,7 @@ private lemma Eq.mem3₂ₗ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₂ �
   hZZ.symm.subset.trans Set.inter_subset_left (by simp)
 
 @[app_unexpander Eq.mem3₂ₗ]
-def Eq.mem3₂ₗ_unexpand : Lean.PrettyPrinter.Unexpander
+private def Eq.mem3₂ₗ_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $e) => `($(e).$(Lean.mkIdent `mem3₂ₗ))
   | _ => throw ()
 
@@ -36,7 +36,7 @@ private lemma Eq.mem3₀ᵣ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₀ �
   hZZ.symm.subset.trans Set.inter_subset_right (Set.mem_insert a₀ {a₁, a₂})
 
 @[app_unexpander Eq.mem3₀ᵣ]
-def Eq.mem3₀ᵣ_unexpand : Lean.PrettyPrinter.Unexpander
+private def Eq.mem3₀ᵣ_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $e) => `($(e).$(Lean.mkIdent `mem3₀ᵣ))
   | _ => throw ()
 
@@ -44,7 +44,7 @@ private lemma Eq.mem3₁ᵣ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₁ �
   hZZ.symm.subset.trans Set.inter_subset_right (Set.insert_comm a₀ a₁ {a₂} ▸ Set.mem_insert a₁ {a₀, a₂})
 
 @[app_unexpander Eq.mem3₁ᵣ]
-def Eq.mem3₁ᵣ_unexpand : Lean.PrettyPrinter.Unexpander
+private def Eq.mem3₁ᵣ_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $e) => `($(e).$(Lean.mkIdent `mem3₁ᵣ))
   | _ => throw ()
 
@@ -52,7 +52,7 @@ private lemma Eq.mem3₂ᵣ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₂ �
   hZZ.symm.subset.trans Set.inter_subset_right (by simp)
 
 @[app_unexpander Eq.mem3₂ᵣ]
-def Eq.mem3₂ᵣ_unexpand : Lean.PrettyPrinter.Unexpander
+private def Eq.mem3₂ᵣ_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $e) => `($(e).$(Lean.mkIdent `mem3₂ᵣ))
   | _ => throw ()
 
@@ -61,7 +61,7 @@ private def Eq.inter3all (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : (Zₗ × Z
   ⟨⟨⟨a₀, hZZ.mem3₀ₗ⟩, ⟨a₁, hZZ.mem3₁ₗ⟩, ⟨a₂, hZZ.mem3₂ₗ⟩⟩, ⟨⟨a₀, hZZ.mem3₀ᵣ⟩, ⟨a₁, hZZ.mem3₁ᵣ⟩, ⟨a₂, hZZ.mem3₂ᵣ⟩⟩⟩
 
 @[app_unexpander Eq.inter3all]
-def Eq.inter3all_unexpand : Lean.PrettyPrinter.Unexpander
+private def Eq.inter3all_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $e) => `($(e).$(Lean.mkIdent `inter3all))
   | _ => throw ()
 
@@ -75,7 +75,7 @@ end members_of_intersection
 private abbrev Set.drop1 (X : Set α) (x₀ : X) : Set α := X \ {x₀.val}
 
 @[app_unexpander Set.drop1]
-def Set.drop1_unexpand : Lean.PrettyPrinter.Unexpander
+private def Set.drop1_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $S) => `($(S).$(Lean.mkIdent `drop1))
   | _ => throw ()
 
@@ -84,7 +84,7 @@ def Set.drop1_unexpand : Lean.PrettyPrinter.Unexpander
 private abbrev Set.drop2 (X : Set α) (x₀ x₁ : X) : Set α := X \ {x₀.val, x₁.val}
 
 @[app_unexpander Set.drop2]
-def Set.drop2_unexpand : Lean.PrettyPrinter.Unexpander
+private def Set.drop2_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $S) => `($(S).$(Lean.mkIdent `drop2))
   | _ => throw ()
 
@@ -93,7 +93,7 @@ def Set.drop2_unexpand : Lean.PrettyPrinter.Unexpander
 private abbrev Set.drop3 (X : Set α) (x₀ x₁ x₂ : X) : Set α := X \ {x₀.val, x₁.val, x₂.val}
 
 @[app_unexpander Set.drop3]
-def Set.drop3_unexpand : Lean.PrettyPrinter.Unexpander
+private def Set.drop3_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $S) => `($(S).$(Lean.mkIdent `drop3))
   | _ => throw ()
 
@@ -148,7 +148,7 @@ private abbrev Matrix.D₀ {F : Type} {X Y : Set α} (B : Matrix X Y F) (x₀ x�
   !![B x₀ y₀, B x₀ y₁; B x₁ y₀, B x₁ y₁]
 
 @[app_unexpander Matrix.D₀]
-def Matrix.D₀_unexpand : Lean.PrettyPrinter.Unexpander
+private def Matrix.D₀_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $A) => `($(A).$(Lean.mkIdent `D₀))
   | _ => throw ()
 
@@ -158,7 +158,7 @@ private abbrev Matrix.Dₗ {F : Type} {X Y : Set α} (B : Matrix X Y F) (x₀ x�
   ![B x₀ ∘ Set.diff_subset.elem, B x₁ ∘ Set.diff_subset.elem]
 
 @[app_unexpander Matrix.Dₗ]
-def Matrix.Dₗ_unexpand : Lean.PrettyPrinter.Unexpander
+private def Matrix.Dₗ_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $A) => `($(A).$(Lean.mkIdent `Dₗ))
   | _ => throw ()
 
@@ -168,7 +168,7 @@ private abbrev Matrix.Dᵣ {F : Type} {X Y : Set α} (B : Matrix X Y F) (x₀ x�
   Matrix.of (fun i => ![B (Set.diff_subset.elem i) y₀, B (Set.diff_subset.elem i) y₁])
 
 @[app_unexpander Matrix.Dᵣ]
-def Matrix.Dᵣ_unexpand : Lean.PrettyPrinter.Unexpander
+private def Matrix.Dᵣ_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $A) => `($(A).$(Lean.mkIdent `Dᵣ))
   | _ => throw ()
 
@@ -178,7 +178,7 @@ private abbrev Matrix.Aₗ {F : Type} {X Y : Set α} (B : Matrix X Y F) (x₀ x�
   B.submatrix Set.diff_subset.elem Set.diff_subset.elem
 
 @[app_unexpander Matrix.Aₗ]
-def Matrix.Aₗ_unexpand : Lean.PrettyPrinter.Unexpander
+private def Matrix.Aₗ_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $A) => `($(A).$(Lean.mkIdent `Aₗ))
   | _ => throw ()
 
@@ -188,7 +188,7 @@ private abbrev Matrix.Aᵣ {F : Type} {X Y : Set α} (B : Matrix X Y F) (x₂ : 
   B.submatrix Set.diff_subset.elem Set.diff_subset.elem
 
 @[app_unexpander Matrix.Aᵣ]
-def Matrix.Aᵣ_unexpand : Lean.PrettyPrinter.Unexpander
+private def Matrix.Aᵣ_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $A) => `($(A).$(Lean.mkIdent `Aᵣ))
   | _ => throw ()
 
@@ -256,7 +256,7 @@ private abbrev Matrix.submatrix3x3 {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x�
     Q x₂ y₀, Q x₂ y₁, Q x₂ y₂]
 
 @[app_unexpander Matrix.submatrix3x3]
-def Matrix.submatrix3x3_unexpand : Lean.PrettyPrinter.Unexpander
+private def Matrix.submatrix3x3_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $Q) => `($(Q).$(Lean.mkIdent `submatrix3x3))
   | _ => throw ()
 
@@ -301,7 +301,7 @@ private def Matrix.submatrix3x3mems {X Y : Set α} (Q : Matrix X Y ℚ)
     Q ⟨x₂, hx₂⟩ ⟨y₀, hy₀⟩, Q ⟨x₂, hx₂⟩ ⟨y₁, hy₁⟩, Q ⟨x₂, hx₂⟩ ⟨y₂, hy₂⟩]
 
 @[app_unexpander Matrix.submatrix3x3mems]
-def Matrix.submatrix3x3mems_unexpand : Lean.PrettyPrinter.Unexpander
+private def Matrix.submatrix3x3mems_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $Q) => `($(Q).$(Lean.mkIdent `submatrix3x3mems))
   | _ => throw ()
 
@@ -338,7 +338,7 @@ private def Matrix.IsTuCanonicallySignable₀ {X Y : Set α} (Q : Matrix X Y ℚ
   ∧ |Q.submatrix3x3 x₀ x₁ x₂ y₀ y₁ y₂| = matrix3x3unsigned₀
 
 @[app_unexpander Matrix.IsTuCanonicallySignable₀]
-def Matrix.IsTuCanonicallySignable₀_unexpand : Lean.PrettyPrinter.Unexpander
+private def Matrix.IsTuCanonicallySignable₀_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $Q) => `($(Q).$(Lean.mkIdent `IsTuCanonicallySignable₀))
   | _ => throw ()
 
@@ -350,7 +350,7 @@ private def Matrix.IsTuCanonicallySignable₁ {X Y : Set α} (Q : Matrix X Y ℚ
   ∧ |Q.submatrix3x3 x₀ x₁ x₂ y₀ y₁ y₂| = matrix3x3unsigned₁
 
 @[app_unexpander Matrix.IsTuCanonicallySignable₁]
-def Matrix.IsTuCanonicallySignable₁_unexpand : Lean.PrettyPrinter.Unexpander
+private def Matrix.IsTuCanonicallySignable₁_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $Q) => `($(Q).$(Lean.mkIdent `IsTuCanonicallySignable₁))
   | _ => throw ()
 
@@ -371,7 +371,7 @@ private def Matrix.toCanonicalSigning {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ 
   Q ⊡ u ⊗ v
 
 @[app_unexpander Matrix.toCanonicalSigning]
-def Matrix.toCanonicalSigning_unexpand : Lean.PrettyPrinter.Unexpander
+private def Matrix.toCanonicalSigning_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $Q) => `($(Q).$(Lean.mkIdent `toCanonicalSigning))
   | _ => throw ()
 
@@ -491,7 +491,7 @@ private lemma Matrix.IsTuCanonicallySignable₁.toCanonicalSigning {X Y : Set α
   B (Set.diff_subset.elem i) y
 
 @[app_unexpander Matrix._col]
-def Matrix._col_unexpand : Lean.PrettyPrinter.Unexpander
+private def Matrix._col_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $B) => `($(B).$(Lean.mkIdent `_col))
   | _ => throw ()
 
@@ -500,7 +500,7 @@ def Matrix._col_unexpand : Lean.PrettyPrinter.Unexpander
   B x (Set.diff_subset.elem j)
 
 @[app_unexpander Matrix._row]
-def Matrix._row_unexpand : Lean.PrettyPrinter.Unexpander
+private def Matrix._row_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $B) => `($(B).$(Lean.mkIdent `_row))
   | _ => throw ()
 
@@ -521,7 +521,7 @@ private abbrev Matrix._rrr {X Y : Set α} (B' : Matrix X Y ℚ) (x₀ x₁ x₂ 
       exact hB'.casesOn id id))
 
 @[app_unexpander Matrix._rrr]
-def Matrix._rrr_unexpand : Lean.PrettyPrinter.Unexpander
+private def Matrix._rrr_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $B) => `($(B).$(Lean.mkIdent `_rrr))
   | _ => throw ()
 
