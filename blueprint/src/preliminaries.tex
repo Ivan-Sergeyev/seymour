@@ -1,6 +1,6 @@
-\section{Preliminaries}
+\chapter{Preliminaries}
 
-\subsection{Total Unimodularity}
+\section{Total Unimodularity}
 
 \begin{definition}\label{def:tu}
     We say that a matrix $A \in \mathbb{Q}^{X \times Y}$ is totally unimodular, or TU for short, if for every $k \in \mathbb{Z}_{\geq 1}$, every $k \times k$ submatrix $T$ of $A$ has $\det T \in \{0, \pm 1\}$.
@@ -27,7 +27,7 @@
 \end{proof}
 
 
-\subsection{Pivoting}
+\section{Pivoting}
 
 % Long Tableau Pivot
 
@@ -67,7 +67,7 @@
 \begin{definition}\label{def:stp}
     Let $A \in R^{X \times Y}$ be a matrix and let $(x, y) \in X \times Y$ be such that $A (x, y) \neq 0$. Perform the following sequence of operations.
     \begin{enumerate}
-        \item Adjoin the identity matrix $1 \in R^{X \times X}$ to $A$, resulting in the matrix $B = \begin{NiceArray}{cc}[hvlines] 1 & A \\ \end{NiceArray} \in R^{X \times (X \oplus Y)}$.
+        \item Adjoin the identity matrix $1 \in R^{X \times X}$ to $A$, resulting in the matrix $B = \begin{bmatrix} 1 & A \end{bmatrix} \in R^{X \times (X \oplus Y)}$.
         \item Perform a long tableau pivot in $B$ on $(x, y)$, and let $C$ denote the result.
         \item Swap columns $x$ and $y$ in $C$, and let $D$ be the resulting matrix.
         \item Finally, remove columns indexed by $X$ from $D$, and let $A'$ be the resulting matrix.
@@ -92,11 +92,11 @@
 \end{proof}
 
 \begin{lemma}\label{lem:stp_block_zero}
-    Let $B = \begin{NiceArray}{cc}[hvlines] B_{11} & 0 \\ B_{21} & B_{22} \\ \end{NiceArray} \in \mathbb{Q}^{\{X_{1} \cup X_{2}\} \times \{Y_{1} \times Y_{2}\}}$. Let $B' = \begin{NiceArray}{cc}[hvlines] B_{11}' & B_{12}' \\ B_{21}' & B_{22}' \\ \end{NiceArray}$ be the result of performing a short tableau pivot on $(x, y) \in X_{1} \times Y_{1}$ in $B$. Then $B_{12}' = 0$, $B_{22}' = B_{22}$, and $\begin{NiceArray}{c}[hvlines] B_{11}' \\ B_{21}' \\ \end{NiceArray}$ is the matrix resulting from performing a short tableau pivot on $(x, y)$ in $\begin{NiceArray}{c}[hvlines] B_{11} \\ B_{21} \\ \end{NiceArray}$.
+    Let $B = \begin{bmatrix} B_{11} & 0 \\ B_{21} & B_{22} \end{bmatrix} \in \mathbb{Q}^{\{X_{1} \cup X_{2}\} \times \{Y_{1} \times Y_{2}\}}$. Let $B' = \begin{bmatrix} B_{11}' & B_{12}' \\ B_{21}' & B_{22}' \end{bmatrix}$ be the result of performing a short tableau pivot on $(x, y) \in X_{1} \times Y_{1}$ in $B$. Then $B_{12}' = 0$, $B_{22}' = B_{22}$, and $\begin{bmatrix} B_{11}' \\ B_{21}' \end{bmatrix}$ is the matrix resulting from performing a short tableau pivot on $(x, y)$ in $\begin{bmatrix} B_{11} \\ B_{21} \end{bmatrix}$.
 \end{lemma}
 
 \begin{proof}
-    This follows by a direct calculation. Indeed, because of the $0$ block in $B$, $B_{12}$ and $B_{22}$ remain unchanged, and since $\begin{NiceArray}{c}[hvlines] B_{11} \\ B_{21} \\ \end{NiceArray}$ is a submatrix of $B$ containing the pivot element, performing a short tableau pivot in it is equivalent to performing a short tableau pivot in $B$ and then taking the corresponding submatrix.
+    This follows by a direct calculation. Indeed, because of the $0$ block in $B$, $B_{12}$ and $B_{22}$ remain unchanged, and since $\begin{bmatrix} B_{11} \\ B_{21} \end{bmatrix}$ is a submatrix of $B$ containing the pivot element, performing a short tableau pivot in it is equivalent to performing a short tableau pivot in $B$ and then taking the corresponding submatrix.
 \end{proof}
 
 \begin{lemma}\label{lem:stp_nz_abs_det_eq}
@@ -136,14 +136,14 @@
 \end{proof}
 
 
-\subsection{Vector Matroids}
+\section{Vector Matroids}
 
 \begin{definition}\label{def:vector_matroid_full_repr}
     Let $R$ be a semiring, let $X$ and $Y$ be sets, and let $A \in R^{X \times Y}$ be a matrix. The vector matroid of $A$ is the matroid $M = (Y, \mathcal{I})$ where a set $I \subset Y$ is independent in $M$ if and only if the columns of $A$ indexed by $I$ are linearly independent.
 \end{definition}
 
 \begin{definition}\label{def:vector_matroid_std_repr}
-    Let $R$ be a semiring, let $X$ and $Y$ be disjoint sets, and let $S \in R^{X \times Y}$ be a matrix. Let $A = \begin{NiceArray}{cc}[hvlines] 1 & S \\ \end{NiceArray} \in R^{X \times (X \cup Y)}$ be the matrix obtained from $S$ by adjoining the identity matrix as columns, and let $M$ be the vector matroid of $A$. Then $S$ is called the standard representation of $M$.
+    Let $R$ be a semiring, let $X$ and $Y$ be disjoint sets, and let $S \in R^{X \times Y}$ be a matrix. Let $A = \begin{bmatrix} 1 & S \end{bmatrix} \in R^{X \times (X \cup Y)}$ be the matrix obtained from $S$ by adjoining the identity matrix as columns, and let $M$ be the vector matroid of $A$. Then $S$ is called the standard representation of $M$.
 \end{definition}
 
 \begin{lemma}\label{lem:std_repr_rows_base}
@@ -224,7 +224,7 @@
 \end{proof}
 
 
-\subsection{Regular Matroids}
+\section{Regular Matroids}
 
 \begin{definition}\label{def:regular}
     A matroid $M$ is regular if there exists a TU matrix $A \in \mathbb{Q}^{X \times Y}$ such that $M$ is a vector matroid of $A$.

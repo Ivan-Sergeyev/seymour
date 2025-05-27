@@ -1,14 +1,14 @@
-\section{Regularity of 2-Sum}
+\chapter{Regularity of 2-Sum}
 
 \begin{definition}\label{def:two_sum_matrix}
     Let $R$ be a semiring (we will use $R = \mathbb{Z}_{2}$ and $R = \mathbb{Q}$). Let $B_{\ell} \in R^{(X_{\ell} \cup \{x\}) \times Y_{\ell}}$ and $B_{r} \in R^{X_{r} \times (Y_{r} \cup \{y\})}$ be matrices of the form
     \[
-        B_{\ell} = \begin{NiceArray}{c}[hvlines] A_{\ell} \\ r \\ \end{NiceArray}, \quad
-        B_{r} = \begin{NiceArray}{cc}[hvlines] c & A_{r} \\ \end{NiceArray}.
+        B_{\ell} = \begin{bmatrix} A_{\ell} \\ r \end{bmatrix}, \quad
+        B_{r} = \begin{bmatrix} c & A_{r} \end{bmatrix}.
     \]
     The $2$-sum $B = B_{\ell} \oplus_{2, x, y} B_{r}$ of $B_{\ell}$ and $B_{r}$ is defined as
     \[
-        B = \begin{NiceArray}{cc}[hvlines] A_{\ell} & 0 \\ D & A_{r} \\ \end{NiceArray}
+        B = \begin{bmatrix} A_{\ell} & 0 \\ D & A_{r} \end{bmatrix}
         \quad \text{where} \quad
         D = c \otimes r.
     \]
@@ -20,7 +20,7 @@
 \end{definition}
 
 \begin{lemma}\label{lem:two_sum_bottom_tu}
-    Let $B_{\ell}$ and $B_{r}$ from Definition~\ref{def:two_sum_matrix} be TU matrices (over $\mathbb{Q}$). Then $C = \begin{NiceArray}{cc}[hvlines] D & A_{r} \\ \end{NiceArray}$ is TU.
+    Let $B_{\ell}$ and $B_{r}$ from Definition~\ref{def:two_sum_matrix} be TU matrices (over $\mathbb{Q}$). Then $C = \begin{bmatrix} D & A_{r} \end{bmatrix}$ is TU.
 \end{lemma}
 
 \begin{proof}
@@ -34,8 +34,8 @@
 \begin{proof}
     Let
     \[
-        B_{\ell}' = \begin{NiceArray}{c}[hvlines] A_{\ell}' \\ r' \\ \end{NiceArray}, \quad
-        B' = \begin{NiceArray}{cc}[hvlines] B_{11}' & B_{12}' \\ B_{21}' & B_{22}' \\ \end{NiceArray}
+        B_{\ell}' = \begin{bmatrix} A_{\ell}' \\ r' \end{bmatrix}, \quad
+        B' = \begin{bmatrix} B_{11}' & B_{12}' \\ B_{21}' & B_{22}' \end{bmatrix}
     \]
     where the blocks have the same dimensions as in $B_{\ell}$ and $B$, respectively. By Lemma~\ref{lem:stp_block_zero}, $B_{11}' = A_{\ell}'$, $B_{12}' = 0$, and $B_{22}' = A_{r}$. Equality $B_{21}' = c \otimes r'$ can be verified via a direct calculation. Thus, $B' = B_{\ell}' \oplus_{2, x, y} B_{r}$.
 \end{proof}
@@ -49,7 +49,7 @@
 
     Suppose that for some $k \in \mathbb{Z}_{\geq 1}$ we know that for any TU matrices $B_{\ell}'$ and $B_{r}'$ (from Definition~\ref{def:two_sum_matrix}) their $2$-sum $B_{\ell}' \oplus_{2, x, y} B_{r}'$ is $k$-PU. Now, given TU matrices $B_{\ell}$ and $B_{r}$ (from Definition~\ref{def:two_sum_matrix}), our goal is to show that $B = B_{\ell} \oplus_{2, x, y} B_{r}$ is $(k + 1)$-PU, i.e., that every $(k + 1) \times (k + 1)$ submatrix $T$ of $B$ has $\det T \in \{0, \pm 1\}$.
 
-    First, suppose that $T$ has no rows in $X_{\ell}$. Then $T$ is a submatrix of $\begin{NiceArray}{cc}[hvlines] D & A_{r} \\ \end{NiceArray}$, which is TU by Lemma~\ref{lem:two_sum_bottom_tu}, so $\det T \in \{0, \pm 1\}$. Thus, we may assume that $T$ contains a row $x_{\ell} \in X_{\ell}$.
+    First, suppose that $T$ has no rows in $X_{\ell}$. Then $T$ is a submatrix of $\begin{bmatrix} D & A_{r} \end{bmatrix}$, which is TU by Lemma~\ref{lem:two_sum_bottom_tu}, so $\det T \in \{0, \pm 1\}$. Thus, we may assume that $T$ contains a row $x_{\ell} \in X_{\ell}$.
 
     Next, note that without loss of generality we may assume that there exists $y_{\ell} \in Y_{\ell}$ such that $T (x_{\ell}, y_{\ell}) \neq 0$. Indeed, if $T (x_{\ell}, y) = 0$ for all $y$, then $\det T = 0$ and we are done, and $T (x_{\ell}, y) = 0$ holds whenever $y \in Y_{r}$.
 

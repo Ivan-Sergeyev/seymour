@@ -1,9 +1,9 @@
-\section{Regularity of 1-Sum}
+\chapter{Regularity of 1-Sum}
 
 \begin{definition}\label{def:one_sum_matrix}
     Let $R$ be a semiring (we will use $R = \mathbb{Z}_{2}$ and $R = \mathbb{Q}$). Let $B_{\ell} \in R^{X_{\ell} \times Y_{\ell}}$ and $B_{r} \in R^{X_{r} \times Y_{r}}$ be matrices where $X_{\ell}, Y_{\ell}, X_{r}, Y_{r}$ are pairwise disjoint sets. The $1$-sum $B = B_{\ell} \oplus_{1} B_{r}$ of $B_{\ell}$ and $B_{r}$ is
     \[
-        B = \begin{NiceArray}{cc}[hvlines] B_{\ell} & 0 \\ 0 & B_{r} \\ \end{NiceArray} \in R^{(X_{\ell} \cup X_{r}) \times (Y_{\ell} \cup Y_{r})}.
+        B = \begin{bmatrix} B_{\ell} & 0 \\ 0 & B_{r} \end{bmatrix} \in R^{(X_{\ell} \cup X_{r}) \times (Y_{\ell} \cup Y_{r})}.
     \]
 \end{definition}
 
@@ -12,7 +12,7 @@
 \end{definition}
 
 \begin{lemma}\label{lem:det_lower_left_zero}
-    Let $A$ be a square matrix of the form $A = \begin{NiceArray}{cc}[hvlines] A_{11} & A_{12} \\ 0 & A_{22} \\ \end{NiceArray}$. Then $\det A = \det A_{11} \cdot \det A_{22}$.
+    Let $A$ be a square matrix of the form $A = \begin{bmatrix} A_{11} & A_{12} \\ 0 & A_{22} \end{bmatrix}$. Then $\det A = \det A_{11} \cdot \det A_{22}$.
 \end{lemma}
 
 \begin{proof}
@@ -28,14 +28,14 @@
 
     Let $T_{\ell}$ and $T_{r}$ denote the submatrices in the intersection of $T$ with $B_{\ell}$ and $B_{r}$, respectively. Then $T$ has the form
     \[
-        T = \begin{NiceArray}{cc}[hvlines] T_{\ell} & 0 \\ 0 & T_{r} \\ \end{NiceArray}.
+        T = \begin{bmatrix} T_{\ell} & 0 \\ 0 & T_{r} \end{bmatrix}.
     \]
 
     First, suppose that $T_{\ell}$ and $T_{r}$ are square. Then $\det T = \det T_{\ell} \cdot \det T_{r}$ by Lemma~\ref{lem:det_lower_left_zero}. Moreover, $\det T_{\ell}, \det T_{r} \in \{0, \pm 1\}$, since $T_{\ell}$ and $T_{r}$ are square submatrices of TU matrices $B_{\ell}$ and $B_{r}$, respectively. Thus, $\det T \in \{0, \pm 1\}$, as desired.
 
     Without loss of generality we may assume that $T_{\ell}$ has fewer rows than columns. Otherwise we can transpose all matrices and use the same proof, since TUness and determinants are preserved under transposition. Thus, $T$ can be represented in the form
     \[
-        T = \begin{NiceArray}{cc}[hvlines] T_{11} & T_{12} \\ 0 & T_{22} \\ \end{NiceArray},
+        T = \begin{bmatrix} T_{11} & T_{12} \\ 0 & T_{22} \end{bmatrix},
     \]
     where $T_{11}$ contains $T_{\ell}$ and some zero rows, $T_{22}$ is a submatrix of $T_{r}$, and $T_{12}$ contains the rest of the rows of $T_{r}$ (not contained in $T_{22}$) and some zero rows. By Lemma~\ref{lem:det_lower_left_zero}, we have $\det T = \det T_{11} \cdot \det T_{22}$. Since $T_{11}$ contains at least one zero row, $\det T_{11} = 0$. Thus, $\det T = 0 \in \{0, \pm 1\}$, as desired.
 \end{proof}

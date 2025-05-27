@@ -1,16 +1,13 @@
-% In this file you should put macros to be used only by
-% the printed version. Of course they should have a corresponding
-% version in macros/web.tex.
-% Typically the printed version could have more fancy decorations.
-% This should be a very short file.
-%
-% This file starts with dummy macros that ensure the pdf
-% compiler will ignore macros provided by plasTeX that make
-% sense only for the web version, such as dependency graph
-% macros.
+% Preamble used only in the printed version.
 
+% Packages
+\usepackage{expl3}  % LaTeX3 programming (for handling invisible refs from leanblueprint-related macros)
+\usepackage[margin=2.5cm]{geometry}  % Page margins
+\usepackage{nicematrix} % Typesetting of complicated matrices
+\usepackage{todonotes}  % Todos
 
-% Dummy macros that make sense only for web version.
+% Dummy macros that ensure the pdf compiler will ignore macros provided by plasTeX that make
+% sense only for the web version, such as dependency graph macros.
 \newcommand{\lean}[1]{}
 \newcommand{\discussion}[1]{}
 \newcommand{\leanok}{}
@@ -27,6 +24,3 @@
  {\clist_map_inline:nn{#1}{\vphantom{\ref{##1}}}%
   \ignorespaces}
 \ExplSyntaxOff
-
-% todos
-\usepackage{todonotes}
