@@ -12,5 +12,9 @@ name = "linters"
 git = "https://github.com/madvorak/leanters"
 rev = "main"
 
+[[require]]
+name = "checkdecls"
+git = "https://github.com/PatrickMassot/checkdecls.git"
+
 [[lean_lib]]
 name = "Seymour"
