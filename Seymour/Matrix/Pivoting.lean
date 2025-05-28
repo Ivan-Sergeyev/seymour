@@ -44,7 +44,7 @@ private lemma Matrix.mulCol_linearIndepOn [DecidableEq Y] [Field F] (A : Matrix 
       conv => enter [1, 2, x]; rw [←mul_assoc, mul_comm (f x), mul_assoc]
       conv => enter [2, 2, x]; rw [←mul_assoc, mul_comm (g x), mul_assoc]
       rw [←Finset.mul_sum, ←Finset.mul_sum]
-      exact congrArg (HMul.hMul q) hfgl
+      exact congr_arg (q * ·) hfgl
     · exact hfgl
   · split_ifs at hfgl with hx'
     · subst hx'

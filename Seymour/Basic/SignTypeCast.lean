@@ -1,4 +1,4 @@
-import Seymour.Basic.Basic
+import Seymour.Basic.Fin
 
 
 lemma zero_iff_ratCast_zero_of_in_signTypeCastRange {a : ℚ} (ha : a ∈ SignType.cast.range) :
@@ -109,3 +109,9 @@ lemma neg_one_pow_in_signTypeCastRange [Ring R] (k : ℕ) :
 lemma neg_one_pow_mul_in_signTypeCastRange [Ring R] {a : R} (ha : a ∈ SignType.cast.range) (k : ℕ) :
     (-1) ^ k * a ∈ SignType.cast.range :=
   in_signTypeCastRange_mul_in_signTypeCastRange (neg_one_pow_in_signTypeCastRange k) ha
+
+@[simp]
+lemma cast_fromZ2_toRat_ite_eq_abs_of_in_signTypeCastRange {a : ℚ} (ha : a ∈ SignType.cast.range) :
+    (ZMod.cast (if a = 0 then (0 : Z2) else (1 : Z2)) : ℚ) = |a| := by
+  obtain ⟨s, hs⟩ := ha
+  cases s <;> simp [←hs]

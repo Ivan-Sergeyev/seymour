@@ -17,7 +17,7 @@ The goal of this project is to formally verify Seymour's decomposition theorem f
 
 ## Used tools and projects
 
+- Imports [Mathlib](https://github.com/leanprover-community/mathlib4) library
 - Uses [LeanProject](https://github.com/pitmonticone/LeanProject) template
 - Uses [Leanblueprint](https://github.com/PatrickMassot/leanblueprint) tool
-- Used [doc-gen4](https://github.com/leanprover/doc-gen4) tool
-- Imports [Mathlib](https://github.com/leanprover-community/mathlib4) library
+- Uses [doc-gen4](https://github.com/leanprover/doc-gen4) library

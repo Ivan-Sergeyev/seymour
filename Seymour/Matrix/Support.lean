@@ -34,3 +34,12 @@ lemma Matrix.IsTotallyUnimodular.abs_cast_eq_support {A : Matrix X Y ℚ} (hA : 
   obtain ⟨s, hs⟩ := hA.apply i j
   rw [Matrix.support, Matrix.of_apply, ←hs]
   cases s <;> simp
+
+lemma Matrix.IsTotallyUnimodular.apply_abs_eq_one {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular)
+    {i : X} {j : Y} (hAij : A.support i j = 1) :
+    |A i j| = 1 := by
+  obtain ⟨s, hs⟩ := hA.apply i j
+  cases s with
+  | zero => simp [←hs] at hAij
+  | pos => simp [←hs]
+  | neg => simp [←hs]

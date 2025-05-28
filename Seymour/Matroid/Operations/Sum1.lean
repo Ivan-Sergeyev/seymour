@@ -25,7 +25,7 @@ def standardRepr1sumComposition {Sₗ Sᵣ : StandardRepr α Z2} (hXY : Sₗ.X �
     Sₗ.X ⫗ Sᵣ.X ∧ Sₗ.Y ⫗ Sᵣ.Y
   ⟩
 
-/-- Matroid `M` is a result of 1-summing `Mₗ` and `Mᵣ` in some way. -/
+/-- Matroid `M` is a result of 1-summing `Mₗ` and `Mᵣ` in some way. Not a `Prop` but treat it as a predicate. -/
 structure Matroid.Is1sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) where
   S : StandardRepr α Z2
   Sₗ : StandardRepr α Z2

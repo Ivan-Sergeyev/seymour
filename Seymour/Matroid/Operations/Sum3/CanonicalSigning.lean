@@ -44,7 +44,6 @@ def Matrix.IsTuCanonicalSigning₁ {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x�
   | _ => throw ()
 
 /-- Converts a matrix to the form of canonical TU signing, does not check assumptions. -/
-@[simp]
 /-private-/ def Matrix.toCanonicalSigning {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x₂ : X) (y₀ y₁ y₂ : Y) :
     Matrix X Y ℚ :=
   let u : X → ℚ := (fun i : X =>
@@ -63,6 +62,13 @@ def Matrix.IsTuCanonicalSigning₁ {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x�
 /-private-/ def Matrix.toCanonicalSigning_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $Q) => `($(Q).$(Lean.mkIdent `toCanonicalSigning))
   | _ => throw ()
+
+set_option maxHeartbeats 333333 in
+@[simp]
+lemma Matrix.toCanonicalSigning_apply_abs {X Y : Set α} (Q : Matrix X Y ℚ) {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y}
+    (_ : |Q x₀ y₀| = 1) (_ : |Q x₀ y₂| = 1) (_ : |Q x₂ y₀| = 1) (_ : |Q x₁ y₂| = 1) (_ : |Q x₂ y₁| = 1) (i : X) (j : Y) :
+    |(Q.toCanonicalSigning x₀ x₁ x₂ y₀ y₁ y₂) i j| = |Q i j| := by
+  aesop (add simp [abs_mul, Matrix.toCanonicalSigning])
 
 /-- Canonical signing of a TU matrix is TU. -/
 /-private-/ lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Set α} {Q : Matrix X Y ℚ}
@@ -117,15 +123,15 @@ def Matrix.IsTuCanonicalSigning₁ {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x�
     (Q.toCanonicalSigning x₀ x₁ x₂ y₀ y₁ y₂).submatrix3x3 x₀ x₁ x₂ y₀ y₁ y₂ = matrix3x3signed₀ := by
   obtain ⟨hQtu, ⟨hx₂, hx₁, hx₀⟩, ⟨hy₂, hy₁, hy₀⟩, hQxy⟩ := hQ
   simp only [Matrix.submatrix3x3, matrix3x3unsigned₀] at hQxy
-  have hQ₀₀ := congr_fun (congr_fun hQxy 0) 0
-  have hQ₀₁ := congr_fun (congr_fun hQxy 0) 1
-  have hQ₀₂ := congr_fun (congr_fun hQxy 0) 2
-  have hQ₁₀ := congr_fun (congr_fun hQxy 1) 0
-  have hQ₁₁ := congr_fun (congr_fun hQxy 1) 1
-  have hQ₁₂ := congr_fun (congr_fun hQxy 1) 2
-  have hQ₂₀ := congr_fun (congr_fun hQxy 2) 0
-  have hQ₂₁ := congr_fun (congr_fun hQxy 2) 1
-  have hQ₂₂ := congr_fun (congr_fun hQxy 2) 2
+  have hQ₀₀ := congr_fun₂ hQxy 0 0
+  have hQ₀₁ := congr_fun₂ hQxy 0 1
+  have hQ₀₂ := congr_fun₂ hQxy 0 2
+  have hQ₁₀ := congr_fun₂ hQxy 1 0
+  have hQ₁₁ := congr_fun₂ hQxy 1 1
+  have hQ₁₂ := congr_fun₂ hQxy 1 2
+  have hQ₂₀ := congr_fun₂ hQxy 2 0
+  have hQ₂₁ := congr_fun₂ hQxy 2 1
+  have hQ₂₂ := congr_fun₂ hQxy 2 2
   simp [Matrix.abs, abs_eq] at hQ₀₀ hQ₀₁ hQ₀₂ hQ₁₀ hQ₁₁ hQ₁₂ hQ₂₀ hQ₂₁ hQ₂₂
   have hQ3x3tu := (hQtu.toCanonicalSigning x₀ x₁ x₂ y₀ y₁ y₂).submatrix3x3 x₀ x₁ x₂ y₀ y₁ y₂
   simp [Matrix.submatrix3x3, Matrix.toCanonicalSigning, matrix3x3signed₀,
@@ -142,15 +148,15 @@ def Matrix.IsTuCanonicalSigning₁ {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x�
     (Q.toCanonicalSigning x₀ x₁ x₂ y₀ y₁ y₂).submatrix3x3 x₀ x₁ x₂ y₀ y₁ y₂ = matrix3x3signed₁ := by
   obtain ⟨hQtu, ⟨hx₂, hx₁, hx₀⟩, ⟨hy₂, hy₁, hy₀⟩, hQxy⟩ := hQ
   simp only [Matrix.submatrix3x3, matrix3x3unsigned₁] at hQxy
-  have hQ₀₀ := congr_fun (congr_fun hQxy 0) 0
-  have hQ₀₁ := congr_fun (congr_fun hQxy 0) 1
-  have hQ₀₂ := congr_fun (congr_fun hQxy 0) 2
-  have hQ₁₀ := congr_fun (congr_fun hQxy 1) 0
-  have hQ₁₁ := congr_fun (congr_fun hQxy 1) 1
-  have hQ₁₂ := congr_fun (congr_fun hQxy 1) 2
-  have hQ₂₀ := congr_fun (congr_fun hQxy 2) 0
-  have hQ₂₁ := congr_fun (congr_fun hQxy 2) 1
-  have hQ₂₂ := congr_fun (congr_fun hQxy 2) 2
+  have hQ₀₀ := congr_fun₂ hQxy 0 0
+  have hQ₀₁ := congr_fun₂ hQxy 0 1
+  have hQ₀₂ := congr_fun₂ hQxy 0 2
+  have hQ₁₀ := congr_fun₂ hQxy 1 0
+  have hQ₁₁ := congr_fun₂ hQxy 1 1
+  have hQ₁₂ := congr_fun₂ hQxy 1 2
+  have hQ₂₀ := congr_fun₂ hQxy 2 0
+  have hQ₂₁ := congr_fun₂ hQxy 2 1
+  have hQ₂₂ := congr_fun₂ hQxy 2 2
   simp [Matrix.abs, abs_eq] at hQ₀₀ hQ₀₁ hQ₀₂ hQ₁₀ hQ₁₁ hQ₁₂ hQ₂₀ hQ₂₁ hQ₂₂
   have hQ3x3tu := (hQtu.toCanonicalSigning x₀ x₁ x₂ y₀ y₁ y₂).submatrix3x3 x₀ x₁ x₂ y₀ y₁ y₂
   simp [Matrix.submatrix3x3, Matrix.toCanonicalSigning, matrix3x3signed₁, matrix3x3unsigned₁,
@@ -218,7 +224,7 @@ def Matrix.IsTuCanonicalSigning₁ {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x�
   | _ => throw ()
 
 -- lemma 15.a
-set_option maxHeartbeats 300000 in
+set_option maxHeartbeats 333333 in
 /-private-/ lemma Matrix.IsTotallyUnimodular.signing_expansion₀ {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
     {x₂ : X} {y₀ y₁ : Y} (hyy : y₀ ≠ y₁) (hQy₀ : Q x₂ y₀ = 1) (hQy₁ : Q x₂ y₁ = 1)
     (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q x₂ y = 0) :
@@ -262,7 +268,7 @@ set_option maxHeartbeats 300000 in
   ext _ ((_|_)|_) <;> simp [q]
 
 -- lemma 15.b
-set_option maxHeartbeats 300000 in
+set_option maxHeartbeats 333333 in
 /-private-/ lemma Matrix.IsTotallyUnimodular.signing_expansion₁ {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
     {x₂ : X} {y₀ y₁ : Y} (hyy : y₀ ≠ y₁) (hQy₀ : Q x₂ y₀ = 1) (hQy₁ : Q x₂ y₁ = 1)
     (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q x₂ y = 0) :
@@ -392,17 +398,10 @@ omit [DecidableEq α] in
   -- the actual definition
   matrix3sumComposition x₀ₗ x₁ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ₗ y₁ₗ y₂ₗ y₀ᵣ y₁ᵣ Aₗ Dₗ D₀ Dᵣ Aᵣ
 
-@[simp]
-lemma cast_1_from_Z2_to_Rat : ZMod.cast (1 : Z2) = (1 : ℚ) := by
-  decide
-
-@[simp]
-lemma cast_Z2_nonneg (a : Z2) : (0 : ℚ) ≤ ZMod.cast a := by
-  fin_cases a <;> decide
-
 /-private-/ lemma matrix3sumCanonicalSigning_isSigningOf_matrix3sumComposition {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    (Bₗ : Matrix Xₗ Yₗ ℚ) (Bᵣ : Matrix Xᵣ Yᵣ ℚ) (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}) :
+    {Bₗ : Matrix Xₗ Yₗ ℚ} {Bᵣ : Matrix Xᵣ Yᵣ ℚ} (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂})
+    (hBₗ : ∀ i : Xₗ, ∀ j : Yₗ, Bₗ i j ∈ SignType.cast.range) (hBᵣ : ∀ i : Xᵣ, ∀ j : Yᵣ, Bᵣ i j ∈ SignType.cast.range) :
     -- row membership
     let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
     let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
@@ -423,10 +422,27 @@ lemma cast_Z2_nonneg (a : Z2) : (0 : ℚ) ≤ ZMod.cast a := by
     let D₀ := Bₗ.support.D₀ x₀ₗ x₁ₗ y₀ₗ y₁ₗ
     let Dᵣ := Bᵣ.support.Dᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ
     let Aᵣ := Bᵣ.support.Aᵣ x₂ᵣ y₀ᵣ y₁ᵣ
-    -- TODO propagate the necessary assumptions from `standardRepr3sumComposition.snd`
-    (matrix3sumCanonicalSigning Bₗ Bᵣ hXX hYY).IsSigningOf
-      (matrix3sumComposition x₀ₗ x₁ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ₗ y₁ₗ y₂ₗ y₀ᵣ y₁ᵣ Aₗ Dₗ D₀ Dᵣ Aᵣ) := by
-  sorry
+    -- the necessary parts of "validity" of the 3-sum
+    |Bₗ x₀ₗ y₀ₗ| = 1 →
+    |Bₗ x₀ₗ y₂ₗ| = 1 →
+    |Bₗ x₂ₗ y₀ₗ| = 1 →
+    |Bₗ x₁ₗ y₂ₗ| = 1 →
+    |Bₗ x₂ₗ y₁ₗ| = 1 →
+    |Bᵣ x₀ᵣ y₀ᵣ| = 1 →
+    |Bᵣ x₀ᵣ y₂ᵣ| = 1 →
+    |Bᵣ x₂ᵣ y₀ᵣ| = 1 →
+    |Bᵣ x₁ᵣ y₂ᵣ| = 1 →
+    |Bᵣ x₂ᵣ y₁ᵣ| = 1 →
+    -- the actual statement
+    (matrix3sumCanonicalSigning Bₗ Bᵣ hXX hYY).IsSigningOf (
+      matrix3sumComposition x₀ₗ x₁ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ₗ y₁ₗ y₂ₗ y₀ᵣ y₁ᵣ Aₗ Dₗ D₀ Dᵣ Aᵣ
+    ) := by
+  intro x₀ₗ x₀ᵣ x₁ₗ x₁ᵣ x₂ₗ x₂ᵣ y₀ₗ y₀ᵣ y₁ₗ y₁ᵣ y₂ₗ y₂ᵣ Aₗ Dₗ D₀ Dᵣ Aᵣ hBₗ₀₀ hBₗ₀₂ hBₗ₂₀ hBₗ₁₂ hBₗ₂₁ hBᵣ₀₀ hBᵣ₀₂ hBᵣ₂₀ hBᵣ₁₂ hBᵣ₂₁
+  rintro (iₗ | iᵣ) (jₗ | jᵣ)
+  · simp [hBₗ, hBₗ₀₀, hBₗ₀₂, hBₗ₂₀, hBₗ₁₂, hBₗ₂₁, Aₗ, x₀ₗ, x₁ₗ, x₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ, matrix3sumComposition]
+  · rfl
+  · sorry
+  · simp [hBᵣ, hBᵣ₀₀, hBᵣ₀₂, hBᵣ₂₀, hBᵣ₁₂, hBᵣ₂₁, Aᵣ, x₀ᵣ, x₁ᵣ, x₂ᵣ, y₀ᵣ, y₁ᵣ, y₂ᵣ, matrix3sumComposition]
 
 -- lemma 19.1
 /-private-/ lemma matrix3sumCanonicalSigning_D_eq {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}

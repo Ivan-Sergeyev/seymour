@@ -285,9 +285,8 @@ private lemma VectorMatroid.toMatroid_isRegular_if_hasTuSigning (V : VectorMatro
     have h1 := Z2_eq_1_of_ne_0 h0
     simp_all
     intro hS0
-    rw [hS0, abs_zero, ZMod.cast] at hSV
-    simp only [ZMod.val_one_eq_one_mod] at hSV
-    norm_num at hSV
+    rw [hS0, abs_zero] at hSV
+    exact Rat.zero_ne_one hSV
 
 
 -- ## Main results of this file

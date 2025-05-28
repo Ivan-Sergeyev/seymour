@@ -59,7 +59,20 @@ lemma standardRepr3sumComposition_Y {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ 
     (standardRepr3sumComposition hXX hYY hXY hYX).fst.Y = (Sₗ.Y \ {y₂}) ∪ (Sᵣ.Y \ {y₀, y₁}) :=
   rfl
 
-/-- Decomposition of (binary) matroid `M` as a 3-sum of (binary) matroids `Mₗ` and `Mᵣ`. -/
+lemma standardRepr3sumComposition_Bₗ₀₀ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+    (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X)
+    (hSS : (standardRepr3sumComposition hXX hYY hXY hYX).snd) :
+    Sₗ.B ⟨x₀, hXX.mem3₀ₗ⟩ ⟨y₀, hYY.mem3₀ₗ⟩ = 1 :=
+  hSS.right.right.left.casesOn (congr_fun₂ · 0 0) (congr_fun₂ · 0 0)
+
+lemma standardRepr3sumComposition_Bᵣ₀₀ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+    (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X)
+    (hSS : (standardRepr3sumComposition hXX hYY hXY hYX).snd) :
+    Sᵣ.B ⟨x₀, hXX.mem3₀ᵣ⟩ ⟨y₀, hYY.mem3₀ᵣ⟩ = 1 := by
+  rw [←standardRepr3sumComposition_Bₗ₀₀ hXX hYY hXY hYX hSS]
+  exact congr_fun₂ hSS.right.left.symm 0 0
+
+/-- Binary matroid `M` is a result of 3-summing `Mₗ` and `Mᵣ` in some way. Not a `Prop` but treat it as a predicate. -/
 structure Matroid.Is3sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) where
   S : StandardRepr α Z2
   Sₗ : StandardRepr α Z2
@@ -82,6 +95,9 @@ instance Matroid.Is3sumOf.finS {M Mₗ Mᵣ : Matroid α} (hM : M.Is3sumOf Mₗ 
   rw [standardRepr3sumComposition_X]
   apply Finite.Set.finite_union
 
+/-- Special function application that binds tighter than anything else. -/
+local notation:max f:max"⁀"a:max => f a
+
 lemma matrix3sumComposition_hasTuSigning {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ : Matrix Xₗ Yₗ Z2} {Bᵣ : Matrix Xᵣ Yᵣ Z2}
@@ -96,23 +112,52 @@ lemma matrix3sumComposition_hasTuSigning {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x�
     let D₀ := Bₗ.D₀ x₀ₗ x₁ₗ y₀ₗ y₁ₗ
     let Dᵣ := Bᵣ.Dᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ
     let Aᵣ := Bᵣ.Aᵣ x₂ᵣ y₀ᵣ y₁ᵣ
-    -- TODO propagate the necessary assumptions from `standardRepr3sumComposition.snd`
+    -- the necessary parts of "validity" of the 3-sum
+    Bₗ x₀ₗ y₀ₗ = 1 →
+    Bₗ x₀ₗ y₂ₗ = 1 →
+    Bₗ x₂ₗ y₀ₗ = 1 →
+    Bₗ x₁ₗ y₂ₗ = 1 →
+    Bₗ x₂ₗ y₁ₗ = 1 →
+    Bᵣ x₀ᵣ y₀ᵣ = 1 →
+    Bᵣ x₀ᵣ y₂ᵣ = 1 →
+    Bᵣ x₂ᵣ y₀ᵣ = 1 →
+    Bᵣ x₁ᵣ y₂ᵣ = 1 →
+    Bᵣ x₂ᵣ y₁ᵣ = 1 →
+    -- the actual statement
     (matrix3sumComposition x₀ₗ x₁ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ₗ y₁ₗ y₂ₗ y₀ᵣ y₁ᵣ Aₗ Dₗ D₀ Dᵣ Aᵣ).HasTuSigning := by
   obtain ⟨Aₗ, hABₗ⟩ := hBₗ
   obtain ⟨Aᵣ, hABᵣ⟩ := hBᵣ
   rw [Matrix.isTuSigningOf_iff] at hABₗ hABᵣ
-  obtain ⟨hAₗ, hBAₗ⟩ := hABₗ
-  obtain ⟨hAᵣ, hBAᵣ⟩ := hABᵣ
-  symm at hBAₗ hBAᵣ
-  use matrix3sumCanonicalSigning Aₗ Aᵣ hXX hYY, matrix3sumCanonicalSigning_isTotallyUnimodular Aₗ Aᵣ hXX hYY
-  convert matrix3sumCanonicalSigning_isSigningOf_matrix3sumComposition Aₗ Aᵣ hXX hYY
+  obtain ⟨hAₗ, rfl⟩ := hABₗ
+  obtain ⟨hAᵣ, rfl⟩ := hABᵣ
+  exact (⟨
+    matrix3sumCanonicalSigning Aₗ Aᵣ hXX hYY,
+    matrix3sumCanonicalSigning_isTotallyUnimodular hXX hYY hAₗ hAᵣ,
+    matrix3sumCanonicalSigning_isSigningOf_matrix3sumComposition hXX hYY hAₗ.apply hAᵣ.apply
+      hAₗ.apply_abs_eq_one⁀·
+      hAₗ.apply_abs_eq_one⁀·
+      hAₗ.apply_abs_eq_one⁀·
+      hAₗ.apply_abs_eq_one⁀·
+      hAₗ.apply_abs_eq_one⁀·
+      hAᵣ.apply_abs_eq_one⁀·
+      hAᵣ.apply_abs_eq_one⁀·
+      hAᵣ.apply_abs_eq_one⁀·
+      hAᵣ.apply_abs_eq_one⁀·
+      hAᵣ.apply_abs_eq_one⁀·
+  ⟩)
+
+-- Perhaps a weaker tactic than `tauto` would suffice; enough to destruct `let`s and `and`s.
+local macro "valid3sum" : tactic => `(tactic| unfold standardRepr3sumComposition at * <;> tauto)
 
 lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X)
     (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) (hSS : (standardRepr3sumComposition hXX hYY hXY hYX).snd) :
     (standardRepr3sumComposition hXX hYY hXY hYX).fst.B.HasTuSigning := by
-  -- TODO extract assumptions from `hSS` and plug them below
-  obtain ⟨B, hB, hBBB⟩ := matrix3sumComposition_hasTuSigning hXX hYY hXY hYX hSₗ hSᵣ --hSS
+  obtain ⟨B, hB, hBBB⟩ :=
+    matrix3sumComposition_hasTuSigning
+      hXX hYY hXY hYX hSₗ hSᵣ
+      (standardRepr3sumComposition_Bₗ₀₀ hXX hYY hXY hYX hSS) (by valid3sum) (by valid3sum) (by valid3sum) (by valid3sum)
+      (standardRepr3sumComposition_Bᵣ₀₀ hXX hYY hXY hYX hSS) (by valid3sum) (by valid3sum) (by valid3sum) (by valid3sum)
   refine ⟨B.toMatrixUnionUnion, hB.toMatrixUnionUnion, fun i j => ?_⟩
   cases hi : i.toSum with
   | inl iₗ =>

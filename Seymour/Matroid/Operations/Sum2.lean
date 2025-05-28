@@ -86,7 +86,7 @@ def standardRepr2sumComposition {α : Type} [DecidableEq α] {a : α} {Sₗ Sᵣ
     (Sₗ.X ⫗ Sᵣ.X ∧ Sₗ.Y ⫗ Sᵣ.Y) ∧ (Sₗ.B.interRow ha ≠ 0 ∧ Sᵣ.B.interCol ha ≠ 0)
   ⟩
 
-/-- Binary matroid `M` is a result of 2-summing `Mₗ` and `Mᵣ` in some way. -/
+/-- Binary matroid `M` is a result of 2-summing `Mₗ` and `Mᵣ` in some way. Not a `Prop` but treat it as a predicate. -/
 structure Matroid.Is2sumOf {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) where
   S : StandardRepr α Z2
   Sₗ : StandardRepr α Z2
@@ -162,7 +162,7 @@ private lemma Matrix.IsTotallyUnimodular.fromRows_pivot {α : Type} [DecidableEq
   have hArxy : (A ⊟ ▬r) ◩x y ≠ 0 := hAxy
   convert hAr.shortTableauPivot hArxy
   exact Matrix.ext (fun i : X ⊕ Unit => fun j : Y => (i.casesOn (fun iₗ : X =>
-      congr_fun (congr_fun (((A ⊟ ▬r).submatrix_shortTableauPivot Sum.inl_injective Function.injective_id x y)) iₗ) j)
+      congr_fun₂ ((A ⊟ ▬r).submatrix_shortTableauPivot Sum.inl_injective Function.injective_id x y) iₗ j)
     ↓(A.shortTableauPivot_adjoinRow_eq r x y j)))
 
 private lemma Matrix.shortTableauPivot_abs_det_eq_submatrix_abs_det {F : Type} [LinearOrderedField F] {k : ℕ}

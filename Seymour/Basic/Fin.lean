@@ -61,3 +61,7 @@ lemma Z2_ext_iff (a b : Z2) : a = b ↔ a.val = b.val := by
 lemma Z2val_toRat_mul_Z2val_toRat (a b : Z2) : (a.val : ℚ) * (b.val : ℚ) = ((a*b).val : ℚ) := by
   fin_cases a <;> fin_cases b <;> simp
   apply one_mul
+
+@[simp]
+lemma cast_1_fromZ2_toRat : ZMod.cast (1 : Z2) = (1 : ℚ) := by
+  decide
