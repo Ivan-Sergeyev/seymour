@@ -2,27 +2,49 @@
 
 \section{Total Unimodularity}
 
-\begin{definition}\label{def:tu}
+\begin{definition}
+    \label{def:tu}
+    % \uses{}
+    % \lean{Matrix.IsTotallyUnimodular}
+    \leanok
     We say that a matrix $A \in \mathbb{Q}^{X \times Y}$ is totally unimodular, or TU for short, if for every $k \in \mathbb{Z}_{\geq 1}$, every $k \times k$ submatrix $T$ of $A$ has $\det T \in \{0, \pm 1\}$.
 \end{definition}
 
-\begin{lemma}\label{lem:tu_mul_row_col_pnz}
+\begin{lemma}
+    \label{lem:tu_mul_row_col_pnz}
+    \uses{def:tu}
+    % \lean{Matrix.IsTotallyUnimodular.mul_rows}
+    \leanok
     Let $A$ be a TU matrix. Suppose some rows and columns of $A$ are multiplied by $\{0, \pm 1\}$ factors. Then the resulting matrix $A'$ is also TU.
 \end{lemma}
 
 \begin{proof}
+    \uses{def:tu}
+    % \lean{}
+    \leanok
     We prove that $A'$ is TU by Definition~\ref{def:tu}. To this end, let $T'$ be a square submatrix of $A'$. Our goal is to show that $\det T' \in \{0, \pm 1\}$. Let $T$ be the submatrix of $A$ that represents $T'$ before pivoting. If some of the rows or columns of $T$ were multiplied by zeros, then $T'$ contains zero rows or columns, and hence $\det T' = 0$. Otherwise, $T'$ was obtained from $T$ by multiplying certain rows and columns by $-1$. Since $T'$ has finitely many rows and columns, the number of such multiplications is also finite. Since multiplying either a row or a column by $-1$ results in the determinant getting multiplied by $-1$, we get $\det T' = \pm \det T \in \{0, \pm 1\}$, as desired.
 \end{proof}
 
-\begin{definition}\label{def:pu}
+\begin{definition}
+    \label{def:pu}
+    % \uses{}
+    % \lean{Matrix.isPartiallyUnimodular}
+    \leanok
     Given $k \in \mathbb{Z}_{\geq 1}$, we say that a matrix $A$ is $k$-partially unimodular, or $k$-PU for short, if every $k \times k$ submatrix $T$ of $A$ has $\det T \in \{0, \pm 1\}$.
 \end{definition}
 
-\begin{lemma}\label{lem:tu_iff_all_pu}
+\begin{lemma}
+    \label{lem:tu_iff_all_pu}
+    \uses{def:tu,def:pu}
+    % \lean{Matrix.isTotallyUnimodular_iff_forall_isPartiallyUnimodular}
+    \leanok
     A matrix $A$ is TU if and only if $A$ is $k$-PU for every $k \in \mathbb{Z}_{\geq 1}$.
 \end{lemma}
 
 \begin{proof}
+    \uses{def:tu,def:pu}
+    % \lean
+    \leanok
     This follows from Definitions~\ref{def:tu} and~\ref{def:pu}.
 \end{proof}
 
@@ -31,7 +53,11 @@
 
 % Long Tableau Pivot
 
-\begin{definition}\label{def:ltp}
+\begin{definition}
+    \label{def:ltp}
+    % \uses{}
+    % \lean{Matrix.longTableauPivot}
+    \leanok
     Let $A \in R^{X \times Y}$ be a matrix and let $(x, y) \in X \times Y$ be such that $A (x, y) \neq 0$. A long tableau pivot in $A$ on $(x, y)$ is the operation that maps $A$ to the matrix $A'$ where
     \[
         \forall i \in X, \ \forall j \in Y, \ A' (i, j) = \begin{cases}
@@ -41,30 +67,28 @@
     \]
 \end{definition}
 
-\begin{lemma}\label{lem:ltp_eq}
-    Let $A \in R^{X \times Y}$ be a matrix and let $(x, y) \in X \times Y$ be such that $A (x, y) \neq 0$. Let $A'$ be the result of performing a long tableau pivot in $A$ on $(x, y)$. Then $A'$ can be equivalently obtained from $A$ as follows:
-    \begin{enumerate}
-        \item For every row $i \in X \setminus \{x\}$, add row $x$ multiplied by $A (i, y) / A (x, y)$ to row $i$.
-        \item Multiply row $x$ by $1 / A (x, y)$.
-    \end{enumerate}
-\end{lemma}
-
-\begin{proof}
-    \SeeLean
-\end{proof}
-
-\begin{lemma}\label{lem:ltp_tu}
+\begin{lemma}
+    \label{lem:ltp_tu}
+    \uses{def:tu,def:ltp}
+    % \lean{Matrix.IsTotallyUnimodular.longTableauPivot}
+    \leanok
     Let $A \in \mathbb{Q}^{X \times Y}$ be a TU matrix and let $(x, y) \in X \times Y$ be such that $A (x, y) \neq 0$. Then performing the long tableau pivot in $A$ on $(x, y)$ yields a TU matrix $A'$.
 \end{lemma}
 
 \begin{proof}
+    % \uses{}
+    \leanok
     \SeeLean
 \end{proof}
 
 
 % Short Tableau Pivot
 
-\begin{definition}\label{def:stp}
+\begin{definition}
+    \label{def:stp}
+    \uses{def:ltp}
+    % \lean{Matrix.shortTableauPivot}
+    \leanok
     Let $A \in R^{X \times Y}$ be a matrix and let $(x, y) \in X \times Y$ be such that $A (x, y) \neq 0$. Perform the following sequence of operations.
     \begin{enumerate}
         \item Adjoin the identity matrix $1 \in R^{X \times X}$ to $A$, resulting in the matrix $B = \begin{bmatrix} 1 & A \end{bmatrix} \in R^{X \times (X \oplus Y)}$.
@@ -75,7 +99,11 @@
     A short tableau pivot in $A$ on $(x, y)$ is the operation that maps $A$ to the matrix $A'$ defined above.
 \end{definition}
 
-\begin{lemma}\label{lem:stp_eq}
+\begin{lemma}
+    \label{lem:stp_eq}
+    \uses{def:stp}
+    % \lean{Matrix.shortTableauPivot_eq}
+    \leanok
     Let $A \in R^{X \times Y}$ be a matrix and let $(x, y) \in X \times Y$ be such that $A (x, y) \neq 0$. Then the short tableau pivot in $A$ on $(x, y)$ maps $A$ to $A'$ with
     \[
         \forall i \in X, \ \forall j \in Y, \ A' (i, j) = \begin{cases}
@@ -88,22 +116,36 @@
 \end{lemma}
 
 \begin{proof}
+    % \uses{}
+    \leanok
     Follows by direct calculation.
 \end{proof}
 
-\begin{lemma}\label{lem:stp_block_zero}
+\begin{lemma}
+    \label{lem:stp_block_zero}
+    \uses{def:stp}
+    % \lean{}
+    \leanok
     Let $B = \begin{bmatrix} B_{11} & 0 \\ B_{21} & B_{22} \end{bmatrix} \in \mathbb{Q}^{\{X_{1} \cup X_{2}\} \times \{Y_{1} \times Y_{2}\}}$. Let $B' = \begin{bmatrix} B_{11}' & B_{12}' \\ B_{21}' & B_{22}' \end{bmatrix}$ be the result of performing a short tableau pivot on $(x, y) \in X_{1} \times Y_{1}$ in $B$. Then $B_{12}' = 0$, $B_{22}' = B_{22}$, and $\begin{bmatrix} B_{11}' \\ B_{21}' \end{bmatrix}$ is the matrix resulting from performing a short tableau pivot on $(x, y)$ in $\begin{bmatrix} B_{11} \\ B_{21} \end{bmatrix}$.
 \end{lemma}
 
 \begin{proof}
+    % \uses{}
+    \leanok
     This follows by a direct calculation. Indeed, because of the $0$ block in $B$, $B_{12}$ and $B_{22}$ remain unchanged, and since $\begin{bmatrix} B_{11} \\ B_{21} \end{bmatrix}$ is a submatrix of $B$ containing the pivot element, performing a short tableau pivot in it is equivalent to performing a short tableau pivot in $B$ and then taking the corresponding submatrix.
 \end{proof}
 
-\begin{lemma}\label{lem:stp_nz_abs_det_eq}
+\begin{lemma}
+    \label{lem:stp_nz_abs_det_eq}
+    \uses{def:stp}
+    % \lean{}
+    \leanok
     Let $k \in \mathbb{Z}_{\geq 1}$, let $A \in \mathbb{Q}^{k \times k}$, and let $A'$ be the result of performing a short tableau pivot in $A$ on $(x, y)$ with $x, y \in \{1, \dots, k\}$ such that $A (x, y) \neq 0$. Then $A'$ contains a submatrix $A''$ of size $(k - 1) \times (k - 1)$ with $|\det A''| = |\det A| / |A (x, y)|$.
 \end{lemma}
 
 \begin{proof}
+    % \uses{}
+    \leanok
     Let $X = \{1, \dots, k\} \setminus \{x\}$ and $Y = \{1, \dots, k\} \setminus \{y\}$, and let $A'' = A' (X, Y)$. Since $A''$ does not contain the pivot row or the pivot column, $\forall (i, j) \in X \times Y$ we have $A'' (i, j) = A (i, j) - \frac{A (i, y) \cdot A (x, j)}{A (x, y)}$. For $\forall j \in Y$, let $B_{j}$ be the matrix obtained from $A$ by removing row $x$ and column $j$, and let $B_{j}''$ be the matrix obtained from $A''$ by replacing column $j$ with $A (X, y)$ (i.e., the pivot column without the pivot element). The cofactor expansion along row $x$ in $A$ yields
     \[
         \det A = \sum_{j = 1}^{k} (-1)^{y + j} \cdot A (x, j) \cdot \det B_{j}.
@@ -119,60 +161,100 @@
     Therefore, $|\det A''| = |\det A| / |A (x, y)|$.
 \end{proof}
 
-\begin{lemma}\label{lem:stp_pn_abs_det_eq}
+\begin{lemma}
+    \label{lem:stp_pn_abs_det_eq}
+    \uses{def:stp}
+    % \lean{}
+    \leanok
     Let $k \in \mathbb{Z}_{\geq 1}$, let $A \in \mathbb{Q}^{k \times k}$, and let $A'$ be the result of performing a short tableau pivot in $A$ on $(x, y)$ with $x, y \in \{1, \dots, k\}$ such that $A (x, y) \in \{\pm 1\}$. Then $A'$ contains a submatrix $A''$ of size $(k - 1) \times (k - 1)$ with $|\det A''| = |\det A|$.
 \end{lemma}
 
 \begin{proof}
+    % \uses{}
+    \leanok
     Apply Lemma~\ref{lem:stp_nz_abs_det_eq} to $A$ and use that $A (x, y) \in \{\pm 1\}$.
 \end{proof}
 
-\begin{lemma}\label{lem:stp_tu}
+\begin{lemma}
+    \label{lem:stp_tu}
+    \uses{def:tu,def:stp}
+    % \lean{Matrix.IsTotallyUnimodular.shortTableauPivot}
+    \leanok
     Let $A \in \mathbb{Q}^{X \times Y}$ be a TU matrix and let $(x, y) \in X \times Y$ be such that $A (x, y) \neq 0$. Then performing the short tableau pivot in $A$ on $(x, y)$ yields a TU matrix $A'$.
 \end{lemma}
 
 \begin{proof}
+    % \uses{}
+    \leanok
     \SeeLean
 \end{proof}
 
 
 \section{Vector Matroids}
 
-\begin{definition}\label{def:vector_matroid_full_repr}
+\begin{definition}
+    \label{def:full_repr}
+    % \uses{}
+    \leanok
     Let $R$ be a semiring, let $X$ and $Y$ be sets, and let $A \in R^{X \times Y}$ be a matrix. The vector matroid of $A$ is the matroid $M = (Y, \mathcal{I})$ where a set $I \subset Y$ is independent in $M$ if and only if the columns of $A$ indexed by $I$ are linearly independent.
 \end{definition}
 
-\begin{definition}\label{def:vector_matroid_std_repr}
+\begin{definition}
+    \label{def:std_repr}
+    \uses{def:full_repr}
+    % \lean{}
+    \leanok
     Let $R$ be a semiring, let $X$ and $Y$ be disjoint sets, and let $S \in R^{X \times Y}$ be a matrix. Let $A = \begin{bmatrix} 1 & S \end{bmatrix} \in R^{X \times (X \cup Y)}$ be the matrix obtained from $S$ by adjoining the identity matrix as columns, and let $M$ be the vector matroid of $A$. Then $S$ is called the standard representation of $M$.
 \end{definition}
 
-\begin{lemma}\label{lem:std_repr_rows_base}
+\begin{lemma}
+    \label{lem:std_repr_rows_base}
+    \uses{def:std_repr}
+    % \lean{}
+    \leanok
     Let $S \in R^{X \times Y}$ be a standard representation of a vector matroid $M$. Then $X$ is a base in $M$.
 \end{lemma}
 
 \begin{proof}
+    % \uses{}
+    \leanok
     \SeeLean
 \end{proof}
 
-\begin{lemma}\label{lem:repr_to_std_repr}
+\begin{lemma}
+    \label{lem:full_repr_to_std_repr}
+    \uses{def:full_repr,def:std_repr}
+    % \lean{}
+    \leanok
     Let $A \in \mathbb{Q}^{X \times Y}$ be a matrix, let $M$ be the vector matroid of $A$, and let $B$ be a base of $M$. Then there exists a standard representation matrix $S \in \mathbb{Q}^{B \times (Y \setminus B)}$ of $M$.
 \end{lemma}
 
 \begin{proof}
+    % \uses{}
+    \leanok
     \SeeLean
 \end{proof}
 
-\begin{lemma}\label{lem:TU_repr_to_TU_std_repr}
+\begin{lemma}
+    \label{lem:TU_repr_to_TU_std_repr}
+    \uses{def:tu,def:full_repr,def:std_repr}
+    % \lean{}
+    \leanok
     Let $A \in \mathbb{Q}^{X \times Y}$ be a TU matrix, let $M$ be the vector matroid of $A$, and let $B$ be a base of $M$. Then there exists a matrix $S \in \mathbb{Q}^{B \times (Y \setminus B)}$ such that $S$ is TU and $S$ is a standard representation of $M$.
 \end{lemma}
 
 \begin{proof}
+    % \uses{}
+    \leanok
     \SeeLean
 \end{proof}
 
 % Representation via support matrices
 
-\begin{definition}\label{def:support_matrix}
+\begin{definition}
+    \label{def:support_matrix}
+    % \uses{}
+    \leanok
     Let $F$ be a field. The support of matrix $A \in F^{X \times Y}$ is $A^{\#} \in \{0, 1\}^{X \times Y}$ given by
     \[
         \forall i \in X, \ \forall j \in Y, \ A^{\#} (i, j) = \begin{cases}
@@ -182,15 +264,24 @@
     \]
 \end{definition}
 
-\begin{definition}\label{def:fund_circuit}
+\begin{definition}
+    \label{def:fund_circuit}
+    % \uses{}
+    \leanok
     Let $M$ be a matroid, let $B$ be a base of $M$, and let $e \in E \setminus B$ be an element. The fundamental circuit $C (e, B)$ of $e$ with respect to $B$ is the unique circuit contained in $B \cup \{e\}$.
 \end{definition}
 
-\begin{lemma}\label{lem:std_repr_fund_circuits}
+\begin{lemma}
+    \label{lem:std_repr_fund_circuits}
+    \uses{def:std_repr,def:fund_circuit}
+    % \lean{}
+    \leanok
     Let $M$ be a matroid and let $S \in F^{X \times Y}$ be a standard representation matrix of $M$ over a field $F$. Then $\forall y \in Y$, the fundamental circuit of $y$ w.r.t. $X$ is $C (y, X) = \{y\} \cup \{x \in X \mid S (x, y) \neq 0\}$.
 \end{lemma}
 
 \begin{proof}
+    \uses{def:fund_circuit}
+    \leanok
     Let $y \in Y$. Our goal is to show that $C' (y, X) = \{y\} \cup \{x \in X \mid D (x, y) \neq 0\}$ is a fundamental circuit of $y$ with respect to $X$.
     \begin{itemize}
         \item $C' (y, X) \subseteq X \cup \{y\}$ by construction.
@@ -203,15 +294,25 @@
     \end{itemize}
 \end{proof}
 
-\begin{lemma}\label{lem:std_repr_support_matrix_cols}
+\begin{lemma}
+    \label{lem:std_repr_support_matrix_cols}
+    \uses{def:std_repr,def:support_matrix}
+    % \lean{}
+    \leanok
     Let $M$ be a matroid and let $S \in F^{X \times Y}$ be a standard representation matrix of $M$ over a field $F$. Then $\forall y \in Y$, column $S^{\#} (\bullet, y)$ is the characteristic vector of $C (y, X) \setminus \{y\}$.
 \end{lemma}
 
 \begin{proof}
+    \uses{lem:std_repr_fund_circuits}
+    \leanok
     Directly follows from Lemma~\ref{lem:std_repr_fund_circuits}.
 \end{proof}
 
-\begin{lemma}\label{lem:repr_TU_iff_repr_TU_support}
+\begin{lemma}
+    \label{lem:repr_TU_iff_repr_TU_support}
+    \uses{def:tu,def:support_matrix,def:std_repr}
+    % \lean{}
+    \leanok
     Let $A$ be a TU matrix.
     \begin{enumerate}
         \item If a matroid is represented by $A$, then it is also represented by $A^{\#}$.
@@ -220,29 +321,45 @@
 \end{lemma}
 
 \begin{proof}
+    % \uses{}
+    \leanok
     \SeeLean
 \end{proof}
 
 
 \section{Regular Matroids}
 
-\begin{definition}\label{def:regular}
+\begin{definition}
+    \label{def:regular}
+    \uses{def:tu,def:full_repr}
+    % \lean{}
+    \leanok
     A matroid $M$ is regular if there exists a TU matrix $A \in \mathbb{Q}^{X \times Y}$ such that $M$ is a vector matroid of $A$.
 \end{definition}
 
-\begin{definition}\label{def:tu_signing}
+\begin{definition}
+    \label{def:tu_signing}
+    \uses{def:tu}
+    % \lean{}
+    \leanok
     We say that $A' \in \mathbb{Q}^{X \times Y}$ is a TU signing of $A \in \mathbb{Z}_{2}^{X \times Y}$ if $A'$ is TU and
     \[
         \forall i \in X, \ \forall j \in Y, \ |A' (i, j)| = A (i, j).
     \]
 \end{definition}
 
-\begin{lemma}\label{lem:regular_defs_equiv}
+\begin{lemma}
+    \label{lem:regular_defs_equiv}
+    \uses{def:std_repr,def:regular,def:tu_signing}
+    % \lean{}
+    \leanok
     Let $B \in \mathbb{Z}_{2}^{X \times Y}$ be a standard representation matrix of a matroid $M$. Then $M$ is regular if and only if $B$ has a TU signing.
 \end{lemma}
 
 \begin{proof}
-    Suppose that $M$ is regular. By Definition~\ref{def:regular}, there exists $A \in \mathbb{Q}^{X \times Y}$ such that $M = M[A]$ and $A$ is TU. By Lemma~\ref{lem:std_repr_rows_base}, $X$ (the row set of $B$) is a base of $M$. By Lemma~\ref{lem:TU_repr_to_TU_std_repr}, $A$ can be converted into a standard representation matrix $B' \in \mathbb{Q}^{X \times Y}$ of $M$ such that $B'$ is also TU. Since $B'$ and $B$ are both standard representations of $M$, by Lemma~\ref{lem:std_repr_support_matrix_cols} the support matrices $(B')^{\#}$ and $B^{\#}$ are the same. Moreover, $B^{\#} = B$, since $B$ has entries in $\mathbb{Z}_{2}$. Thus, $B'$ is TU and $(B')^{\#} = B$, so $B'$ is a TU signing of $B$.
+    \uses{def:regular,def:tu_signing,lem:std_repr_rows_base,lem:TU_repr_to_TU_std_repr,lem:std_repr_support_matrix_cols,lem:repr_TU_iff_repr_TU_support}
+    \leanok
+    Suppose that $M$ is regular. By Definition~\ref{def:regular}, there exists a TU matrix $A \in \mathbb{Q}^{X \times Y}$ such that $M$ is a vector matroid of $A$. By Lemma~\ref{lem:std_repr_rows_base}, $X$ (the row set of $B$) is a base of $M$. By Lemma~\ref{lem:TU_repr_to_TU_std_repr}, $A$ can be converted into a standard representation matrix $B' \in \mathbb{Q}^{X \times Y}$ of $M$ such that $B'$ is also TU. Since $B'$ and $B$ are both standard representations of $M$, by Lemma~\ref{lem:std_repr_support_matrix_cols} the support matrices $(B')^{\#}$ and $B^{\#}$ are the same. Moreover, $B^{\#} = B$, since $B$ has entries in $\mathbb{Z}_{2}$. Thus, $B'$ is TU and $(B')^{\#} = B$, so $B'$ is a TU signing of $B$.
 
     Suppose that $B$ has a TU signing $B' \in \mathbb{Q}^{X \times Y}$. Then $A = [I \mid B']$ is TU, as it is obtained from $B'$ by adjoining the identity matrix. Moreover, by Lemma~\ref{lem:repr_TU_iff_repr_TU_support}, $A$ represents the same matroid as $A^{\#} = [I \mid B]$, which is $M$. Thus, $A$ is a TU matrix representing $M$, so $M$ is regular.
 \end{proof}

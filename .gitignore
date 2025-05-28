@@ -2,6 +2,7 @@
 .DS_Store
 ## Lake
 .lake/*
+docbuild/.lake/*
 .cache/*
 ## Blueprint
 /blueprint/print/print.log
