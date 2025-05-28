@@ -118,19 +118,29 @@ variable {α : Type}
 
 -- ## Main definition
 
+/-- The bottom left block of the 3-sum matrix, a.k.a. `D`. -/
+noncomputable abbrev matrix3sumBottomLeft [DecidableEq α] {F : Type} [Field F]
+    {X Y : Set α} [∀ x, Decidable (x ∈ X)] [∀ y, Decidable (y ∈ Y)]
+    (x₀ᵣ x₁ᵣ x₂ᵣ : X) (y₀ₗ y₁ₗ y₂ₗ : Y)
+    (Dₗ : Matrix (Fin 2) (Y.drop3 y₀ₗ y₁ₗ y₂ₗ) F)
+    (D₀ : Matrix (Fin 2) (Fin 2) F)
+    (Dᵣ : Matrix (X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ) (Fin 2) F) :
+    Matrix (X.drop1 x₂ᵣ) (Y.drop1 y₂ₗ) F :=
+  (⊞ Dₗ D₀ (Dᵣ * D₀⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY
+
 /-- The 3-sum composition of matrices. -/
 noncomputable def matrix3sumComposition [DecidableEq α] {F : Type} [Field F]
     {Xₗ Yₗ Xᵣ Yᵣ : Set α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    (x₀ₗ x₁ₗ : Xₗ) (y₀ₗ y₁ₗ y₂ₗ : Yₗ)
-    (x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ) (y₀ᵣ y₁ᵣ : Yᵣ)
+    (x₀ₗ x₁ₗ : Xₗ) (x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ)
+    (y₀ₗ y₁ₗ y₂ₗ : Yₗ) (y₀ᵣ y₁ᵣ : Yᵣ)
     (Aₗ : Matrix (Xₗ.drop2 x₀ₗ x₁ₗ) (Yₗ.drop1 y₂ₗ) F)
     (Dₗ : Matrix (Fin 2) (Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ) F)
     (D₀ : Matrix (Fin 2) (Fin 2) F)
     (Dᵣ : Matrix (Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ) (Fin 2) F)
     (Aᵣ : Matrix (Xᵣ.drop1 x₂ᵣ) (Yᵣ.drop2 y₀ᵣ y₁ᵣ) F) :
     Matrix ((Xₗ.drop2 x₀ₗ x₁ₗ) ⊕ (Xᵣ.drop1 x₂ᵣ)) ((Yₗ.drop1 y₂ₗ) ⊕ (Yᵣ.drop2 y₀ᵣ y₁ᵣ)) F :=
-  ⊞ Aₗ 0 ((⊞ Dₗ D₀ (Dᵣ * D₀⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY) Aᵣ
+  ⊞ Aₗ 0 (matrix3sumBottomLeft x₀ᵣ x₁ᵣ x₂ᵣ y₀ₗ y₁ₗ y₂ₗ Dₗ D₀ Dᵣ) Aᵣ
 
 
 -- ## Parts of the two matrices

@@ -371,7 +371,7 @@ omit [DecidableEq α] in
 
 /-- Canonical signing of 3-sum constructed from TU signings of summands. -/
 @[simp]
-/-private-/ noncomputable def matrix3sumCompositionCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+/-private-/ noncomputable def matrix3sumCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     (Bₗ' : Matrix Xₗ Yₗ ℚ) (Bᵣ' : Matrix Xᵣ Yᵣ ℚ) (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}) :
     let ⟨⟨x₀ₗ, x₁ₗ, _⟩, ⟨_, _, x₂ᵣ⟩⟩ := hXX.inter3all
@@ -383,15 +383,53 @@ omit [DecidableEq α] in
   -- convert summands to canonical form
   let Bₗ := Bₗ'.toCanonicalSigning x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ
   let Bᵣ := Bᵣ'.toCanonicalSigning x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
-  -- pieces of the bottom left submatrix
-  let D₀ := Bₗ.D₀ x₀ₗ x₁ₗ y₀ₗ y₁ₗ
+  -- extract submatrices
+  let Aₗ := Bₗ.Aₗ x₀ₗ x₁ₗ y₂ₗ
   let Dₗ := Bₗ.Dₗ x₀ₗ x₁ₗ y₀ₗ y₁ₗ y₂ₗ
+  let D₀ := Bₗ.D₀ x₀ₗ x₁ₗ y₀ₗ y₁ₗ
   let Dᵣ := Bᵣ.Dᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ
+  let Aᵣ := Bᵣ.Aᵣ x₂ᵣ y₀ᵣ y₁ᵣ
   -- the actual definition
-  ⊞ (Bₗ.Aₗ x₀ₗ x₁ₗ y₂ₗ) 0 ((⊞ Dₗ D₀ (Dᵣ * D₀⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY) (Bᵣ.Aᵣ x₂ᵣ y₀ᵣ y₁ᵣ)
+  matrix3sumComposition x₀ₗ x₁ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ₗ y₁ₗ y₂ₗ y₀ᵣ y₁ᵣ Aₗ Dₗ D₀ Dᵣ Aᵣ
+
+@[simp]
+lemma cast_1_from_Z2_to_Rat : ZMod.cast (1 : Z2) = (1 : ℚ) := by
+  decide
+
+@[simp]
+lemma cast_Z2_nonneg (a : Z2) : (0 : ℚ) ≤ ZMod.cast a := by
+  fin_cases a <;> decide
+
+/-private-/ lemma matrix3sumCanonicalSigning_isSigningOf_matrix3sumComposition {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+    [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
+    (Bₗ : Matrix Xₗ Yₗ ℚ) (Bᵣ : Matrix Xᵣ Yᵣ ℚ) (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}) :
+    -- row membership
+    let x₀ₗ : Xₗ := ⟨x₀, hXX.mem3₀ₗ⟩
+    let x₀ᵣ : Xᵣ := ⟨x₀, hXX.mem3₀ᵣ⟩
+    let x₁ₗ : Xₗ := ⟨x₁, hXX.mem3₁ₗ⟩
+    let x₁ᵣ : Xᵣ := ⟨x₁, hXX.mem3₁ᵣ⟩
+    let x₂ₗ : Xₗ := ⟨x₂, hXX.mem3₂ₗ⟩
+    let x₂ᵣ : Xᵣ := ⟨x₂, hXX.mem3₂ᵣ⟩
+    -- col membership
+    let y₀ₗ : Yₗ := ⟨y₀, hYY.mem3₀ₗ⟩
+    let y₀ᵣ : Yᵣ := ⟨y₀, hYY.mem3₀ᵣ⟩
+    let y₁ₗ : Yₗ := ⟨y₁, hYY.mem3₁ₗ⟩
+    let y₁ᵣ : Yᵣ := ⟨y₁, hYY.mem3₁ᵣ⟩
+    let y₂ₗ : Yₗ := ⟨y₂, hYY.mem3₂ₗ⟩
+    let y₂ᵣ : Yᵣ := ⟨y₂, hYY.mem3₂ᵣ⟩
+    -- extract submatrices but over `Z2`
+    let Aₗ := Bₗ.support.Aₗ x₀ₗ x₁ₗ y₂ₗ
+    let Dₗ := Bₗ.support.Dₗ x₀ₗ x₁ₗ y₀ₗ y₁ₗ y₂ₗ
+    let D₀ := Bₗ.support.D₀ x₀ₗ x₁ₗ y₀ₗ y₁ₗ
+    let Dᵣ := Bᵣ.support.Dᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ
+    let Aᵣ := Bᵣ.support.Aᵣ x₂ᵣ y₀ᵣ y₁ᵣ
+    -- TODO propagate the necessary assumptions from `standardRepr3sumComposition.snd`
+    (matrix3sumCanonicalSigning Bₗ Bᵣ hXX hYY).IsSigningOf
+      (matrix3sumComposition x₀ₗ x₁ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ₗ y₁ₗ y₂ₗ y₀ᵣ y₁ᵣ Aₗ Dₗ D₀ Dᵣ Aᵣ) := by
+  sorry
 
 -- lemma 19.1
-/-private-/ lemma matrix3sumCompositionCanonicalSigning_D_eq {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+/-private-/ lemma matrix3sumCanonicalSigning_D_eq {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}) :
@@ -427,11 +465,11 @@ omit [DecidableEq α] in
     -- two just-constructed rows
     let ⟨r₀, r₁, _⟩ := Bₗ'._rrr x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ hBₗ'
     -- the actual statement
-    ((⊞ Dₗ D₀ (Dᵣ * D₀⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY) = c₀ ⊗ r₀ + c₁ ⊗ r₁ :=
+    matrix3sumBottomLeft x₀ᵣ x₁ᵣ x₂ᵣ y₀ₗ y₁ₗ y₂ₗ Dₗ D₀ Dᵣ = c₀ ⊗ r₀ + c₁ ⊗ r₁ :=
   sorry
 
 -- lemma 19.2
-/-private-/ lemma matrix3sumCompositionCanonicalSigning_D_rows {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+/-private-/ lemma matrix3sumCanonicalSigning_D_rows {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}) :
@@ -457,7 +495,7 @@ omit [DecidableEq α] in
     let Dₗ := Bₗ.Dₗ x₀ₗ x₁ₗ y₀ₗ y₁ₗ y₂ₗ
     let Dᵣ := Bᵣ.Dᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ
     -- final bottom left submatrix
-    let D : Matrix (Xᵣ.drop1 x₂ᵣ) (Yₗ.drop1 y₂ₗ) ℚ := (⊞ Dₗ D₀ (Dᵣ * D₀⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY
+    let D : Matrix (Xᵣ.drop1 x₂ᵣ) (Yₗ.drop1 y₂ₗ) ℚ := matrix3sumBottomLeft x₀ᵣ x₁ᵣ x₂ᵣ y₀ₗ y₁ₗ y₂ₗ Dₗ D₀ Dᵣ
     -- assumptions
     ∀ hBₗ' : |Bₗ'.submatrix3x3 x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ| = matrix3x3unsigned₀ ∨
              |Bₗ'.submatrix3x3 x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ| = matrix3x3unsigned₁ ,
@@ -470,7 +508,7 @@ omit [DecidableEq α] in
   sorry
 
 -- lemma 19.3
-/-private-/ lemma matrix3sumCompositionCanonicalSigning_D_cols {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+/-private-/ lemma matrix3sumCanonicalSigning_D_cols {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}) :
@@ -496,7 +534,7 @@ omit [DecidableEq α] in
     let Dₗ := Bₗ.Dₗ x₀ₗ x₁ₗ y₀ₗ y₁ₗ y₂ₗ
     let Dᵣ := Bᵣ.Dᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ
     -- final bottom left submatrix
-    let D : Matrix (Xᵣ.drop1 x₂ᵣ) (Yₗ.drop1 y₂ₗ) ℚ := (⊞ Dₗ D₀ (Dᵣ * D₀⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY
+    let D : Matrix (Xᵣ.drop1 x₂ᵣ) (Yₗ.drop1 y₂ₗ) ℚ := matrix3sumBottomLeft x₀ᵣ x₁ᵣ x₂ᵣ y₀ₗ y₁ₗ y₂ₗ Dₗ D₀ Dᵣ
     -- special columns
     let c₀ : (Xᵣ \ {x₂}).Elem → ℚ := Bᵣ._col y₀ᵣ
     let c₁ : (Xᵣ \ {x₂}).Elem → ℚ := Bᵣ._col y₁ᵣ
@@ -513,7 +551,7 @@ omit [DecidableEq α] in
 -- ## Total unimodularity of constituents
 
 -- lemma 19.5
-/-private-/ lemma matrix3sumCompositionCanonicalSigning_Aᵣ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+/-private-/ lemma matrix3sumCanonicalSigning_Aᵣ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}) :
@@ -533,11 +571,11 @@ omit [DecidableEq α] in
     |Bᵣ'.submatrix3x3 x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ| = matrix3x3unsigned₀ ∨
     |Bᵣ'.submatrix3x3 x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ| = matrix3x3unsigned₁ →
     -- the actual statement
-    (Bᵣ.Aᵣ x₂ᵣ y₀ᵣ y₁ᵣ ◫ (⊞ Dₗ D₀ (Dᵣ * D₀⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY).IsTotallyUnimodular :=
+    (Bᵣ.Aᵣ x₂ᵣ y₀ᵣ y₁ᵣ ◫ matrix3sumBottomLeft x₀ᵣ x₁ᵣ x₂ᵣ y₀ₗ y₁ₗ y₂ₗ Dₗ D₀ Dᵣ).IsTotallyUnimodular :=
   sorry
 
 -- lemma 19.7
-/-private-/ lemma matrix3sumCompositionCanonicalSigning_Aₗ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+/-private-/ lemma matrix3sumCanonicalSigning_Aₗ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
     (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}) :
@@ -557,5 +595,5 @@ omit [DecidableEq α] in
     |Bᵣ'.submatrix3x3 x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ| = matrix3x3unsigned₀ ∨
     |Bᵣ'.submatrix3x3 x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ| = matrix3x3unsigned₁ →
     -- the actual statement
-    (Bₗ.Aₗ x₀ₗ x₁ₗ y₂ₗ ⊟ (⊞ Dₗ D₀ (Dᵣ * D₀⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY).IsTotallyUnimodular := by
+    (Bₗ.Aₗ x₀ₗ x₁ₗ y₂ₗ ⊟ matrix3sumBottomLeft x₀ᵣ x₁ᵣ x₂ᵣ y₀ₗ y₁ₗ y₂ₗ Dₗ D₀ Dᵣ).IsTotallyUnimodular := by
   sorry

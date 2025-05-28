@@ -25,7 +25,7 @@ noncomputable def standardRepr3sumComposition {Sₗ Sᵣ : StandardRepr α Z2} {
           ⟨⟨Sₗ.hXY.disjoint_sdiff_left.disjoint_sdiff_right, hYX.symm.disjoint_sdiff_left.disjoint_sdiff_right⟩,
           ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right, Sᵣ.hXY.disjoint_sdiff_left.disjoint_sdiff_right⟩⟩,
       -- the standard representation matrix
-      (matrix3sumComposition x₀ₗ x₁ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ Aₗ Dₗ D₀ Dᵣ Aᵣ).toMatrixUnionUnion,
+      (matrix3sumComposition x₀ₗ x₁ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ₗ y₁ₗ y₂ₗ y₀ᵣ y₁ᵣ Aₗ Dₗ D₀ Dᵣ Aᵣ).toMatrixUnionUnion,
       inferInstance,
       inferInstance,
     ⟩,
@@ -82,14 +82,6 @@ instance Matroid.Is3sumOf.finS {M Mₗ Mᵣ : Matroid α} (hM : M.Is3sumOf Mₗ 
   rw [standardRepr3sumComposition_X]
   apply Finite.Set.finite_union
 
-@[simp]
-lemma cast_1_from_Z2_to_Rat : ZMod.cast (1 : Z2) = (1 : ℚ) := by
-  decide
-
-@[simp]
-lemma cast_Z2_nonneg (a : Z2) : (0 : ℚ) ≤ ZMod.cast a := by
-  fin_cases a <;> decide
-
 lemma matrix3sumComposition_hasTuSigning {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ : Matrix Xₗ Yₗ Z2} {Bᵣ : Matrix Xᵣ Yᵣ Z2}
@@ -104,12 +96,16 @@ lemma matrix3sumComposition_hasTuSigning {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x�
     let D₀ := Bₗ.D₀ x₀ₗ x₁ₗ y₀ₗ y₁ₗ
     let Dᵣ := Bᵣ.Dᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ
     let Aᵣ := Bᵣ.Aᵣ x₂ᵣ y₀ᵣ y₁ᵣ
-    -- (matrix3sumComposition Bₗ Bᵣ hXX hYY).snd →
-    -- TODO propagate the necessary assumption from `standardRepr3sumComposition.snd`
-    (matrix3sumComposition x₀ₗ x₁ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ Aₗ Dₗ D₀ Dᵣ Aᵣ).HasTuSigning := by
-  obtain ⟨Aₗ, hAₗ, hABₗ⟩ := hBₗ
-  obtain ⟨Aᵣ, hAᵣ, hABᵣ⟩ := hBᵣ
-  sorry
+    -- TODO propagate the necessary assumptions from `standardRepr3sumComposition.snd`
+    (matrix3sumComposition x₀ₗ x₁ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ₗ y₁ₗ y₂ₗ y₀ᵣ y₁ᵣ Aₗ Dₗ D₀ Dᵣ Aᵣ).HasTuSigning := by
+  obtain ⟨Aₗ, hABₗ⟩ := hBₗ
+  obtain ⟨Aᵣ, hABᵣ⟩ := hBᵣ
+  rw [Matrix.isTuSigningOf_iff] at hABₗ hABᵣ
+  obtain ⟨hAₗ, hBAₗ⟩ := hABₗ
+  obtain ⟨hAᵣ, hBAᵣ⟩ := hABᵣ
+  symm at hBAₗ hBAᵣ
+  use matrix3sumCanonicalSigning Aₗ Aᵣ hXX hYY, matrix3sumCanonicalSigning_isTotallyUnimodular Aₗ Aᵣ hXX hYY
+  convert matrix3sumCanonicalSigning_isSigningOf_matrix3sumComposition Aₗ Aᵣ hXX hYY
 
 lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X)
