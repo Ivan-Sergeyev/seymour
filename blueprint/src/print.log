@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2024.10.7)  27 MAY 2025 13:27
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2024.10.7)  28 MAY 2025 13:42
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -608,4 +608,84 @@ LaTeX Info: Redefining \nameref on input line 8.
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: 
 * h-part:(L,W,R)=(71.13188pt, 455.24411pt, 71.13188pt)
-* v-part:(T,H,B)=(71.13188pt, 702.783
+* v-part:(T,H,B)=(71.13188pt, 702.78308pt, 71.13188pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=455.24411pt
+* \textheight=702.78308pt
+* \oddsidemargin=-1.1381pt
+* \evensidemargin=-1.1381pt
+* \topmargin=-38.1381pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=10.0pt
+* \footskip=30.0pt
+* \marginparwidth=57.0pt
+* \marginparsep=11.0pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+LaTeX Font Info:    Trying to load font information for U+msa on input line 10.
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 10.
+ (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+) [1
+
+] (./content.tex (./preliminaries.tex
+Chapter 1.
+[1
+
+] [2] [3]) (./sum_1.tex [4]
+Chapter 2.
+) (./sum_2.tex [5
+
+]
+Chapter 3.
+[6
+
+]) (./sum_3.tex [7]
+Chapter 4.
+[8
+
+]
+Overfull \hbox (11.86023pt too wide) in paragraph at lines 179--183
+[][]\TU/lmr/bx/n/10 Lemma 41. [][][]\TU/lmr/m/n/10 Let $\OML/cmm/m/it/10 Q$ \TU/lmr/m/n/10 be a TU signing of $\OML/cmm/m/it/10 S$ \TU/lmr/m/n/10 (from Definition [][]39[][]). Let $\OML/cmm/m/it/10 u \OMS/cmsy/m/n/10 2 f\OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OMS/cmsy/m/n/10 ^^F\OT1/cmr/m/n/10 1\OMS/cmsy/m/n/10 g[]$\TU/lmr/m/n/10 , $\OML/cmm/m/it/10 v \OMS/cmsy/m/n/10 2 f\OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OMS/cmsy/m/n/10 ^^F\OT1/cmr/m/n/10 1\OMS/cmsy/m/n/10 g[]$\TU/lmr/m/n/10 ,
+ []
+
+
+Overfull \hbox (5.57913pt too wide) detected at line 213
+[]
+ []
+
+[9]
+Package hyperref Info: bookmark level for unknown todo defaults to 0 on input line 332.
+ [10] [11]
+Overfull \hbox (2.60121pt too wide) detected at line 456
+[] \OT1/cmr/m/n/10 = [] \OMS/cmsy/m/n/10 ^^A \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 D[]\OT1/cmr/m/n/10 )[] \OMS/cmsy/m/n/10 ^^A \OML/cmm/m/it/10 D[];  [] \OT1/cmr/m/n/10 = [] \OMS/cmsy/m/n/10 ^^A \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 D[]\OT1/cmr/m/n/10 )[] \OMS/cmsy/m/n/10 ^^A \OML/cmm/m/it/10 D[];  [] \OT1/cmr/m/n/10 = [] \OML/cmm/m/it/10 ;  [] \OT1/cmr/m/n/10 = [] \OML/cmm/m/it/10 :
+ []
+
+[12] [13])) [14] (./print.aux)
+Package rerunfilecheck Info: File `print.out' has not changed.
+(rerunfilecheck)             Checksum: 5645D8F7ACB32A5F616297459D385029;1677.
+ ) 
+Here is how much of TeX's memory you used:
+ 23082 strings out of 476191
+ 463068 string characters out of 5812072
+ 755282 words of memory out of 5000000
+ 43413 multiletter control sequences out of 15000+600000
+ 476059 words of font info for 67 fonts, out of 8000000 for 9000
+ 1348 hyphenation exceptions out of 8191
+ 105i,14n,107p,1089b,1044s stack positions out of 5000i,500n,10000p,200000b,80000s
+
+Output written on print.pdf (15 pages).

@@ -2,7 +2,11 @@
 
 \section{Definition}
 
-\begin{definition}\label{def:three_sum_matrix}
+\begin{definition}
+    \label{def:three_sum_matrix}
+    % \uses{}
+    % \lean{}
+    \leanok
     Let $B_{\ell} \in \mathbb{Z}_{2}^{(X_{\ell} \cup \{x_{0}, x_{1}\}) \times (Y_{\ell} \cup \{y_{2}\})}, B_{r} \in \mathbb{Z}_{2}^{(X_{r} \cup \{x_{2}\}) \times (Y_{r} \cup \{y_{0}, y_{1}\})}$ be matrices of the form
     \begin{center}
         \noindent
@@ -80,14 +84,22 @@
     Note that $D_{0}$ is non-singular by construction, so $D_{\ell r}$ and $B$ are well-defined. Moreover, a non-singular $\mathbb{Z}_{2}^{2 \times 2}$ matrix is either  $\begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}$ or $\begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}$ up to re-indexing. Thus, Definition~\ref{def:three_sum_matrix} can be equivalently restated with $D_{0}$ required to be non-singular and $B_{\ell}$, $B_{r}$, and $B$ re-indexed appropriately.
 \end{definition}
 
-\begin{definition}\label{def:three_sum_matroid}
+\begin{definition}
+    \label{def:three_sum_matroid}
+    \uses{def:three_sum_matrix,def:std_repr}
+    % \lean{}
+    \leanok
     A matroid $M$ is a $3$-sum of matroids $M_{\ell}$ and $M_{r}$ if there exist standard $\mathbb{Z}_{2}$ representation matrices $B$, $B_{\ell}$, and $B_{r}$ (for $M$, $M_{\ell}$, and $M_{r}$, respectively) of the form given in Definition~\ref{def:three_sum_matrix}.
 \end{definition}
 
 
 \section{Canonical Signing}
 
-\begin{definition}\label{def:three_sum_signing_S}
+\begin{definition}
+    \label{def:three_sum_signing_S}
+    % \uses{}
+    % \lean{}
+    \leanok
     We call $D_{0}' \in \mathbb{Q}^{\{x_{0}, x_{1}\} \times \{y_{0}, y_{1}\}}$ the canonical signing of $D_{0} \in \mathbb{Z}_{2}^{\{x_{0}, x_{1}\} \times \{y_{0}, y_{1}\}}$ if
     \[
         D_{0} = \begin{bmatrix}
@@ -148,15 +160,25 @@
     To simplify notation, going forward we use $D_{0}$, $D_{0}'$, $S$, and $S'$ to refer to the matrices of the form above.
 \end{definition}
 
-\begin{lemma}\label{lem:three_sum_signing_S_TU}
+\begin{lemma}
+    \label{lem:three_sum_signing_S_TU}
+    \uses{def:three_sum_signing_S,def:tu}
+    % \lean{}
+    \leanok
     The canonical signing $S'$ of $S$ (from Definition~\ref{def:three_sum_signing_S}) is TU.
 \end{lemma}
 
 \begin{proof}
+    % \uses{}
+    % \leanok
     Verified via a direct calculation.
 \end{proof}
 
-\begin{lemma}\label{lem:three_sum_re_signing_helper}
+\begin{lemma}
+    \label{lem:three_sum_re_signing_helper}
+    \uses{def:tu_signing,def:three_sum_signing_S}
+    % \lean{}
+    \leanok
     Let $Q$ be a TU signing of $S$ (from Definition~\ref{def:three_sum_signing_S}). Let $u \in \{0, \pm 1\}^{\{x_{0}, x_{1}, x_{2}\}}$, $v \in \{0, \pm 1\}^{\{y_{0}, y_{1}, y_{2}\}}$, and $Q'$ be defined as follows:
     \begin{align*}
         u(i) &= \begin{cases}
@@ -175,6 +197,8 @@
 \end{lemma}
 
 \begin{proof}
+    \uses{def:tu_signing,lem:tu_mul_row_col_pnz,def:tu}
+    % \leanok
     Since $Q$ is a TU signing of $S$ and $Q'$ is obtained from $Q$ by multiplying rows and columns by $\pm 1$ factors, $Q'$ is also a TU signing of $S$. By construction, we have
     \begin{align*}
         Q' (x_{2}, y_{0}) &= Q (x_{2}, y_{0}) \cdot 1 \cdot Q (x_{2}, y_{0}) = 1, \\
@@ -217,7 +241,11 @@
     \end{enumerate}
 \end{proof}
 
-\begin{definition}\label{def:three_sum_re_signing}
+\begin{definition}
+    \label{def:three_sum_re_signing}
+    \uses{def:tu}
+    % \lean{}
+    \leanok
     Let $X$ and $Y$ be sets with $\{x_{0}, x_{1}, x_{2}\} \subseteq X$ and $\{y_{0}, y_{1}, y_{2}\} \subseteq Y$. Let $Q \in \mathbb{Q}^{X \times Y}$ be a TU matrix. Define $u \in \{0, \pm 1\}^{X}$, $v \in \{0, \pm 1\}^{Y}$, and $Q'$ as follows:
     \begin{align*}
         u(i) &= \begin{cases}
@@ -237,15 +265,25 @@
     We call $Q'$ the canonical re-signing of $Q$.
 \end{definition}
 
-\begin{lemma}\label{lem:three_sum_re_signing_apply}
-    Let $X$ and $Y$ be sets with $\{x_{0}, x_{1}, x_{2}\} \subseteq X$ and $\{y_{0}, y_{1}, y_{2}\} \subseteq Y$. Let $Q \in \mathbb{Q}^{X \times Y}$ be a TU signing of $Q_{0} \in \mathbb{Z}_{2}^{X \times Y}$ such that $Q_{0} (\{x_{0}, x_{1}, x_{2}\}, \{y_{0}, y_{1}, y_{2}\}) = S$ (from Definition~\ref{def:three_sum_signing_S}). Then the canonical re-signing $Q'$ of $Q$ is a TU signing of $Q_{0}$ and $Q' (\{x_{0}, x_{1}, x_{2}\}, \{y_{0}, y_{1}, y_{2}\}) = S'$ (from Definition~\ref{def:three_sum_signing_S}).
+\begin{lemma}
+    \label{lem:three_sum_re_signing_apply}
+    \uses{def:tu_signing,def:three_sum_signing_S,def:three_sum_re_signing}
+    % \lean{}
+    \leanok
+    Let $X$ and $Y$ be sets with $\{x_{0}, x_{1}, x_{2}\} \subseteq X$ and $\{y_{0}, y_{1}, y_{2}\} \subseteq Y$. Let $Q \in \mathbb{Q}^{X \times Y}$ be a TU signing of $Q_{0} \in \mathbb{Z}_{2}^{X \times Y}$ such that $Q_{0} (\{x_{0}, x_{1}, x_{2}\}, \{y_{0}, y_{1}, y_{2}\}) = S$ (from Definition~\ref{def:three_sum_signing_S}). Then the canonical re-signing $Q'$ of $Q$ (from Definition~\ref{def:three_sum_re_signing}) is a TU signing of $Q_{0}$ and $Q' (\{x_{0}, x_{1}, x_{2}\}, \{y_{0}, y_{1}, y_{2}\}) = S'$ (from Definition~\ref{def:three_sum_signing_S}).
 \end{lemma}
 
 \begin{proof}
+    \uses{def:tu_signing,lem:tu_mul_row_col_pnz,lem:three_sum_re_signing_helper}
+    % \leanok
     Since $Q$ is a TU signing of $Q_{0}$ and $Q'$ is obtained from $Q$ by multiplying some rows and columns by $\pm 1$ factors, $Q'$ is also a TU signing of $Q_{0}$. Equality $Q' (\{x_{0}, x_{1}, x_{2}\}, \{y_{0}, y_{1}, y_{2}\}) = S'$ follows from Lemma~\ref{lem:three_sum_re_signing_helper}.
 \end{proof}
 
-\begin{definition}\label{def:three_sum_signing_B}
+\begin{definition}
+    \label{def:three_sum_signing_B}
+    \uses{def:three_sum_matrix,def:tu_signing,def:three_sum_re_signing}
+    % \lean{}
+    \leanok
     Suppose that $B_{\ell}$ and $B_{r}$ from Definition~\ref{def:three_sum_matrix} have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Let $B_{\ell}''$ and $B_{r}''$ be the canonical re-signings (from Definition~\ref{def:three_sum_re_signing}) of $B_{\ell}'$ and $B_{r}'$, respectively. Let $A_{\ell}''$, $A_{r}''$, $D_{\ell}''$, $D_{r}''$, and $D_{0}''$ be blocks of $B_{\ell}''$ and $B_{r}''$ analogous to blocks $A_{\ell}$, $A_{r}$, $D_{\ell}$, $D_{r}$, and $D_{0}$ of $B_{\ell}$ and $B_{r}$. The canonical signing $B''$ of $B$ is defined as
     \begin{center}
         \noindent
@@ -280,15 +318,25 @@
 
 \section{Properties of Canonical Signing}
 
-\begin{lemma}\label{lem:three_sum_signing_B_valid}
+\begin{lemma}
+    \label{lem:three_sum_signing_B_valid}
+    \uses{def:three_sum_signing_B}
+    % \lean{}
+    \leanok
     $B''$ from Definition~\ref{def:three_sum_signing_B} is a signing of $B$.
 \end{lemma}
 
 \begin{proof}
+    \uses{lem:three_sum_re_signing_apply,def:tu_signing}
+    % \leanok
     By Lemma~\ref{lem:three_sum_re_signing_apply}, $B_{\ell}''$ and $B_{r}''$ are TU signings of $B_{\ell}$ and $B_{r}$, respectively. As a result, blocks $A_{\ell}''$, $A_{r}''$, $D_{\ell}''$, $D_{r}''$, and $D_{0}''$ in $B''$ are signings of the corresponding blocks in $B$. Thus, it remains to show that $D_{\ell r}''$ is a signing of $D_{\ell r}$. This can be verified via a direct calculation. \todo{Need details?}
 \end{proof}
 
-\begin{lemma}\label{lem:three_sum_signing_B_r_props}
+\begin{lemma}
+    \label{lem:three_sum_signing_B_r_props}
+    \uses{def:three_sum_matrix,def:tu_signing,def:three_sum_re_signing}
+    % \lean{}
+    \leanok
     Suppose that $B_{r}$ from Definition~\ref{def:three_sum_matrix} has a TU signing $B_{r}'$. Let $B_{r}''$ be the canonical re-signing (from Definition~\ref{def:three_sum_re_signing}) of $B_{r}'$. Let $c_{0}'' = B_{r}'' (X_{r}, y_{0})$, $c_{1}'' = B_{r}'' (X_{r}, y_{1})$, and $c_{2}'' = c_{0}'' - c_{1}''$. Then the following statements hold.
     \begin{enumerate}
         \item\label{item:tss_Brp_c01} For every $i \in X_{r}$, $\begin{bmatrix} c_{0}'' (i) & c_{1}'' (i) \end{bmatrix} \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}} \setminus \left\{ \begin{bmatrix} 1 & -1 \end{bmatrix}, \begin{bmatrix} -1 & 1 \end{bmatrix} \right\}$.
@@ -300,6 +348,8 @@
 \end{lemma}
 
 \begin{proof}
+    \uses{lem:three_sum_re_signing_apply,def:tu,def:stp,lem:stp_tu,lem:tu_mul_row_col_pnz}
+    % \leanok
     Throughout the proof we use that $B_{r}''$ is TU, which holds by Lemma~\ref{lem:three_sum_re_signing_apply}.
 
     \begin{enumerate}
@@ -318,35 +368,29 @@
         \item Performing a short tableau pivot in $B_{r}''$ on $(x_{2}, y_{0})$ yields:
         \[
             B_{r}'' = \begin{bmatrix}
-                1 & 1 & 0 & & & \\
+                \fbox{1} & 1 & 0 \\
                 c_{0} & c_{1} & A_{r}
-            % \CodeAfter
-            %     \tikz \draw (1-1) circle (0.2);
             \end{bmatrix}
             \quad \to \quad
-            \begin{bmatrix}[hvlines,right-margin=1em,left-margin=1em]{cccccc}
-                1 & 1 & 0 & & & \\
+            \begin{bmatrix}
+                1 & 1 & 0 \\
                 -c_{0} & c_{1}'' - c_{0} & A_{r}
             \end{bmatrix}
         \]
-        \todo[inline]{Circle pivot element}
         The resulting matrix can be transformed into $\begin{bmatrix} c_{0}'' & c_{2}'' & A_{r}'' \end{bmatrix}$ by removing row $x_{2}$ and multiplying columns $y_{0}$ and $y_{1}$ by $-1$. Since $B_{r}''$ is TU and since TUness is preserved under pivoting, taking submatrices, multiplying columns by ${\pm 1}$ factors, we conclude that $\begin{bmatrix} c_{0}'' & c_{2}'' & A_{r}'' \end{bmatrix}$ is TU.
 
         \item Similar to item~\ref{item:tss_Brp_tu2}, performing a short tableau pivot in $B_{r}''$ on $(x_{2}, y_{1})$ yields:
         \[
             B_{r}'' = \begin{bmatrix}
-                1 & 1 & 0 & & & \\
+                1 & \fbox{1} & 0 \\
                 c_{0} & c_{1} & A_{r}
-            % \CodeAfter
-                % \tikz \draw (1-2) circle (0.2);
             \end{bmatrix}
             \quad \to \quad
             \begin{bmatrix}
-                1 & 1 & 0 & & & \\
+                1 & 1 & 0 \\
                 c_{0}'' - c_{1} & -c_{1} & A_{r}
             \end{bmatrix}
         \]
-        \todo[inline]{Circle pivot element}
         The resulting matrix can be transformed into $\begin{bmatrix} c_{1}'' & c_{2}'' & A_{r}'' \end{bmatrix}$ by removing row $x_{2}$, multiplying column $y_{1}$ by $-1$, and swapping the order of columns $y_{0}$ and $y_{1}$. Since $B_{r}''$ is TU and since TUness is preserved under pivoting, taking submatrices, multiplying columns by ${\pm 1}$ factors, and re-ordering columns, we conclude that $\begin{bmatrix} c_{1}'' & c_{2}'' & A_{r}'' \end{bmatrix}$ is TU.
 
         \item Let $V$ be a square submatrix of $\begin{bmatrix} c_{0}'' & c_{1}'' & c_{2}'' & A_{r}'' \end{bmatrix}$. Our goal is to show that $\det V \in \{0, \pm 1\}$.
@@ -360,7 +404,11 @@
     \end{enumerate}
 \end{proof}
 
-\begin{lemma}\label{lem:three_sum_signing_B_l_props}
+\begin{lemma}
+    \label{lem:three_sum_signing_B_l_props}
+    \uses{def:three_sum_matrix,def:tu_signing,def:three_sum_re_signing}
+    % \lean{}
+    \leanok
     Suppose that $B_{\ell}$ from Definition~\ref{def:three_sum_matrix} has a TU signing $B_{\ell}'$. Let $B_{\ell}''$ be the canonical re-signing (from Definition~\ref{def:three_sum_re_signing}) of $B_{\ell}'$. Let $d_{0}'' = B_{\ell}'' (x_{0}, Y_{\ell})$, $d_{1}'' = B_{\ell}'' (x_{1}, Y_{\ell})$, and $d_{2}'' = d_{0}'' - d_{1}''$. Then the following statements hold.
     \begin{enumerate}
         \item\label{item:tss_Blp_d01} For every $j \in Y_{\ell}$, $\begin{bmatrix} d_{0}'' (i) \\ d_{1}'' (j) \end{bmatrix} \in \{0, \pm 1\}^{\{x_{0}, x_{1}\}} \setminus \left\{ \begin{bmatrix} 1 \\ -1 \end{bmatrix}, \begin{bmatrix} -1 \\ 1 \end{bmatrix} \right\}$.
@@ -372,10 +420,16 @@
 \end{lemma}
 
 \begin{proof}
+    \uses{lem:three_sum_signing_B_r_props}
+    % \leanok
     Apply Lemma~\ref{lem:three_sum_signing_B_r_props} to $B_{\ell}^{\top}$, or repeat the same arguments up to transposition.
 \end{proof}
 
-\begin{lemma}\label{lem:three_sum_signing_B_props}
+\begin{lemma}
+    \label{lem:three_sum_signing_B_props}
+    \uses{def:three_sum_signing_B,def:tu}
+    % \lean{}
+    \leanok
     Let $B''$ be from Definition~\ref{def:three_sum_signing_B}. Let $c_{0}'' = B'' (X_{r}, y_{0})$, $c_{1}'' = B'' (X_{r}, y_{1})$, and $c_{2}'' = c_{0}'' - c_{1}''$. Similarly, let $d_{0}'' = B'' (x_{0}, Y_{\ell})$, $d_{1}'' = B'' (x_{1}, Y_{\ell})$, and $d_{2}'' = d_{0}'' - d_{1}''$. Then the following statements hold.
     \begin{enumerate}
         \item\label{item:tss_Bp_c2} For every $i \in X_{r}$, $c_{2}'' (i) \in \{0, \pm 1\}$.
@@ -388,6 +442,8 @@
 \end{lemma}
 
 \begin{proof}
+    \uses{lem:three_sum_signing_B_r_props,lem:three_sum_signing_B_l_props,def:tu}
+    % \leanok
     \begin{enumerate}
         \item Holds by Lemma~\ref{lem:three_sum_signing_B_r_props}.\ref{item:tss_Brp_c2}.
 
@@ -429,7 +485,11 @@
 
 \section{Proof of Regularity}
 
-\begin{definition}\label{def:three_sum_like_matrix}
+\begin{definition}
+    \label{def:three_sum_like_matrix}
+    \uses{def:tu}
+    % \lean{}
+    \leanok
     Let $X_{\ell}$, $Y_{\ell}$, $X_{r}$, $Y_{r}$ be sets and let $c_{0}, c_{1} \in \mathbb{Q}^{X_{r}}$ be column vectors such that for every $i \in X_{r}$ we have $c_{0} (i), \ c_{1} (i), \ c_{0} (i) - c_{1} (i) \in \{0, \pm 1\}$. Define $\mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ to be the family of matrices of the form $\begin{bmatrix} A_{\ell} & 0 \\ D & A_{r} \end{bmatrix}$ where $A_{\ell} \in \mathbb{Q}^{X_{\ell} \times Y_{\ell}}$, $A_{r} \in \mathbb{Q}^{X_{r} \times Y_{r}}$, and $D \in \mathbb{Q}^{X_{r} \times Y_{\ell}}$ are such that:
     \begin{enumerate}
         \item\label{item:tsl_cols} for every $j \in Y_{r}$, $D (X_{r}, j) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$,
@@ -438,19 +498,31 @@
     \end{enumerate}
 \end{definition}
 
-\begin{lemma}\label{lem:three_sum_like_signing_B}
+\begin{lemma}
+    \label{lem:three_sum_like_signing_B}
+    \uses{def:three_sum_signing_B,def:three_sum_like_matrix}
+    % \lean{}
+    \leanok
     Let $B''$ be from Definition~\ref{def:three_sum_signing_B}. Then $B'' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$ where $c_{0}'' = B'' (X_{r}, y_{0})$ and $c_{1}'' = B'' (X_{r}, y_{1})$.
 \end{lemma}
 
 \begin{proof}
+    \uses{lem:three_sum_signing_B_props,def:three_sum_like_matrix}
+    % \leanok
     Recall that $c_{0}'' - c_{1}'' \in \{0, \pm 1\}^{X_{r}}$ by Lemma~\ref{lem:three_sum_signing_B_props}.\ref{item:tss_Bp_c2}, so $\mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$ is well-defined. To see that $B'' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$, note that all properties from Definition~\ref{def:three_sum_like_matrix} are satisfied: property~\ref{item:tsl_cols} holds by Lemma~\ref{lem:three_sum_signing_B_props}.\ref{item:tss_Bp_Dcols}, property~\ref{item:tsl_bot} holds by Lemma~\ref{lem:three_sum_signing_B_r_props}.\ref{item:tss_Brp_tu3}, and property~\ref{item:tsl_left} holds by Lemma~\ref{lem:three_sum_signing_B_props}.\ref{item:tss_Bp_AlD}.
 \end{proof}
 
-\begin{lemma}\label{lem:three_sum_like_pivot}
+\begin{lemma}
+    \label{lem:three_sum_like_pivot}
+    \uses{def:three_sum_like_matrix,def:stp}
+    % \lean{}
+    \leanok
     Let $C \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ from Definition~\ref{def:three_sum_like_matrix}. Let $x \in X_{\ell}$ and $y \in Y_{\ell}$ be such that $A_{\ell} (x, y) \neq 0$, and let $C'$ be the result of performing a short tableau pivot in $C$ on $(x, y)$. Then $C' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$.
 \end{lemma}
 
 \begin{proof}
+    \uses{lem:stp_block_zero,def:tu,lem:stp_tu}
+    % \leanok
     Our goal is to show that $C'$ satisfies all properties from Definition~\ref{def:three_sum_like_matrix}. Let $C' = \begin{bmatrix} C_{11}' & C_{12}' \\ C_{21}' & C_{22}' \end{bmatrix}$, and let $\begin{bmatrix} A_{\ell}' \\ D' \end{bmatrix}$ be the result of performing a short tableau pivot on $(x, y)$ in $\begin{bmatrix} A_{\ell} \\ D \end{bmatrix}$. Observe the following.
 
     \begin{itemize}
@@ -467,11 +539,17 @@
     Now suppose $j \in Y_{\ell} \setminus \{y\}$. By the pivot formula, $D' (X_{r}, j) = D (X_{r}, j) - \frac{A_{\ell} (x, j)}{A_{\ell} (x, y)} \cdot D (X_{r}, y)$. Here $D (X_{r}, j), \ D (X_{r}, y) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$ by property~\ref{item:tsl_cols} for $C$, and $A_{\ell} (x, j) \in \{0, \pm 1\}$ and $A_{\ell} (x, y) \in \{\pm 1\}$ by the prior observations. Perform an exhaustive case distinction on $D (X_{r}, j)$, $D (X_{r}, y)$, $A_{\ell} (x, j)$, and $A_{\ell} (x, y)$. In every case, we can show that either $\begin{bmatrix} A_{\ell} (x, y) & A_{\ell} (x, j) \\ D (X_{r}, y) & D (X_{r}, j) \end{bmatrix}$ contains a submatrix with determinant not in $\{0, \pm 1\}$, which contradicts TUness of $\begin{bmatrix} A_{\ell} \\ D \end{bmatrix}$, or that $D' (X_{r}, j) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$, as desired. \todo{need details?}
 \end{proof}
 
-\begin{lemma}\label{lem:three_sum_like_tu}
+\begin{lemma}
+    \label{lem:three_sum_like_tu}
+    \uses{def:three_sum_like_matrix,def:tu}
+    % \lean{}
+    \leanok
     Let $C \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ from Definition~\ref{def:three_sum_like_matrix}. Then $C$ is TU.
 \end{lemma}
 
 \begin{proof}
+    \uses{def:three_sum_like_matrix,lem:tu_iff_all_pu,lem:stp_pn_abs_det_eq,lem:three_sum_like_pivot}
+    % \leanok
     By Lemma~\ref{lem:tu_iff_all_pu}, it suffices to show that $C$ is $k$-PU for every $k \in \mathbb{Z}_{\geq 1}$. We prove this claim by induction on $k$. The base case with $k = 1$ holds, since properties~\ref{item:tsl_bot} and~\ref{item:tsl_left} in Definition~\ref{def:three_sum_like_matrix} imply that $A_{\ell}$, $A_{r}$, and $D$ are TU, so all their entries of $C = \begin{bmatrix} A_{\ell} & 0 \\ D & A_{r} \end{bmatrix}$ are in $\{0, \pm 1\}$, as desired.
 
     Suppose that for some $k \in \mathbb{Z}_{\geq 1}$ we know that every $C' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ is $k$-PU. Our goal is to show that $C$ is $k$-PU, i.e., that every $(k + 1) \times (k + 1)$ submatrix $S$ of $C$ has $\det V \in \{0, \pm 1\}$.
@@ -483,19 +561,31 @@
     Since $C$ is $1$-PU, all entries of $V$ are in $\{0, \pm 1\}$, and hence $V (x_{\ell}, y_{\ell}) \in \{\pm 1\}$. Thus, by Lemma~\ref{lem:stp_pn_abs_det_eq}, performing a short tableau pivot in $V$ on $(x_{\ell}, y_{\ell})$ yields a matrix that contains a $k \times k$ submatrix $S''$ such that $|\det V| = |\det V''|$. Since $V$ is a submatrix of $C$, matrix $V''$ is a submatrix of the matrix $C'$ resulting from performing a short tableau pivot in $C$ on the same entry $(x_{\ell}, y_{\ell})$. By Lemma~\ref{lem:three_sum_like_pivot}, we have $C' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$. Thus, by the inductive hypothesis applied to $V''$ and $C'$, we have $\det V'' \in \{0, \pm 1\}$. Since $|\det V| = |\det V''|$, we conclude that $\det V \in \{0, \pm 1\}$.
 \end{proof}
 
-\begin{lemma}\label{lem:three_sum_signing_B_tu}
+\begin{lemma}
+    \label{lem:three_sum_signing_B_tu}
+    \uses{def:three_sum_signing_B,def:tu}
+    % \lean{}
+    \leanok
     $B''$ from Definition~\ref{def:three_sum_signing_B} is TU.
 \end{lemma}
 
 \begin{proof}
+    \uses{lem:three_sum_like_signing_B,lem:three_sum_like_tu}
+    % \leanok
     Combine the results of Lemmas~\ref{lem:three_sum_like_signing_B} and~\ref{lem:three_sum_like_tu}.
     % By Lemma~\ref{lem:three_sum_like_signing_B}, $B'' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$, and by Lemma~\ref{lem:three_sum_like_tu}, every matrix in $\mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$ is TU.
 \end{proof}
 
-\begin{lemma}\label{lem:matroid_three_sum_reg}
+\begin{theorem}
+    \label{thm:matroid_three_sum_regular}
+    \uses{def:three_sum_matroid,def:regular}
+    % \lean{}
+    \leanok
     Let $M$ be a $3$-sum of regular matroids $M_{\ell}$ and $M_{r}$. Then $M$ is also regular.
-\end{lemma}
+\end{theorem}
 
 \begin{proof}
+    \uses{def:std_repr,def:three_sum_matroid,lem:regular_defs_equiv,def:three_sum_signing_B,lem:three_sum_signing_B_valid,lem:three_sum_signing_B_tu}
+    % \leanok
     Let $B$, $B_{\ell}$, and $B_{r}$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{def:three_sum_matroid}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{lem:regular_defs_equiv}, $B_{\ell}$ and $B_{r}$ have TU signings. Then the canonical signing $B''$ from Definition~\ref{def:three_sum_signing_B} is a TU signing of $B$. Indeed, $B''$ is a signing of $B$ by Lemma~\ref{lem:three_sum_signing_B_valid}, and $B''$ is TU by Lemma~\ref{lem:three_sum_signing_B_tu}. Thus, $M$ is regular by Lemma~\ref{lem:regular_defs_equiv}.
 \end{proof}
