@@ -441,7 +441,67 @@ omit [DecidableEq α] in
   rintro (iₗ | iᵣ) (jₗ | jᵣ)
   · simp [hBₗ, hBₗ₀₀, hBₗ₀₂, hBₗ₂₀, hBₗ₁₂, hBₗ₂₁, Aₗ, x₀ₗ, x₁ₗ, x₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ, matrix3sumComposition]
   · rfl
-  · sorry
+  · if hx₀ : iᵣ.val = x₀ then
+      if hy₀ : jₗ.val = y₀ then
+        simp [hx₀, hy₀,
+          hBₗ, hBₗ₀₀, hBₗ₀₂, hBₗ₂₀, hBₗ₁₂, hBₗ₂₁, Aₗ, x₀ₗ, x₁ₗ, x₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ,
+          hBᵣ, hBᵣ₀₀, hBᵣ₀₂, hBᵣ₂₀, hBᵣ₁₂, hBᵣ₂₁, Aᵣ, x₀ᵣ, x₁ᵣ, x₂ᵣ, y₀ᵣ, y₁ᵣ, y₂ᵣ,
+          matrix3sumComposition, D₀]
+      else if hy₁ : jₗ.val = y₁ then
+        have hyy : y₁ ≠ y₀ := sorry
+        simp [hx₀, hy₁, hyy,
+          hBₗ, hBₗ₀₀, hBₗ₀₂, hBₗ₂₀, hBₗ₁₂, hBₗ₂₁, Aₗ, x₀ₗ, x₁ₗ, x₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ,
+          hBᵣ, hBᵣ₀₀, hBᵣ₀₂, hBᵣ₂₀, hBᵣ₁₂, hBᵣ₂₁, Aᵣ, x₀ᵣ, x₁ᵣ, x₂ᵣ, y₀ᵣ, y₁ᵣ, y₂ᵣ,
+          matrix3sumComposition, D₀]
+      else
+        have hy₂ : jₗ.val ≠ y₂ := sorry
+        have hYₗ : jₗ.val ∈ Yₗ := sorry
+        simp [hx₀, hy₀, hy₁, hy₂, hYₗ,
+          hBₗ, hBₗ₀₀, hBₗ₀₂, hBₗ₂₀, hBₗ₁₂, hBₗ₂₁, Aₗ, x₀ₗ, x₁ₗ, x₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ,
+          hBᵣ, hBᵣ₀₀, hBᵣ₀₂, hBᵣ₂₀, hBᵣ₁₂, hBᵣ₂₁, Aᵣ, x₀ᵣ, x₁ᵣ, x₂ᵣ, y₀ᵣ, y₁ᵣ, y₂ᵣ,
+          matrix3sumComposition, Dₗ]
+    else if hx₁ : iᵣ.val = x₁ then
+      have hxx : x₁ ≠ x₀ := sorry
+      if hy₀ : jₗ.val = y₀ then
+        simp [hx₁, hy₀, hxx,
+          hBₗ, hBₗ₀₀, hBₗ₀₂, hBₗ₂₀, hBₗ₁₂, hBₗ₂₁, Aₗ, x₀ₗ, x₁ₗ, x₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ,
+          hBᵣ, hBᵣ₀₀, hBᵣ₀₂, hBᵣ₂₀, hBᵣ₁₂, hBᵣ₂₁, Aᵣ, x₀ᵣ, x₁ᵣ, x₂ᵣ, y₀ᵣ, y₁ᵣ, y₂ᵣ,
+          matrix3sumComposition, D₀]
+      else if hy₁ : jₗ.val = y₁ then
+        have hyy : y₁ ≠ y₀ := sorry
+        simp [hx₁, hy₁, hxx, hyy,
+          hBₗ, hBₗ₀₀, hBₗ₀₂, hBₗ₂₀, hBₗ₁₂, hBₗ₂₁, Aₗ, x₀ₗ, x₁ₗ, x₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ,
+          hBᵣ, hBᵣ₀₀, hBᵣ₀₂, hBᵣ₂₀, hBᵣ₁₂, hBᵣ₂₁, Aᵣ, x₀ᵣ, x₁ᵣ, x₂ᵣ, y₀ᵣ, y₁ᵣ, y₂ᵣ,
+          matrix3sumComposition, D₀]
+      else
+        have hy₂ : jₗ.val ≠ y₂ := sorry
+        have hYₗ : jₗ.val ∈ Yₗ := sorry
+        simp [hx₀, hx₁, hy₀, hy₁, hy₂, hxx, hYₗ,
+          hBₗ, hBₗ₀₀, hBₗ₀₂, hBₗ₂₀, hBₗ₁₂, hBₗ₂₁, Aₗ, x₀ₗ, x₁ₗ, x₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ,
+          hBᵣ, hBᵣ₀₀, hBᵣ₀₂, hBᵣ₂₀, hBᵣ₁₂, hBᵣ₂₁, Aᵣ, x₀ᵣ, x₁ᵣ, x₂ᵣ, y₀ᵣ, y₁ᵣ, y₂ᵣ,
+          matrix3sumComposition, Dₗ]
+    else
+      have hx₂ : iᵣ.val ≠ x₂ := sorry
+      have hXᵣ : iᵣ.val ∈ Xᵣ := sorry
+      if hy₀ : jₗ.val = y₀ then
+        simp [hx₀, hx₁, hx₂, hy₀, hXᵣ,
+          hBₗ, hBₗ₀₀, hBₗ₀₂, hBₗ₂₀, hBₗ₁₂, hBₗ₂₁, Aₗ, x₀ₗ, x₁ₗ, x₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ,
+          hBᵣ, hBᵣ₀₀, hBᵣ₀₂, hBᵣ₂₀, hBᵣ₁₂, hBᵣ₂₁, Aᵣ, x₀ᵣ, x₁ᵣ, x₂ᵣ, y₀ᵣ, y₁ᵣ, y₂ᵣ,
+          matrix3sumComposition, Dᵣ]
+      else if hy₁ : jₗ.val = y₁ then
+        have hyy : y₁ ≠ y₀ := sorry
+        simp [hx₀, hx₁, hx₂, hy₁, hyy, hXᵣ,
+          hBₗ, hBₗ₀₀, hBₗ₀₂, hBₗ₂₀, hBₗ₁₂, hBₗ₂₁, Aₗ, x₀ₗ, x₁ₗ, x₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ,
+          hBᵣ, hBᵣ₀₀, hBᵣ₀₂, hBᵣ₂₀, hBᵣ₁₂, hBᵣ₂₁, Aᵣ, x₀ᵣ, x₁ᵣ, x₂ᵣ, y₀ᵣ, y₁ᵣ, y₂ᵣ,
+          matrix3sumComposition, Dᵣ]
+      else
+        have hy₂ : jₗ.val ≠ y₂ := sorry
+        have hYₗ : jₗ.val ∈ Yₗ := sorry
+        simp [hx₀, hx₁, hx₂, hy₀, hy₁, hy₂, hXᵣ, hYₗ,
+          hBₗ, hBₗ₀₀, hBₗ₀₂, hBₗ₂₀, hBₗ₁₂, hBₗ₂₁, Aₗ, x₀ₗ, x₁ₗ, x₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ,
+          hBᵣ, hBᵣ₀₀, hBᵣ₀₂, hBᵣ₂₀, hBᵣ₁₂, hBᵣ₂₁, Aᵣ, x₀ᵣ, x₁ᵣ, x₂ᵣ, y₀ᵣ, y₁ᵣ, y₂ᵣ,
+          matrix3sumComposition, D₀, Dₗ, Dᵣ]
+        sorry
   · simp [hBᵣ, hBᵣ₀₀, hBᵣ₀₂, hBᵣ₂₀, hBᵣ₁₂, hBᵣ₂₁, Aᵣ, x₀ᵣ, x₁ᵣ, x₂ᵣ, y₀ᵣ, y₁ᵣ, y₂ᵣ, matrix3sumComposition]
 
 -- lemma 19.1
