@@ -6,47 +6,39 @@ variable {α : Type} [DecidableEq α]
 noncomputable def standardRepr3sumComposition {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
     StandardRepr α Z2 × Prop :=
-  -- respective `x`s and `y`s as members of respective sets
-  let ⟨⟨x₀ₗ, x₁ₗ, x₂ₗ⟩, ⟨x₀ᵣ, x₁ᵣ, x₂ᵣ⟩⟩ := hXX.inter3all
-  let ⟨⟨y₀ₗ, y₁ₗ, y₂ₗ⟩, ⟨y₀ᵣ, y₁ᵣ, y₂ᵣ⟩⟩ := hYY.inter3all
-  -- extracting submatrices
-  let Aₗ := Sₗ.B.Aₗ x₀ₗ x₁ₗ y₂ₗ
-  let Dₗ := Sₗ.B.Dₗ x₀ₗ x₁ₗ y₀ₗ y₁ₗ y₂ₗ
-  let D₀ := Sₗ.B.D₀ x₀ₗ x₁ₗ y₀ₗ y₁ₗ
-  let Dᵣ := Sᵣ.B.Dᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ
-  let Aᵣ := Sᵣ.B.Aᵣ x₂ᵣ y₀ᵣ y₁ᵣ
+  let S := matrix3sum.fromStandardRepr hXX hYY
   ⟨
     ⟨
-      (Sₗ.X.drop2 x₀ₗ x₁ₗ) ∪ (Sᵣ.X.drop1 x₂ᵣ),
-      (Sₗ.Y.drop1 y₂ₗ) ∪ (Sᵣ.Y.drop2 y₀ᵣ y₁ᵣ),
+      S.XAₗ ∪ S.XAᵣ,
+      S.YAₗ ∪ S.YAᵣ,
       by
         rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
         exact
           ⟨⟨Sₗ.hXY.disjoint_sdiff_left.disjoint_sdiff_right, hYX.symm.disjoint_sdiff_left.disjoint_sdiff_right⟩,
           ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right, Sᵣ.hXY.disjoint_sdiff_left.disjoint_sdiff_right⟩⟩,
       -- the standard representation matrix
-      (matrix3sumComposition x₀ₗ x₁ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ₗ y₁ₗ y₂ₗ y₀ᵣ y₁ᵣ Aₗ Dₗ D₀ Dᵣ Aᵣ).toMatrixUnionUnion,
+      S.Composition.toMatrixUnionUnion,
       inferInstance,
       inferInstance,
     ⟩,
     -- the special elements are all distinct
     ((x₀ ≠ x₁ ∧ x₀ ≠ x₂ ∧ x₁ ≠ x₂) ∧ (y₀ ≠ y₁ ∧ y₀ ≠ y₂ ∧ y₁ ≠ y₂))
     -- `D₀` is the same in `Bₗ` and `Bᵣ`
-    ∧ D₀ = Sᵣ.B.D₀ x₀ᵣ x₁ᵣ y₀ᵣ y₁ᵣ
+    ∧ S.D₀ = Sᵣ.B.D₀ S.x₀ᵣ S.x₁ᵣ S.y₀ᵣ S.y₁ᵣ
     -- `D₀` has the correct form
-    ∧ (D₀ = 1 ∨ D₀ = !![1, 1; 0, 1])
+    ∧ (S.D₀ = 1 ∨ S.D₀ = !![1, 1; 0, 1])
     -- `Bₗ` has the correct structure outside of `Aₗ`, `Dₗ`, and `D₀`
-    ∧ Sₗ.B x₀ₗ y₂ₗ = 1
-    ∧ Sₗ.B x₁ₗ y₂ₗ = 1
-    ∧ Sₗ.B x₂ₗ y₀ₗ = 1
-    ∧ Sₗ.B x₂ₗ y₁ₗ = 1
-    ∧ (∀ x : α, ∀ hx : x ∈ Sₗ.X, x ≠ x₀ ∧ x ≠ x₁ → Sₗ.B ⟨x, hx⟩ y₂ₗ = 0)
+    ∧ Sₗ.B S.x₀ₗ S.y₂ₗ = 1
+    ∧ Sₗ.B S.x₁ₗ S.y₂ₗ = 1
+    ∧ Sₗ.B S.x₂ₗ S.y₀ₗ = 1
+    ∧ Sₗ.B S.x₂ₗ S.y₁ₗ = 1
+    ∧ (∀ x : α, ∀ hx : x ∈ Sₗ.X, x ≠ x₀ ∧ x ≠ x₁ → Sₗ.B ⟨x, hx⟩ S.y₂ₗ = 0)
     -- `Bᵣ` has the correct structure outside of `Aᵣ`, `Dᵣ`, and `D₀`
-    ∧ Sᵣ.B x₀ᵣ y₂ᵣ = 1
-    ∧ Sᵣ.B x₁ᵣ y₂ᵣ = 1
-    ∧ Sᵣ.B x₂ᵣ y₀ᵣ = 1
-    ∧ Sᵣ.B x₂ᵣ y₁ᵣ = 1
-    ∧ (∀ y : α, ∀ hy : y ∈ Sᵣ.Y, y ≠ y₀ ∧ y ≠ y₁ → Sᵣ.B x₂ᵣ ⟨y, hy⟩ = 0)
+    ∧ Sᵣ.B S.x₀ᵣ S.y₂ᵣ = 1
+    ∧ Sᵣ.B S.x₁ᵣ S.y₂ᵣ = 1
+    ∧ Sᵣ.B S.x₂ᵣ S.y₀ᵣ = 1
+    ∧ Sᵣ.B S.x₂ᵣ S.y₁ᵣ = 1
+    ∧ (∀ y : α, ∀ hy : y ∈ Sᵣ.Y, y ≠ y₀ ∧ y ≠ y₁ → Sᵣ.B S.x₂ᵣ ⟨y, hy⟩ = 0)
   ⟩
 
 lemma standardRepr3sumComposition_X {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
@@ -94,57 +86,6 @@ instance Matroid.Is3sumOf.finS {M Mₗ Mᵣ : Matroid α} (hM : M.Is3sumOf Mₗ 
   obtain ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, rfl, _⟩ := hM
   rw [standardRepr3sumComposition_X]
   apply Finite.Set.finite_union
-
-/-- Special function application that binds tighter than anything else. -/
-local notation:max f:max"⁀"a:max => f a
-
-lemma matrix3sumComposition_hasTuSigning {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
-    [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    {Bₗ : Matrix Xₗ Yₗ Z2} {Bᵣ : Matrix Xᵣ Yᵣ Z2}
-    (hXX : Xₗ ∩ Xᵣ = {x₀, x₁, x₂}) (hYY : Yₗ ∩ Yᵣ = {y₀, y₁, y₂}) (hXY : Xₗ ⫗ Yᵣ) (hYX : Yₗ ⫗ Xᵣ)
-    (hBₗ : Bₗ.HasTuSigning) (hBᵣ : Bᵣ.HasTuSigning) :
-    -- respective `x`s and `y`s as members of respective sets
-    let ⟨⟨x₀ₗ, x₁ₗ, x₂ₗ⟩, ⟨x₀ᵣ, x₁ᵣ, x₂ᵣ⟩⟩ := hXX.inter3all
-    let ⟨⟨y₀ₗ, y₁ₗ, y₂ₗ⟩, ⟨y₀ᵣ, y₁ᵣ, y₂ᵣ⟩⟩ := hYY.inter3all
-    -- extract submatrices
-    let Aₗ := Bₗ.Aₗ x₀ₗ x₁ₗ y₂ₗ
-    let Dₗ := Bₗ.Dₗ x₀ₗ x₁ₗ y₀ₗ y₁ₗ y₂ₗ
-    let D₀ := Bₗ.D₀ x₀ₗ x₁ₗ y₀ₗ y₁ₗ
-    let Dᵣ := Bᵣ.Dᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ
-    let Aᵣ := Bᵣ.Aᵣ x₂ᵣ y₀ᵣ y₁ᵣ
-    -- the necessary parts of "validity" of the 3-sum
-    Bₗ x₀ₗ y₀ₗ = 1 →
-    Bₗ x₀ₗ y₂ₗ = 1 →
-    Bₗ x₂ₗ y₀ₗ = 1 →
-    Bₗ x₁ₗ y₂ₗ = 1 →
-    Bₗ x₂ₗ y₁ₗ = 1 →
-    Bᵣ x₀ᵣ y₀ᵣ = 1 →
-    Bᵣ x₀ᵣ y₂ᵣ = 1 →
-    Bᵣ x₂ᵣ y₀ᵣ = 1 →
-    Bᵣ x₁ᵣ y₂ᵣ = 1 →
-    Bᵣ x₂ᵣ y₁ᵣ = 1 →
-    -- the actual statement
-    (matrix3sumComposition x₀ₗ x₁ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ₗ y₁ₗ y₂ₗ y₀ᵣ y₁ᵣ Aₗ Dₗ D₀ Dᵣ Aᵣ).HasTuSigning := by
-  obtain ⟨Aₗ, hABₗ⟩ := hBₗ
-  obtain ⟨Aᵣ, hABᵣ⟩ := hBᵣ
-  rw [Matrix.isTuSigningOf_iff] at hABₗ hABᵣ
-  obtain ⟨hAₗ, rfl⟩ := hABₗ
-  obtain ⟨hAᵣ, rfl⟩ := hABᵣ
-  exact (⟨
-    matrix3sumCanonicalSigning Aₗ Aᵣ hXX hYY,
-    matrix3sumCanonicalSigning_isTotallyUnimodular hXX hYY hAₗ hAᵣ,
-    matrix3sumCanonicalSigning_isSigningOf_matrix3sumComposition hXX hYY hAₗ.apply hAᵣ.apply
-      hAₗ.apply_abs_eq_one⁀·
-      hAₗ.apply_abs_eq_one⁀·
-      hAₗ.apply_abs_eq_one⁀·
-      hAₗ.apply_abs_eq_one⁀·
-      hAₗ.apply_abs_eq_one⁀·
-      hAᵣ.apply_abs_eq_one⁀·
-      hAᵣ.apply_abs_eq_one⁀·
-      hAᵣ.apply_abs_eq_one⁀·
-      hAᵣ.apply_abs_eq_one⁀·
-      hAᵣ.apply_abs_eq_one⁀·
-  ⟩)
 
 -- Perhaps a weaker tactic than `tauto` would suffice; enough to destruct `let`s and `and`s.
 local macro "valid3sum" : tactic => `(tactic| unfold standardRepr3sumComposition at * <;> tauto)
