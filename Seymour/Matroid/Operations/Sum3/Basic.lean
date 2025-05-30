@@ -142,7 +142,6 @@ noncomputable def matrix3sumComposition [DecidableEq α] {F : Type} [Field F]
     Matrix ((Xₗ.drop2 x₀ₗ x₁ₗ) ⊕ (Xᵣ.drop1 x₂ᵣ)) ((Yₗ.drop1 y₂ₗ) ⊕ (Yᵣ.drop2 y₀ᵣ y₁ᵣ)) F :=
   ⊞ Aₗ 0 (matrix3sumBottomLeft x₀ᵣ x₁ᵣ x₂ᵣ y₀ₗ y₁ₗ y₂ₗ Dₗ D₀ Dᵣ) Aᵣ
 
-
 -- ## Parts of the two matrices
 
 @[simp]

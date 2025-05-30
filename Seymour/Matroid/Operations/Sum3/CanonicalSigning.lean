@@ -223,7 +223,6 @@ lemma Matrix.toCanonicalSigning_apply_abs {X Y : Set α} (Q : Matrix X Y ℚ) {x
   | `($_ $B) => `($(B).$(Lean.mkIdent `_rrr))
   | _ => throw ()
 
--- lemma 15.a
 set_option maxHeartbeats 333333 in
 /-private-/ lemma Matrix.IsTotallyUnimodular.signing_expansion₀ {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
     {x₂ : X} {y₀ y₁ : Y} (hyy : y₀ ≠ y₁) (hQy₀ : Q x₂ y₀ = 1) (hQy₁ : Q x₂ y₁ = 1)
@@ -267,7 +266,6 @@ set_option maxHeartbeats 333333 in
   convert hQcc.mul_cols hq
   ext _ ((_|_)|_) <;> simp [q]
 
--- lemma 15.b
 set_option maxHeartbeats 333333 in
 /-private-/ lemma Matrix.IsTotallyUnimodular.signing_expansion₁ {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
     {x₂ : X} {y₀ y₁ : Y} (hyy : y₀ ≠ y₁) (hQy₀ : Q x₂ y₀ = 1) (hQy₁ : Q x₂ y₁ = 1)
@@ -311,7 +309,6 @@ set_option maxHeartbeats 333333 in
   convert hQcc.mul_cols hq
   ext _ ((_|_)|_) <;> simp [q]
 
--- lemma 16.1
 omit [DecidableEq α] in
 /-private-/ lemma Matrix.IsTotallyUnimodular.special_form_cols {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
     {x₂ : X} {y₀ y₁ : Y} (hQy₀ : Q x₂ y₀ = 1) (hQy₁ : Q x₂ y₁ = 1) :
@@ -327,7 +324,6 @@ omit [DecidableEq α] in
     have := hQ.det ![x₂, Set.diff_subset.elem i] ![y₀, y₁]
     simp_all [Matrix.det_fin_two]
 
--- lemma 16.2
 /-private-/ lemma Matrix.IsTotallyUnimodular.signing_expansion_cols_weak {X Y : Set α} {Q : Matrix X Y ℚ}
     (hQ : Q.IsTotallyUnimodular) {x₂ : X} {y₀ y₁ : Y} (hyy : y₀ ≠ y₁) (hQy₀ : Q x₂ y₀ = 1) (hQy₁ : Q x₂ y₁ = 1)
     (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q x₂ y = 0) :
@@ -363,7 +359,6 @@ omit [DecidableEq α] in
         SignType.cast.range by rintro ((((((_|_)|_)|_)|_)|_)|_) <;> simp)).fromCols_zero Unit
   aesop
 
--- Lemma 18.2's corollary
 /-private-/ lemma Matrix.IsTotallyUnimodular.signing_expansion_rows {X Y : Set α} {Q : Matrix X Y ℚ}
     (hQ : Q.IsTotallyUnimodular) {x₀ x₁ : X} {y₂ : Y} (hxx : x₀ ≠ x₁) (hQx₀ : Q x₀ y₂ = 1) (hQx₁ : Q x₁ y₂ = 1)
     (hQx : ∀ x : X, x.val ≠ x₀ ∧ x.val ≠ x₁ → Q x y₂ = 0) :
@@ -504,7 +499,6 @@ omit [DecidableEq α] in
         sorry
   · simp [hBᵣ, hBᵣ₀₀, hBᵣ₀₂, hBᵣ₂₀, hBᵣ₁₂, hBᵣ₂₁, Aᵣ, x₀ᵣ, x₁ᵣ, x₂ᵣ, y₀ᵣ, y₁ᵣ, y₂ᵣ, matrix3sumComposition]
 
--- lemma 19.1
 /-private-/ lemma matrix3sumCanonicalSigning_D_eq {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
@@ -544,7 +538,6 @@ omit [DecidableEq α] in
     matrix3sumBottomLeft x₀ᵣ x₁ᵣ x₂ᵣ y₀ₗ y₁ₗ y₂ₗ Dₗ D₀ Dᵣ = c₀ ⊗ r₀ + c₁ ⊗ r₁ :=
   sorry
 
--- lemma 19.2
 /-private-/ lemma matrix3sumCanonicalSigning_D_rows {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
@@ -583,7 +576,6 @@ omit [DecidableEq α] in
     ∀ i, D i = r₀ ∨ D i = -r₀ ∨ D i = r₁ ∨ D i = -r₁ ∨ D i = r₂ ∨ D i = -r₂ ∨ D i = 0 :=
   sorry
 
--- lemma 19.3
 /-private-/ lemma matrix3sumCanonicalSigning_D_cols {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
@@ -620,13 +612,12 @@ omit [DecidableEq α] in
     |Bᵣ'.submatrix3x3 x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ| = matrix3x3unsigned₀ ∨
     |Bᵣ'.submatrix3x3 x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ| = matrix3x3unsigned₁ →
     -- the actual statement
-    ∀ j, (D · j) = c₀ ∨ (D · j) = -c₀ ∨ (D · j) = c₁ ∨ (D · j) = -c₁ ∨ (D · j) = c₀ - c₁ ∨ (D · j) = c₁ - c₀ ∨ (D · j) = 0 :=
+    ∀ j, (D · j) = 0 ∨ (D · j) = c₀ ∨ (D · j) = -c₀ ∨ (D · j) = c₁ ∨ (D · j) = -c₁ ∨ (D · j) = c₀ - c₁ ∨ (D · j) = c₁ - c₀ :=
   sorry
 
 
 -- ## Total unimodularity of constituents
 
--- lemma 19.5
 /-private-/ lemma matrix3sumCanonicalSigning_Aᵣ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
@@ -650,7 +641,6 @@ omit [DecidableEq α] in
     (Bᵣ.Aᵣ x₂ᵣ y₀ᵣ y₁ᵣ ◫ matrix3sumBottomLeft x₀ᵣ x₁ᵣ x₂ᵣ y₀ₗ y₁ₗ y₂ₗ Dₗ D₀ Dᵣ).IsTotallyUnimodular :=
   sorry
 
--- lemma 19.7
 /-private-/ lemma matrix3sumCanonicalSigning_Aₗ_D_TU {Xₗ Yₗ Xᵣ Yᵣ : Set α} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
     {Bₗ' : Matrix Xₗ Yₗ ℚ} {Bᵣ' : Matrix Xᵣ Yᵣ ℚ} (hBₗ' : Bₗ'.IsTotallyUnimodular) (hBᵣ' : Bᵣ'.IsTotallyUnimodular)
