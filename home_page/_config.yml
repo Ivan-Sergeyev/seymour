@@ -20,7 +20,7 @@
 
 title: Seymour
 #email: your-email@example.com
-description: by Ivan Sergeev and Martin Dvorak and Tristan Figueroa-Reid and Byung-Hak Hwang and Rida Hamadani
+description: Martin Dvorak, Ivan Sergeev, Tristan Figueroa-Reid, Byung-Hak Hwang, Rida Hamadani
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://Ivan-Sergeyev.github.io/seymour" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username:
