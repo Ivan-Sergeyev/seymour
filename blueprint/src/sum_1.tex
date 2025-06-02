@@ -13,7 +13,7 @@
 
 \begin{definition}
     \label{def:one_sum_matroid}
-    \uses{def:std_repr,def:one_sum_matrix}
+    \uses{StandardRepr,def:one_sum_matrix}
     % \lean{}
     \leanok
     A matroid $M$ is a $1$-sum of matroids $M_{\ell}$ and $M_{r}$ if there exist standard $\mathbb{Z}_{2}$ representation matrices $B$, $B_{\ell}$, and $B_{r}$ (for $M$, $M_{\ell}$, and $M_{r}$, respectively) of the form given in Definition~\ref{def:one_sum_matrix}.
@@ -34,16 +34,16 @@
 
 \begin{lemma}
     \label{lem:one_sum_tu}
-    \uses{def:one_sum_matrix,def:tu}
+    \uses{def:one_sum_matrix,Matrix.IsTotallyUnimodular}
     % \lean{}
     \leanok
     Let $B_{\ell}$ and $B_{r}$ from Definition~\ref{def:one_sum_matrix} be TU matrices (over $\mathbb{Q}$). Then $B = B_{\ell} \oplus_{1} B_{r}$ is TU.
 \end{lemma}
 
 \begin{proof}
-    \uses{def:one_sum_matrix,def:tu,lem:det_lower_left_zero}
+    \uses{def:one_sum_matrix,Matrix.IsTotallyUnimodular,lem:det_lower_left_zero}
     \leanok
-    We prove that $B$ is TU by Definition~\ref{def:tu}. To this end, let $T$ be a square submatrix of $B$. Our goal is to show that $\det T \in \{0, \pm 1\}$.
+    We prove that $B$ is TU by Definition~\ref{Matrix.IsTotallyUnimodular}. To this end, let $T$ be a square submatrix of $B$. Our goal is to show that $\det T \in \{0, \pm 1\}$.
 
     Let $T_{\ell}$ and $T_{r}$ denote the submatrices in the intersection of $T$ with $B_{\ell}$ and $B_{r}$, respectively. Then $T$ has the form
     \[
@@ -61,14 +61,14 @@
 
 \begin{theorem}
     \label{thm:one_sum_regular}
-    \uses{def:one_sum_matroid,def:regular}
+    \uses{def:one_sum_matroid,Matroid.IsRegular}
     % \lean{}
     \leanok
     Let $M$ be a $1$-sum of regular matroids $M_{\ell}$ and $M_{r}$. Then $M$ is also regular.
 \end{theorem}
 
 \begin{proof}
-    \uses{def:std_repr,def:one_sum_matroid,def:regular,lem:regular_defs_equiv,lem:one_sum_tu,def:tu_signing}
+    \uses{StandardRepr,def:one_sum_matroid,Matroid.IsRegular,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,lem:one_sum_tu,Matrix.IsTuSigningOf}
     \leanok
-    Let $B$, $B_{\ell}$, and $B_{r}$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{def:one_sum_matroid}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{lem:regular_defs_equiv}, $B_{\ell}$ and $B_{r}$ have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Then $B' = B_{\ell}' \oplus_{1} B_{r}'$ is a TU signing of $B$. Indeed, $B'$ is TU by Lemma~\ref{lem:one_sum_tu}, and a direct calculation shows that $B'$ is a signing of $B$. Thus, $M$ is regular by Lemma~\ref{lem:regular_defs_equiv}.
+    Let $B$, $B_{\ell}$, and $B_{r}$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{def:one_sum_matroid}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Then $B' = B_{\ell}' \oplus_{1} B_{r}'$ is a TU signing of $B$. Indeed, $B'$ is TU by Lemma~\ref{lem:one_sum_tu}, and a direct calculation shows that $B'$ is a signing of $B$. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
 \end{proof}

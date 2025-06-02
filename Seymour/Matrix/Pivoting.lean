@@ -6,8 +6,8 @@ import Mathlib.LinearAlgebra.Matrix.Permutation
 
 open scoped Matrix
 
-
 variable {X Y F : Type}
+
 
 -- ## Elementary row operations
 
@@ -322,6 +322,7 @@ lemma Matrix.longTableauPivot_linearIndepenOn [DecidableEq X] [Field F] (A : Mat
     (hAxy : A x y ≠ 0) (S : Set Y) :
     LinearIndepOn F (A.longTableauPivot x y)ᵀ S ↔ LinearIndepOn F Aᵀ S := by
   rw [A.longTableauPivot_eq, Matrix.mulRow_linearIndepOn _ _ (one_div_ne_zero hAxy), A.addRowMultiples_linearIndepOn]
+
 
 -- ## Short-tableau pivoting
 
