@@ -492,7 +492,7 @@
     \leanok
     Let $X_{\ell}$, $Y_{\ell}$, $X_{r}$, $Y_{r}$ be sets and let $c_{0}, c_{1} \in \mathbb{Q}^{X_{r}}$ be column vectors such that for every $i \in X_{r}$ we have $c_{0} (i), \ c_{1} (i), \ c_{0} (i) - c_{1} (i) \in \{0, \pm 1\}$. Define $\mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ to be the family of matrices of the form $\begin{bmatrix} A_{\ell} & 0 \\ D & A_{r} \end{bmatrix}$ where $A_{\ell} \in \mathbb{Q}^{X_{\ell} \times Y_{\ell}}$, $A_{r} \in \mathbb{Q}^{X_{r} \times Y_{r}}$, and $D \in \mathbb{Q}^{X_{r} \times Y_{\ell}}$ are such that:
     \begin{enumerate}
-        \item\label{item:tsl_cols} for every $j \in Y_{r}$, $D (X_{r}, j) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$,
+        \item\label{item:tsl_cols} for every $j \in Y_{\ell}$, $D (X_{r}, j) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$,
         \item\label{item:tsl_bot} $\begin{bmatrix} c_{0} & c_{1} & c_{0} - c_{1} & A_{r} \end{bmatrix}$ is TU,
         \item\label{item:tsl_left} $\begin{bmatrix} A_{\ell} \\ D \end{bmatrix}$ is TU.
     \end{enumerate}
@@ -529,7 +529,7 @@
         \item By Lemma~\ref{lem:stp_block_zero}, $C_{11}' = A_{\ell}'$, $C_{12}' = 0$, $C_{21}' = D'$, and $C_{22}' = A_{r}$.
         \item Since $\begin{bmatrix} A_{\ell} \\ D \end{bmatrix}$ is TU by property~\ref{item:tsl_left} for $C$, all entries of $A_{\ell}$ are in $\{0, \pm 1\}$.
         \item $A_{\ell} (x, y) \in \{\pm 1\}$, as $A_{\ell} (x, y) \in \{0, \pm 1\}$ by the above observation and $A_{\ell} (x, y) \neq 0$ by the assumption.
-        \item Since $\begin{bmatrix} A_{\ell} \\ D \end{bmatrix}$ is TU by property~\ref{item:tsl_left} for $C$ and since pivoting preserves TUness, $\begin{bmatrix} A_{\ell}' \\ D' \end{bmatrix}$ is also TU.
+        \item Since $\begin{bmatrix} A_{\ell} \\ D \end{bmatrix}$ is TU by property~\ref{item:tsl_left} for $C$, and since pivoting preserves TUness, $\begin{bmatrix} A_{\ell}' \\ D' \end{bmatrix}$ is also TU.
     \end{itemize}
 
     These observations immediately imply properties~\ref{item:tsl_bot} and~\ref{item:tsl_left} for $C'$. Indeed, property~\ref{item:tsl_bot} holds for $C'$, since $C_{22}' = A_{r}$ and $\begin{bmatrix} c_{0} & c_{1} & c_{0} - c_{1} & A_{r} \end{bmatrix}$ is TU by property~\ref{item:tsl_bot} for $C$. On the other hand, property~\ref{item:tsl_left} follows from $C_{11}' = A_{\ell}'$, $C_{21}' = D'$, and $\begin{bmatrix} A_{\ell}' \\ D' \end{bmatrix}$ being TU. Thus, it only remains to show that $C'$ satisfies property~\ref{item:tsl_cols}. Let $j \in Y_{r}$. Our goal is to prove that $D' (X_{r}, j) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$.
@@ -552,7 +552,7 @@
     % \leanok
     By Lemma~\ref{lem:tu_iff_all_pu}, it suffices to show that $C$ is $k$-PU for every $k \in \mathbb{Z}_{\geq 1}$. We prove this claim by induction on $k$. The base case with $k = 1$ holds, since properties~\ref{item:tsl_bot} and~\ref{item:tsl_left} in Definition~\ref{def:three_sum_like_matrix} imply that $A_{\ell}$, $A_{r}$, and $D$ are TU, so all their entries of $C = \begin{bmatrix} A_{\ell} & 0 \\ D & A_{r} \end{bmatrix}$ are in $\{0, \pm 1\}$, as desired.
 
-    Suppose that for some $k \in \mathbb{Z}_{\geq 1}$ we know that every $C' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ is $k$-PU. Our goal is to show that $C$ is $k$-PU, i.e., that every $(k + 1) \times (k + 1)$ submatrix $S$ of $C$ has $\det V \in \{0, \pm 1\}$.
+    Suppose that for some $k \in \mathbb{Z}_{\geq 1}$ we know that every $C' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ is $k$-PU. Our goal is to show that $C$ is $(k + 1)$-PU, i.e., that every $(k + 1) \times (k + 1)$ submatrix $S$ of $C$ has $\det V \in \{0, \pm 1\}$.
 
     First, suppose that $V$ has no rows in $X_{\ell}$. Then $V$ is a submatrix of $\begin{bmatrix} D & A_{r} \end{bmatrix}$, which is TU by property~\ref{item:tsl_bot} in Definition~\ref{def:three_sum_like_matrix}, so $\det V \in \{0, \pm 1\}$. Thus, we may assume that $S$ contains a row $x_{\ell} \in X_{\ell}$.
 
