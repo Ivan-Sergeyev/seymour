@@ -287,6 +287,34 @@
 \end{definition}
 
 \begin{lemma}
+    \label{Matrix.support_transpose}
+    \uses{Matrix.support,StandardRepr}
+    % \lean{}
+    \leanok
+    Transpose of a support matrix is equal to a support of the transposed matrix.
+\end{lemma}
+
+\begin{proof}
+    % \uses{}
+    \leanok
+    Definitional equality.
+\end{proof}
+
+\begin{lemma}
+    \label{Matrix.support_submatrix}
+    \uses{Matrix.support,StandardRepr}
+    % \lean{}
+    \leanok
+    Submatrix of a support matrix is equal to a support matrix of the submatrix.
+\end{lemma}
+
+\begin{proof}
+    % \uses{}
+    \leanok
+    Definitional equality.
+\end{proof}
+
+\begin{lemma}
     \label{Matrix.support_Z2}
     \uses{Matrix.support,StandardRepr}
     % \lean{}
@@ -315,6 +343,51 @@
 \end{proof}
 
 \begin{lemma}
+    \label{Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent_of_finite_of_finite}
+    \uses{Matrix.IsTotallyUnimodular,Matrix.support}
+    % \lean{}
+    \leanok
+    Let $A$ be a rational TU matrix with finite number of rows and finite number of columns.
+    Its rows are linearly independent iff the rows of its support matrix are linearly independent.
+\end{lemma}
+
+\begin{proof}
+    % \uses{}
+    \leanok
+    \SeeLean
+\end{proof}
+
+\begin{lemma}
+    \label{Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent_of_finite}
+    \uses{Matrix.IsTotallyUnimodular,Matrix.support}
+    % \lean{}
+    \leanok
+    Let $A$ be a rational TU matrix with finite number of rows.
+    Its rows are linearly independent iff the rows of its support matrix are linearly independent.
+\end{lemma}
+
+\begin{proof}
+    \uses{Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent_of_finite_of_finite}
+    \leanok
+    \SeeLean
+\end{proof}
+
+\begin{lemma}
+    \label{Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent}
+    \uses{Matrix.IsTotallyUnimodular,Matrix.support}
+    % \lean{}
+    \leanok
+    Let $A$ be a rational TU matrix.
+    Its rows are linearly independent iff the rows of its support matrix are linearly independent.
+\end{lemma}
+
+\begin{proof}
+    \uses{Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent_of_finite}
+    \leanok
+    \SeeLean
+\end{proof}
+
+\begin{lemma}
     \label{Matrix.IsTotallyUnimodular.toMatroid_eq_support_toMatroid}
     \uses{Matrix.IsTotallyUnimodular,Matrix.support,StandardRepr}
     % \lean{}
@@ -327,7 +400,7 @@
 \end{lemma}
 
 \begin{proof}
-    % \uses{}
+    \uses{Matrix.support_transpose,Matrix.support_submatrix,Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent}
     \leanok
     \SeeLean
 \end{proof}
