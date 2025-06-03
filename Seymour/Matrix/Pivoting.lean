@@ -160,7 +160,7 @@ private lemma Matrix.addRowMultiples_det [DecidableEq X] [Fintype X] [CommRing F
   aesop
 
 /-- Adding multiples of a row to all other rows of a matrix preserves total unimodularity. -/
-private lemma Matrix.IsTotallyUnimodular.addPivotMultiples [DecidableEq X] [Field F] {A : Matrix X Y F}
+private lemma Matrix.IsTotallyUnimodular.addRowMultiples [DecidableEq X] [Field F] {A : Matrix X Y F}
     (hA : A.IsTotallyUnimodular) {x : X} {y : Y} (hAxy : A x y ≠ 0) :
     (A.addRowMultiples x (- A · y / A x y)).IsTotallyUnimodular := by
   intro k f g hf hg
@@ -315,7 +315,7 @@ lemma Matrix.IsTotallyUnimodular.longTableauPivot [DecidableEq X] [Field F] {A :
   rw [A.longTableauPivot_eq x y]
   have h1Axy : 1 / A x y ∈ SignType.cast.range
   · rw [inv_eq_self_of_in_signTypeCastRange] <;> exact hA.apply x y
-  exact (hA.addPivotMultiples hAxy).mulRow x h1Axy
+  exact (hA.addRowMultiples hAxy).mulRow x h1Axy
 
 /-- Long-tableau pivoting preserves linear independence on transpose. -/
 lemma Matrix.longTableauPivot_linearIndepenOn [DecidableEq X] [Field F] (A : Matrix X Y F) {x : X} {y : Y}
