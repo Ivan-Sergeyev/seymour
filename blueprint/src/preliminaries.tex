@@ -10,6 +10,7 @@
 
 \begin{definition}
     \label{Matrix.det}
+    \uses{Matrix}
     \leanok
     Determinant of a matrix.
 \end{definition}
@@ -19,7 +20,7 @@
     \uses{Matrix.det}
     % \lean{Matrix.IsTotallyUnimodular}
     \leanok
-    Let $R$ be a commutative ring. We say that a matrix $A \in R^{X \times Y}$ is totally unimodular, or TU for short, if for every $k \in \mathbb{N}$, every $k \times k$ submatrix $T$ of $A$ has $\det T \in \{0, \pm 1\}$.
+    Let $R$ be a commutative ring. We say that a matrix $A \in R^{X \times Y}$ is totally unimodular, or TU for short, if for every $k \in \mathbb{N}$, every (not necessarily contiguous) $k \times k$ submatrix $T$ of $A$ has $\det T \in \{0, \pm 1\}$.
 \end{definition}
 
 \begin{lemma}
@@ -57,7 +58,7 @@
     \uses{Matrix.det}
     % \lean{Matrix.IsPartiallyUnimodular}
     \leanok
-    Given $k \in \mathbb{N}$, we say that a matrix $A$ is $k$-partially unimodular, or $k$-PU for short, if every $k \times k$ submatrix $T$ of $A$ has $\det T \in \{0, \pm 1\}$.
+    Given $k \in \mathbb{N}$, we say that a matrix $A$ is $k$-partially unimodular, or $k$-PU for short, if every (not necessarily contiguous, not necessarily injective) $k \times k$ submatrix $T$ of $A$ has $\det T \in \{0, \pm 1\}$.
 \end{definition}
 
 \begin{lemma}
@@ -192,21 +193,6 @@
         \det A'' = \det A' - \sum_{j \in Y} \frac{A (x, j)}{A (x, y)} \cdot \det B_{j}''
     \]
     Therefore, $|\det A''| = |\det A| / |A (x, y)|$.
-\end{proof}
-
-\begin{lemma}
-    \label{shortTableauPivot_submatrix_det_ni_signTypeCastRange}
-    \uses{Matrix.shortTableauPivot}
-    % \lean{}
-    \leanok
-    % TODO state more accurately
-    Let $k \in \mathbb{N}$, let $A \in \mathbb{Q}^{k \times k}$, and let $A'$ be the result of performing a short tableau pivot in $A$ on $(x, y)$ with $x, y \in \{1, \dots, k\}$ such that $A (x, y) \in \{\pm 1\}$. Then $A'$ contains a submatrix $A''$ of size $(k - 1) \times (k - 1)$ with $|\det A''| = |\det A|$.
-\end{lemma}
-
-\begin{proof}
-    % \uses{}
-    \leanok
-    Apply Lemma~\ref{shortTableauPivot_submatrix_det_abs_eq_div} to $A$ and use that $A (x, y) \in \{\pm 1\}$.
 \end{proof}
 
 \begin{lemma}
