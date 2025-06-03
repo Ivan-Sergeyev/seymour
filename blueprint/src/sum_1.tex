@@ -20,7 +20,7 @@
 \end{definition}
 
 \begin{lemma}
-    \label{lem:det_lower_left_zero}
+    \label{Matrix.det_fromBlocks_zero}
     % \uses{}
     % \lean{}
     \leanok
@@ -29,11 +29,11 @@
 
 \begin{proof}
     \leanok
-    This result is proved in MathLib.
+    This result is proved in Mathlib.
 \end{proof}
 
 \begin{lemma}
-    \label{lem:one_sum_tu}
+    \label{Matrix.fromBlocks_isTotallyUnimodular}
     \uses{standardRepr1sumComposition,Matrix.IsTotallyUnimodular}
     % \lean{}
     \leanok
@@ -41,7 +41,7 @@
 \end{lemma}
 
 \begin{proof}
-    \uses{standardRepr1sumComposition,Matrix.IsTotallyUnimodular,lem:det_lower_left_zero}
+    \uses{standardRepr1sumComposition,Matrix.IsTotallyUnimodular,Matrix.det_fromBlocks_zero}
     \leanok
     We prove that $B$ is TU by Definition~\ref{Matrix.IsTotallyUnimodular}. To this end, let $T$ be a square submatrix of $B$. Our goal is to show that $\det T \in \{0, \pm 1\}$.
 
@@ -50,17 +50,17 @@
         T = \begin{bmatrix} T_{\ell} & 0 \\ 0 & T_{r} \end{bmatrix}.
     \]
 
-    First, suppose that $T_{\ell}$ and $T_{r}$ are square. Then $\det T = \det T_{\ell} \cdot \det T_{r}$ by Lemma~\ref{lem:det_lower_left_zero}. Moreover, $\det T_{\ell}, \det T_{r} \in \{0, \pm 1\}$, since $T_{\ell}$ and $T_{r}$ are square submatrices of TU matrices $B_{\ell}$ and $B_{r}$, respectively. Thus, $\det T \in \{0, \pm 1\}$, as desired.
+    First, suppose that $T_{\ell}$ and $T_{r}$ are square. Then $\det T = \det T_{\ell} \cdot \det T_{r}$ by Lemma~\ref{Matrix.det_fromBlocks_zero}. Moreover, $\det T_{\ell}, \det T_{r} \in \{0, \pm 1\}$, since $T_{\ell}$ and $T_{r}$ are square submatrices of TU matrices $B_{\ell}$ and $B_{r}$, respectively. Thus, $\det T \in \{0, \pm 1\}$, as desired.
 
     Without loss of generality we may assume that $T_{\ell}$ has fewer rows than columns. Otherwise we can transpose all matrices and use the same proof, since TUness and determinants are preserved under transposition. Thus, $T$ can be represented in the form
     \[
         T = \begin{bmatrix} T_{11} & T_{12} \\ 0 & T_{22} \end{bmatrix},
     \]
-    where $T_{11}$ contains $T_{\ell}$ and some zero rows, $T_{22}$ is a submatrix of $T_{r}$, and $T_{12}$ contains the rest of the rows of $T_{r}$ (not contained in $T_{22}$) and some zero rows. By Lemma~\ref{lem:det_lower_left_zero}, we have $\det T = \det T_{11} \cdot \det T_{22}$. Since $T_{11}$ contains at least one zero row, $\det T_{11} = 0$. Thus, $\det T = 0 \in \{0, \pm 1\}$, as desired.
+    where $T_{11}$ contains $T_{\ell}$ and some zero rows, $T_{22}$ is a submatrix of $T_{r}$, and $T_{12}$ contains the rest of the rows of $T_{r}$ (not contained in $T_{22}$) and some zero rows. By Lemma~\ref{Matrix.det_fromBlocks_zero}, we have $\det T = \det T_{11} \cdot \det T_{22}$. Since $T_{11}$ contains at least one zero row, $\det T_{11} = 0$. Thus, $\det T = 0 \in \{0, \pm 1\}$, as desired.
 \end{proof}
 
 \begin{theorem}
-    \label{thm:one_sum_regular}
+    \label{Matroid.Is1sumOf.isRegular}
     \uses{Matroid.Is1sumOf,Matroid.IsRegular}
     % \lean{}
     \leanok
@@ -68,7 +68,7 @@
 \end{theorem}
 
 \begin{proof}
-    \uses{StandardRepr,Matroid.Is1sumOf,Matroid.IsRegular,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,lem:one_sum_tu,Matrix.IsTuSigningOf}
+    \uses{StandardRepr,Matroid.Is1sumOf,Matroid.IsRegular,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,Matrix.fromBlocks_isTotallyUnimodular,Matrix.IsTuSigningOf}
     \leanok
-    Let $B$, $B_{\ell}$, and $B_{r}$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{Matroid.Is1sumOf}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Then $B' = B_{\ell}' \oplus_{1} B_{r}'$ is a TU signing of $B$. Indeed, $B'$ is TU by Lemma~\ref{lem:one_sum_tu}, and a direct calculation shows that $B'$ is a signing of $B$. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
+    Let $B$, $B_{\ell}$, and $B_{r}$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{Matroid.Is1sumOf}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Then $B' = B_{\ell}' \oplus_{1} B_{r}'$ is a TU signing of $B$. Indeed, $B'$ is TU by Lemma~\ref{Matrix.fromBlocks_isTotallyUnimodular}, and a direct calculation shows that $B'$ is a signing of $B$. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
 \end{proof}
