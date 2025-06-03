@@ -69,7 +69,7 @@
 \end{lemma}
 
 \begin{proof}
-    \uses{Matrix.isTotallyUnimodular_iff_forall_isPartiallyUnimodular,matrix2sumComposition,Matrix.IsTotallyUnimodular.fromCols_outer,shortTableauPivot_submatrix_det_abs_eq_div,matrix2sumComposition_shortTableauPivot}
+    \uses{Matrix.isTotallyUnimodular_iff_forall_isPartiallyUnimodular,matrix2sumComposition,Matrix.IsTotallyUnimodular.fromCols_outer,shortTableauPivot_submatrix_det_abs_eq_div,matrix2sumComposition_shortTableauPivot,Matrix.IsTotallyUnimodular.shortTableauPivot}
     \leanok
     By Lemma~\ref{Matrix.isTotallyUnimodular_iff_forall_isPartiallyUnimodular}, it suffices to show that $B_{\ell} \oplus_{2, x, y} B_{r}$ is $k$-PU for every $k \in \mathbb{N}$. We prove this claim by induction on $k$. The base case with $k = 1$ holds, since all entries of $B_{\ell} \oplus_{2, x, y} B_{r}$ are in $\{0, \pm 1\}$ by construction.
 
@@ -79,7 +79,7 @@
 
     Next, note that without loss of generality we may assume that there exists $y_{\ell} \in Y_{\ell}$ such that $T (x_{\ell}, y_{\ell}) \neq 0$. Indeed, if $T (x_{\ell}, y) = 0$ for all $y$, then $\det T = 0$ and we are done, and $T (x_{\ell}, y) = 0$ holds whenever $y \in Y_{r}$.
 
-    Since $B$ is $1$-PU, all entries of $T$ are in $\{0, \pm 1\}$, and hence $T (x_{\ell}, y_{\ell}) \in \{\pm 1\}$. Thus, by Lemma~\ref{shortTableauPivot_submatrix_det_abs_eq_div}, performing a short tableau pivot in $T$ on $(x_{\ell}, y_{\ell})$ yields a matrix that contains a $k \times k$ submatrix $T''$ such that $|\det T| = |\det T''|$. Since $T$ is a submatrix of $B$, matrix $T''$ is a submatrix of the matrix $B'$ resulting from performing a short tableau pivot in $B$ on the same entry $(x_{\ell}, y_{\ell})$. By Lemma~\ref{matrix2sumComposition_shortTableauPivot}, we have $B' = B_{\ell}' \oplus_{2, x, y} B_{r}$ where $B_{\ell}'$ is the result of performing a short tableau pivot in $B_{\ell}$ on $(x_{\ell}, y_{\ell})$. Since TUness is preserved by pivoting and $B_{\ell}$ is TU, $B_{\ell}'$ is also TU. Thus, by the inductive hypothesis applied to $T''$ and $B_{\ell}' \oplus_{2, x, y} B_{r}$, we have $\det T'' \in \{0, \pm 1\}$. Since $|\det T| = |\det T''|$, we conclude that $\det T \in \{0, \pm 1\}$.
+    Since $B$ is $1$-PU, all entries of $T$ are in $\{0, \pm 1\}$, and hence $T (x_{\ell}, y_{\ell}) \in \{\pm 1\}$. Thus, by Lemma~\ref{shortTableauPivot_submatrix_det_abs_eq_div}, performing a short tableau pivot in $T$ on $(x_{\ell}, y_{\ell})$ yields a matrix that contains a $k \times k$ submatrix $T''$ such that $|\det T| = |\det T''|$. Since $T$ is a submatrix of $B$, matrix $T''$ is a submatrix of the matrix $B'$ resulting from performing a short tableau pivot in $B$ on the same entry $(x_{\ell}, y_{\ell})$. By Lemma~\ref{matrix2sumComposition_shortTableauPivot}, we have $B' = B_{\ell}' \oplus_{2, x, y} B_{r}$ where $B_{\ell}'$ is the result of performing a short tableau pivot in $B_{\ell}$ on $(x_{\ell}, y_{\ell})$. Since $B_{\ell}$ is TU, by Lemma \ref{Matrix.IsTotallyUnimodular.shortTableauPivot}, $B_{\ell}'$ is also TU. Thus, by the inductive hypothesis applied to $T''$ and $B_{\ell}' \oplus_{2, x, y} B_{r}$, we have $\det T'' \in \{0, \pm 1\}$. Since $|\det T| = |\det T''|$, we conclude that $\det T \in \{0, \pm 1\}$.
 \end{proof}
 
 \begin{theorem}
