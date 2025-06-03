@@ -1,7 +1,7 @@
 \chapter{Regularity of 1-Sum}
 
 \begin{definition}
-    \label{def:one_sum_matrix}
+    \label{standardRepr1sumComposition}
     % \uses{}
     % \lean{}
     \leanok
@@ -12,11 +12,11 @@
 \end{definition}
 
 \begin{definition}
-    \label{def:one_sum_matroid}
-    \uses{StandardRepr,def:one_sum_matrix}
+    \label{Matroid.Is1sumOf}
+    \uses{StandardRepr,standardRepr1sumComposition}
     % \lean{}
     \leanok
-    A matroid $M$ is a $1$-sum of matroids $M_{\ell}$ and $M_{r}$ if there exist standard $\mathbb{Z}_{2}$ representation matrices $B$, $B_{\ell}$, and $B_{r}$ (for $M$, $M_{\ell}$, and $M_{r}$, respectively) of the form given in Definition~\ref{def:one_sum_matrix}.
+    A matroid $M$ is a $1$-sum of matroids $M_{\ell}$ and $M_{r}$ if there exist standard $\mathbb{Z}_{2}$ representation matrices $B_{\ell}$, $B_{r}$, and $B$ (for $M_{\ell}$, $M_{r}$, and $M$, respectively) of the form given in Definition~\ref{standardRepr1sumComposition}.
 \end{definition}
 
 \begin{lemma}
@@ -34,14 +34,14 @@
 
 \begin{lemma}
     \label{lem:one_sum_tu}
-    \uses{def:one_sum_matrix,Matrix.IsTotallyUnimodular}
+    \uses{standardRepr1sumComposition,Matrix.IsTotallyUnimodular}
     % \lean{}
     \leanok
-    Let $B_{\ell}$ and $B_{r}$ from Definition~\ref{def:one_sum_matrix} be TU matrices (over $\mathbb{Q}$). Then $B = B_{\ell} \oplus_{1} B_{r}$ is TU.
+    Let $B_{\ell}$ and $B_{r}$ from Definition~\ref{standardRepr1sumComposition} be TU matrices (over $\mathbb{Q}$). Then $B = B_{\ell} \oplus_{1} B_{r}$ is TU.
 \end{lemma}
 
 \begin{proof}
-    \uses{def:one_sum_matrix,Matrix.IsTotallyUnimodular,lem:det_lower_left_zero}
+    \uses{standardRepr1sumComposition,Matrix.IsTotallyUnimodular,lem:det_lower_left_zero}
     \leanok
     We prove that $B$ is TU by Definition~\ref{Matrix.IsTotallyUnimodular}. To this end, let $T$ be a square submatrix of $B$. Our goal is to show that $\det T \in \{0, \pm 1\}$.
 
@@ -61,14 +61,14 @@
 
 \begin{theorem}
     \label{thm:one_sum_regular}
-    \uses{def:one_sum_matroid,Matroid.IsRegular}
+    \uses{Matroid.Is1sumOf,Matroid.IsRegular}
     % \lean{}
     \leanok
     Let $M$ be a $1$-sum of regular matroids $M_{\ell}$ and $M_{r}$. Then $M$ is also regular.
 \end{theorem}
 
 \begin{proof}
-    \uses{StandardRepr,def:one_sum_matroid,Matroid.IsRegular,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,lem:one_sum_tu,Matrix.IsTuSigningOf}
+    \uses{StandardRepr,Matroid.Is1sumOf,Matroid.IsRegular,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,lem:one_sum_tu,Matrix.IsTuSigningOf}
     \leanok
-    Let $B$, $B_{\ell}$, and $B_{r}$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{def:one_sum_matroid}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Then $B' = B_{\ell}' \oplus_{1} B_{r}'$ is a TU signing of $B$. Indeed, $B'$ is TU by Lemma~\ref{lem:one_sum_tu}, and a direct calculation shows that $B'$ is a signing of $B$. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
+    Let $B$, $B_{\ell}$, and $B_{r}$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{Matroid.Is1sumOf}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Then $B' = B_{\ell}' \oplus_{1} B_{r}'$ is a TU signing of $B$. Indeed, $B'$ is TU by Lemma~\ref{lem:one_sum_tu}, and a direct calculation shows that $B'$ is a signing of $B$. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
 \end{proof}
