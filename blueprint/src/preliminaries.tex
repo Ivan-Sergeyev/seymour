@@ -282,43 +282,18 @@
     \]
 \end{definition}
 
-\begin{definition}
-    \label{def:fund_circuit}
+\begin{lemma}
+    \label{support_eq_support_of_same_matroid_same_X}
+    \uses{Matrix.support,StandardRepr}
+    % \lean{}
+    \leanok
+    If two standard representation matrices of the same matroid have the same base, then they have the same support.
+\end{lemma}
+
+\begin{proof}
     % \uses{}
-    Let $M$ be a matroid, let $B$ be a base of $M$, and let $e \in E \setminus B$ be an element. The fundamental circuit $C (e, B)$ of $e$ with respect to $B$ is the unique circuit contained in $B \cup \{e\}$.
-\end{definition}
-
-\begin{lemma}
-    \label{lem:std_repr_fund_circuits}
-    \uses{StandardRepr,def:fund_circuit}
-    % \lean{}
-    Let $M$ be a matroid and let $S \in F^{X \times Y}$ be a standard representation matrix of $M$ over a field $F$. Then $\forall y \in Y$, the fundamental circuit of $y$ w.r.t.~$X$ is $C (y, X) = \{y\} \cup \{x \in X \mid S (x, y) \neq 0\}$.
-\end{lemma}
-
-\begin{proof}
-    \uses{def:fund_circuit}
-    Let $y \in Y$. Our goal is to show that $C' (y, X) = \{y\} \cup \{x \in X \mid D (x, y) \neq 0\}$ is a fundamental circuit of $y$ with respect to $X$.
-    \begin{itemize}
-        \item $C' (y, X) \subseteq X \cup \{y\}$ by construction.
-        \item $C' (y, X)$ is dependent, since columns of $[1 \mid S]$ indexed by elements of $C (y, X)$ are linearly dependent.
-        \item If $C \subsetneq C' (y, X)$, then $C$ is independent. To show this, let $V$ be the set of columns of $[1 \mid S]$ indexed by elements of $C$ and consider two cases.
-        \begin{enumerate}
-            \item Suppose that $y \notin C$. Then vectors in $V$ are linearly independent (as columns of $I$). Thus, $C$ is independent.
-            \item Suppose $\exists x \in X \setminus C$ such that $S (x, y) \neq 0$. Then any nontrivial linear combination of vectors in $V$ has a non-zero entry in row $x$. Thus, these vectors are linearly independent, so $C$ is independent.
-        \end{enumerate}
-    \end{itemize}
-\end{proof}
-
-\begin{lemma}
-    \label{lem:std_repr_support_matrix_cols}
-    \uses{StandardRepr,Matrix.support}
-    % \lean{}
-    Let $M$ be a matroid and let $S \in F^{X \times Y}$ be a standard representation matrix of $M$ over a field $F$. Then $\forall y \in Y$, column $S^{\#} (\bullet, y)$ is the characteristic vector of $C (y, X) \setminus \{y\}$.
-\end{lemma}
-
-\begin{proof}
-    \uses{}
-    Directly follows from Lemma~\ref{lem:std_repr_fund_circuits}.
+    \leanok
+    \SeeLean
 \end{proof}
 
 \begin{lemma}
@@ -361,6 +336,10 @@
     \]
 \end{definition}
 
+% Possible to include here: Matroid.IsRegular.isBinary
+% \uses{Matroid.IsRegular,Matrix.support,Matrix.IsTotallyUnimodular.toMatroid_eq_support_toMatroid}
+% \leanok
+
 \begin{lemma}
     \label{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}
     \uses{StandardRepr,Matroid.IsRegular,Matrix.IsTuSigningOf}
@@ -370,7 +349,7 @@
 \end{lemma}
 
 \begin{proof}
-    \uses{Matroid.IsRegular,Matrix.IsTuSigningOf,StandardRepr.toMatroid_isBase_X,VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular,lem:std_repr_support_matrix_cols,Matrix.IsTotallyUnimodular.toMatroid_eq_support_toMatroid}
+    \uses{Matroid.IsRegular,Matrix.IsTuSigningOf,StandardRepr.toMatroid_isBase_X,VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular,support_eq_support_of_same_matroid_same_X,Matrix.IsTotallyUnimodular.toMatroid_eq_support_toMatroid}
     \leanok
     Suppose that $M$ is regular. By Definition~\ref{Matroid.IsRegular}, there exists a TU matrix $A \in \mathbb{Q}^{X \times Y}$ such that $M$ is a vector matroid of $A$. By Lemma~\ref{StandardRepr.toMatroid_isBase_X}, $X$ (the row set of $B$) is a base of $M$. By Lemma~\ref{VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular}, $A$ can be converted into a standard representation matrix $B' \in \mathbb{Q}^{X \times Y}$ of $M$ such that $B'$ is also TU. Since $B'$ and $B$ are both standard representations of $M$, by Lemma~\ref{lem:std_repr_support_matrix_cols} the support matrices $(B')^{\#}$ and $B^{\#}$ are the same. Moreover, $B^{\#} = B$, since $B$ has entries in $\mathbb{Z}_{2}$. Thus, $B'$ is TU and $(B')^{\#} = B$, so $B'$ is a TU signing of $B$. Note that the Lean formalization does not refer to the notion of fundamental circuits; instead, it is proved only using dependent sets and independent sets.
 

@@ -6,7 +6,7 @@
     \label{def:three_sum_matrix}
     % \uses{}
     % \lean{}
-    \leanok
+    % \leanok
     Let $B_{\ell} \in \mathbb{Z}_{2}^{(X_{\ell} \cup \{x_{0}, x_{1}\}) \times (Y_{\ell} \cup \{y_{2}\})}, B_{r} \in \mathbb{Z}_{2}^{(X_{r} \cup \{x_{2}\}) \times (Y_{r} \cup \{y_{0}, y_{1}\})}$ be matrices of the form
     \begin{center}
         \noindent
@@ -88,8 +88,8 @@
     \label{def:three_sum_matroid}
     \uses{def:three_sum_matrix,StandardRepr}
     % \lean{}
-    \leanok
-    A matroid $M$ is a $3$-sum of matroids $M_{\ell}$ and $M_{r}$ if there exist standard $\mathbb{Z}_{2}$ representation matrices $B$, $B_{\ell}$, and $B_{r}$ (for $M$, $M_{\ell}$, and $M_{r}$, respectively) of the form given in Definition~\ref{def:three_sum_matrix}.
+    % \leanok
+    A matroid $M$ is a $3$-sum of matroids $M_{\ell}$ and $M_{r}$ if there exist standard $\mathbb{Z}_{2}$ representation matrices $B_{\ell}$, $B_{r}$, and $B$ (for $M_{\ell}$, $M_{r}$, and $M$, respectively) of the form given in Definition~\ref{def:three_sum_matrix}.
 \end{definition}
 
 
@@ -99,7 +99,7 @@
     \label{def:three_sum_signing_S}
     % \uses{}
     % \lean{}
-    \leanok
+    % \leanok
     We call $D_{0}' \in \mathbb{Q}^{\{x_{0}, x_{1}\} \times \{y_{0}, y_{1}\}}$ the canonical signing of $D_{0} \in \mathbb{Z}_{2}^{\{x_{0}, x_{1}\} \times \{y_{0}, y_{1}\}}$ if
     \[
         D_{0} = \begin{bmatrix}
@@ -164,7 +164,7 @@
     \label{lem:three_sum_signing_S_TU}
     \uses{def:three_sum_signing_S,Matrix.IsTotallyUnimodular}
     % \lean{}
-    \leanok
+    % \leanok
     The canonical signing $S'$ of $S$ (from Definition~\ref{def:three_sum_signing_S}) is TU.
 \end{lemma}
 
@@ -178,7 +178,7 @@
     \label{lem:three_sum_re_signing_helper}
     \uses{Matrix.IsTuSigningOf,def:three_sum_signing_S}
     % \lean{}
-    \leanok
+    % \leanok
     Let $Q$ be a TU signing of $S$ (from Definition~\ref{def:three_sum_signing_S}). Let $u \in \{0, \pm 1\}^{\{x_{0}, x_{1}, x_{2}\}}$, $v \in \{0, \pm 1\}^{\{y_{0}, y_{1}, y_{2}\}}$, and $Q'$ be defined as follows:
     \begin{align*}
         u(i) &= \begin{cases}
@@ -245,7 +245,7 @@
     \label{def:three_sum_re_signing}
     \uses{Matrix.IsTotallyUnimodular}
     % \lean{}
-    \leanok
+    % \leanok
     Let $X$ and $Y$ be sets with $\{x_{0}, x_{1}, x_{2}\} \subseteq X$ and $\{y_{0}, y_{1}, y_{2}\} \subseteq Y$. Let $Q \in \mathbb{Q}^{X \times Y}$ be a TU matrix. Define $u \in \{0, \pm 1\}^{X}$, $v \in \{0, \pm 1\}^{Y}$, and $Q'$ as follows:
     \begin{align*}
         u(i) &= \begin{cases}
@@ -269,7 +269,7 @@
     \label{lem:three_sum_re_signing_apply}
     \uses{Matrix.IsTuSigningOf,def:three_sum_signing_S,def:three_sum_re_signing}
     % \lean{}
-    \leanok
+    % \leanok
     Let $X$ and $Y$ be sets with $\{x_{0}, x_{1}, x_{2}\} \subseteq X$ and $\{y_{0}, y_{1}, y_{2}\} \subseteq Y$. Let $Q \in \mathbb{Q}^{X \times Y}$ be a TU signing of $Q_{0} \in \mathbb{Z}_{2}^{X \times Y}$ such that $Q_{0} (\{x_{0}, x_{1}, x_{2}\}, \{y_{0}, y_{1}, y_{2}\}) = S$ (from Definition~\ref{def:three_sum_signing_S}). Then the canonical re-signing $Q'$ of $Q$ (from Definition~\ref{def:three_sum_re_signing}) is a TU signing of $Q_{0}$ and $Q' (\{x_{0}, x_{1}, x_{2}\}, \{y_{0}, y_{1}, y_{2}\}) = S'$ (from Definition~\ref{def:three_sum_signing_S}).
 \end{lemma}
 
@@ -283,7 +283,7 @@
     \label{def:three_sum_signing_B}
     \uses{def:three_sum_matrix,Matrix.IsTuSigningOf,def:three_sum_re_signing}
     % \lean{}
-    \leanok
+    % \leanok
     Suppose that $B_{\ell}$ and $B_{r}$ from Definition~\ref{def:three_sum_matrix} have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Let $B_{\ell}''$ and $B_{r}''$ be the canonical re-signings (from Definition~\ref{def:three_sum_re_signing}) of $B_{\ell}'$ and $B_{r}'$, respectively. Let $A_{\ell}''$, $A_{r}''$, $D_{\ell}''$, $D_{r}''$, and $D_{0}''$ be blocks of $B_{\ell}''$ and $B_{r}''$ analogous to blocks $A_{\ell}$, $A_{r}$, $D_{\ell}$, $D_{r}$, and $D_{0}$ of $B_{\ell}$ and $B_{r}$. The canonical signing $B''$ of $B$ is defined as
     \begin{center}
         \noindent
@@ -322,7 +322,7 @@
     \label{lem:three_sum_signing_B_valid}
     \uses{def:three_sum_signing_B}
     % \lean{}
-    \leanok
+    % \leanok
     $B''$ from Definition~\ref{def:three_sum_signing_B} is a signing of $B$.
 \end{lemma}
 
@@ -336,7 +336,7 @@
     \label{lem:three_sum_signing_B_r_props}
     \uses{def:three_sum_matrix,Matrix.IsTuSigningOf,def:three_sum_re_signing}
     % \lean{}
-    \leanok
+    % \leanok
     Suppose that $B_{r}$ from Definition~\ref{def:three_sum_matrix} has a TU signing $B_{r}'$. Let $B_{r}''$ be the canonical re-signing (from Definition~\ref{def:three_sum_re_signing}) of $B_{r}'$. Let $c_{0}'' = B_{r}'' (X_{r}, y_{0})$, $c_{1}'' = B_{r}'' (X_{r}, y_{1})$, and $c_{2}'' = c_{0}'' - c_{1}''$. Then the following statements hold.
     \begin{enumerate}
         \item\label{item:tss_Brp_c01} For every $i \in X_{r}$, $\begin{bmatrix} c_{0}'' (i) & c_{1}'' (i) \end{bmatrix} \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}} \setminus \left\{ \begin{bmatrix} 1 & -1 \end{bmatrix}, \begin{bmatrix} -1 & 1 \end{bmatrix} \right\}$.
@@ -408,7 +408,7 @@
     \label{lem:three_sum_signing_B_l_props}
     \uses{def:three_sum_matrix,Matrix.IsTuSigningOf,def:three_sum_re_signing}
     % \lean{}
-    \leanok
+    % \leanok
     Suppose that $B_{\ell}$ from Definition~\ref{def:three_sum_matrix} has a TU signing $B_{\ell}'$. Let $B_{\ell}''$ be the canonical re-signing (from Definition~\ref{def:three_sum_re_signing}) of $B_{\ell}'$. Let $d_{0}'' = B_{\ell}'' (x_{0}, Y_{\ell})$, $d_{1}'' = B_{\ell}'' (x_{1}, Y_{\ell})$, and $d_{2}'' = d_{0}'' - d_{1}''$. Then the following statements hold.
     \begin{enumerate}
         \item\label{item:tss_Blp_d01} For every $j \in Y_{\ell}$, $\begin{bmatrix} d_{0}'' (i) \\ d_{1}'' (j) \end{bmatrix} \in \{0, \pm 1\}^{\{x_{0}, x_{1}\}} \setminus \left\{ \begin{bmatrix} 1 \\ -1 \end{bmatrix}, \begin{bmatrix} -1 \\ 1 \end{bmatrix} \right\}$.
@@ -429,7 +429,7 @@
     \label{lem:three_sum_signing_B_props}
     \uses{def:three_sum_signing_B,Matrix.IsTotallyUnimodular}
     % \lean{}
-    \leanok
+    % \leanok
     Let $B''$ be from Definition~\ref{def:three_sum_signing_B}. Let $c_{0}'' = B'' (X_{r}, y_{0})$, $c_{1}'' = B'' (X_{r}, y_{1})$, and $c_{2}'' = c_{0}'' - c_{1}''$. Similarly, let $d_{0}'' = B'' (x_{0}, Y_{\ell})$, $d_{1}'' = B'' (x_{1}, Y_{\ell})$, and $d_{2}'' = d_{0}'' - d_{1}''$. Then the following statements hold.
     \begin{enumerate}
         \item\label{item:tss_Bp_c2} For every $i \in X_{r}$, $c_{2}'' (i) \in \{0, \pm 1\}$.
@@ -489,7 +489,7 @@
     \label{def:three_sum_like_matrix}
     \uses{Matrix.IsTotallyUnimodular}
     % \lean{}
-    \leanok
+    % \leanok
     Let $X_{\ell}$, $Y_{\ell}$, $X_{r}$, $Y_{r}$ be sets and let $c_{0}, c_{1} \in \mathbb{Q}^{X_{r}}$ be column vectors such that for every $i \in X_{r}$ we have $c_{0} (i), \ c_{1} (i), \ c_{0} (i) - c_{1} (i) \in \{0, \pm 1\}$. Define $\mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ to be the family of matrices of the form $\begin{bmatrix} A_{\ell} & 0 \\ D & A_{r} \end{bmatrix}$ where $A_{\ell} \in \mathbb{Q}^{X_{\ell} \times Y_{\ell}}$, $A_{r} \in \mathbb{Q}^{X_{r} \times Y_{r}}$, and $D \in \mathbb{Q}^{X_{r} \times Y_{\ell}}$ are such that:
     \begin{enumerate}
         \item\label{item:tsl_cols} for every $j \in Y_{\ell}$, $D (X_{r}, j) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$,
@@ -502,7 +502,7 @@
     \label{lem:three_sum_like_signing_B}
     \uses{def:three_sum_signing_B,def:three_sum_like_matrix}
     % \lean{}
-    \leanok
+    % \leanok
     Let $B''$ be from Definition~\ref{def:three_sum_signing_B}. Then $B'' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$ where $c_{0}'' = B'' (X_{r}, y_{0})$ and $c_{1}'' = B'' (X_{r}, y_{1})$.
 \end{lemma}
 
@@ -516,7 +516,7 @@
     \label{lem:three_sum_like_pivot}
     \uses{def:three_sum_like_matrix,Matrix.shortTableauPivot}
     % \lean{}
-    \leanok
+    % \leanok
     Let $C \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ from Definition~\ref{def:three_sum_like_matrix}. Let $x \in X_{\ell}$ and $y \in Y_{\ell}$ be such that $A_{\ell} (x, y) \neq 0$, and let $C'$ be the result of performing a short tableau pivot in $C$ on $(x, y)$. Then $C' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$.
 \end{lemma}
 
@@ -543,7 +543,7 @@
     \label{lem:three_sum_like_tu}
     \uses{def:three_sum_like_matrix,Matrix.IsTotallyUnimodular}
     % \lean{}
-    \leanok
+    % \leanok
     Let $C \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ from Definition~\ref{def:three_sum_like_matrix}. Then $C$ is TU.
 \end{lemma}
 
@@ -565,7 +565,7 @@
     \label{lem:three_sum_signing_B_tu}
     \uses{def:three_sum_signing_B,Matrix.IsTotallyUnimodular}
     % \lean{}
-    \leanok
+    % \leanok
     $B''$ from Definition~\ref{def:three_sum_signing_B} is TU.
 \end{lemma}
 
@@ -577,7 +577,7 @@
 \end{proof}
 
 \begin{theorem}
-    \label{thm:matroid_three_sum_regular}
+    \label{Matroid.Is3sumOf.isRegular}
     \uses{def:three_sum_matroid,Matroid.IsRegular}
     % \lean{}
     \leanok
@@ -587,5 +587,5 @@
 \begin{proof}
     \uses{StandardRepr,def:three_sum_matroid,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,def:three_sum_signing_B,lem:three_sum_signing_B_valid,lem:three_sum_signing_B_tu}
     % \leanok
-    Let $B$, $B_{\ell}$, and $B_{r}$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{def:three_sum_matroid}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings. Then the canonical signing $B''$ from Definition~\ref{def:three_sum_signing_B} is a TU signing of $B$. Indeed, $B''$ is a signing of $B$ by Lemma~\ref{lem:three_sum_signing_B_valid}, and $B''$ is TU by Lemma~\ref{lem:three_sum_signing_B_tu}. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
+    Let $B_{\ell}$, $B_{r}$, and $B$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{def:three_sum_matroid}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings. Then the canonical signing $B''$ from Definition~\ref{def:three_sum_signing_B} is a TU signing of $B$. Indeed, $B''$ is a signing of $B$ by Lemma~\ref{lem:three_sum_signing_B_valid}, and $B''$ is TU by Lemma~\ref{lem:three_sum_signing_B_tu}. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
 \end{proof}
