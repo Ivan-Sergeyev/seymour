@@ -29,7 +29,7 @@
 
 \begin{lemma}
     \label{Matrix.IsTotallyUnimodular.fromCols_outer}
-    \uses{matrix2sumComposition,Matrix.IsTotallyUnimodular}
+    \uses{matrix2sumComposition,Matrix.IsTotallyUnimodular,Matrix.IsTotallyUnimodular.mul_cols}
     % \lean{}
     \leanok
     Let $B_{\ell}$ and $B_{r}$ from Definition~\ref{matrix2sumComposition} be TU matrices (over $\mathbb{Q}$). Then $C = \begin{bmatrix} D & A_{r} \end{bmatrix}$ is TU.
@@ -50,7 +50,7 @@
 \end{lemma}
 
 \begin{proof}
-    \uses{matrix2sumComposition,Matrix.shortTableauPivot,Matrix.shortTableauPivot_zero}
+    \uses{matrix2sumComposition,Matrix.shortTableauPivot,Matrix.shortTableauPivot_zero,Matrix.shortTableauPivot_eq}
     \leanok
     Let
     \[

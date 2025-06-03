@@ -31,7 +31,7 @@
     % \lean{Matrix.IsTotallyUnimodular.mul_cols}
     \leanok
     Let $A$ be a TU matrix. Suppose some columns of $A$ are multiplied by $\{0, \pm 1\}$ factors. Then the resulting matrix $A'$ is also TU.
-\end{lemma} % TODO this one is used in the 2-sum file, too
+\end{lemma}
 
 \begin{proof}
     \uses{Matrix.IsTotallyUnimodular,Matrix.IsTotallyUnimodular.mul_rows}
@@ -113,7 +113,7 @@
     \end{enumerate}
     A short tableau pivot in $A$ on $(x, y)$ is the operation that maps $A$ to the matrix $A'$ defined above.
 \end{definition}
-% TODO this lemma is used somewhere.
+
 \begin{lemma}
     \label{Matrix.shortTableauPivot_eq}
     \uses{Matrix.shortTableauPivot}
@@ -351,7 +351,7 @@
 \begin{proof}
     \uses{Matroid.IsRegular,Matrix.IsTuSigningOf,StandardRepr.toMatroid_isBase_X,VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular,support_eq_support_of_same_matroid_same_X,Matrix.IsTotallyUnimodular.toMatroid_eq_support_toMatroid}
     \leanok
-    Suppose that $M$ is regular. By Definition~\ref{Matroid.IsRegular}, there exists a TU matrix $A \in \mathbb{Q}^{X \times Y}$ such that $M$ is a vector matroid of $A$. By Lemma~\ref{StandardRepr.toMatroid_isBase_X}, $X$ (the row set of $B$) is a base of $M$. By Lemma~\ref{VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular}, $A$ can be converted into a standard representation matrix $B' \in \mathbb{Q}^{X \times Y}$ of $M$ such that $B'$ is also TU. Since $B'$ and $B$ are both standard representations of $M$, by Lemma~\ref{lem:std_repr_support_matrix_cols} the support matrices $(B')^{\#}$ and $B^{\#}$ are the same. Moreover, $B^{\#} = B$, since $B$ has entries in $\mathbb{Z}_{2}$. Thus, $B'$ is TU and $(B')^{\#} = B$, so $B'$ is a TU signing of $B$. Note that the Lean formalization does not refer to the notion of fundamental circuits; instead, it is proved only using dependent sets and independent sets.
+    Suppose that $M$ is regular. By Definition~\ref{Matroid.IsRegular}, there exists a TU matrix $A \in \mathbb{Q}^{X \times Y}$ such that $M$ is a vector matroid of $A$. By Lemma~\ref{StandardRepr.toMatroid_isBase_X}, $X$ (the row set of $B$) is a base of $M$. By Lemma~\ref{VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular}, $A$ can be converted into a standard representation matrix $B' \in \mathbb{Q}^{X \times Y}$ of $M$ such that $B'$ is also TU. Since $B'$ and $B$ are both standard representations of $M$, by Lemma~\ref{support_eq_support_of_same_matroid_same_X} the support matrices $(B')^{\#}$ and $B^{\#}$ are the same. Moreover, $B^{\#} = B$, since $B$ has entries in $\mathbb{Z}_{2}$. Thus, $B'$ is TU and $(B')^{\#} = B$, so $B'$ is a TU signing of $B$.
 
     Suppose that $B$ has a TU signing $B' \in \mathbb{Q}^{X \times Y}$. Then $A = [1 \mid B']$ is TU, as it is obtained from $B'$ by adjoining the identity matrix. Moreover, by Lemma~\ref{Matrix.IsTotallyUnimodular.toMatroid_eq_support_toMatroid}, $A$ represents the same matroid as $A^{\#} = [1 \mid B]$, which is $M$. Thus, $A$ is a TU matrix representing $M$, so $M$ is regular.
 \end{proof}
