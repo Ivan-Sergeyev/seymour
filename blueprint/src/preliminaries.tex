@@ -89,7 +89,7 @@
 
 \begin{definition}
     \label{Matrix.longTableauPivot}
-    % \uses{}
+    \uses{Matrix}
     % \lean{Matrix.longTableauPivot}
     \leanok
     Let $A \in R^{X \times Y}$ be a matrix and let $(x, y) \in X \times Y$ be such that $A (x, y) \neq 0$. A long tableau pivot in $A$ on $(x, y)$ is the operation that maps $A$ to the matrix $A'$ where
@@ -98,15 +98,15 @@
             \frac{A (i, j)}{A (x, y)}, & \text{ if } i = x, \\
             A (i, j) - \frac{A (i, y) \cdot A (x, j)}{A (x, y)}, & \text{ if } i \neq x.
         \end{cases}
-        \]
-    \end{definition}
+    \]
+\end{definition}
 
-    \begin{lemma}
-        \label{Matrix.IsTotallyUnimodular.longTableauPivot}
-        \uses{Matrix.IsTotallyUnimodular,Matrix.longTableauPivot}
-        % \lean{Matrix.IsTotallyUnimodular.longTableauPivot}
-        \leanok
-        Let $A \in \mathbb{Q}^{X \times Y}$ be a TU matrix and let $(x, y) \in X \times Y$ be such that $A (x, y) \neq 0$. Then performing the long tableau pivot in $A$ on $(x, y)$ yields a TU matrix.
+\begin{lemma}
+    \label{Matrix.IsTotallyUnimodular.longTableauPivot}
+    \uses{Matrix.IsTotallyUnimodular,Matrix.longTableauPivot}
+    % \lean{Matrix.IsTotallyUnimodular.longTableauPivot}
+    \leanok
+    Let $A \in \mathbb{Q}^{X \times Y}$ be a TU matrix and let $(x, y) \in X \times Y$ be such that $A (x, y) \neq 0$. Then performing the long tableau pivot in $A$ on $(x, y)$ yields a TU matrix.
 \end{lemma}
 
 \begin{proof}
