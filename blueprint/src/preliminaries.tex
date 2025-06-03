@@ -287,6 +287,20 @@
 \end{definition}
 
 \begin{lemma}
+    \label{Matrix.support_Z2}
+    \uses{Matrix.support,StandardRepr}
+    % \lean{}
+    \leanok
+    If $A$ is a matrix over $\mathbb{Z}_{2}$, then $A^{\#} = A$.
+\end{lemma}
+
+\begin{proof}
+    % \uses{}
+    \leanok
+    Check elementwise equality.
+\end{proof}
+
+\begin{lemma}
     \label{support_eq_support_of_same_matroid_same_X}
     \uses{Matrix.support,StandardRepr}
     % \lean{}
@@ -353,9 +367,9 @@
 \end{lemma}
 
 \begin{proof}
-    \uses{Matroid.IsRegular,Matrix.IsTuSigningOf,StandardRepr.toMatroid_isBase_X,VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular,support_eq_support_of_same_matroid_same_X,Matrix.IsTotallyUnimodular.toMatroid_eq_support_toMatroid}
+    \uses{Matroid.IsRegular,Matrix.IsTuSigningOf,StandardRepr.toMatroid_isBase_X,VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular,support_eq_support_of_same_matroid_same_X,Matrix.IsTotallyUnimodular.toMatroid_eq_support_toMatroid, Matrix.support_Z2}
     \leanok
-    Suppose that $M$ is regular. By Definition~\ref{Matroid.IsRegular}, there exists a TU matrix $A \in \mathbb{Q}^{X \times Y}$ such that $M$ is a vector matroid of $A$. By Lemma~\ref{StandardRepr.toMatroid_isBase_X}, $X$ (the row set of $B$) is a base of $M$. By Lemma~\ref{VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular}, $A$ can be converted into a standard representation matrix $B' \in \mathbb{Q}^{X \times Y}$ of $M$ such that $B'$ is also TU. Since $B'$ and $B$ are both standard representations of $M$, by Lemma~\ref{support_eq_support_of_same_matroid_same_X} the support matrices $(B')^{\#}$ and $B^{\#}$ are the same. Moreover, $B^{\#} = B$, since $B$ has entries in $\mathbb{Z}_{2}$. Thus, $B'$ is TU and $(B')^{\#} = B$, so $B'$ is a TU signing of $B$.
+    Suppose that $M$ is regular. By Definition~\ref{Matroid.IsRegular}, there exists a TU matrix $A \in \mathbb{Q}^{X \times Y}$ such that $M$ is a vector matroid of $A$. By Lemma~\ref{StandardRepr.toMatroid_isBase_X}, $X$ (the row set of $B$) is a base of $M$. By Lemma~\ref{VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular}, $A$ can be converted into a standard representation matrix $B' \in \mathbb{Q}^{X \times Y}$ of $M$ such that $B'$ is also TU. Since $B'$ and $B$ are both standard representations of $M$, by Lemma~\ref{support_eq_support_of_same_matroid_same_X} the support matrices $(B')^{\#}$ and $B^{\#}$ are the same. Lemma \ref{Matrix.support_Z2} gives $B^{\#} = B$. Thus, $B'$ is TU and $(B')^{\#} = B$, so $B'$ is a TU signing of $B$.
 
     Suppose that $B$ has a TU signing $B' \in \mathbb{Q}^{X \times Y}$. Then $A = [1 \mid B']$ is TU, as it is obtained from $B'$ by adjoining the identity matrix. Moreover, by Lemma~\ref{Matrix.IsTotallyUnimodular.toMatroid_eq_support_toMatroid}, $A$ represents the same matroid as $A^{\#} = [1 \mid B]$, which is $M$. Thus, $A$ is a TU matrix representing $M$, so $M$ is regular.
 \end{proof}
