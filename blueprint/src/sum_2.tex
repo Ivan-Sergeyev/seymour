@@ -71,9 +71,9 @@
 \begin{proof}
     \uses{Matrix.isTotallyUnimodular_iff_forall_isPartiallyUnimodular,matrix2sumComposition,lem:two_sum_bottom_tu,shortTableauPivot_submatrix_det_ni_signTypeCastRange,lem:two_sum_pivot}
     \leanok
-    By Lemma~\ref{Matrix.isTotallyUnimodular_iff_forall_isPartiallyUnimodular}, it suffices to show that $B_{\ell} \oplus_{2, x, y} B_{r}$ is $k$-PU for every $k \in \mathbb{Z}_{\geq 1}$. We prove this claim by induction on $k$. The base case with $k = 1$ holds, since all entries of $B_{\ell} \oplus_{2, x, y} B_{r}$ are in $\{0, \pm 1\}$ by construction.
+    By Lemma~\ref{Matrix.isTotallyUnimodular_iff_forall_isPartiallyUnimodular}, it suffices to show that $B_{\ell} \oplus_{2, x, y} B_{r}$ is $k$-PU for every $k \in \mathbb{N}$. We prove this claim by induction on $k$. The base case with $k = 1$ holds, since all entries of $B_{\ell} \oplus_{2, x, y} B_{r}$ are in $\{0, \pm 1\}$ by construction.
 
-    Suppose that for some $k \in \mathbb{Z}_{\geq 1}$ we know that for any TU matrices $B_{\ell}'$ and $B_{r}'$ (from Definition~\ref{matrix2sumComposition}) their $2$-sum $B_{\ell}' \oplus_{2, x, y} B_{r}'$ is $k$-PU. Now, given TU matrices $B_{\ell}$ and $B_{r}$ (from Definition~\ref{matrix2sumComposition}), our goal is to show that $B = B_{\ell} \oplus_{2, x, y} B_{r}$ is $(k + 1)$-PU, i.e., that every $(k + 1) \times (k + 1)$ submatrix $T$ of $B$ has $\det T \in \{0, \pm 1\}$.
+    Suppose that for some $k \in \mathbb{N}$ we know that for any TU matrices $B_{\ell}'$ and $B_{r}'$ (from Definition~\ref{matrix2sumComposition}) their $2$-sum $B_{\ell}' \oplus_{2, x, y} B_{r}'$ is $k$-PU. Now, given TU matrices $B_{\ell}$ and $B_{r}$ (from Definition~\ref{matrix2sumComposition}), our goal is to show that $B = B_{\ell} \oplus_{2, x, y} B_{r}$ is $(k + 1)$-PU, i.e., that every $(k + 1) \times (k + 1)$ submatrix $T$ of $B$ has $\det T \in \{0, \pm 1\}$.
 
     First, suppose that $T$ has no rows in $X_{\ell}$. Then $T$ is a submatrix of $\begin{bmatrix} D & A_{r} \end{bmatrix}$, which is TU by Lemma~\ref{lem:two_sum_bottom_tu}, so $\det T \in \{0, \pm 1\}$. Thus, we may assume that $T$ contains a row $x_{\ell} \in X_{\ell}$.
 

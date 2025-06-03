@@ -7,7 +7,7 @@
     % \uses{}
     % \lean{Matrix.IsTotallyUnimodular}
     \leanok
-    We say that a matrix $A \in \mathbb{Q}^{X \times Y}$ is totally unimodular, or TU for short, if for every $k \in \mathbb{Z}_{\geq 1}$, every $k \times k$ submatrix $T$ of $A$ has $\det T \in \{0, \pm 1\}$.
+    Let $R$ be a commutative ring. We say that a matrix $A \in R^{X \times Y}$ is totally unimodular, or TU for short, if for every $k \in \mathbb{N}$, every $k \times k$ submatrix $T$ of $A$ has $\det T \in \{0, \pm 1\}$.
 \end{definition}
 
 \begin{lemma}
@@ -45,7 +45,7 @@
     % \uses{}
     % \lean{Matrix.IsPartiallyUnimodular}
     \leanok
-    Given $k \in \mathbb{Z}_{\geq 1}$, we say that a matrix $A$ is $k$-partially unimodular, or $k$-PU for short, if every $k \times k$ submatrix $T$ of $A$ has $\det T \in \{0, \pm 1\}$.
+    Given $k \in \mathbb{N}$, we say that a matrix $A$ is $k$-partially unimodular, or $k$-PU for short, if every $k \times k$ submatrix $T$ of $A$ has $\det T \in \{0, \pm 1\}$.
 \end{definition}
 
 \begin{lemma}
@@ -53,7 +53,7 @@
     \uses{Matrix.IsTotallyUnimodular,Matrix.IsPartiallyUnimodular}
     % \lean{Matrix.isTotallyUnimodular_iff_forall_isPartiallyUnimodular}
     \leanok
-    A matrix $A$ is TU if and only if $A$ is $k$-PU for every $k \in \mathbb{Z}_{\geq 1}$.
+    A matrix $A$ is TU if and only if $A$ is $k$-PU for every $k \in \mathbb{N}$.
 \end{lemma}
 
 \begin{proof}
@@ -155,7 +155,7 @@
     \uses{Matrix.shortTableauPivot}
     % \lean{}
     \leanok
-    Let $k \in \mathbb{Z}_{\geq 1}$, let $A \in \mathbb{Q}^{k \times k}$, and let $A'$ be the result of performing a short tableau pivot in $A$ on $(x, y)$ with $x, y \in \{1, \dots, k\}$ such that $A (x, y) \neq 0$. Then $A'$ contains a submatrix $A''$ of size $(k - 1) \times (k - 1)$ with $|\det A''| = |\det A| / |A (x, y)|$.
+    Let $k \in \mathbb{N}$, let $A \in \mathbb{Q}^{k \times k}$, and let $A'$ be the result of performing a short tableau pivot in $A$ on $(x, y)$ with $x, y \in \{1, \dots, k\}$ such that $A (x, y) \neq 0$. Then $A'$ contains a submatrix $A''$ of size $(k - 1) \times (k - 1)$ with $|\det A''| = |\det A| / |A (x, y)|$.
 \end{lemma}
 
 \begin{proof}
@@ -182,7 +182,7 @@
     % \lean{}
     \leanok
     % TODO state more accurately
-    Let $k \in \mathbb{Z}_{\geq 1}$, let $A \in \mathbb{Q}^{k \times k}$, and let $A'$ be the result of performing a short tableau pivot in $A$ on $(x, y)$ with $x, y \in \{1, \dots, k\}$ such that $A (x, y) \in \{\pm 1\}$. Then $A'$ contains a submatrix $A''$ of size $(k - 1) \times (k - 1)$ with $|\det A''| = |\det A|$.
+    Let $k \in \mathbb{N}$, let $A \in \mathbb{Q}^{k \times k}$, and let $A'$ be the result of performing a short tableau pivot in $A$ on $(x, y)$ with $x, y \in \{1, \dots, k\}$ such that $A (x, y) \in \{\pm 1\}$. Then $A'$ contains a submatrix $A''$ of size $(k - 1) \times (k - 1)$ with $|\det A''| = |\det A|$.
 \end{lemma}
 
 \begin{proof}
@@ -273,7 +273,7 @@
     \label{Matrix.support}
     % \uses{}
     \leanok
-    Let $F$ be a field. The support of matrix $A \in F^{X \times Y}$ is $A^{\#} \in \{0, 1\}^{X \times Y}$ given by
+    Let $R$ be a magma containing zero. The support of matrix $A \in R^{X \times Y}$ is $A^{\#} \in \{0, 1\}^{X \times Y}$ given by
     \[
         \forall i \in X, \ \forall j \in Y, \ A^{\#} (i, j) = \begin{cases}
             0, & \text{ if } A (i, j) = 0, \\
