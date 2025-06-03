@@ -3,8 +3,20 @@
 \section{Total Unimodularity}
 
 \begin{definition}
+    \label{Matrix}
+    \leanok
+    Matrix (not the movie).
+\end{definition}
+
+\begin{definition}
+    \label{Matrix.det}
+    \leanok
+    Determinant of a matrix.
+\end{definition}
+
+\begin{definition}
     \label{Matrix.IsTotallyUnimodular}
-    % \uses{}
+    \uses{Matrix.det}
     % \lean{Matrix.IsTotallyUnimodular}
     \leanok
     Let $R$ be a commutative ring. We say that a matrix $A \in R^{X \times Y}$ is totally unimodular, or TU for short, if for every $k \in \mathbb{N}$, every $k \times k$ submatrix $T$ of $A$ has $\det T \in \{0, \pm 1\}$.
@@ -42,7 +54,7 @@
 
 \begin{definition}
     \label{Matrix.IsPartiallyUnimodular}
-    % \uses{}
+    \uses{Matrix.det}
     % \lean{Matrix.IsPartiallyUnimodular}
     \leanok
     Given $k \in \mathbb{N}$, we say that a matrix $A$ is $k$-partially unimodular, or $k$-PU for short, if every $k \times k$ submatrix $T$ of $A$ has $\det T \in \{0, \pm 1\}$.
@@ -63,6 +75,12 @@
     This follows from Definitions~\ref{Matrix.IsTotallyUnimodular} and~\ref{Matrix.IsPartiallyUnimodular}.
 \end{proof}
 
+\begin{definition}
+    \label{Matrix.fromBlocks}
+    \uses{Matrix}
+    \leanok
+    Matrix made of 4 blocks (2x2).
+\end{definition}
 
 \section{Pivoting}
 
@@ -210,7 +228,7 @@
 
 \begin{definition}
     \label{VectorMatroid}
-    % \uses{}
+    \uses{Matrix}
     \leanok
     Let $R$ be a semiring, let $X$ and $Y$ be sets, and let $A \in R^{X \times Y}$ be a matrix. The vector matroid of $A$ is the matroid $M = (Y, \mathcal{I})$ where a set $I \subset Y$ is independent in $M$ if and only if the columns of $A$ indexed by $I$ are linearly independent.
 \end{definition}
@@ -271,7 +289,7 @@
 
 \begin{definition}
     \label{Matrix.support}
-    % \uses{}
+    \uses{Matrix}
     \leanok
     Let $R$ be a magma containing zero. The support of matrix $A \in R^{X \times Y}$ is $A^{\#} \in \{0, 1\}^{X \times Y}$ given by
     \[

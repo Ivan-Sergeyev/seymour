@@ -2,7 +2,7 @@
 
 \begin{definition}
     \label{standardRepr1sumComposition}
-    % \uses{}
+    \uses{Matrix.fromBlocks}
     % \lean{}
     \leanok
     Let $R$ be a magma containing zero (we will use $R = \mathbb{Z}_{2}$ and $R = \mathbb{Q}$). Let $B_{\ell} \in R^{X_{\ell} \times Y_{\ell}}$ and $B_{r} \in R^{X_{r} \times Y_{r}}$ be matrices where $X_{\ell}, Y_{\ell}, X_{r}, Y_{r}$ are pairwise disjoint sets. The $1$-sum $B = B_{\ell} \oplus_{1} B_{r}$ of $B_{\ell}$ and $B_{r}$ is
@@ -21,7 +21,7 @@
 
 \begin{lemma}
     \label{Matrix.det_fromBlocks_zero}
-    % \uses{}
+    \uses{Matrix.det}
     % \lean{}
     \leanok
     Let $A$ be a square matrix of the form $A = \begin{bmatrix} A_{11} & A_{12} \\ 0 & A_{22} \end{bmatrix}$. Then $\det A = \det A_{11} \cdot \det A_{22}$.

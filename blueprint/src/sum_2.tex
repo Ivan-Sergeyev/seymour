@@ -2,7 +2,7 @@
 
 \begin{definition}
     \label{matrix2sumComposition}
-    % \uses{}
+    \uses{Matrix.fromBlocks}
     % \lean{}
     \leanok
     Let $R$ be a semiring (we will use $R = \mathbb{Z}_{2}$ and $R = \mathbb{Q}$). Let $B_{\ell} \in R^{(X_{\ell} \cup \{x\}) \times Y_{\ell}}$ and $B_{r} \in R^{X_{r} \times (Y_{r} \cup \{y\})}$ be matrices of the form
@@ -29,14 +29,14 @@
 
 \begin{lemma}
     \label{Matrix.IsTotallyUnimodular.fromCols_outer}
-    \uses{matrix2sumComposition,Matrix.IsTotallyUnimodular,Matrix.IsTotallyUnimodular.mul_cols}
+    \uses{matrix2sumComposition,Matrix.IsTotallyUnimodular}
     % \lean{}
     \leanok
     Let $B_{\ell}$ and $B_{r}$ from Definition~\ref{matrix2sumComposition} be TU matrices (over $\mathbb{Q}$). Then $C = \begin{bmatrix} D & A_{r} \end{bmatrix}$ is TU.
 \end{lemma}
 
 \begin{proof}
-    \uses{matrix2sumComposition,Matrix.IsTotallyUnimodular}
+    \uses{matrix2sumComposition,Matrix.IsTotallyUnimodular,Matrix.IsTotallyUnimodular.mul_cols}
     \leanok
     Since $B_{\ell}$ is TU, all its entries are in $\{0, \pm 1\}$. In particular, $r$ is a $\{0, \pm 1\}$ vector. Therefore, every column of $D$ is a copy of $y$, $-y$, or the zero column. Thus, $C$ can be obtained from $B_{r}$ by adjoining zero columns, duplicating the $y$ column, and multiplying some columns by $-1$. Since all these operations preserve TUess and since $B_{r}$ is TU, $C$ is also TU.
 \end{proof}
