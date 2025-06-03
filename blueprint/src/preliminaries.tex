@@ -28,14 +28,14 @@
     \uses{Matrix.IsTotallyUnimodular}
     % \lean{Matrix.IsTotallyUnimodular.mul_rows}
     \leanok
-    Let $A$ be a TU matrix. Suppose some rows of $A$ are multiplied by $\{0, \pm 1\}$ factors. Then the resulting matrix $A'$ is also TU.
+    Let $A$ be a TU matrix. Suppose rows of $A$ are multiplied by $\{0, \pm 1\}$ factors. Then the resulting matrix $A'$ is also TU.
 \end{lemma}
 
 \begin{proof}
     \uses{Matrix.IsTotallyUnimodular}
     % \lean{}
     \leanok
-    We prove that $A'$ is TU by Definition~\ref{Matrix.IsTotallyUnimodular}. To this end, let $T'$ be a square submatrix of $A'$. Our goal is to show that $\det T' \in \{0, \pm 1\}$. Let $T$ be the submatrix of $A$ that represents $T'$ before pivoting. If some of the rows of $T$ were multiplied by zeros, then $T'$ contains zero rows, and hence $\det T' = 0$. Otherwise, $T'$ was obtained from $T$ by multiplying certain rows by $-1$. Since $T'$ has finitely many rows, the number of such multiplications is also finite. Since multiplying a row by $-1$ results in the determinant getting multiplied by $-1$, we get $\det T' = \pm \det T \in \{0, \pm 1\}$, as desired.
+    We prove that $A'$ is TU by Definition~\ref{Matrix.IsTotallyUnimodular}. To this end, let $T'$ be a square submatrix of $A'$. Our goal is to show that $\det T' \in \{0, \pm 1\}$. Let $T$ be the submatrix of $A$ that represents $T'$ before pivoting. If some of the rows of $T$ were multiplied by zeros, then $T'$ contains zero rows, and hence $\det T' = 0$. Otherwise, $T'$ was obtained from $T$ by multiplying certain rows by $-1$. Since $T'$ has finitely many rows, the number of such multiplications is also finite. Since multiplying a row by $-1$ results in the determinant getting multiplied by $-1$, we get $\det T' = \pm \det T \in \{0, \pm 1\}$ as desired.
 \end{proof}
 
 \begin{lemma}
@@ -43,7 +43,7 @@
     \uses{Matrix.IsTotallyUnimodular}
     % \lean{Matrix.IsTotallyUnimodular.mul_cols}
     \leanok
-    Let $A$ be a TU matrix. Suppose some columns of $A$ are multiplied by $\{0, \pm 1\}$ factors. Then the resulting matrix $A'$ is also TU.
+    Let $A$ be a TU matrix. Suppose columns of $A$ are multiplied by $\{0, \pm 1\}$ factors. Then the resulting matrix $A'$ is also TU.
 \end{lemma}
 
 \begin{proof}
