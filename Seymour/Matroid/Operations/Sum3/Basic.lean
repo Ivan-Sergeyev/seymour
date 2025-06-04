@@ -7,26 +7,32 @@ import Seymour.Matroid.Properties.Regularity
 /-! ## Additional notation for convenience -/
 
 /-!
-  We create aliases for `Fin 2` and `Fin 3` used to represent different index sets.
+  We create aliases for `Fin 1` and `Fin 2` and `Fin 3` used to represent different index sets.
 -/
 
-/-- Fin 1 representing x₂. -/
+/-- Fin 1 representing `x₂`. -/
 abbrev Fin1X := Fin 1 -- TODO natural `Equiv`
 
-/-- Fin 1 representing y₂. -/
+/-- Fin 1 representing `y₂`. -/
 abbrev Fin1Y := Fin 1 -- TODO natural `Equiv`
 
-/-- Fin 2 representing x₀, x₁. -/
+/-- Fin 2 representing `x₀`, `x₁`. -/
 abbrev Fin2X := Fin 2 -- TODO natural `Equiv`
 
-/-- Fin 2 representing y₀, y₁. -/
+/-- Fin 2 representing `y₀`, `y₁`. -/
 abbrev Fin2Y := Fin 2 -- TODO natural `Equiv`
 
-/-- Fin 3 representing x₀, x₁, x₂. -/
+/-- Fin 3 representing `x₀`, `x₁`, `x₂`. -/
 abbrev Fin3X := Fin 3
 
-/-- Fin 3 representing y₀, y₁, y₂. -/
+/-- Fin 3 representing `y₀`, `y₁`, `y₂`. -/
 abbrev Fin3Y := Fin 3
+
+def equivFin1X {α : Type} {X : Set α} (x : X) : Fin1X ≃ Set.Elem {x.val} := Equiv.ofUnique Fin1X (Set.Elem {x.val})
+def equivFin1Y {α : Type} {Y : Set α} (y : Y) : Fin1Y ≃ Set.Elem {y.val} := Equiv.ofUnique Fin1Y (Set.Elem {y.val})
+
+def equivFin2X {α : Type} {X : Set α} (x₀ x₁ : X) : Fin2X ≃ Set.Elem {x₀.val, x₁.val} := sorry
+def equivFin2Y {α : Type} {Y : Set α} (y₀ y₁ : Y) : Fin2X ≃ Set.Elem {y₀.val, y₁.val} := sorry
 
 /-!
   We define the unsigned and the signed version of the special cases of the 3×3 submatrix in the intersection of the summands.
