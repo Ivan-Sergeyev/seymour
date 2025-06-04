@@ -1,257 +1,186 @@
--- Do not shake the imports here!
 import Seymour.Matrix.Pivoting
 import Seymour.Matroid.Properties.Regularity
 
 
-variable {α : Type}
+/-! # Matrix-level 3-sum -/
 
--- ## Interface between set theory and type theory
+/-! ## Additional notation for convenience -/
 
-/-- Remove a bundled element from a set. -/
+/-!
+  We create aliases for `Fin 2` and `Fin 3` used to represent different index sets.
+-/
+
+/-- Fin 1 representing x₂. -/
+abbrev Fin1X := Fin 1 -- TODO natural `Equiv`
+
+/-- Fin 1 representing y₂. -/
+abbrev Fin1Y := Fin 1 -- TODO natural `Equiv`
+
+/-- Fin 2 representing x₀, x₁. -/
+abbrev Fin2X := Fin 2 -- TODO natural `Equiv`
+
+/-- Fin 2 representing y₀, y₁. -/
+abbrev Fin2Y := Fin 2 -- TODO natural `Equiv`
+
+/-- Fin 3 representing x₀, x₁, x₂. -/
+abbrev Fin3X := Fin 3
+
+/-- Fin 3 representing y₀, y₁, y₂. -/
+abbrev Fin3Y := Fin 3
+
+/-!
+  We define the unsigned and the signed version of the special cases of the 3×3 submatrix in the intersection of the summands.
+-/
+
+/-- Unsigned version of the first special case of the 3×3 submatrix in the intersection of the summands. -/
 @[simp]
-/-private-/ abbrev Set.drop1 (X : Set α) (x₀ : X) : Set α := X \ {x₀.val}
+abbrev matrix3x3unsigned₀ (F : Type) [Zero F] [One F] :
+    Matrix Fin3X Fin3Y F :=
+  !![1, 0, 1; 0, 1, 1; 1, 1, 0]
 
-@[app_unexpander Set.drop1]
-/-private-/ def Set.drop1_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $S) => `($(S).$(Lean.mkIdent `drop1))
-  | _ => throw ()
-
-/-- Remove two bundled elements from a set. -/
+/-- Unsigned version of the second special case of the 3×3 submatrix in the intersection of the summands. -/
 @[simp]
-/-private-/ abbrev Set.drop2 (X : Set α) (x₀ x₁ : X) : Set α := X \ {x₀.val, x₁.val}
+abbrev matrix3x3unsigned₁ (F : Type) [Zero F] [One F] :
+    Matrix Fin3X Fin3Y F :=
+  !![1, 1, 1; 0, 1, 1; 1, 1, 0]
 
-@[app_unexpander Set.drop2]
-/-private-/ def Set.drop2_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $S) => `($(S).$(Lean.mkIdent `drop2))
-  | _ => throw ()
-
-/-- Remove three bundled elements from a set. -/
+/-- Signed version of the first special case of the 3×3 submatrix in the intersection of the summands. -/
 @[simp]
-/-private-/ abbrev Set.drop3 (X : Set α) (x₀ x₁ x₂ : X) : Set α := X \ {x₀.val, x₁.val, x₂.val}
+abbrev matrix3x3signed₀ :
+    Matrix Fin3X Fin3Y ℚ :=
+  !![1, 0, 1; 0, -1, 1; 1, 1, 0]
 
-@[app_unexpander Set.drop3]
-/-private-/ def Set.drop3_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $S) => `($(S).$(Lean.mkIdent `drop3))
-  | _ => throw ()
-
+/-- Signed version of the second special case of the 3×3 submatrix in the intersection of the summands. -/
 @[simp]
-/-private-/ abbrev undrop1 {X : Set α} {x₀ : X} (i : X.drop1 x₀) : X :=
-  ⟨i.val, i.property.left⟩
-
-@[simp]
-/-private-/ abbrev undrop2 {X : Set α} {x₀ x₁ : X} (i : X.drop2 x₀ x₁) : X :=
-  ⟨i.val, i.property.left⟩
-
-@[simp]
-/-private-/ abbrev undrop3 {X : Set α} {x₀ x₁ x₂ : X} (i : X.drop3 x₀ x₁ x₂) : X :=
-  ⟨i.val, i.property.left⟩
-
-@[simp]
-/-private-/ abbrev mapX [DecidableEq α] {X : Set α} {x₀ x₁ x₂ : X} [∀ x, Decidable (x ∈ X)] (i : X.drop1 x₂) :
-    Fin 2 ⊕ X.drop3 x₀ x₁ x₂ :=
-  if hi₀ : i.val = x₀ then ◩0 else
-  if hi₁ : i.val = x₁ then ◩1 else
-  if hi : i.val ∈ X.drop3 x₀ x₁ x₂ then ◪⟨i, hi⟩ else
-  (impossible_nmem_sdiff_triplet hi hi₀ hi₁).elim
-
-@[simp]
-/-private-/ abbrev mapY [DecidableEq α] {Y : Set α} {y₀ y₁ y₂ : Y} [∀ x, Decidable (x ∈ Y)] (j : Y.drop1 y₂) :
-    Y.drop3 y₀ y₁ y₂ ⊕ Fin 2 :=
-  if hj₀ : j.val = y₀ then ◪0 else
-  if hj₁ : j.val = y₁ then ◪1 else
-  if hj : j.val ∈ Y.drop3 y₀ y₁ y₂ then ◩⟨j, hj⟩ else
-  (impossible_nmem_sdiff_triplet hj hj₀ hj₁).elim
+abbrev matrix3x3signed₁ :
+    Matrix Fin3X Fin3Y ℚ :=
+  matrix3x3unsigned₁ ℚ
 
 
--- ## Specific 3×3 matrices
+/-! ## Definition -/
 
-@[simp] /-private-/ abbrev matrix3x3unsigned₀ : Matrix (Fin 3) (Fin 3) ℚ := !![1, 0, 1; 0, 1, 1; 1, 1, 0]
-@[simp] /-private-/ abbrev matrix3x3unsigned₁ : Matrix (Fin 3) (Fin 3) ℚ := !![1, 1, 1; 0, 1, 1; 1, 1, 0]
+/-- Structural data of 3-sum of matrices. -/
+structure MatrixSum3 (Xₗ Yₗ Xᵣ Yᵣ : Type) (F : Type) where
+  Aₗ : Matrix (Xₗ ⊕ Fin1X) (Yₗ ⊕ Fin2Y) F
+  Dₗ : Matrix Fin2X Yₗ F
+  D₀ₗ : Matrix Fin2X Fin2Y F
+  D₀ᵣ : Matrix Fin2X Fin2Y F
+  Dᵣ : Matrix Xᵣ Fin2Y F
+  Aᵣ : Matrix (Fin2X ⊕ Xᵣ) (Fin1Y ⊕ Yᵣ) F
 
-@[simp] /-private-/ abbrev matrix3x3signed₀ : Matrix (Fin 3) (Fin 3) ℚ := !![1, 0, 1; 0, -1, 1; 1, 1, 0]
-@[simp] /-private-/ abbrev matrix3x3signed₁ : Matrix (Fin 3) (Fin 3) ℚ := matrix3x3unsigned₁
+/-- The bottom-left block of 3-sum. -/
+noncomputable abbrev MatrixSum3.D {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Field F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
+    Matrix (Fin2X ⊕ Xᵣ) (Yₗ ⊕ Fin2Y) F :=
+  ⊞ S.Dₗ S.D₀ₗ (S.Dᵣ * S.D₀ₗ⁻¹ * S.Dₗ) S.Dᵣ
 
-@[simp]
-/-private-/ abbrev Matrix.submatrix3x3 {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x₂ : X) (y₀ y₁ y₂ : Y) :
-    Matrix (Fin 3) (Fin 3) ℚ :=
-  !![
-    Q x₀ y₀, Q x₀ y₁, Q x₀ y₂;
-    Q x₁ y₀, Q x₁ y₁, Q x₁ y₂;
-    Q x₂ y₀, Q x₂ y₁, Q x₂ y₂]
-
-@[app_unexpander Matrix.submatrix3x3]
-/-private-/ def Matrix.submatrix3x3_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $Q) => `($(Q).$(Lean.mkIdent `submatrix3x3))
-  | _ => throw ()
-
-/-private-/ lemma submatrix3x3signed₀_abs {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y}
-    (hQ : Q.submatrix3x3 x₀ x₁ x₂ y₀ y₁ y₂ = matrix3x3signed₀) :
-    |Q.submatrix3x3 x₀ x₁ x₂ y₀ y₁ y₂| = matrix3x3unsigned₀ :=
-  hQ ▸ |matrix3x3signed₀|.eta_fin_three
-
-/-private-/ lemma submatrix3x3signed₁_abs {X Y : Set α} {Q : Matrix X Y ℚ} {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y}
-    (hQ : Q.submatrix3x3 x₀ x₁ x₂ y₀ y₁ y₂ = matrix3x3signed₁) :
-    |Q.submatrix3x3 x₀ x₁ x₂ y₀ y₁ y₂| = matrix3x3unsigned₁ :=
-  hQ ▸ |matrix3x3signed₁|.eta_fin_three
-
-/-private-/ lemma Matrix.submatrix3x3_eq {X Y : Set α} (Q : Matrix X Y ℚ) (x₀ x₁ x₂ : X) (y₀ y₁ y₂ : Y) :
-    Q.submatrix3x3 x₀ x₁ x₂ y₀ y₁ y₂ =
-    Q.submatrix
-      (match · with
-        | 0 => x₀
-        | 1 => x₁
-        | 2 => x₂)
-      (match · with
-        | 0 => y₀
-        | 1 => y₁
-        | 2 => y₂) := by
-  ext
-  rw [Matrix.submatrix_apply]
-  split <;> split <;> rfl
-
-/-private-/ lemma Matrix.IsTotallyUnimodular.submatrix3x3 {X Y : Set α} {Q : Matrix X Y ℚ}
-    (hQ : Q.IsTotallyUnimodular) (x₀ x₁ x₂ : X) (y₀ y₁ y₂ : Y) :
-    (Q.submatrix3x3 x₀ x₁ x₂ y₀ y₁ y₂).IsTotallyUnimodular := by
-  rw [Matrix.submatrix3x3_eq]
-  apply hQ.submatrix
+/-- The resulting matrix of 3-sum. -/
+noncomputable def MatrixSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Field F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
+    Matrix ((Xₗ ⊕ Fin1X) ⊕ (Fin2X ⊕ Xᵣ)) ((Yₗ ⊕ Fin2Y) ⊕ (Fin1Y ⊕ Yᵣ)) F :=
+  ⊞ S.Aₗ 0 S.D S.Aᵣ
 
 
--- ## Main definition
+/-! ## Re-construction of summands -/
 
-/-- The bottom left block of the 3-sum matrix, a.k.a. `D`. -/
-noncomputable abbrev matrix3sumBottomLeft [DecidableEq α] {F : Type} [Field F]
-    {X Y : Set α} [∀ x, Decidable (x ∈ X)] [∀ y, Decidable (y ∈ Y)]
-    (x₀ᵣ x₁ᵣ x₂ᵣ : X) (y₀ₗ y₁ₗ y₂ₗ : Y)
-    (Dₗ : Matrix (Fin 2) (Y.drop3 y₀ₗ y₁ₗ y₂ₗ) F)
-    (D₀ : Matrix (Fin 2) (Fin 2) F)
-    (Dᵣ : Matrix (X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ) (Fin 2) F) :
-    Matrix (X.drop1 x₂ᵣ) (Y.drop1 y₂ₗ) F :=
-  (⊞ Dₗ D₀ (Dᵣ * D₀⁻¹ * Dₗ) Dᵣ).submatrix mapX mapY
+/-- Reconstructed left summand. -/
+abbrev MatrixSum3.Bₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
+    Matrix ((Xₗ ⊕ Fin1X) ⊕ Fin2X) ((Yₗ ⊕ Fin2Y) ⊕ Fin 1) F :=
+  ⊞ S.Aₗ 0 (S.Dₗ ◫ S.D₀ₗ) !![1; 1]
 
-/-- The 3-sum composition of matrices. -/
-noncomputable def matrix3sumComposition [DecidableEq α] {F : Type} [Field F]
-    {Xₗ Yₗ Xᵣ Yᵣ : Set α}
-    [∀ x, Decidable (x ∈ Xₗ)] [∀ x, Decidable (x ∈ Xᵣ)] [∀ y, Decidable (y ∈ Yₗ)] [∀ y, Decidable (y ∈ Yᵣ)]
-    (x₀ₗ x₁ₗ : Xₗ) (x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ)
-    (y₀ₗ y₁ₗ y₂ₗ : Yₗ) (y₀ᵣ y₁ᵣ : Yᵣ)
-    (Aₗ : Matrix (Xₗ.drop2 x₀ₗ x₁ₗ) (Yₗ.drop1 y₂ₗ) F)
-    (Dₗ : Matrix (Fin 2) (Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ) F)
-    (D₀ : Matrix (Fin 2) (Fin 2) F)
-    (Dᵣ : Matrix (Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ) (Fin 2) F)
-    (Aᵣ : Matrix (Xᵣ.drop1 x₂ᵣ) (Yᵣ.drop2 y₀ᵣ y₁ᵣ) F) :
-    Matrix ((Xₗ.drop2 x₀ₗ x₁ₗ) ⊕ (Xᵣ.drop1 x₂ᵣ)) ((Yₗ.drop1 y₂ₗ) ⊕ (Yᵣ.drop2 y₀ᵣ y₁ᵣ)) F :=
-  ⊞ Aₗ 0 (matrix3sumBottomLeft x₀ᵣ x₁ᵣ x₂ᵣ y₀ₗ y₁ₗ y₂ₗ Dₗ D₀ Dᵣ) Aᵣ
+/-- Reconstructed right summand. -/
+abbrev MatrixSum3.Bᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
+    Matrix (Fin 1 ⊕ (Fin2X ⊕ Xᵣ)) (Fin2Y ⊕ (Fin1Y ⊕ Yᵣ)) F :=
+  ⊞ !![1, 1] 0 (S.D₀ᵣ ⊟ S.Dᵣ) S.Aᵣ
 
--- ## Parts of the two matrices
+/-- Reconstructed left summand's 3×3 submatrix in the intersection of the summands. -/
+abbrev MatrixSum3.Sₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
+    Matrix Fin3X Fin3Y F :=
+  S.Bₗ.submatrix ![◪0, ◪1, ◩◪0] ![◩◪0, ◩◪1, ◪0]
 
-@[simp]
-/-private-/ abbrev Matrix.D₀ {F : Type} {X Y : Set α} (B : Matrix X Y F) (x₀ x₁ : X) (y₀ y₁ : Y) :
-    Matrix (Fin 2) (Fin 2) F :=
-  !![B x₀ y₀, B x₀ y₁; B x₁ y₀, B x₁ y₁]
-
-@[app_unexpander Matrix.D₀]
-/-private-/ def Matrix.D₀_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $A) => `($(A).$(Lean.mkIdent `D₀))
-  | _ => throw ()
-
-@[simp]
-/-private-/ abbrev Matrix.Dₗ {F : Type} {X Y : Set α} (B : Matrix X Y F) (x₀ x₁ : X) (y₀ y₁ y₂ : Y) :
-    Matrix (Fin 2) (Y.drop3 y₀ y₁ y₂).Elem F :=
-  ![B x₀ ∘ Set.diff_subset.elem, B x₁ ∘ Set.diff_subset.elem]
-
-@[app_unexpander Matrix.Dₗ]
-/-private-/ def Matrix.Dₗ_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $A) => `($(A).$(Lean.mkIdent `Dₗ))
-  | _ => throw ()
-
-@[simp]
-/-private-/ abbrev Matrix.Dᵣ {F : Type} {X Y : Set α} (B : Matrix X Y F) (x₀ x₁ x₂ : X) (y₀ y₁ : Y) :
-    Matrix (X.drop3 x₀ x₁ x₂) (Fin 2) F :=
-  Matrix.of (fun i => ![B (Set.diff_subset.elem i) y₀, B (Set.diff_subset.elem i) y₁])
-
-@[app_unexpander Matrix.Dᵣ]
-/-private-/ def Matrix.Dᵣ_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $A) => `($(A).$(Lean.mkIdent `Dᵣ))
-  | _ => throw ()
-
-@[simp]
-/-private-/ abbrev Matrix.Aₗ {F : Type} {X Y : Set α} (B : Matrix X Y F) (x₀ x₁ : X) (y₂ : Y) :
-    Matrix (X.drop2 x₀ x₁) (Y.drop1 y₂) F :=
-  B.submatrix Set.diff_subset.elem Set.diff_subset.elem
-
-@[app_unexpander Matrix.Aₗ]
-/-private-/ def Matrix.Aₗ_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $A) => `($(A).$(Lean.mkIdent `Aₗ))
-  | _ => throw ()
-
-@[simp]
-/-private-/ abbrev Matrix.Aᵣ {F : Type} {X Y : Set α} (B : Matrix X Y F) (x₂ : X) (y₀ y₁ : Y) :
-    Matrix (X.drop1 x₂) (Y.drop2 y₀ y₁) F :=
-  B.submatrix Set.diff_subset.elem Set.diff_subset.elem
-
-@[app_unexpander Matrix.Aᵣ]
-/-private-/ def Matrix.Aᵣ_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $A) => `($(A).$(Lean.mkIdent `Aᵣ))
-  | _ => throw ()
+/-- Reconstructed right summand's 3×3 submatrix in the intersection of the summands. -/
+abbrev MatrixSum3.Sᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
+    Matrix Fin3X Fin3Y F :=
+  S.Bᵣ.submatrix ![◪◩0, ◪◩1, ◩0] ![◩0, ◩1, ◪◩0]
 
 
--- ## Elements of the triplet intersection as elements of respective types
+/-! ## Correctness -/
 
-variable {Zₗ Zᵣ : Set α} {a₀ a₁ a₂ : α}
+/-- Equality of absolute values of the 2×2 submatrices in the intersection of the summands. -/
+abbrev MatrixSum3.HasEqD₀ₗD₀ᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) : Prop :=
+  S.D₀ₗ = S.D₀ᵣ
 
-/-private-/ lemma Eq.mem3₀ₗ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₀ ∈ Zₗ :=
-  hZZ.symm.subset.trans Set.inter_subset_left (Set.mem_insert a₀ {a₁, a₂})
+/-- Equality of absolute values of the 3×3 submatrices in the intersection of the summands. -/
+abbrev MatrixSum3.HasEqSₗSᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) : Prop :=
+  S.Sₗ = S.Sᵣ
 
-@[app_unexpander Eq.mem3₀ₗ]
-/-private-/ def Eq.mem3₀ₗ_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $e) => `($(e).$(Lean.mkIdent `mem3₀ₗ))
-  | _ => throw ()
+/-- Equality of the 2×2 submatrices in the intersection of the summands. -/
+abbrev MatrixSum3.HasEqAbsD₀ₗD₀ᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [LinearOrderedAddCommGroup F]
+    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) : Prop :=
+  |S.D₀ₗ| = |S.D₀ᵣ|
 
-/-private-/ lemma Eq.mem3₁ₗ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₁ ∈ Zₗ :=
-  hZZ.symm.subset.trans Set.inter_subset_left (Set.insert_comm a₀ a₁ {a₂} ▸ Set.mem_insert a₁ {a₀, a₂})
+/-- Equality of the 3×3 submatrices in the intersection of the summands. -/
+abbrev MatrixSum3.HasEqAbsSₗSᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] [LinearOrderedAddCommGroup F]
+    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) : Prop :=
+  |S.Sₗ| = |S.Sᵣ|
 
-@[app_unexpander Eq.mem3₁ₗ]
-/-private-/ def Eq.mem3₁ₗ_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $e) => `($(e).$(Lean.mkIdent `mem3₁ₗ))
-  | _ => throw ()
+/-- Absolute values of the 3×3 submatrices in the intersection of the summands match the first special case. -/
+abbrev MatrixSum3.Has3x3abs₀ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] [LinearOrderedAddCommGroup F]
+    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) : Prop :=
+  |S.Sₗ| = matrix3x3unsigned₀ F ∧ |S.Sᵣ| = matrix3x3unsigned₀ F
 
-/-private-/ lemma Eq.mem3₂ₗ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₂ ∈ Zₗ :=
-  hZZ.symm.subset.trans Set.inter_subset_left (by simp)
+/-- Absolute values of the 3×3 submatrices in the intersection of the summands match the second special case. -/
+abbrev MatrixSum3.Has3x3abs₁ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] [LinearOrderedAddCommGroup F]
+    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) : Prop :=
+  |S.Sₗ| = matrix3x3unsigned₁ F ∧ |S.Sᵣ| = matrix3x3unsigned₁ F
 
-@[app_unexpander Eq.mem3₂ₗ]
-/-private-/ def Eq.mem3₂ₗ_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $e) => `($(e).$(Lean.mkIdent `mem3₂ₗ))
-  | _ => throw ()
+/-- Absolute values of the 3×3 submatrices in the intersection of the summands match the first or the second special case. -/
+abbrev MatrixSum3.Has3x3abs₀₁ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] [LinearOrderedAddCommGroup F]
+    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) : Prop :=
+  S.Has3x3abs₀ ∨ S.Has3x3abs₁
 
-/-private-/ lemma Eq.mem3₀ᵣ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₀ ∈ Zᵣ :=
-  hZZ.symm.subset.trans Set.inter_subset_right (Set.mem_insert a₀ {a₁, a₂})
+/-- The signed 3×3 submatrices in the intersection of the summands match the first special case. -/
+abbrev MatrixSum3.Has3x3signed₀ {Xₗ Yₗ Xᵣ Yᵣ : Type}
+    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) : Prop :=
+  S.Sₗ = matrix3x3signed₀ ∧ S.Sᵣ = matrix3x3signed₀
 
-@[app_unexpander Eq.mem3₀ᵣ]
-/-private-/ def Eq.mem3₀ᵣ_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $e) => `($(e).$(Lean.mkIdent `mem3₀ᵣ))
-  | _ => throw ()
+/-- The signed 3×3 submatrices in the intersection of the summands match the second special case. -/
+abbrev MatrixSum3.Has3x3signed₁ {Xₗ Yₗ Xᵣ Yᵣ : Type}
+    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) : Prop :=
+  S.Sₗ = matrix3x3signed₁ ∧ S.Sᵣ = matrix3x3signed₁
 
-/-private-/ lemma Eq.mem3₁ᵣ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₁ ∈ Zᵣ :=
-  hZZ.symm.subset.trans Set.inter_subset_right (Set.insert_comm a₀ a₁ {a₂} ▸ Set.mem_insert a₁ {a₀, a₂})
+/-- The signed 3×3 submatrices in the intersection of the summands match the first or the second special case. -/
+abbrev MatrixSum3.Has3x3signed₀₁ {Xₗ Yₗ Xᵣ Yᵣ : Type}
+    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) : Prop :=
+  S.Has3x3signed₀ ∨ S.Has3x3signed₁
 
-@[app_unexpander Eq.mem3₁ᵣ]
-/-private-/ def Eq.mem3₁ᵣ_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $e) => `($(e).$(Lean.mkIdent `mem3₁ᵣ))
-  | _ => throw ()
 
-/-private-/ lemma Eq.mem3₂ᵣ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₂ ∈ Zᵣ :=
-  hZZ.symm.subset.trans Set.inter_subset_right (by simp)
+/-! ## Total unimodularity of summands -/
 
-@[app_unexpander Eq.mem3₂ᵣ]
-/-private-/ def Eq.mem3₂ᵣ_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $e) => `($(e).$(Lean.mkIdent `mem3₂ᵣ))
-  | _ => throw ()
+/-- Reconstructed left summand has a totally unimodular signing. -/
+abbrev MatrixSum3.HasTuSigningBₗ {Xₗ Yₗ Xᵣ Yᵣ : Type}
+    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2) : Prop :=
+  S.Bₗ.HasTuSigning
 
-@[simp]
-/-private-/ def Eq.inter3all (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : (Zₗ × Zₗ × Zₗ) × (Zᵣ × Zᵣ × Zᵣ) :=
-  ⟨⟨⟨a₀, hZZ.mem3₀ₗ⟩, ⟨a₁, hZZ.mem3₁ₗ⟩, ⟨a₂, hZZ.mem3₂ₗ⟩⟩, ⟨⟨a₀, hZZ.mem3₀ᵣ⟩, ⟨a₁, hZZ.mem3₁ᵣ⟩, ⟨a₂, hZZ.mem3₂ᵣ⟩⟩⟩
+/-- Reconstructed right summand has a totally unimodular signing. -/
+abbrev MatrixSum3.HasTuSigningBᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type}
+    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2) : Prop :=
+  S.Bᵣ.HasTuSigning
 
-@[app_unexpander Eq.inter3all]
-/-private-/ def Eq.inter3all_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $e) => `($(e).$(Lean.mkIdent `inter3all))
-  | _ => throw ()
+/-- Both reconstructed summands have a totally unimodular signing. -/
+abbrev MatrixSum3.HasTuSigningBₗᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type}
+    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2) : Prop :=
+  S.HasTuSigningBₗ ∧ S.HasTuSigningBᵣ
+
+/-- Reconstructed left summand is totally unimodular. -/
+abbrev MatrixSum3.HasTuBₗ {Xₗ Yₗ Xᵣ Yᵣ : Type}
+    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) : Prop :=
+  S.Bₗ.IsTotallyUnimodular
+
+/-- Reconstructed right summand is totally unimodular. -/
+abbrev MatrixSum3.HasTuBᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type}
+    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) : Prop :=
+  S.Bᵣ.IsTotallyUnimodular
+
+/-- Both reconstructed summands are totally unimodular. -/
+abbrev MatrixSum3.HasTuBₗᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type}
+    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) : Prop :=
+  S.HasTuBₗ ∧ S.HasTuBᵣ
