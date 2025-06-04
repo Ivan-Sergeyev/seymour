@@ -235,19 +235,21 @@ def MatrixSum3.IsCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Type} (S : MatrixSum3 X
 
 /-- Sufficient condition for existence of a canonical signing of a 3-sum of matrices. -/
 def MatrixSum3.HasCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2) : Prop :=
-  sorry
+  (S.Bₗ.HasTuSigning ∧ S.Bᵣ.HasTuSigning) ∧
+    ((S.Sₗ = matrix3x3unsigned₀ Z2 ∧ S.Sᵣ = matrix3x3unsigned₀ Z2) ∨
+     (S.Sₗ = matrix3x3unsigned₁ Z2 ∧ S.Sᵣ = matrix3x3unsigned₁ Z2))
 
 
 /-! ## Correctness -/
 
 /-- Canonical re-signing transforms a 3-sum of matrices into its canonically signed version. -/
-lemma MatrixSum3.toCanonicalSigning_IsCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2}
+lemma MatrixSum3.HasCanonicalSigning.isCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2}
     (hS : S.HasCanonicalSigning) :
     S.toCanonicalSigning.IsCanonicalSigning :=
   sorry
 
 /-- Canonical re-signing yields a signing of the original 3-sum of marices. -/
-lemma MatrixSum3.toCanonicalSigning_IsSigning {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2}
+lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2}
     (hS : S.HasCanonicalSigning) :
     S.toCanonicalSigning.matrix.IsSigningOf S.matrix :=
   sorry

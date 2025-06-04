@@ -48,6 +48,20 @@ abbrev undrop2 {X : Set α} {x₀ x₁ : X} (i : X.drop2 x₀ x₁) : X :=
 abbrev undrop3 {X : Set α} {x₀ x₁ x₂ : X} (i : X.drop3 x₀ x₁ x₂) : X :=
   ⟨i.val, i.property.left⟩
 
+-- TODO pairwise inequality assumptions and prove the following
+
+lemma Set.drop3_insert2 {X : Set α} {x₀ x₁ x₂ : X} : X.drop3 x₀ x₁ x₂ ∪ {x₀.val, x₁.val} = X.drop1 x₂ := by
+  sorry
+
+lemma Set.insert2_drop3 {X : Set α} {x₀ x₁ x₂ : X} : {x₀.val, x₁.val} ∪ X.drop3 x₀ x₁ x₂ = X.drop1 x₂ := by
+  sorry
+
+lemma Set.drop3_insert1 {X : Set α} {x₀ x₁ x₂ : X} : X.drop3 x₀ x₁ x₂ ∪ {x₂.val} = X.drop2 x₀ x₁ := by
+  sorry
+
+lemma Set.insert1_drop3 {X : Set α} {x₀ x₁ x₂ : X} : {x₂.val} ∪ X.drop3 x₀ x₁ x₂ = X.drop2 x₀ x₁ := by
+  sorry
+
 
 /-! ### Re-typing elements of the triplet intersection -/
 
@@ -170,19 +184,73 @@ variable {α : Type} [DecidableEq α]
 
 def standardReprMatrixSum3 (Sₗ Sᵣ : StandardRepr α Z2)
     (x₀ₗ x₁ₗ x₂ₗ : Sₗ.X) (y₀ₗ y₁ₗ y₂ₗ : Sₗ.Y) (x₀ᵣ x₁ᵣ x₂ᵣ : Sᵣ.X) (y₀ᵣ y₁ᵣ y₂ᵣ : Sᵣ.Y) :
-    MatrixSum3 (Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ) (Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ) (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ) (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ) Z2 where
-  Aₗ := Sₗ.B.submatrix (fun i => i.casesOn undrop3 ↓x₂ₗ) (fun j => j.casesOn undrop3 ![y₀ₗ, y₁ₗ])
+    MatrixSum3 (Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ) (Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ) (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ) (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ) Z2
+    where
+  Aₗ := Sₗ.B.submatrix (·.casesOn undrop3 ↓x₂ₗ) (·.casesOn undrop3 ![y₀ₗ, y₁ₗ])
   Dₗ := Sₗ.B.Dₗ x₀ₗ x₁ₗ y₀ₗ y₁ₗ y₂ₗ
   D₀ₗ := Sₗ.B.D₀ x₀ₗ x₁ₗ y₀ₗ y₁ₗ
   D₀ᵣ := Sᵣ.B.D₀ x₀ᵣ x₁ᵣ y₀ᵣ y₁ᵣ
   Dᵣ := Sᵣ.B.Dᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ
-  Aᵣ := Sᵣ.B.submatrix (fun i => i.casesOn ![x₀ᵣ, x₁ᵣ] undrop3) (fun j => j.casesOn ↓y₂ᵣ undrop3)
+  Aᵣ := Sᵣ.B.submatrix (·.casesOn ![x₀ᵣ, x₁ᵣ] undrop3) (·.casesOn ↓y₂ᵣ undrop3)
 
-def standardRepr3sumComposition_B (Sₗ Sᵣ : StandardRepr α Z2)
+/-- Convert `(X₁₁.Elem ⊕ X₁₂.Elem) ⊕ (X₂₁.Elem ⊕ X₂₂.Elem)` to `((X₁₁ ∪ X₁₂) ∪ (X₂₁ ∪ X₂₂)).Elem`. -/
+def Sum.toUnionUnionUnion {X₁₁ X₁₂ X₂₁ X₂₂ : Set α} (i : (X₁₁.Elem ⊕ X₁₂.Elem) ⊕ (X₂₁.Elem ⊕ X₂₂.Elem)) :
+    ((X₁₁ ∪ X₁₂) ∪ (X₂₁ ∪ X₂₂)).Elem :=
+  i.casesOn (Set.subset_union_left.elem ·.toUnion) (Set.subset_union_right.elem ·.toUnion)
+
+/-- Convert `((X₁₁ ∪ X₁₂) ∪ (X₂₁ ∪ X₂₂)).Elem` to `(X₁₁.Elem ⊕ X₁₂.Elem) ⊕ (X₂₁.Elem ⊕ X₂₂.Elem)`. -/
+def Subtype.toSumSumSum {X₁₁ X₁₂ X₂₁ X₂₂ : Set α}
+    [∀ a : α, Decidable (a ∈ X₁₁)]
+    [∀ a : α, Decidable (a ∈ X₁₂)]
+    [∀ a : α, Decidable (a ∈ X₂₁)]
+    [∀ a : α, Decidable (a ∈ X₂₂)]
+    (i : ((X₁₁ ∪ X₁₂) ∪ (X₂₁ ∪ X₂₂)).Elem) :
+    (X₁₁.Elem ⊕ X₁₂.Elem) ⊕ (X₂₁.Elem ⊕ X₂₂.Elem) :=
+  if hiX₁₁ : i.val ∈ X₁₁ then ◩◩⟨i, hiX₁₁⟩ else
+  if hiX₁₂ : i.val ∈ X₁₂ then ◩◪⟨i, hiX₁₂⟩ else
+  if hiX₂₁ : i.val ∈ X₂₁ then ◪◩⟨i, hiX₂₁⟩ else
+  if hiX₂₂ : i.val ∈ X₂₂ then ◪◪⟨i, hiX₂₂⟩ else
+  False.elim (by have := i.property; tauto_set)
+
+/-- Convert a nested block matrix to a matrix over nested set unions. -/
+def Matrix.toMatrixUnionNested {X₁₁ X₁₂ X₂₁ X₂₂ Y₁₁ Y₁₂ Y₂₁ Y₂₂ : Set α} {R : Type}
+    [∀ a : α, Decidable (a ∈ X₁₁)]
+    [∀ a : α, Decidable (a ∈ X₁₂)]
+    [∀ a : α, Decidable (a ∈ X₂₁)]
+    [∀ a : α, Decidable (a ∈ X₂₂)]
+    [∀ a : α, Decidable (a ∈ Y₁₁)]
+    [∀ a : α, Decidable (a ∈ Y₁₂)]
+    [∀ a : α, Decidable (a ∈ Y₂₁)]
+    [∀ a : α, Decidable (a ∈ Y₂₂)]
+    (A : Matrix ((X₁₁.Elem ⊕ X₁₂.Elem) ⊕ (X₂₁.Elem ⊕ X₂₂.Elem)) ((Y₁₁.Elem ⊕ Y₁₂.Elem) ⊕ (Y₂₁.Elem ⊕ Y₂₂.Elem)) R) :
+    Matrix ((X₁₁ ∪ X₁₂) ∪ (X₂₁ ∪ X₂₂)).Elem ((Y₁₁ ∪ Y₁₂) ∪ (Y₂₁ ∪ Y₂₂)).Elem R :=
+  ((A ∘ Subtype.toSumSumSum) · ∘ Subtype.toSumSumSum)
+
+noncomputable def standardRepr3sumComposition_B (Sₗ Sᵣ : StandardRepr α Z2) --[∀ S : Set α, ∀ a : α, Decidable (a ∈ S)]
     (x₀ₗ x₁ₗ x₂ₗ : Sₗ.X) (y₀ₗ y₁ₗ y₂ₗ : Sₗ.Y) (x₀ᵣ x₁ᵣ x₂ᵣ : Sᵣ.X) (y₀ᵣ y₁ᵣ y₂ᵣ : Sᵣ.Y) :
     Matrix (Sₗ.X.drop2 x₀ₗ x₁ₗ ∪ Sᵣ.X.drop1 x₂ᵣ).Elem (Sₗ.Y.drop1 y₂ₗ ∪ Sᵣ.Y.drop2 y₀ᵣ y₁ᵣ).Elem Z2 :=
   let S := standardReprMatrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
-  sorry -- todo: essentially `toMatrixUnionUnion`, but with remapping Fin 1 and Fin 2 to corresponding elements
+  let A := S.matrix
+  let eₓ : ((Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ).Elem ⊕ Fin1X) ⊕ (Fin2X ⊕ (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ).Elem) ≃
+      ((Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ).Elem ⊕ Set.Elem {x₂ₗ.val}) ⊕ (Set.Elem {x₀ᵣ.val, x₁ᵣ.val} ⊕ (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ).Elem) := by
+    apply Equiv.sumCongr
+    apply Equiv.sumCongr
+    apply Equiv.refl
+    sorry
+    apply Equiv.sumCongr
+    sorry
+    apply Equiv.refl
+  let eₐ : ((Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ).Elem ⊕ Fin2Y) ⊕ (Fin1Y ⊕ (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ).Elem) ≃
+      ((Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ).Elem ⊕ Set.Elem {y₀ₗ.val, y₁ₗ.val}) ⊕ (Set.Elem {y₂ᵣ.val} ⊕ (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ).Elem) := by
+    apply Equiv.sumCongr
+    apply Equiv.sumCongr
+    apply Equiv.refl
+    sorry
+    apply Equiv.sumCongr
+    sorry
+    apply Equiv.refl
+  let A' := A.reindex eₓ eₐ
+  Set.drop3_insert1 ▸ Set.insert2_drop3 ▸ Set.drop3_insert2 ▸ Set.insert1_drop3 ▸ A'.toMatrixUnionNested
 
 noncomputable def standardRepr3sumComposition {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :

@@ -11,16 +11,16 @@ import Seymour.Matroid.Properties.Regularity
 -/
 
 /-- Fin 1 representing x₂. -/
-abbrev Fin1X := Fin 1
+abbrev Fin1X := Fin 1 -- TODO natural `Equiv`
 
 /-- Fin 1 representing y₂. -/
-abbrev Fin1Y := Fin 1
+abbrev Fin1Y := Fin 1 -- TODO natural `Equiv`
 
 /-- Fin 2 representing x₀, x₁. -/
-abbrev Fin2X := Fin 2
+abbrev Fin2X := Fin 2 -- TODO natural `Equiv`
 
 /-- Fin 2 representing y₀, y₁. -/
-abbrev Fin2Y := Fin 2
+abbrev Fin2Y := Fin 2 -- TODO natural `Equiv`
 
 /-- Fin 3 representing x₀, x₁, x₂. -/
 abbrev Fin3X := Fin 3
