@@ -158,21 +158,8 @@
         \end{tikzpicture}
     \end{center}
     To simplify notation, going forward we use $D_{0}$, $D_{0}'$, $S$, and $S'$ to refer to the matrices of the form above.
+    BTW, the canonical signing $S'$ of $S$ (from Definition~\ref{def:three_sum_signing_S}) is TU.
 \end{definition}
-
-\begin{lemma}
-    \label{lem:three_sum_signing_S_TU}
-    \uses{def:three_sum_signing_S,Matrix.IsTotallyUnimodular}
-    % \lean{}
-    % \leanok
-    The canonical signing $S'$ of $S$ (from Definition~\ref{def:three_sum_signing_S}) is TU.
-\end{lemma}
-
-\begin{proof}
-    % \uses{}
-    % \leanok
-    Verified via a direct calculation.
-\end{proof}
 
 \begin{lemma}
     \label{lem:three_sum_re_signing_helper}
@@ -197,7 +184,7 @@
 \end{lemma}
 
 \begin{proof}
-    \uses{Matrix.IsTuSigningOf,Matrix.IsTotallyUnimodular.mul_rows,Matrix.IsTotallyUnimodular.mul_cols,Matrix.IsTotallyUnimodular,lem:three_sum_signing_S_TU}
+    \uses{Matrix.IsTuSigningOf,Matrix.IsTotallyUnimodular.mul_rows,Matrix.IsTotallyUnimodular.mul_cols,Matrix.IsTotallyUnimodular}
     % \leanok
     Since $Q$ is a TU signing of $S$ and $Q'$ is obtained from $Q$ by multiplying rows and columns by $\pm 1$ factors, $Q'$ is also a TU signing of $S$. By construction, we have
     \begin{align*}
@@ -239,7 +226,6 @@
         $
         which contradicts TUness of $Q'$. Thus, $Q' (x_{1}, y_{1}) = 1 = S' (x_{1}, y_{1})$.
     \end{enumerate}
-    % TODO how is lem:three_sum_signing_S_TU used in the proof?
 \end{proof}
 
 \begin{definition}
