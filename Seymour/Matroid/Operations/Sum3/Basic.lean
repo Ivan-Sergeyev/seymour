@@ -11,16 +11,16 @@ import Seymour.Matroid.Properties.Regularity
 -/
 
 /-- Fin 1 representing `x₂`. -/
-abbrev Fin1X := Fin 1 -- TODO natural `Equiv`
+abbrev Fin1X := Fin 1
 
 /-- Fin 1 representing `y₂`. -/
-abbrev Fin1Y := Fin 1 -- TODO natural `Equiv`
+abbrev Fin1Y := Fin 1
 
 /-- Fin 2 representing `x₀`, `x₁`. -/
-abbrev Fin2X := Fin 2 -- TODO natural `Equiv`
+abbrev Fin2X := Fin 2
 
 /-- Fin 2 representing `y₀`, `y₁`. -/
-abbrev Fin2Y := Fin 2 -- TODO natural `Equiv`
+abbrev Fin2Y := Fin 2
 
 /-- Fin 3 representing `x₀`, `x₁`, `x₂`. -/
 abbrev Fin3X := Fin 3
@@ -28,11 +28,23 @@ abbrev Fin3X := Fin 3
 /-- Fin 3 representing `y₀`, `y₁`, `y₂`. -/
 abbrev Fin3Y := Fin 3
 
-def equivFin1X {α : Type} {X : Set α} (x : X) : Fin1X ≃ Set.Elem {x.val} := Equiv.ofUnique Fin1X (Set.Elem {x.val})
-def equivFin1Y {α : Type} {Y : Set α} (y : Y) : Fin1Y ≃ Set.Elem {y.val} := Equiv.ofUnique Fin1Y (Set.Elem {y.val})
+/-!
+  We provide canonical bijections between `Fin 1` or `Fin 2` and corresponding elements.
+-/
 
-def equivFin2X {α : Type} {X : Set α} (x₀ x₁ : X) : Fin2X ≃ Set.Elem {x₀.val, x₁.val} := sorry
-def equivFin2Y {α : Type} {Y : Set α} (y₀ y₁ : Y) : Fin2X ≃ Set.Elem {y₀.val, y₁.val} := sorry
+abbrev equivFin1X {α : Type} {X : Set α} (x : X) : Fin1X ≃ Set.Elem {x.val} := Equiv.ofUnique Fin1X (Set.Elem {x.val})
+abbrev equivFin1Y {α : Type} {Y : Set α} (y : Y) : Fin1Y ≃ Set.Elem {y.val} := Equiv.ofUnique Fin1Y (Set.Elem {y.val})
+
+def equivFin2 {α : Type} [DecidableEq α] {Z : Set α} {z₀ z₁ : Z} (hzz : z₁ ≠ z₀) : Fin 2 ≃ Set.Elem {z₀.val, z₁.val} :=
+⟨
+  ![⟨z₀.val, Set.mem_insert z₀.val {z₁.val}⟩, ⟨z₁.val, Set.mem_insert_of_mem z₀.val rfl⟩],
+  (if ·.val = z₀.val then 0 else 1),
+  (if h0 : · = 0 then by simp [h0] else have := fin2_eq_1_of_ne_0 h0; by aesop),
+  ↓(by aesop)
+⟩
+
+abbrev equivFin2X {α : Type} [DecidableEq α] {X : Set α} {x₀ x₁ : X} (hxx : x₁ ≠ x₀) : Fin2X ≃ Set.Elem {x₀.val, x₁.val} := equivFin2 hxx
+abbrev equivFin2Y {α : Type} [DecidableEq α] {Y : Set α} {y₀ y₁ : Y} (hyy : y₁ ≠ y₀) : Fin2X ≃ Set.Elem {y₀.val, y₁.val} := equivFin2 hyy
 
 /-!
   We define the unsigned and the signed version of the special cases of the 3×3 submatrix in the intersection of the summands.
