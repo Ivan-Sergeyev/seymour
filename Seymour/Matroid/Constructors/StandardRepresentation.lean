@@ -37,13 +37,8 @@ private def Set.equivFin_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $S) => `($(S).$(Lean.mkIdent `equivFin))
   | _ => throw ()
 
-private abbrev Equiv.leftCongr {ι₁ ι₂ : Type} (e : ι₁ ≃ ι₂) : ι₁ ⊕ α ≃ ι₂ ⊕ α :=
+abbrev Equiv.leftCongr {ι₁ ι₂ : Type} (e : ι₁ ≃ ι₂) : ι₁ ⊕ α ≃ ι₂ ⊕ α :=
   Equiv.sumCongr e (Equiv.refl α)
-
-@[app_unexpander Equiv.leftCongr]
-private def Equiv.leftCongr_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $S) => `($(S).$(Lean.mkIdent `leftCongr))
-  | _ => throw ()
 
 
 variable [DecidableEq α] {R : Type}

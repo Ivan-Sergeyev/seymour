@@ -7,32 +7,32 @@ import Seymour.Matroid.Operations.Sum3.Basic
 /-! ## Additional notation for special rows and columns -/
 
 /-- First special column of `S.Bᵣ` used to generate `S.D`. -/
-def MatrixSum3.c₀ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
+@[simp]
+abbrev MatrixSum3.c₀ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
     Fin 2 ⊕ Xᵣ → F :=
   ((S.D₀ᵣ ⊟ S.Dᵣ) · 0)
 
 /-- Second special column of `S.Bᵣ` used to generate `S.D`. -/
-def MatrixSum3.c₁ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
+@[simp]
+abbrev MatrixSum3.c₁ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
     Fin 2 ⊕ Xᵣ → F :=
   ((S.D₀ᵣ ⊟ S.Dᵣ) · 1)
 
-/-- Third special column of `S.Bᵣ` used to generate `S.D`. -/
-def MatrixSum3.c₂ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Sub F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
-    Fin 2 ⊕ Xᵣ → F :=
-  S.c₀ - S.c₁
-
 /-- First special row of `S.Bₗ` used to generate `S.D`. -/
-def MatrixSum3.d₀ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
+@[simp]
+abbrev MatrixSum3.d₀ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
     Yₗ ⊕ Fin 2 → F :=
   (S.Dₗ ◫ S.D₀ₗ) 0
 
 /-- Second special row of `S.Bₗ` used to generate `S.D`. -/
-def MatrixSum3.d₁ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
+@[simp]
+abbrev MatrixSum3.d₁ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
     Yₗ ⊕ Fin 2 → F :=
   (S.Dₗ ◫ S.D₀ₗ) 1
 
 /-- Third special row of `S.Bₗ` used to generate `S.D`. -/
-def MatrixSum3.d₂ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Sub F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
+@[simp]
+abbrev MatrixSum3.d₂ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Sub F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
     Yₗ ⊕ Fin 2 → F :=
   S.d₀ - S.d₁
 
@@ -41,185 +41,97 @@ def MatrixSum3.d₂ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Sub F] (S : MatrixS
 
 lemma MatrixSum3.HasTuBᵣ_special_form_cols {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.HasTuBᵣ) :
-    ∀ i, ![S.c₀ i, S.c₁ i] ≠ ![1, -1] ∧ ![S.c₀ i, S.c₁ i] ≠ ![-1, 1] := by
-  sorry
--- todo: convert proof below; Q = S.Bᵣ; assumptions are satisfied by construction of S.Bᵣ
--- omit [DecidableEq α] in
--- lemma Matrix.IsTotallyUnimodular.special_form_cols {α : Type} {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
---     {x₂ : X} {y₀ y₁ : Y} (hQy₀ : Q x₂ y₀ = 1) (hQy₁ : Q x₂ y₁ = 1) :
---     let c₀ := Q._col y₀
---     let c₁ := Q._col y₁
---     ∀ i : X.drop1 x₂, ![c₀ i, c₁ i] ≠ ![1, -1] ∧ ![c₀ i, c₁ i] ≠ ![-1, 1] := by
---   intro c₀ c₁ i
---   constructor <;>
---   · intro contr
---     simp only [c₀, c₁] at contr
---     have := congr_fun contr 0
---     have := congr_fun contr 1
---     have := hQ.det ![x₂, Set.diff_subset.elem i] ![y₀, y₁]
---     simp_all [Matrix.det_fin_two]
+    ∀ i : Fin 2 ⊕ Xᵣ, ![S.c₀ i, S.c₁ i] ≠ ![1, -1] ∧ ![S.c₀ i, S.c₁ i] ≠ ![-1, 1] := by
+  intro i
+  have := hS.det ![◪i, ◩0] ![◩0, ◩1]
+  constructor
+  <;> intro contr
+  <;> have := congr_fun contr 0
+  <;> have := congr_fun contr 1
+  <;> simp_all [Matrix.det_fin_two]
 
-lemma MatrixSum3.HasTuBᵣ_c₀_c₂_Aᵣ_IsTotallyUnimodular₀ {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
+example (X Y : Type) (e : X ≃ Y) : e ∘ e.symm = id := by
+  exact Equiv.self_comp_symm e
+
+lemma MatrixSum3.HasTuBᵣ.c₀_c₂_Aᵣ_isTotallyUnimodular₀ {Xₗ Yₗ Xᵣ Yᵣ : Type}
+    [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ] {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.HasTuBᵣ) :
-    (▮S.c₀ ◫ ▮S.c₂ ◫ S.Aᵣ).IsTotallyUnimodular := by
-  sorry
--- todo: convert proof below; Q = S.Bᵣ; assumptions are satisfied by construction of S.Bᵣ
--- set_option maxHeartbeats 333333 in
--- lemma Matrix.IsTotallyUnimodular.signing_expansion₀ {α : Type} {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
---     {x₂ : X} {y₀ y₁ : Y} (hyy : y₀ ≠ y₁) (hQy₀ : Q x₂ y₀ = 1) (hQy₁ : Q x₂ y₁ = 1)
---     (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q x₂ y = 0) :
---     let c₀ := Q._col y₀
---     let c₁ := Q._col y₁
---     let Q' := Q.Aᵣ x₂ y₀ y₁
---     (Q' ◫ ▮c₀ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular := by
---   intro c₀ c₁ Q'
---   let B : Matrix X Y ℚ := Q.shortTableauPivot x₂ y₀
---   let B' : Matrix (X.drop1 x₂) Y ℚ := B.submatrix Set.diff_subset.elem id
---   let e : (Y.drop2 y₀ y₁ ⊕ Unit) ⊕ Unit ≃ Y := ⟨
---     (·.casesOn (·.casesOn Set.diff_subset.elem ↓y₀) ↓y₁),
---     fun ⟨y, hy⟩ => if hy₀ : y = y₀ then ◩◪() else if hy₁ : y = y₁ then ◪() else ◩◩⟨y, by simp [*]⟩,
---     ↓(by aesop),
---     ↓(by aesop)⟩
---   have B'_eq : B' = (Q' ◫ ▮(-c₀) ◫ ▮(c₁ - c₀)).submatrix id e.symm
---   · ext i j
---     have : undrop1 i ≠ x₂ := i.property.right ∘ congr_arg Subtype.val
---     have : y₁.val ≠ y₀.val := Subtype.coe_ne_coe.← (Ne.symm hyy)
---     if hjy₀ : j = y₀ then
---       simp_all [Matrix.shortTableauPivot_eq, e, B, B', c₀]
---     else if hjy₁ : j = y₁ then
---       simp_all [Matrix.shortTableauPivot_eq, e, B, B', c₀, c₁]
---     else
---       have : j.val ≠ y₀.val := Subtype.coe_ne_coe.← hjy₀
---       have : j.val ≠ y₁.val := Subtype.coe_ne_coe.← hjy₁
---       simp_all [Matrix.shortTableauPivot_eq, e, B, B', Q']
---   have hB : B.IsTotallyUnimodular
---   · apply hQ.shortTableauPivot
---     rw [hQy₀]
---     exact Rat.zero_ne_one.symm
---   have hB' : B'.IsTotallyUnimodular
---   · apply hB.submatrix
---   rw [B'_eq] at hB'
---   have hQcc : (Q' ◫ ▮(-c₀) ◫ ▮(c₁ - c₀)).IsTotallyUnimodular
---   · simpa using hB'.submatrix id e
---   let q : ((Y.drop2 y₀ y₁) ⊕ Unit) ⊕ Unit → ℚ := (·.casesOn (·.casesOn 1 (-1)) (-1))
---   have hq : ∀ i : ((Y.drop2 y₀ y₁) ⊕ Unit) ⊕ Unit, q i ∈ SignType.cast.range
---   · rintro ((_|_)|_) <;> simp [q]
---   convert hQcc.mul_cols hq
---   ext _ ((_|_)|_) <;> simp [q]
+    (▮S.c₀ ◫ ▮(S.c₀ - S.c₁) ◫ S.Aᵣ).IsTotallyUnimodular := by
+  let B : Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) ℚ := S.Bᵣ.shortTableauPivot ◩0 ◩0
+  let B' : Matrix (Fin 2 ⊕ Xᵣ) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) ℚ := B.submatrix Sum.inr id
+  have B'_eq : B' = (▮(-S.c₀) ◫ ▮(S.c₁ - S.c₀) ◫ S.Aᵣ).submatrix id equivUnitSumUnit.leftCongr
+  · ext _ (j₂ | _)
+    · fin_cases j₂ <;> simp [Matrix.shortTableauPivot_eq, B, B']
+    · simp [Matrix.shortTableauPivot_eq, B, B']
+  have hB : B.IsTotallyUnimodular
+  · apply hS.shortTableauPivot
+    simp [MatrixSum3.Bᵣ]
+  have hB' : B'.IsTotallyUnimodular
+  · apply hB.submatrix
+  rw [B'_eq] at hB'
+  have hScc : (▮(-S.c₀) ◫ ▮(S.c₁ - S.c₀) ◫ S.Aᵣ).IsTotallyUnimodular
+  · simpa only [Matrix.submatrix_submatrix, Equiv.self_comp_symm, Function.comp_id, Matrix.submatrix_id_id] using
+      hB'.submatrix id equivUnitSumUnit.leftCongr.symm
+  let q : (Unit ⊕ Unit) ⊕ (Fin 1 ⊕ Yᵣ) → ℚ := (·.casesOn (-1) 1)
+  have hq : ∀ i : (Unit ⊕ Unit) ⊕ (Fin 1 ⊕ Yᵣ), q i ∈ SignType.cast.range
+  · rintro (_|_) <;> simp [q]
+  convert hScc.mul_cols hq
+  ext _ ((_|_)|_) <;> simp [q]
 
-lemma MatrixSum3.HasTuBᵣ_c₁_c₂_Aᵣ_IsTotallyUnimodular₀ {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
+lemma MatrixSum3.HasTuBᵣ.c₂_c₁_Aᵣ_isTotallyUnimodular₀ {Xₗ Yₗ Xᵣ Yᵣ : Type}
+    [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ] {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.HasTuBᵣ) :
-    (▮S.c₁ ◫ ▮S.c₂ ◫ S.Aᵣ).IsTotallyUnimodular := by
-  sorry
--- todo: convert proof below; Q = S.Bᵣ; assumptions are satisfied by construction of S.Bᵣ
--- set_option maxHeartbeats 333333 in
--- lemma Matrix.IsTotallyUnimodular.signing_expansion₁ {α : Type} {X Y : Set α} {Q : Matrix X Y ℚ} (hQ : Q.IsTotallyUnimodular)
---     {x₂ : X} {y₀ y₁ : Y} (hyy : y₀ ≠ y₁) (hQy₀ : Q x₂ y₀ = 1) (hQy₁ : Q x₂ y₁ = 1)
---     (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q x₂ y = 0) :
---     let c₀ := Q._col y₀
---     let c₁ := Q._col y₁
---     let Q' := Q.Aᵣ x₂ y₀ y₁
---     (Q' ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular := by
---   intro c₀ c₁ Q'
---   let B := Q.shortTableauPivot x₂ y₁
---   let B' : Matrix (X.drop1 x₂) Y ℚ := B.submatrix Set.diff_subset.elem id
---   let e : (Y.drop2 y₀ y₁ ⊕ Unit) ⊕ Unit ≃ Y := ⟨
---     (·.casesOn (·.casesOn Set.diff_subset.elem ↓y₁) ↓y₀),
---     fun ⟨y, hy⟩ => if hy₀ : y = y₀ then ◪() else if hy₁ : y = y₁ then ◩◪() else ◩◩⟨y, by simp [*]⟩,
---     ↓(by aesop),
---     ↓(by aesop)⟩
---   have B'_eq : B' = (Q' ◫ ▮(-c₁) ◫ ▮(c₀ - c₁)).submatrix id e.symm
---   · ext i j
---     have : undrop1 i ≠ x₂ := i.property.right ∘ congr_arg Subtype.val
---     have : y₁.val ≠ y₀.val := Subtype.coe_ne_coe.← (Ne.symm hyy)
---     if hjy₀ : j = y₀ then
---       simp_all [Matrix.shortTableauPivot_eq, e, B, B', c₀, c₁]
---     else if hjy₁ : j = y₁ then
---       simp_all [Matrix.shortTableauPivot_eq, e, B, B', c₀, c₁]
---     else
---       have : j.val ≠ y₀.val := Subtype.coe_ne_coe.← hjy₀
---       have : j.val ≠ y₁.val := Subtype.coe_ne_coe.← hjy₁
---       simp_all [Matrix.shortTableauPivot_eq, e, B, B', Q']
---   have hB : B.IsTotallyUnimodular
---   · apply hQ.shortTableauPivot
---     rw [hQy₁]
---     exact Rat.zero_ne_one.symm
---   have hB' : B'.IsTotallyUnimodular
---   · apply hB.submatrix
---   rw [B'_eq] at hB'
---   have hQcc : (Q' ◫ ▮(-c₁) ◫ ▮(c₀ - c₁)).IsTotallyUnimodular
---   · simpa using hB'.submatrix id e
---   let q : ((Y.drop2 y₀ y₁) ⊕ Unit) ⊕ Unit → ℚ := (·.casesOn (·.casesOn 1 (-1)) 1)
---   have hq : ∀ i : ((Y.drop2 y₀ y₁) ⊕ Unit) ⊕ Unit, q i ∈ SignType.cast.range
---   · rintro ((_|_)|_) <;> simp [q]
---   convert hQcc.mul_cols hq
---   ext _ ((_|_)|_) <;> simp [q]
+    (▮(S.c₀ - S.c₁) ◫ ▮S.c₁ ◫ S.Aᵣ).IsTotallyUnimodular := by
+  let B : Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) ℚ := S.Bᵣ.shortTableauPivot ◩0 ◩1
+  let B' : Matrix (Fin 2 ⊕ Xᵣ) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) ℚ := B.submatrix Sum.inr id
+  have B'_eq : B' = (▮(S.c₀ - S.c₁) ◫ ▮(-S.c₁) ◫ S.Aᵣ).submatrix id equivUnitSumUnit.leftCongr
+  · ext _ (j₂ | _)
+    · fin_cases j₂ <;> simp [Matrix.shortTableauPivot_eq, B, B']
+    · simp [Matrix.shortTableauPivot_eq, B, B']
+  have hB : B.IsTotallyUnimodular
+  · apply hS.shortTableauPivot
+    simp [MatrixSum3.Bᵣ]
+  have hB' : B'.IsTotallyUnimodular
+  · apply hB.submatrix
+  rw [B'_eq] at hB'
+  have hScc : (▮(S.c₀ - S.c₁) ◫ ▮(-S.c₁) ◫ S.Aᵣ).IsTotallyUnimodular
+  · simpa only [Matrix.submatrix_submatrix, Equiv.self_comp_symm, Function.comp_id, Matrix.submatrix_id_id] using
+      hB'.submatrix id equivUnitSumUnit.leftCongr.symm
+  let q : (Unit ⊕ Unit) ⊕ (Fin 1 ⊕ Yᵣ) → ℚ := (·.casesOn (·.casesOn 1 (-1)) 1)
+  have hq : ∀ i : (Unit ⊕ Unit) ⊕ (Fin 1 ⊕ Yᵣ), q i ∈ SignType.cast.range
+  · rintro ((_|_)|_) <;> simp [q]
+  convert hScc.mul_cols hq
+  ext _ ((_|_)|_) <;> simp [q]
 
-lemma MatrixSum3.HasTuBᵣ_c₀_c₁_c₂_Aᵣ_IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
+lemma MatrixSum3.HasTuBᵣ.c₀_c₁_c₂_Aᵣ_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type}
+    [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ] {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.HasTuBᵣ) :
-    (▮S.c₀ ◫ ▮S.c₁ ◫ ▮S.c₂ ◫ S.Aᵣ).IsTotallyUnimodular := by
+    (▮S.c₀ ◫ ▮S.c₁ ◫ ▮(S.c₀ - S.c₁) ◫ S.Aᵣ).IsTotallyUnimodular := by
   sorry
--- todo: convert proof below; Q = S.Bᵣ; assumptions are satisfied by construction of S.Bᵣ
--- lemma Matrix.IsTotallyUnimodular.signing_expansion_cols_weak {α : Type} {X Y : Set α} {Q : Matrix X Y ℚ}
---     (hQ : Q.IsTotallyUnimodular) {x₂ : X} {y₀ y₁ : Y} (hyy : y₀ ≠ y₁) (hQy₀ : Q x₂ y₀ = 1) (hQy₁ : Q x₂ y₁ = 1)
---     (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q x₂ y = 0) :
---     let c₀ := Q._col y₀
---     let c₁ := Q._col y₁
---     let Q' := Q.Aᵣ x₂ y₀ y₁
---     (Q' ◫ ▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular := by
---   sorry
 
-lemma MatrixSum3.HasTuBᵣ_dup_c₀_c₁_c₂_Aᵣ_IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
+lemma MatrixSum3.HasTuBᵣ.c₀_c₀_c₁_c₁_c₂_c₂_Aᵣ_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type}
+    [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ] {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.HasTuBᵣ) :
-    (▮S.c₀ ◫ ▮S.c₀ ◫ ▮S.c₁ ◫ ▮S.c₁ ◫ ▮S.c₂ ◫ ▮S.c₂ ◫ S.Aᵣ).IsTotallyUnimodular := by
-  sorry
--- todo: convert proof below; Q = S.Bᵣ; assumptions are satisfied by construction of S.Bᵣ
--- lemma Matrix.IsTotallyUnimodular.signing_expansion_cols_aux {α : Type} {X Y : Set α} {Q : Matrix X Y ℚ}
---     (hQ : Q.IsTotallyUnimodular) {x₂ : X} {y₀ y₁ : Y} (hyy : y₀ ≠ y₁) (hQy₀ : Q x₂ y₀ = 1) (hQy₁ : Q x₂ y₁ = 1)
---     (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q x₂ y = 0) :
---     let c₀ := Q._col y₀
---     let c₁ := Q._col y₁
---     let Q' := Q.Aᵣ x₂ y₀ y₁
---     (Q' ◫ ▮c₀ ◫ ▮c₀ ◫ ▮c₁ ◫ ▮c₁ ◫ ▮(c₀ - c₁) ◫ ▮(c₀ - c₁)).IsTotallyUnimodular := by
---   intros
---   convert (hQ.signing_expansion_cols_weak hyy hQy₀ hQy₁ hQy).comp_cols
---     (fun j : ((((((Y.drop2 y₀ y₁ ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) =>
---       (j.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (◩◩◩·) ↓◩◩◪()) ↓◩◩◪()) ↓◩◪()) ↓◩◪()) ↓◪()) ↓◪()))
---   aesop
+    (▮S.c₀ ◫ ▮S.c₀ ◫ ▮S.c₁ ◫ ▮S.c₁ ◫ ▮(S.c₀ - S.c₁) ◫ ▮(S.c₀ - S.c₁) ◫ S.Aᵣ).IsTotallyUnimodular := by
+  convert hS.c₀_c₁_c₂_Aᵣ_isTotallyUnimodular.comp_cols
+    (fun j : ((((((Unit ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ (Fin 1 ⊕ Yᵣ)) =>
+      (j.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (↓◩◩◩()) ↓◩◩◩()) ↓◩◩◪()) ↓◩◩◪()) ↓◩◪()) ↓◩◪()) Sum.inr))
+  aesop
 
-lemma MatrixSum3.HasTuBᵣ_pm_c₀_c₁_c₂_Aᵣ_IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
+lemma MatrixSum3.HasTuBᵣ_pmz_c₀_c₁_c₂_Aᵣ_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type}
+    [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ] {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.HasTuBᵣ) :
-    (S.Aᵣ ◫ ▮S.c₀ ◫ ▮(-S.c₀) ◫ ▮S.c₁ ◫ ▮(-S.c₁) ◫ ▮S.c₂ ◫ ▮(-S.c₂)).IsTotallyUnimodular := by
-  sorry
--- todo: convert proof below; Q = S.Bᵣ; assumptions are satisfied by construction of S.Bᵣ
--- lemma Matrix.IsTotallyUnimodular.signing_expansion_cols {α : Type} {X Y : Set α} {Q : Matrix X Y ℚ}
---     (hQ : Q.IsTotallyUnimodular) {x₂ : X} {y₀ y₁ : Y} (hyy : y₀ ≠ y₁) (hQy₀ : Q x₂ y₀ = 1) (hQy₁ : Q x₂ y₁ = 1)
---     (hQy : ∀ y : Y, y.val ≠ y₀ ∧ y.val ≠ y₁ → Q x₂ y = 0) :
---     let c₀ := Q._col y₀
---     let c₁ := Q._col y₁
---     let Q' := Q.Aᵣ x₂ y₀ y₁
---     (Q' ◫ ▮c₀ ◫ ▮(-c₀) ◫ ▮c₁ ◫ ▮(-c₁) ◫ ▮(c₀ - c₁) ◫ ▮(c₁ - c₀) ◫ ▮0).IsTotallyUnimodular := by
---   intros
---   convert ((hQ.signing_expansion_cols_aux hyy hQy₀ hQy₁ hQy).mul_cols
---     (show ∀ j, (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn 1 1) (-1)) 1) (-1)) 1) (-1)) j ∈
---         SignType.cast.range by rintro ((((((_|_)|_)|_)|_)|_)|_) <;> simp)).fromCols_zero Unit
---   aesop
+    (▮0 ◫ (▮S.c₀ ◫ ▮(-S.c₀) ◫ ▮S.c₁ ◫ ▮(-S.c₁) ◫ ▮(S.c₀ - S.c₁) ◫ ▮(-(S.c₀ - S.c₁)) ◫ S.Aᵣ)).IsTotallyUnimodular := by
+  convert (hS.c₀_c₀_c₁_c₁_c₂_c₂_Aᵣ_isTotallyUnimodular.mul_cols
+    (show ∀ j, (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn 1 (-1)) 1) (-1)) 1) (-1)) 1) j ∈
+        SignType.cast.range by rintro ((((((_|_)|_)|_)|_)|_)|_) <;> simp)).zero_fromCols Unit
+  aesop
 
--- lemma MatrixSum3.HasTuBₗ_Aₗ_pm_d₀_d₁_d₂_IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
---     (hS : S.HasTuBₗ) :
---     (S.Aₗ ⊟ ▬S.d₀ ⊟ ▬(-S.d₀) ⊟ ▬S.d₁ ⊟ ▬(-S.d₁) ⊟ ▬S.d₂ ⊟ ▬(-S.d₂)).IsTotallyUnimodular := by
---   sorry
--- -- todo: convert proof below; Q = S.Bₗ; assumptions are satisfied by construction of S.Bₗ
--- -- lemma Matrix.IsTotallyUnimodular.signing_expansion_rows {α : Type} {X Y : Set α} {Q : Matrix X Y ℚ}
--- --     (hQ : Q.IsTotallyUnimodular) {x₀ x₁ : X} {y₂ : Y} (hxx : x₀ ≠ x₁) (hQx₀ : Q x₀ y₂ = 1) (hQx₁ : Q x₁ y₂ = 1)
--- --     (hQx : ∀ x : X, x.val ≠ x₀ ∧ x.val ≠ x₁ → Q x y₂ = 0) :
--- --     let d₀ := Q._row x₀
--- --     let d₁ := Q._row x₁
--- --     let Q' := Q.Aₗ x₀ x₁ y₂
--- --     (Q' ⊟ ▬d₀ ⊟ ▬(-d₀) ⊟ ▬d₁ ⊟ ▬(-d₁) ⊟ ▬(d₀ - d₁) ⊟ ▬(d₁ - d₀) ⊟ ▬0).IsTotallyUnimodular := by
--- --   intros
--- --   convert (hQ.transpose.signing_expansion_cols hxx hQx₀ hQx₁ hQx).transpose
--- --   aesop
+lemma MatrixSum3.HasTuBₗ_Aₗ_pm_d₀_d₁_d₂_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type}
+    [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ] {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
+    (hS : S.HasTuBₗ) :
+    (S.Aₗ ⊟ ▬S.d₀ ⊟ ▬(-S.d₀) ⊟ ▬S.d₁ ⊟ ▬(-S.d₁) ⊟ ▬S.d₂ ⊟ ▬(-S.d₂) ⊟ ▬0).IsTotallyUnimodular := by
+  sorry
 
 
 /-! ## Definition -/
@@ -283,14 +195,14 @@ lemma MatrixSum3.IsCanonicalSigning.D_eq_rows {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : 
   sorry
 
 /-- The left block of a canonical signing of a 3-sum of matrices is totally unimodular. -/
-lemma MatrixSum3.IsCanonicalSigning.Aₗ_D_IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
+lemma MatrixSum3.IsCanonicalSigning.Aₗ_D_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.IsCanonicalSigning) :
     (S.Aₗ ⊟ S.D).IsTotallyUnimodular :=
   sorry
 
 /-- The extension of the bottom-right block of a canonical signing of a 3-sum of matrices with special columns is totally
     unimodular. -/
-lemma MatrixSum3.IsCanonicalSigning.c₀_c₁_c₂_Aᵣ_IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
+lemma MatrixSum3.IsCanonicalSigning.c₀_c₁_c₂_Aᵣ_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.IsCanonicalSigning) :
-    (▮S.c₀ ◫ ▮S.c₁ ◫ ▮S.c₂ ◫ S.Aᵣ).IsTotallyUnimodular :=
+    (▮S.c₀ ◫ ▮S.c₁ ◫ ▮(S.c₀ - S.c₁) ◫ S.Aᵣ).IsTotallyUnimodular :=
   sorry

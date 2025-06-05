@@ -63,9 +63,9 @@ noncomputable def MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3 {Xₗ Yₗ Xᵣ
   Aₗ := S.Aₗ
   D := S.D
   Aᵣ := S.Aᵣ
-  hAₗ := hS.Aₗ_D_IsTotallyUnimodular
+  hAₗ := hS.Aₗ_D_isTotallyUnimodular
   hD := hS.D_eq_cols
-  hAᵣ := hS.c₀_c₁_c₂_Aᵣ_IsTotallyUnimodular
+  hAᵣ := hS.c₀_c₁_c₂_Aᵣ_isTotallyUnimodular
 
 /-- The canonical signing of a 3-sum of matrices is totally unimodular. -/
 lemma MatrixSum3.IsCanonicalSigning.IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
