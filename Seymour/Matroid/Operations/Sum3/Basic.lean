@@ -44,7 +44,7 @@ def equivFin2 {α : Type} [DecidableEq α] {Z : Set α} {z₀ z₁ : Z} (hzz : z
 ⟩
 
 abbrev equivFin2X {α : Type} [DecidableEq α] {X : Set α} {x₀ x₁ : X} (hxx : x₁ ≠ x₀) : Fin2X ≃ Set.Elem {x₀.val, x₁.val} := equivFin2 hxx
-abbrev equivFin2Y {α : Type} [DecidableEq α] {Y : Set α} {y₀ y₁ : Y} (hyy : y₁ ≠ y₀) : Fin2X ≃ Set.Elem {y₀.val, y₁.val} := equivFin2 hyy
+abbrev equivFin2Y {α : Type} [DecidableEq α] {Y : Set α} {y₀ y₁ : Y} (hyy : y₁ ≠ y₀) : Fin2Y ≃ Set.Elem {y₀.val, y₁.val} := equivFin2 hyy
 
 /-!
   We define the unsigned and the signed version of the special cases of the 3×3 submatrix in the intersection of the summands.
@@ -101,12 +101,12 @@ noncomputable def MatrixSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Fie
 
 /-- Reconstructed left summand. -/
 abbrev MatrixSum3.Bₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
-    Matrix ((Xₗ ⊕ Fin1X) ⊕ Fin2X) ((Yₗ ⊕ Fin2Y) ⊕ Fin 1) F :=
+    Matrix ((Xₗ ⊕ Fin1X) ⊕ Fin2X) ((Yₗ ⊕ Fin2Y) ⊕ Fin1Y) F :=
   ⊞ S.Aₗ 0 (S.Dₗ ◫ S.D₀ₗ) !![1; 1]
 
 /-- Reconstructed right summand. -/
 abbrev MatrixSum3.Bᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
-    Matrix (Fin 1 ⊕ (Fin2X ⊕ Xᵣ)) (Fin2Y ⊕ (Fin1Y ⊕ Yᵣ)) F :=
+    Matrix (Fin1X ⊕ (Fin2X ⊕ Xᵣ)) (Fin2Y ⊕ (Fin1Y ⊕ Yᵣ)) F :=
   ⊞ !![1, 1] 0 (S.D₀ᵣ ⊟ S.Dᵣ) S.Aᵣ
 
 /-- Reconstructed left summand's 3×3 submatrix in the intersection of the summands. -/
