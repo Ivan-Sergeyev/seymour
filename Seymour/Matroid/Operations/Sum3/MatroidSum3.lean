@@ -48,18 +48,18 @@ private abbrev undrop2 {X : Set α} {x₀ x₁ : X} (i : X.drop2 x₀ x₁) : X 
 private abbrev undrop3 {X : Set α} {x₀ x₁ x₂ : X} (i : X.drop3 x₀ x₁ x₂) : X :=
   ⟨i.val, i.property.left⟩
 
-private lemma drop3_union_pair {X : Set α} {x₀ x₁ x₂ : X} (hx₀ : x₀ ≠ x₂) (hx₁ : x₁ ≠ x₂) :
+private lemma drop3_union_pair {X : Set α} {x₀ x₁ x₂ : X} (hx₀ : x₁ ≠ x₂) (hx₁ : x₀ ≠ x₂) :
     X.drop3 x₀ x₁ x₂ ∪ {x₀.val, x₁.val} = X.drop1 x₂ := by
   ext a
   rw [←Subtype.coe_ne_coe] at hx₀ hx₁
   by_cases a = x₀ <;> by_cases a = x₁ <;> simp [*]
 
-private lemma pair_union_drop3 {X : Set α} {x₀ x₁ x₂ : X} (hx₀ : x₀ ≠ x₂) (hx₁ : x₁ ≠ x₂) :
+private lemma pair_union_drop3 {X : Set α} {x₀ x₁ x₂ : X} (hx₀ : x₁ ≠ x₂) (hx₁ : x₀ ≠ x₂) :
     {x₀.val, x₁.val} ∪ X.drop3 x₀ x₁ x₂ = X.drop1 x₂ := by
   rw [Set.union_comm]
   exact drop3_union_pair hx₀ hx₁
 
-private lemma drop3_union_mem {X : Set α} {x₀ x₁ x₂ : X} (hx₀ : x₀ ≠ x₂) (hx₁ : x₁ ≠ x₂) :
+private lemma drop3_union_mem {X : Set α} {x₀ x₁ x₂ : X} (hx₀ : x₁ ≠ x₂) (hx₁ : x₀ ≠ x₂) :
     X.drop3 x₀ x₁ x₂ ∪ {x₂.val} = X.drop2 x₀ x₁ := by
   ext a
   rw [←Subtype.coe_ne_coe] at hx₀ hx₁
@@ -67,7 +67,7 @@ private lemma drop3_union_mem {X : Set α} {x₀ x₁ x₂ : X} (hx₀ : x₀ �
   have := hx₁.symm
   by_cases a = x₂ <;> simp [*]
 
-private lemma mem_union_drop3 {X : Set α} {x₀ x₁ x₂ : X} (hx₀ : x₀ ≠ x₂) (hx₁ : x₁ ≠ x₂) :
+private lemma mem_union_drop3 {X : Set α} {x₀ x₁ x₂ : X} (hx₀ : x₁ ≠ x₂) (hx₁ : x₀ ≠ x₂) :
     {x₂.val} ∪ X.drop3 x₀ x₁ x₂ = X.drop2 x₀ x₁ := by
   rw [Set.union_comm]
   exact drop3_union_mem hx₀ hx₁
@@ -238,14 +238,14 @@ def Matrix.toMatrixUnionNested {X₁₁ X₁₂ X₂₁ X₂₂ Y₁₁ Y₁₂ 
 
 noncomputable def standardRepr3sumComposition_B (Sₗ Sᵣ : StandardRepr α Z2)
     {x₀ₗ x₁ₗ x₂ₗ : Sₗ.X} {y₀ₗ y₁ₗ y₂ₗ : Sₗ.Y} {x₀ᵣ x₁ᵣ x₂ᵣ : Sᵣ.X} {y₀ᵣ y₁ᵣ y₂ᵣ : Sᵣ.Y}
-    (hxxₗ₁ : x₀ₗ ≠ x₂ₗ) (hxxₗ₀ : x₁ₗ ≠ x₂ₗ) (hxxᵣ₁ : x₀ᵣ ≠ x₂ᵣ) (hxxᵣ₀ : x₁ᵣ ≠ x₂ᵣ) (hxxᵣ₂ : x₁ᵣ ≠ x₀ᵣ)
-    (hyyₗ₁ : y₀ₗ ≠ y₂ₗ) (hyyₗ₀ : y₁ₗ ≠ y₂ₗ) (hyyᵣ₁ : y₀ᵣ ≠ y₂ᵣ) (hyyᵣ₀ : y₁ᵣ ≠ y₂ᵣ) (hyyₗ₂ : y₁ₗ ≠ y₀ₗ) :
+    (hx₀ₗ : x₁ₗ ≠ x₂ₗ) (hx₁ₗ : x₀ₗ ≠ x₂ₗ) (hx₀ᵣ : x₁ᵣ ≠ x₂ᵣ) (hx₁ᵣ : x₀ᵣ ≠ x₂ᵣ) (hx₂ᵣ : x₁ᵣ ≠ x₀ᵣ)
+    (hy₀ₗ : y₁ₗ ≠ y₂ₗ) (hy₁ₗ : y₀ₗ ≠ y₂ₗ) (hy₀ᵣ : y₁ᵣ ≠ y₂ᵣ) (hy₁ᵣ : y₀ᵣ ≠ y₂ᵣ) (hy₂ᵣ : y₁ₗ ≠ y₀ₗ) :
     Matrix (Sₗ.X.drop2 x₀ₗ x₁ₗ ∪ Sᵣ.X.drop1 x₂ᵣ).Elem (Sₗ.Y.drop1 y₂ₗ ∪ Sᵣ.Y.drop2 y₀ᵣ y₁ᵣ).Elem Z2 :=
-  drop3_union_mem hxxₗ₁ hxxₗ₀ ▸ drop3_union_pair hyyₗ₁ hyyₗ₀ ▸
-  mem_union_drop3 hyyᵣ₁ hyyᵣ₀ ▸ pair_union_drop3 hxxᵣ₁ hxxᵣ₀ ▸
+  drop3_union_mem hx₀ₗ hx₁ₗ ▸ drop3_union_pair hy₀ₗ hy₁ₗ ▸
+  mem_union_drop3 hy₀ᵣ hy₁ᵣ ▸ pair_union_drop3 hx₀ᵣ hx₁ᵣ ▸
   ((standardReprMatrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).matrix.reindex
-    (Equiv.sumCongr (Equiv.sumCongr (Equiv.refl _) (equivFin1X x₂ₗ)) (Equiv.sumCongr (equivFin2X hxxᵣ₂) (Equiv.refl _)))
-    (Equiv.sumCongr (Equiv.sumCongr (Equiv.refl _) (equivFin2X hyyₗ₂)) (Equiv.sumCongr (equivFin1X y₂ᵣ) (Equiv.refl _)))
+    (Equiv.sumCongr (Equiv.sumCongr (Equiv.refl _) (equivFin1X x₂ₗ)) (Equiv.sumCongr (equivFin2X hx₂ᵣ) (Equiv.refl _)))
+    (Equiv.sumCongr (Equiv.sumCongr (Equiv.refl _) (equivFin2X hy₂ᵣ)) (Equiv.sumCongr (equivFin1X y₂ᵣ) (Equiv.refl _)))
   ).toMatrixUnionNested
 
 noncomputable def standardRepr3sumComposition {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
@@ -286,7 +286,7 @@ noncomputable def standardRepr3sumComposition {Sₗ Sᵣ : StandardRepr α Z2} {
         exact
           ⟨⟨Sₗ.hXY.disjoint_sdiff_left.disjoint_sdiff_right, hYX.symm.disjoint_sdiff_left.disjoint_sdiff_right⟩,
           ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right, Sᵣ.hXY.disjoint_sdiff_left.disjoint_sdiff_right⟩⟩,
-      standardRepr3sumComposition_B Sₗ Sᵣ hx₁ₗ hx₀ₗ hx₁ᵣ hx₀ᵣ hx₂ᵣ hy₁ₗ hy₀ₗ hy₁ᵣ hy₀ᵣ hy₂ₗ,
+      standardRepr3sumComposition_B Sₗ Sᵣ hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₀ᵣ hy₁ᵣ hy₂ₗ,
       inferInstance,
       inferInstance,
     ⟩,
@@ -314,13 +314,13 @@ lemma standardRepr3sumComposition_X {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ 
     (standardRepr3sumComposition hx₀ hx₁ hx₂ hy₀ hy₁ hy₂ hXX hYY hXY hYX).fst.X = Sₗ.X ∪ Sᵣ.X := by
   ext a
   if hax₂ : a = x₂ then
-    simp [*, hXX.mem3₂ₗ, Ne.symm hx₀, Ne.symm hx₁, standardRepr3sumComposition]
+    simp [standardRepr3sumComposition, *, hXX.mem3₂ₗ, Ne.symm hx₀, Ne.symm hx₁]
   else if hax₀ : a = x₀ then
-    simp [*, hXX.mem3₀ᵣ, standardRepr3sumComposition]
+    simp [standardRepr3sumComposition, *, hXX.mem3₀ᵣ]
   else if hax₁ : a = x₁ then
-    simp [*, hXX.mem3₁ᵣ, standardRepr3sumComposition]
+    simp [standardRepr3sumComposition, *, hXX.mem3₁ᵣ]
   else
-    simp [*, standardRepr3sumComposition]
+    simp [standardRepr3sumComposition, *]
 
 lemma standardRepr3sumComposition_Y {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     (hx₀ : x₁ ≠ x₂) (hx₁ : x₀ ≠ x₂) (hx₂ : x₁ ≠ x₀) (hy₀ : y₁ ≠ y₂) (hy₁ : y₀ ≠ y₂) (hy₂ : y₁ ≠ y₀)
@@ -328,13 +328,13 @@ lemma standardRepr3sumComposition_Y {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ 
     (standardRepr3sumComposition hx₀ hx₁ hx₂ hy₀ hy₁ hy₂ hXX hYY hXY hYX).fst.Y = Sₗ.Y ∪ Sᵣ.Y := by
   ext a
   if hay₂ : a = y₂ then
-    simp [*, hYY.mem3₂ᵣ, Ne.symm hy₀, Ne.symm hy₁, standardRepr3sumComposition]
+    simp [standardRepr3sumComposition, *, hYY.mem3₂ᵣ, Ne.symm hy₀, Ne.symm hy₁]
   else if hay₀ : a = y₀ then
-    simp [*, hYY.mem3₀ₗ, standardRepr3sumComposition]
+    simp [standardRepr3sumComposition, *, hYY.mem3₀ₗ]
   else if hay₁ : a = y₁ then
-    simp [*, hYY.mem3₁ₗ, standardRepr3sumComposition]
+    simp [standardRepr3sumComposition, *, hYY.mem3₁ₗ]
   else
-    simp [*, standardRepr3sumComposition]
+    simp [standardRepr3sumComposition, *]
 
 lemma standardRepr3sumComposition_Bₗ₀₀ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     (hx₀ : x₁ ≠ x₂) (hx₁ : x₀ ≠ x₂) (hx₂ : x₁ ≠ x₀) (hy₀ : y₁ ≠ y₂) (hy₁ : y₀ ≠ y₂) (hy₂ : y₁ ≠ y₀)
