@@ -7,33 +7,11 @@ import Seymour.Matroid.Properties.Regularity
 /-! ## Additional notation for convenience -/
 
 /-!
-  We create aliases for `Fin 1` and `Fin 2` and `Fin 3` used to represent different index sets.
--/
-
-/-- Fin 1 representing `x₂`. -/
-abbrev Fin1X := Fin 1
-
-/-- Fin 1 representing `y₂`. -/
-abbrev Fin1Y := Fin 1
-
-/-- Fin 2 representing `x₀`, `x₁`. -/
-abbrev Fin2X := Fin 2
-
-/-- Fin 2 representing `y₀`, `y₁`. -/
-abbrev Fin2Y := Fin 2
-
-/-- Fin 3 representing `x₀`, `x₁`, `x₂`. -/
-abbrev Fin3X := Fin 3
-
-/-- Fin 3 representing `y₀`, `y₁`, `y₂`. -/
-abbrev Fin3Y := Fin 3
-
-/-!
   We provide canonical bijections between `Fin 1` or `Fin 2` and corresponding elements.
 -/
 
-abbrev equivFin1X {α : Type} {X : Set α} (x : X) : Fin1X ≃ Set.Elem {x.val} := Equiv.ofUnique Fin1X (Set.Elem {x.val})
-abbrev equivFin1Y {α : Type} {Y : Set α} (y : Y) : Fin1Y ≃ Set.Elem {y.val} := Equiv.ofUnique Fin1Y (Set.Elem {y.val})
+def equivFin1 {α : Type} {Z : Set α} (z : Z) : Fin 1 ≃ Set.Elem {z.val} :=
+  Equiv.ofUnique (Fin 1) (Set.Elem {z.val})
 
 def equivFin2 {α : Type} [DecidableEq α] {Z : Set α} {z₀ z₁ : Z} (hzz : z₁ ≠ z₀) : Fin 2 ≃ Set.Elem {z₀.val, z₁.val} :=
 ⟨
@@ -43,9 +21,6 @@ def equivFin2 {α : Type} [DecidableEq α] {Z : Set α} {z₀ z₁ : Z} (hzz : z
   ↓(by aesop)
 ⟩
 
-abbrev equivFin2X {α : Type} [DecidableEq α] {X : Set α} {x₀ x₁ : X} (hxx : x₁ ≠ x₀) : Fin2X ≃ Set.Elem {x₀.val, x₁.val} := equivFin2 hxx
-abbrev equivFin2Y {α : Type} [DecidableEq α] {Y : Set α} {y₀ y₁ : Y} (hyy : y₁ ≠ y₀) : Fin2Y ≃ Set.Elem {y₀.val, y₁.val} := equivFin2 hyy
-
 /-!
   We define the unsigned and the signed version of the special cases of the 3×3 submatrix in the intersection of the summands.
 -/
@@ -53,25 +28,25 @@ abbrev equivFin2Y {α : Type} [DecidableEq α] {Y : Set α} {y₀ y₁ : Y} (hyy
 /-- Unsigned version of the first special case of the 3×3 submatrix in the intersection of the summands. -/
 @[simp]
 abbrev matrix3x3unsigned₀ (F : Type) [Zero F] [One F] :
-    Matrix Fin3X Fin3Y F :=
+    Matrix (Fin 3) (Fin 3) F :=
   !![1, 0, 1; 0, 1, 1; 1, 1, 0]
 
 /-- Unsigned version of the second special case of the 3×3 submatrix in the intersection of the summands. -/
 @[simp]
 abbrev matrix3x3unsigned₁ (F : Type) [Zero F] [One F] :
-    Matrix Fin3X Fin3Y F :=
+    Matrix (Fin 3) (Fin 3) F :=
   !![1, 1, 1; 0, 1, 1; 1, 1, 0]
 
 /-- Signed version of the first special case of the 3×3 submatrix in the intersection of the summands. -/
 @[simp]
 abbrev matrix3x3signed₀ :
-    Matrix Fin3X Fin3Y ℚ :=
+    Matrix (Fin 3) (Fin 3) ℚ :=
   !![1, 0, 1; 0, -1, 1; 1, 1, 0]
 
 /-- Signed version of the second special case of the 3×3 submatrix in the intersection of the summands. -/
 @[simp]
 abbrev matrix3x3signed₁ :
-    Matrix Fin3X Fin3Y ℚ :=
+    Matrix (Fin 3) (Fin 3) ℚ :=
   matrix3x3unsigned₁ ℚ
 
 
@@ -79,21 +54,21 @@ abbrev matrix3x3signed₁ :
 
 /-- Structural data of 3-sum of matrices. -/
 structure MatrixSum3 (Xₗ Yₗ Xᵣ Yᵣ : Type) (F : Type) where
-  Aₗ : Matrix (Xₗ ⊕ Fin1X) (Yₗ ⊕ Fin2Y) F
-  Dₗ : Matrix Fin2X Yₗ F
-  D₀ₗ : Matrix Fin2X Fin2Y F
-  D₀ᵣ : Matrix Fin2X Fin2Y F
-  Dᵣ : Matrix Xᵣ Fin2Y F
-  Aᵣ : Matrix (Fin2X ⊕ Xᵣ) (Fin1Y ⊕ Yᵣ) F
+  Aₗ : Matrix (Xₗ ⊕ Fin 1) (Yₗ ⊕ Fin 2) F
+  Dₗ : Matrix (Fin 2) Yₗ F
+  D₀ₗ : Matrix (Fin 2) (Fin 2) F
+  D₀ᵣ : Matrix (Fin 2) (Fin 2) F
+  Dᵣ : Matrix Xᵣ (Fin 2) F
+  Aᵣ : Matrix (Fin 2 ⊕ Xᵣ) (Fin 1 ⊕ Yᵣ) F
 
 /-- The bottom-left block of 3-sum. -/
 noncomputable abbrev MatrixSum3.D {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Field F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
-    Matrix (Fin2X ⊕ Xᵣ) (Yₗ ⊕ Fin2Y) F :=
+    Matrix (Fin 2 ⊕ Xᵣ) (Yₗ ⊕ Fin 2) F :=
   ⊞ S.Dₗ S.D₀ₗ (S.Dᵣ * S.D₀ₗ⁻¹ * S.Dₗ) S.Dᵣ
 
 /-- The resulting matrix of 3-sum. -/
 noncomputable def MatrixSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Field F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
-    Matrix ((Xₗ ⊕ Fin1X) ⊕ (Fin2X ⊕ Xᵣ)) ((Yₗ ⊕ Fin2Y) ⊕ (Fin1Y ⊕ Yᵣ)) F :=
+    Matrix ((Xₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ)) ((Yₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ)) F :=
   ⊞ S.Aₗ 0 S.D S.Aᵣ
 
 
@@ -101,22 +76,22 @@ noncomputable def MatrixSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Fie
 
 /-- Reconstructed left summand. -/
 abbrev MatrixSum3.Bₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
-    Matrix ((Xₗ ⊕ Fin1X) ⊕ Fin2X) ((Yₗ ⊕ Fin2Y) ⊕ Fin1Y) F :=
+    Matrix ((Xₗ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Fin 1) F :=
   ⊞ S.Aₗ 0 (S.Dₗ ◫ S.D₀ₗ) !![1; 1]
 
 /-- Reconstructed right summand. -/
 abbrev MatrixSum3.Bᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
-    Matrix (Fin1X ⊕ (Fin2X ⊕ Xᵣ)) (Fin2Y ⊕ (Fin1Y ⊕ Yᵣ)) F :=
+    Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) F :=
   ⊞ !![1, 1] 0 (S.D₀ᵣ ⊟ S.Dᵣ) S.Aᵣ
 
 /-- Reconstructed left summand's 3×3 submatrix in the intersection of the summands. -/
 abbrev MatrixSum3.Sₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
-    Matrix Fin3X Fin3Y F :=
+    Matrix (Fin 3) (Fin 3) F :=
   S.Bₗ.submatrix ![◪0, ◪1, ◩◪0] ![◩◪0, ◩◪1, ◪0]
 
 /-- Reconstructed right summand's 3×3 submatrix in the intersection of the summands. -/
 abbrev MatrixSum3.Sᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
-    Matrix Fin3X Fin3Y F :=
+    Matrix (Fin 3) (Fin 3) F :=
   S.Bᵣ.submatrix ![◪◩0, ◪◩1, ◩0] ![◩0, ◩1, ◪◩0]
 
 

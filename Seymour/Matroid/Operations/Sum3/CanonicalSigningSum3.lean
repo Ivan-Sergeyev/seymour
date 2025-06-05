@@ -8,32 +8,32 @@ import Seymour.Matroid.Operations.Sum3.Basic
 
 /-- First special column of `S.Bᵣ` used to generate `S.D`. -/
 def MatrixSum3.c₀ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
-    Fin2X ⊕ Xᵣ → F :=
+    Fin 2 ⊕ Xᵣ → F :=
   ((S.D₀ᵣ ⊟ S.Dᵣ) · 0)
 
 /-- Second special column of `S.Bᵣ` used to generate `S.D`. -/
 def MatrixSum3.c₁ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
-    Fin2X ⊕ Xᵣ → F :=
+    Fin 2 ⊕ Xᵣ → F :=
   ((S.D₀ᵣ ⊟ S.Dᵣ) · 1)
 
 /-- Third special column of `S.Bᵣ` used to generate `S.D`. -/
 def MatrixSum3.c₂ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Sub F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
-    Fin2X ⊕ Xᵣ → F :=
+    Fin 2 ⊕ Xᵣ → F :=
   S.c₀ - S.c₁
 
 /-- First special row of `S.Bₗ` used to generate `S.D`. -/
 def MatrixSum3.d₀ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
-    Yₗ ⊕ Fin2Y → F :=
+    Yₗ ⊕ Fin 2 → F :=
   (S.Dₗ ◫ S.D₀ₗ) 0
 
 /-- Second special row of `S.Bₗ` used to generate `S.D`. -/
 def MatrixSum3.d₁ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
-    Yₗ ⊕ Fin2Y → F :=
+    Yₗ ⊕ Fin 2 → F :=
   (S.Dₗ ◫ S.D₀ₗ) 1
 
 /-- Third special row of `S.Bₗ` used to generate `S.D`. -/
 def MatrixSum3.d₂ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Sub F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
-    Yₗ ⊕ Fin2Y → F :=
+    Yₗ ⊕ Fin 2 → F :=
   S.d₀ - S.d₁
 
 

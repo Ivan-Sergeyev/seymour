@@ -244,8 +244,8 @@ noncomputable def standardRepr3sumComposition_B (Sₗ Sᵣ : StandardRepr α Z2)
   drop3_union_elem hx₀ₗ hx₁ₗ ▸ drop3_union_pair hy₀ₗ hy₁ₗ ▸
   elem_union_drop3 hy₀ᵣ hy₁ᵣ ▸ pair_union_drop3 hx₀ᵣ hx₁ᵣ ▸
   ((standardReprMatrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).matrix.reindex
-    (Equiv.sumCongr (Equiv.sumCongr (Equiv.refl _) (equivFin1X x₂ₗ)) (Equiv.sumCongr (equivFin2X hx₂ᵣ) (Equiv.refl _)))
-    (Equiv.sumCongr (Equiv.sumCongr (Equiv.refl _) (equivFin2X hy₂ᵣ)) (Equiv.sumCongr (equivFin1X y₂ᵣ) (Equiv.refl _)))
+    (Equiv.sumCongr (Equiv.sumCongr (Equiv.refl _) (equivFin1 x₂ₗ)) (Equiv.sumCongr (equivFin2 hx₂ᵣ) (Equiv.refl _)))
+    (Equiv.sumCongr (Equiv.sumCongr (Equiv.refl _) (equivFin2 hy₂ᵣ)) (Equiv.sumCongr (equivFin1 y₂ᵣ) (Equiv.refl _)))
   ).toMatrixUnionNested
 
 noncomputable def standardRepr3sumComposition {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}

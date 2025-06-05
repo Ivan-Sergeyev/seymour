@@ -57,7 +57,7 @@ lemma MatrixLikeSum3.IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} (M : Matri
 /-- Convert a canonical signing of 3-sum of matrices to a 3-sum-like matrix. -/
 noncomputable def MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3 {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.IsCanonicalSigning) :
-    MatrixLikeSum3 (Xₗ ⊕ Fin1X) (Yₗ ⊕ Fin2Y) (Fin2X ⊕ Xᵣ) (Fin1Y ⊕ Yᵣ) where
+    MatrixLikeSum3 (Xₗ ⊕ Fin 1) (Yₗ ⊕ Fin 2) (Fin 2 ⊕ Xᵣ) (Fin 1 ⊕ Yᵣ) where
   c₀ := S.c₀
   c₁ := S.c₁
   Aₗ := S.Aₗ
