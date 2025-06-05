@@ -2,7 +2,7 @@
 
 \begin{definition}
     \label{matrix2sumComposition}
-    \uses{Matrix.fromBlocks}
+    \uses{StandardRepr,Matrix.fromBlocks}
     % \lean{}
     \leanok
     Let $R$ be a semiring (we will use $R = \mathbb{Z}_{2}$ and $R = \mathbb{Q}$). Let $B_{\ell} \in R^{(X_{\ell} \cup \{x\}) \times Y_{\ell}}$ and $B_{r} \in R^{X_{r} \times (Y_{r} \cup \{y\})}$ be matrices of the form
@@ -21,7 +21,7 @@
 
 \begin{definition}
     \label{Matroid.Is2sumOf}
-    \uses{StandardRepr,matrix2sumComposition}
+    \uses{Matroid,StandardRepr,matrix2sumComposition}
     % \lean{}
     \leanok
     A matroid $M$ is a $2$-sum of matroids $M_{\ell}$ and $M_{r}$ if there exist standard $\mathbb{Z}_{2}$ representation matrices $B_{\ell}$, $B_{r}$, and $B$ (for $M_{\ell}$, $M_{r}$, and $M$, respectively) of the form given in Definition~\ref{matrix2sumComposition}.

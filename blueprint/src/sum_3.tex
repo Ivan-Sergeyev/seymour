@@ -4,7 +4,7 @@
 
 \begin{definition}
     \label{def:three_sum_matrix}
-    \uses{Matrix.fromBlocks}
+    \uses{StandardRepr,Matrix.fromBlocks}
     % \lean{}
     % \leanok
     Let $B_{\ell} \in \mathbb{Z}_{2}^{(X_{\ell} \cup \{x_{0}, x_{1}\}) \times (Y_{\ell} \cup \{y_{2}\})}, B_{r} \in \mathbb{Z}_{2}^{(X_{r} \cup \{x_{2}\}) \times (Y_{r} \cup \{y_{0}, y_{1}\})}$ be matrices of the form
@@ -86,7 +86,7 @@
 
 \begin{definition}
     \label{Matroid.Is3sumOf}
-    \uses{def:three_sum_matrix,StandardRepr}
+    \uses{Matroid,StandardRepr,def:three_sum_matrix}
     % \lean{}
     \leanok
     A matroid $M$ is a $3$-sum of matroids $M_{\ell}$ and $M_{r}$ if there exist standard $\mathbb{Z}_{2}$ representation matrices $B_{\ell}$, $B_{r}$, and $B$ (for $M_{\ell}$, $M_{r}$, and $M$, respectively) of the form given in Definition~\ref{def:three_sum_matrix}.
@@ -575,33 +575,4 @@
     \uses{StandardRepr,Matroid.Is3sumOf,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,def:three_sum_signing_B,lem:three_sum_signing_B_valid,lem:three_sum_signing_B_tu}
     % \leanok
     Let $B_{\ell}$, $B_{r}$, and $B$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{Matroid.Is3sumOf}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings. Then the canonical signing $B''$ from Definition~\ref{def:three_sum_signing_B} is a TU signing of $B$. Indeed, $B''$ is a signing of $B$ by Lemma~\ref{lem:three_sum_signing_B_valid}, and $B''$ is TU by Lemma~\ref{lem:three_sum_signing_B_tu}. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
-\end{proof}
-
-
-
-
-\section{TODO move elsewhere}
-
-\begin{definition}
-    \label{Matroid.IsGood}
-    \uses{Matroid.IsRegular,Matroid.Is1sumOf,Matroid.Is2sumOf,Matroid.Is3sumOf}
-    \leanok
-    Regular matroid is good. % Ideally, the base case will be replaced by three base cases: R10, graphic, cographic.
-    Any 1-sum of good matroids is a good matroid.
-    Any 2-sum of good matroids is a good matroid.
-    Any 3-sum of good matroids is a good matroid.
-\end{definition}
-
-\begin{corollary}
-    \label{Matroid.IsGood.isRegular}
-    \uses{Matroid.IsGood,Matroid.IsRegular}
-    % \lean{}
-    \leanok
-    Any good matroid is regular. This is the easy direction of the Seymour theorem.
-\end{corollary}
-
-\begin{proof}
-    \uses{Matroid.Is1sumOf.isRegular,Matroid.Is2sumOf.isRegular,Matroid.Is3sumOf.isRegular}
-    % \leanok
-    Structural induction.
 \end{proof}

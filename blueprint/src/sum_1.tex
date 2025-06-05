@@ -2,7 +2,7 @@
 
 \begin{definition}
     \label{standardRepr1sumComposition}
-    \uses{Matrix.fromBlocks}
+    \uses{StandardRepr,Matrix.fromBlocks}
     % \lean{}
     \leanok
     Let $R$ be a magma containing zero (we will use $R = \mathbb{Z}_{2}$ and $R = \mathbb{Q}$). Let $B_{\ell} \in R^{X_{\ell} \times Y_{\ell}}$ and $B_{r} \in R^{X_{r} \times Y_{r}}$ be matrices where $X_{\ell}, Y_{\ell}, X_{r}, Y_{r}$ are pairwise disjoint sets. The $1$-sum $B = B_{\ell} \oplus_{1} B_{r}$ of $B_{\ell}$ and $B_{r}$ is
@@ -13,7 +13,7 @@
 
 \begin{definition}
     \label{Matroid.Is1sumOf}
-    \uses{StandardRepr,standardRepr1sumComposition}
+    \uses{Matroid,StandardRepr,standardRepr1sumComposition}
     % \lean{}
     \leanok
     A matroid $M$ is a $1$-sum of matroids $M_{\ell}$ and $M_{r}$ if there exist standard $\mathbb{Z}_{2}$ representation matrices $B_{\ell}$, $B_{r}$, and $B$ (for $M_{\ell}$, $M_{r}$, and $M$, respectively) of the form given in Definition~\ref{standardRepr1sumComposition}.

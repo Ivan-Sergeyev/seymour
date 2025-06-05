@@ -5,14 +5,18 @@
 \begin{definition}
     \label{Matrix}
     \leanok
-    Matrix (not the movie).
+    Matrix is a function that takes a row index and returns a vector, which is a function that takes a column index and returns a value.
+    The former aforementioned identity is definitional, the latter is syntactical.
+    By abuse of notation $\left(R^Y\right)^X \equiv R^{X \times Y}$ we do not curry functions in this text.
+    When a matrix happens to be finite (that is, both $X$ and $Y$ are finite) and its entries are numeric, we like to represent it by a table of numbers.
 \end{definition}
 
 \begin{definition}
     \label{Matrix.det}
     \uses{Matrix}
     \leanok
-    Determinant of a matrix.
+    Let $A$ be a square matrix over a commutative ring.
+    Determinant of $A$ is the sum over all permutations, sign of the permutation times the product of (TODO write properly).
 \end{definition}
 
 \begin{definition}
@@ -213,10 +217,17 @@
 \section{Vector Matroids}
 
 \begin{definition}
-    \label{VectorMatroid}
-    \uses{Matrix}
+    \label{Matroid}
+    \uses{}
     \leanok
-    Let $R$ be a semiring, let $X$ and $Y$ be sets, and let $A \in R^{X \times Y}$ be a matrix. The vector matroid of $A$ is the matroid $M = (Y, \mathcal{I})$ where a set $I \subset Y$ is independent in $M$ if and only if the columns of $A$ indexed by $I$ are linearly independent.
+    TODO
+\end{definition}
+
+\begin{definition}
+    \label{VectorMatroid}
+    \uses{Matrix, Matroid}
+    \leanok
+    Let $R$ be a division ring, let $X$ and $Y$ be sets, and let $A \in R^{X \times Y}$ be a matrix. The vector matroid of $A$ is the matroid $M = (Y, \mathcal{I})$ where a set $I \subset Y$ is independent in $M$ if and only if the columns of $A$ indexed by $I$ are linearly independent.
 \end{definition}
 
 \begin{definition}
@@ -224,7 +235,7 @@
     \uses{VectorMatroid}
     % \lean{}
     \leanok
-    Let $R$ be a semiring, let $X$ and $Y$ be disjoint sets, and let $S \in R^{X \times Y}$ be a matrix. Let $A = \begin{bmatrix} 1 & S \end{bmatrix} \in R^{X \times (X \cup Y)}$ be the matrix obtained from $S$ by adjoining the identity matrix as columns, and let $M$ be the vector matroid of $A$. Then $S$ is called the standard representation of $M$.
+    Let $R$ be a division ring, let $X$ and $Y$ be disjoint sets, and let $S \in R^{X \times Y}$ be a matrix. Let $A = \begin{bmatrix} 1 & S \end{bmatrix} \in R^{X \times (X \cup Y)}$ be the matrix obtained from $S$ by adjoining the identity matrix as columns, and let $M$ be the vector matroid of $A$. Then $S$ is called the standard representation of $M$.
 \end{definition}
 
 \begin{lemma}
@@ -258,6 +269,20 @@
 % \end{proof}
 
 \begin{lemma}
+    \label{Matrix.fromRows_zero_reindex_toMatroid}
+    \uses{VectorMatroid}
+    % \lean{}
+    \leanok
+    Adding extra zero rows to a full representation matrix of a vector matroid does not change the matroid.
+\end{lemma}
+
+\begin{proof}
+    \uses{}
+    \leanok
+    \SeeLean
+\end{proof}
+
+\begin{lemma}
     \label{VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular}
     \uses{Matrix.IsTotallyUnimodular,VectorMatroid,StandardRepr}
     % \lean{}
@@ -266,7 +291,7 @@
 \end{lemma}
 
 \begin{proof}
-    \uses{Matrix.IsTotallyUnimodular.longTableauPivot}
+    \uses{Matrix.IsTotallyUnimodular.longTableauPivot,Matrix.fromRows_zero_reindex_toMatroid}
     \leanok
     \SeeLean
 \end{proof}
@@ -343,6 +368,20 @@
 \end{proof}
 
 \begin{lemma}
+    \label{Matrix.isUnit_iff_isUnit_det}
+    \uses{Matrix.det}
+    % \lean{}
+    \leanok
+    A square matrix is invertible iff its determinant is invertible.
+\end{lemma}
+
+\begin{proof}
+    % \uses{}
+    \leanok
+    This result is proved in Mathlib.
+\end{proof}
+
+\begin{lemma}
     \label{Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent_of_finite_of_finite}
     \uses{Matrix.IsTotallyUnimodular,Matrix.support}
     % \lean{}
@@ -352,7 +391,7 @@
 \end{lemma}
 
 \begin{proof}
-    \uses{Matrix.support_submatrix}
+    \uses{Matrix.support_submatrix,Matrix.isUnit_iff_isUnit_det}
     \leanok
     \SeeLean
 \end{proof}
@@ -410,7 +449,7 @@
 
 \begin{definition}
     \label{Matroid.IsRegular}
-    \uses{Matrix.IsTotallyUnimodular,VectorMatroid}
+    \uses{Matroid,VectorMatroid,Matrix.IsTotallyUnimodular}
     % \lean{}
     \leanok
     A matroid $M$ is regular if there exists a TU matrix $A \in \mathbb{Q}^{X \times Y}$ such that $M$ is a vector matroid of $A$.

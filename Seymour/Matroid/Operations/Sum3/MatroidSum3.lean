@@ -59,7 +59,7 @@ private lemma pair_union_drop3 {X : Set α} {x₀ x₁ x₂ : X} (hx₀ : x₁ �
   rw [Set.union_comm]
   exact drop3_union_pair hx₀ hx₁
 
-private lemma drop3_union_mem {X : Set α} {x₀ x₁ x₂ : X} (hx₀ : x₁ ≠ x₂) (hx₁ : x₀ ≠ x₂) :
+private lemma drop3_union_elem {X : Set α} {x₀ x₁ x₂ : X} (hx₀ : x₁ ≠ x₂) (hx₁ : x₀ ≠ x₂) :
     X.drop3 x₀ x₁ x₂ ∪ {x₂.val} = X.drop2 x₀ x₁ := by
   ext a
   rw [←Subtype.coe_ne_coe] at hx₀ hx₁
@@ -67,10 +67,10 @@ private lemma drop3_union_mem {X : Set α} {x₀ x₁ x₂ : X} (hx₀ : x₁ �
   have := hx₁.symm
   by_cases a = x₂ <;> simp [*]
 
-private lemma mem_union_drop3 {X : Set α} {x₀ x₁ x₂ : X} (hx₀ : x₁ ≠ x₂) (hx₁ : x₀ ≠ x₂) :
+private lemma elem_union_drop3 {X : Set α} {x₀ x₁ x₂ : X} (hx₀ : x₁ ≠ x₂) (hx₁ : x₀ ≠ x₂) :
     {x₂.val} ∪ X.drop3 x₀ x₁ x₂ = X.drop2 x₀ x₁ := by
   rw [Set.union_comm]
-  exact drop3_union_mem hx₀ hx₁
+  exact drop3_union_elem hx₀ hx₁
 
 
 /-! ### Re-typing elements of the triplet intersection -/
@@ -241,8 +241,8 @@ noncomputable def standardRepr3sumComposition_B (Sₗ Sᵣ : StandardRepr α Z2)
     (hx₀ₗ : x₁ₗ ≠ x₂ₗ) (hx₁ₗ : x₀ₗ ≠ x₂ₗ) (hx₀ᵣ : x₁ᵣ ≠ x₂ᵣ) (hx₁ᵣ : x₀ᵣ ≠ x₂ᵣ) (hx₂ᵣ : x₁ᵣ ≠ x₀ᵣ)
     (hy₀ₗ : y₁ₗ ≠ y₂ₗ) (hy₁ₗ : y₀ₗ ≠ y₂ₗ) (hy₀ᵣ : y₁ᵣ ≠ y₂ᵣ) (hy₁ᵣ : y₀ᵣ ≠ y₂ᵣ) (hy₂ᵣ : y₁ₗ ≠ y₀ₗ) :
     Matrix (Sₗ.X.drop2 x₀ₗ x₁ₗ ∪ Sᵣ.X.drop1 x₂ᵣ).Elem (Sₗ.Y.drop1 y₂ₗ ∪ Sᵣ.Y.drop2 y₀ᵣ y₁ᵣ).Elem Z2 :=
-  drop3_union_mem hx₀ₗ hx₁ₗ ▸ drop3_union_pair hy₀ₗ hy₁ₗ ▸
-  mem_union_drop3 hy₀ᵣ hy₁ᵣ ▸ pair_union_drop3 hx₀ᵣ hx₁ᵣ ▸
+  drop3_union_elem hx₀ₗ hx₁ₗ ▸ drop3_union_pair hy₀ₗ hy₁ₗ ▸
+  elem_union_drop3 hy₀ᵣ hy₁ᵣ ▸ pair_union_drop3 hx₀ᵣ hx₁ᵣ ▸
   ((standardReprMatrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).matrix.reindex
     (Equiv.sumCongr (Equiv.sumCongr (Equiv.refl _) (equivFin1X x₂ₗ)) (Equiv.sumCongr (equivFin2X hx₂ᵣ) (Equiv.refl _)))
     (Equiv.sumCongr (Equiv.sumCongr (Equiv.refl _) (equivFin2X hy₂ᵣ)) (Equiv.sumCongr (equivFin1X y₂ᵣ) (Equiv.refl _)))

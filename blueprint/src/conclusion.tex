@@ -1,0 +1,25 @@
+\chapter{Conclusion}
+
+\begin{definition}
+    \label{Matroid.IsGood}
+    \uses{Matroid.IsRegular,Matroid.Is1sumOf,Matroid.Is2sumOf,Matroid.Is3sumOf}
+    \leanok
+    Regular matroid is good. % Ideally, the base case will be replaced by three base cases: R10, graphic, cographic.
+    Any 1-sum of good matroids is a good matroid.
+    Any 2-sum of good matroids is a good matroid.
+    Any 3-sum of good matroids is a good matroid.
+\end{definition}
+
+\begin{corollary}
+    \label{Matroid.IsGood.isRegular}
+    \uses{Matroid.IsGood,Matroid.IsRegular}
+    % \lean{}
+    \leanok
+    Any good matroid is regular. This is the easy direction of the Seymour theorem.
+\end{corollary}
+
+\begin{proof}
+    \uses{Matroid.Is1sumOf.isRegular,Matroid.Is2sumOf.isRegular,Matroid.Is3sumOf.isRegular}
+    \leanok
+    Structural induction.
+\end{proof}
