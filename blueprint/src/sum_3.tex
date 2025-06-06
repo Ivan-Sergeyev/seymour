@@ -3,10 +3,10 @@
 \section{Definition}
 
 \begin{definition}
-    \label{def:three_sum_matrix}
+    \label{MatrixSum3.matrix}
     \uses{StandardRepr,Matrix.fromBlocks}
     % \lean{}
-    % \leanok
+    \leanok
     Let $B_{\ell} \in \mathbb{Z}_{2}^{(X_{\ell} \cup \{x_{0}, x_{1}\}) \times (Y_{\ell} \cup \{y_{2}\})}, B_{r} \in \mathbb{Z}_{2}^{(X_{r} \cup \{x_{2}\}) \times (Y_{r} \cup \{y_{0}, y_{1}\})}$ be matrices of the form
     \begin{center}
         \noindent
@@ -81,25 +81,25 @@
     \end{center}
     Here $x_{2} \in X_{\ell}$, $x_{0}, x_{1} \in X_{r}$, $y_{0}, y_{1} \in Y_{\ell}$, $y_{2} \in Y_{r}$, $A_{\ell} \in \mathbb{Z}_{2}^{X_{\ell} \times Y_{\ell}}$, $A_{r} \in \mathbb{Z}_{2}^{X_{r} \times Y_{r}}$, $D_{\ell} \in \mathbb{Z}_{2}^{\{x_{0}, x_{1}\} \times (Y_{\ell} \setminus \{y_{0}, y_{1}\})}$, $D_{r} \in \mathbb{Z}_{2}^{(X_{r} \setminus \{x_{0}, x_{1}\}) \times \{y_{0}, y_{1}\}}$, $D_{\ell r} \in \mathbb{Z}_{2}^{(X_{r} \setminus \{x_{0}, x_{1}\}) \times (Y_{\ell} \setminus \{y_{0}, y_{1}\})}$, $D_{0} \in \mathbb{Z}_{2}^{\{x_{0}, x_{1}\} \times \{y_{0}, y_{1}\}}$. The indexing is consistent everywhere.
 
-    Note that $D_{0}$ is non-singular by construction, so $D_{\ell r}$ and $B$ are well-defined. Moreover, a non-singular $\mathbb{Z}_{2}^{2 \times 2}$ matrix is either  $\begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}$ or $\begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}$ up to re-indexing. Thus, Definition~\ref{def:three_sum_matrix} can be equivalently restated with $D_{0}$ required to be non-singular and $B_{\ell}$, $B_{r}$, and $B$ re-indexed appropriately.
+    Note that $D_{0}$ is non-singular by construction, so $D_{\ell r}$ and $B$ are well-defined. Moreover, a non-singular $\mathbb{Z}_{2}^{2 \times 2}$ matrix is either  $\begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}$ or $\begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}$ up to re-indexing. Thus, Definition~\ref{MatrixSum3.matrix} can be equivalently restated with $D_{0}$ required to be non-singular and $B_{\ell}$, $B_{r}$, and $B$ re-indexed appropriately.
 \end{definition}
 
 \begin{definition}
     \label{Matroid.Is3sumOf}
-    \uses{Matroid,StandardRepr,def:three_sum_matrix}
+    \uses{Matroid,StandardRepr,MatrixSum3.matrix}
     % \lean{}
     \leanok
-    A matroid $M$ is a $3$-sum of matroids $M_{\ell}$ and $M_{r}$ if there exist standard $\mathbb{Z}_{2}$ representation matrices $B_{\ell}$, $B_{r}$, and $B$ (for $M_{\ell}$, $M_{r}$, and $M$, respectively) of the form given in Definition~\ref{def:three_sum_matrix}.
+    A matroid $M$ is a $3$-sum of matroids $M_{\ell}$ and $M_{r}$ if there exist standard $\mathbb{Z}_{2}$ representation matrices $B_{\ell}$, $B_{r}$, and $B$ (for $M_{\ell}$, $M_{r}$, and $M$, respectively) of the form given in Definition~\ref{MatrixSum3.matrix}.
 \end{definition}
 
 
 \section{Canonical Signing}
 
 \begin{definition}
-    \label{def:three_sum_signing_S}
+    \label{matrix3x3signed}
     \uses{Matrix.fromBlocks}
     % \lean{}
-    % \leanok
+    \leanok
     We call $D_{0}' \in \mathbb{Q}^{\{x_{0}, x_{1}\} \times \{y_{0}, y_{1}\}}$ the canonical signing of $D_{0} \in \mathbb{Z}_{2}^{\{x_{0}, x_{1}\} \times \{y_{0}, y_{1}\}}$ if
     \[
         D_{0} = \begin{bmatrix}
@@ -158,15 +158,15 @@
         \end{tikzpicture}
     \end{center}
     To simplify notation, going forward we use $D_{0}$, $D_{0}'$, $S$, and $S'$ to refer to the matrices of the form above.
-    BTW, the canonical signing $S'$ of $S$ (from Definition~\ref{def:three_sum_signing_S}) is TU.
+    BTW, the canonical signing $S'$ of $S$ (from Definition~\ref{matrix3x3signed}) is TU.
 \end{definition}
 
 \begin{lemma}
-    \label{lem:three_sum_re_signing_helper}
-    \uses{Matrix.IsTuSigningOf,def:three_sum_signing_S}
+    \label{Matrix.HasTuCanonicalSigning.toCanonicalSigning_submatrix3x3}
+    \uses{Matrix.IsTuSigningOf,matrix3x3signed}
     % \lean{}
-    % \leanok
-    Let $Q$ be a TU signing of $S$ (from Definition~\ref{def:three_sum_signing_S}). Let $u \in \{0, \pm 1\}^{\{x_{0}, x_{1}, x_{2}\}}$, $v \in \{0, \pm 1\}^{\{y_{0}, y_{1}, y_{2}\}}$, and $Q'$ be defined as follows:
+    \leanok
+    Let $Q$ be a TU signing of $S$ (from Definition~\ref{matrix3x3signed}). Let $u \in \{0, \pm 1\}^{\{x_{0}, x_{1}, x_{2}\}}$, $v \in \{0, \pm 1\}^{\{y_{0}, y_{1}, y_{2}\}}$, and $Q'$ be defined as follows:
     \begin{align*}
         u(i) &= \begin{cases}
             Q (x_{2}, y_{0}) \cdot Q (x_{0}, y_{0}), & i = x_{0}, \\
@@ -180,12 +180,12 @@
         \end{cases} \\
         Q' (i, j) &= Q (i, j) \cdot u(i) \cdot v(j) \quad \forall i \in \{x_{0}, x_{1}, x_{2}\}, \ \forall j \in \{y_{0}, y_{1}, y_{2}\}.
     \end{align*}
-    Then $Q' = S'$ (from Definition~\ref{def:three_sum_signing_S}).
+    Then $Q' = S'$ (from Definition~\ref{matrix3x3signed}).
 \end{lemma}
 
 \begin{proof}
     \uses{Matrix.IsTuSigningOf,Matrix.IsTotallyUnimodular.mul_rows,Matrix.IsTotallyUnimodular.mul_cols,Matrix.IsTotallyUnimodular}
-    % \leanok
+    \leanok
     Since $Q$ is a TU signing of $S$ and $Q'$ is obtained from $Q$ by multiplying rows and columns by $\pm 1$ factors, $Q'$ is also a TU signing of $S$. By construction, we have
     \begin{align*}
         Q' (x_{2}, y_{0}) &= Q (x_{2}, y_{0}) \cdot 1 \cdot Q (x_{2}, y_{0}) = 1, \\
@@ -229,10 +229,10 @@
 \end{proof}
 
 \begin{definition}
-    \label{def:three_sum_re_signing}
+    \label{Matrix.toCanonicalSigning}
     \uses{Matrix.IsTotallyUnimodular}
     % \lean{}
-    % \leanok
+    \leanok
     Let $X$ and $Y$ be sets with $\{x_{0}, x_{1}, x_{2}\} \subseteq X$ and $\{y_{0}, y_{1}, y_{2}\} \subseteq Y$. Let $Q \in \mathbb{Q}^{X \times Y}$ be a TU matrix. Define $u \in \{0, \pm 1\}^{X}$, $v \in \{0, \pm 1\}^{Y}$, and $Q'$ as follows:
     \begin{align*}
         u(i) &= \begin{cases}
@@ -253,25 +253,25 @@
 \end{definition}
 
 \begin{lemma}
-    \label{lem:three_sum_re_signing_apply}
-    \uses{Matrix.IsTuSigningOf,def:three_sum_signing_S,def:three_sum_re_signing}
+    \label{Matrix.HasTuCanonicalSigning.toCanonicalSigning}
+    \uses{Matrix.IsTuSigningOf,matrix3x3signed,Matrix.toCanonicalSigning}
     % \lean{}
-    % \leanok
-    Let $X$ and $Y$ be sets with $\{x_{0}, x_{1}, x_{2}\} \subseteq X$ and $\{y_{0}, y_{1}, y_{2}\} \subseteq Y$. Let $Q \in \mathbb{Q}^{X \times Y}$ be a TU signing of $Q_{0} \in \mathbb{Z}_{2}^{X \times Y}$ such that $Q_{0} (\{x_{0}, x_{1}, x_{2}\}, \{y_{0}, y_{1}, y_{2}\}) = S$ (from Definition~\ref{def:three_sum_signing_S}). Then the canonical re-signing $Q'$ of $Q$ (from Definition~\ref{def:three_sum_re_signing}) is a TU signing of $Q_{0}$ and $Q' (\{x_{0}, x_{1}, x_{2}\}, \{y_{0}, y_{1}, y_{2}\}) = S'$ (from Definition~\ref{def:three_sum_signing_S}).
+    \leanok
+    Let $X$ and $Y$ be sets with $\{x_{0}, x_{1}, x_{2}\} \subseteq X$ and $\{y_{0}, y_{1}, y_{2}\} \subseteq Y$. Let $Q \in \mathbb{Q}^{X \times Y}$ be a TU signing of $Q_{0} \in \mathbb{Z}_{2}^{X \times Y}$ such that $Q_{0} (\{x_{0}, x_{1}, x_{2}\}, \{y_{0}, y_{1}, y_{2}\}) = S$ (from Definition~\ref{matrix3x3signed}). Then the canonical re-signing $Q'$ of $Q$ (from Definition~\ref{Matrix.toCanonicalSigning}) is a TU signing of $Q_{0}$ and $Q' (\{x_{0}, x_{1}, x_{2}\}, \{y_{0}, y_{1}, y_{2}\}) = S'$ (from Definition~\ref{matrix3x3signed}).
 \end{lemma}
 
 \begin{proof}
-    \uses{Matrix.IsTuSigningOf,Matrix.IsTotallyUnimodular.mul_rows,Matrix.IsTotallyUnimodular.mul_cols,lem:three_sum_re_signing_helper}
-    % \leanok
-    Since $Q$ is a TU signing of $Q_{0}$ and $Q'$ is obtained from $Q$ by multiplying some rows and columns by $\pm 1$ factors, $Q'$ is also a TU signing of $Q_{0}$. Equality $Q' (\{x_{0}, x_{1}, x_{2}\}, \{y_{0}, y_{1}, y_{2}\}) = S'$ follows from Lemma~\ref{lem:three_sum_re_signing_helper}.
+    \uses{Matrix.IsTuSigningOf,Matrix.IsTotallyUnimodular.mul_rows,Matrix.IsTotallyUnimodular.mul_cols,Matrix.HasTuCanonicalSigning.toCanonicalSigning_submatrix3x3}
+    \leanok
+    Since $Q$ is a TU signing of $Q_{0}$ and $Q'$ is obtained from $Q$ by multiplying some rows and columns by $\pm 1$ factors, $Q'$ is also a TU signing of $Q_{0}$. Equality $Q' (\{x_{0}, x_{1}, x_{2}\}, \{y_{0}, y_{1}, y_{2}\}) = S'$ follows from Lemma~\ref{Matrix.HasTuCanonicalSigning.toCanonicalSigning_submatrix3x3}.
 \end{proof}
 
 \begin{definition}
-    \label{def:three_sum_signing_B}
-    \uses{def:three_sum_matrix,Matrix.IsTuSigningOf,def:three_sum_re_signing}
+    \label{MatrixSum3.toCanonicalSigning}
+    \uses{MatrixSum3.matrix,Matrix.IsTuSigningOf,Matrix.toCanonicalSigning}
     % \lean{}
-    % \leanok
-    Suppose that $B_{\ell}$ and $B_{r}$ from Definition~\ref{def:three_sum_matrix} have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Let $B_{\ell}''$ and $B_{r}''$ be the canonical re-signings (from Definition~\ref{def:three_sum_re_signing}) of $B_{\ell}'$ and $B_{r}'$, respectively. Let $A_{\ell}''$, $A_{r}''$, $D_{\ell}''$, $D_{r}''$, and $D_{0}''$ be blocks of $B_{\ell}''$ and $B_{r}''$ analogous to blocks $A_{\ell}$, $A_{r}$, $D_{\ell}$, $D_{r}$, and $D_{0}$ of $B_{\ell}$ and $B_{r}$. The canonical signing $B''$ of $B$ is defined as
+    \leanok
+    Suppose that $B_{\ell}$ and $B_{r}$ from Definition~\ref{MatrixSum3.matrix} have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Let $B_{\ell}''$ and $B_{r}''$ be the canonical re-signings (from Definition~\ref{Matrix.toCanonicalSigning}) of $B_{\ell}'$ and $B_{r}'$, respectively. Let $A_{\ell}''$, $A_{r}''$, $D_{\ell}''$, $D_{r}''$, and $D_{0}''$ be blocks of $B_{\ell}''$ and $B_{r}''$ analogous to blocks $A_{\ell}$, $A_{r}$, $D_{\ell}$, $D_{r}$, and $D_{0}$ of $B_{\ell}$ and $B_{r}$. The canonical signing $B''$ of $B$ is defined as
     \begin{center}
         \noindent
         \begin{tikzpicture}
@@ -307,24 +307,24 @@
 
 \begin{lemma}
     \label{lem:three_sum_signing_B_valid}
-    \uses{def:three_sum_signing_B}
+    \uses{MatrixSum3.toCanonicalSigning}
     % \lean{}
     % \leanok
-    $B''$ from Definition~\ref{def:three_sum_signing_B} is a signing of $B$.
+    $B''$ from Definition~\ref{MatrixSum3.toCanonicalSigning} is a signing of $B$.
 \end{lemma}
 
 \begin{proof}
-    \uses{lem:three_sum_re_signing_apply,Matrix.IsTuSigningOf}
+    \uses{Matrix.HasTuCanonicalSigning.toCanonicalSigning,Matrix.IsTuSigningOf}
     % \leanok
-    By Lemma~\ref{lem:three_sum_re_signing_apply}, $B_{\ell}''$ and $B_{r}''$ are TU signings of $B_{\ell}$ and $B_{r}$, respectively. As a result, blocks $A_{\ell}''$, $A_{r}''$, $D_{\ell}''$, $D_{r}''$, and $D_{0}''$ in $B''$ are signings of the corresponding blocks in $B$. Thus, it remains to show that $D_{\ell r}''$ is a signing of $D_{\ell r}$. This can be verified via a direct calculation. \todo{Need details?}
+    By Lemma~\ref{Matrix.HasTuCanonicalSigning.toCanonicalSigning}, $B_{\ell}''$ and $B_{r}''$ are TU signings of $B_{\ell}$ and $B_{r}$, respectively. As a result, blocks $A_{\ell}''$, $A_{r}''$, $D_{\ell}''$, $D_{r}''$, and $D_{0}''$ in $B''$ are signings of the corresponding blocks in $B$. Thus, it remains to show that $D_{\ell r}''$ is a signing of $D_{\ell r}$. This can be verified via a direct calculation. \todo{Need details?}
 \end{proof}
 
 \begin{lemma}
-    \label{lem:three_sum_signing_B_r_props}
-    \uses{def:three_sum_matrix,Matrix.IsTuSigningOf,def:three_sum_re_signing}
+    \label{MatrixSum3.HasTuBr.cccAr_isTotallyUnimodular}
+    \uses{MatrixSum3.matrix,Matrix.IsTuSigningOf,Matrix.toCanonicalSigning}
     % \lean{}
-    % \leanok
-    Suppose that $B_{r}$ from Definition~\ref{def:three_sum_matrix} has a TU signing $B_{r}'$. Let $B_{r}''$ be the canonical re-signing (from Definition~\ref{def:three_sum_re_signing}) of $B_{r}'$. Let $c_{0}'' = B_{r}'' (X_{r}, y_{0})$, $c_{1}'' = B_{r}'' (X_{r}, y_{1})$, and $c_{2}'' = c_{0}'' - c_{1}''$. Then the following statements hold.
+    \leanok
+    Suppose that $B_{r}$ from Definition~\ref{MatrixSum3.matrix} has a TU signing $B_{r}'$. Let $B_{r}''$ be the canonical re-signing (from Definition~\ref{Matrix.toCanonicalSigning}) of $B_{r}'$. Let $c_{0}'' = B_{r}'' (X_{r}, y_{0})$, $c_{1}'' = B_{r}'' (X_{r}, y_{1})$, and $c_{2}'' = c_{0}'' - c_{1}''$. Then the following statements hold.
     \begin{enumerate}
         \item\label{item:tss_Brp_c01} For every $i \in X_{r}$, $\begin{bmatrix} c_{0}'' (i) & c_{1}'' (i) \end{bmatrix} \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}} \setminus \left\{ \begin{bmatrix} 1 & -1 \end{bmatrix}, \begin{bmatrix} -1 & 1 \end{bmatrix} \right\}$.
         \item\label{item:tss_Brp_c2} For every $i \in X_{r}$, $c_{2}'' (i) \in \{0, \pm 1\}$.
@@ -335,9 +335,9 @@
 \end{lemma}
 
 \begin{proof}
-    \uses{lem:three_sum_re_signing_apply,Matrix.IsTotallyUnimodular,Matrix.shortTableauPivot,Matrix.IsTotallyUnimodular.shortTableauPivot,Matrix.IsTotallyUnimodular.mul_rows,Matrix.IsTotallyUnimodular.mul_cols}
-    % \leanok
-    Throughout the proof we use that $B_{r}''$ is TU, which holds by Lemma~\ref{lem:three_sum_re_signing_apply}.
+    \uses{Matrix.HasTuCanonicalSigning.toCanonicalSigning,Matrix.IsTotallyUnimodular,Matrix.shortTableauPivot,Matrix.IsTotallyUnimodular.shortTableauPivot,Matrix.IsTotallyUnimodular.mul_rows,Matrix.IsTotallyUnimodular.mul_cols}
+    \leanok
+    Throughout the proof we use that $B_{r}''$ is TU, which holds by Lemma~\ref{Matrix.HasTuCanonicalSigning.toCanonicalSigning}.
 
     \begin{enumerate}
         \item Since $B_{r}''$ is TU, all its entries are in $\{0, \pm 1\}$, and in particular $\begin{bmatrix} c_{0}'' (i) & c_{1}'' (i) \end{bmatrix} \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}}$. If $\begin{bmatrix} c_{0}' (i) & c_{1}'' (i) \end{bmatrix} = \begin{bmatrix} 1 & -1 \end{bmatrix}$, then
@@ -393,10 +393,10 @@
 
 \begin{lemma}
     \label{lem:three_sum_signing_B_l_props}
-    \uses{def:three_sum_matrix,Matrix.IsTuSigningOf,def:three_sum_re_signing}
+    \uses{MatrixSum3.matrix,Matrix.IsTuSigningOf,Matrix.toCanonicalSigning}
     % \lean{}
     % \leanok
-    Suppose that $B_{\ell}$ from Definition~\ref{def:three_sum_matrix} has a TU signing $B_{\ell}'$. Let $B_{\ell}''$ be the canonical re-signing (from Definition~\ref{def:three_sum_re_signing}) of $B_{\ell}'$. Let $d_{0}'' = B_{\ell}'' (x_{0}, Y_{\ell})$, $d_{1}'' = B_{\ell}'' (x_{1}, Y_{\ell})$, and $d_{2}'' = d_{0}'' - d_{1}''$. Then the following statements hold.
+    Suppose that $B_{\ell}$ from Definition~\ref{MatrixSum3.matrix} has a TU signing $B_{\ell}'$. Let $B_{\ell}''$ be the canonical re-signing (from Definition~\ref{Matrix.toCanonicalSigning}) of $B_{\ell}'$. Let $d_{0}'' = B_{\ell}'' (x_{0}, Y_{\ell})$, $d_{1}'' = B_{\ell}'' (x_{1}, Y_{\ell})$, and $d_{2}'' = d_{0}'' - d_{1}''$. Then the following statements hold.
     \begin{enumerate}
         \item\label{item:tss_Blp_d01} For every $j \in Y_{\ell}$, $\begin{bmatrix} d_{0}'' (i) \\ d_{1}'' (j) \end{bmatrix} \in \{0, \pm 1\}^{\{x_{0}, x_{1}\}} \setminus \left\{ \begin{bmatrix} 1 \\ -1 \end{bmatrix}, \begin{bmatrix} -1 \\ 1 \end{bmatrix} \right\}$.
         \item\label{item:tss_Blp_d2} For every $j \in Y_{\ell}$, $d_{2}'' (j) \in \{0, \pm 1\}$.
@@ -407,17 +407,17 @@
 \end{lemma}
 
 \begin{proof}
-    \uses{lem:three_sum_signing_B_r_props}
+    \uses{MatrixSum3.HasTuBr.cccAr_isTotallyUnimodular}
     % \leanok
-    Apply Lemma~\ref{lem:three_sum_signing_B_r_props} to $B_{\ell}^{\top}$, or repeat the same arguments up to transposition.
+    Apply Lemma~\ref{MatrixSum3.HasTuBr.cccAr_isTotallyUnimodular} to $B_{\ell}^{\top}$, or repeat the same arguments up to transposition.
 \end{proof}
 
 \begin{lemma}
     \label{lem:three_sum_signing_B_props}
-    \uses{def:three_sum_signing_B,Matrix.IsTotallyUnimodular}
+    \uses{MatrixSum3.toCanonicalSigning,Matrix.IsTotallyUnimodular}
     % \lean{}
     % \leanok
-    Let $B''$ be from Definition~\ref{def:three_sum_signing_B}. Let $c_{0}'' = B'' (X_{r}, y_{0})$, $c_{1}'' = B'' (X_{r}, y_{1})$, and $c_{2}'' = c_{0}'' - c_{1}''$. Similarly, let $d_{0}'' = B'' (x_{0}, Y_{\ell})$, $d_{1}'' = B'' (x_{1}, Y_{\ell})$, and $d_{2}'' = d_{0}'' - d_{1}''$. Then the following statements hold.
+    Let $B''$ be from Definition~\ref{MatrixSum3.toCanonicalSigning}. Let $c_{0}'' = B'' (X_{r}, y_{0})$, $c_{1}'' = B'' (X_{r}, y_{1})$, and $c_{2}'' = c_{0}'' - c_{1}''$. Similarly, let $d_{0}'' = B'' (x_{0}, Y_{\ell})$, $d_{1}'' = B'' (x_{1}, Y_{\ell})$, and $d_{2}'' = d_{0}'' - d_{1}''$. Then the following statements hold.
     \begin{enumerate}
         \item\label{item:tss_Bp_c2} For every $i \in X_{r}$, $c_{2}'' (i) \in \{0, \pm 1\}$.
         \item\label{item:tss_Bp_Deq} If $D_{0}'' = \begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix}$, then $D'' = c_{0}'' \otimes d_{0}'' - c_{1}'' \otimes d_{1}''$. If $D_{0}'' = \begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}$, then $D'' = c_{0}'' \otimes d_{0}'' - c_{0}'' \otimes d_{1}'' + c_{1}'' \otimes d_{1}''$.
@@ -429,10 +429,10 @@
 \end{lemma}
 
 \begin{proof}
-    \uses{lem:three_sum_signing_B_r_props,lem:three_sum_signing_B_l_props,Matrix.IsTotallyUnimodular}
+    \uses{MatrixSum3.HasTuBr.cccAr_isTotallyUnimodular,lem:three_sum_signing_B_l_props,Matrix.IsTotallyUnimodular}
     % \leanok
     \begin{enumerate}
-        \item Holds by Lemma~\ref{lem:three_sum_signing_B_r_props}.\ref{item:tss_Brp_c2}.
+        \item Holds by Lemma~\ref{MatrixSum3.HasTuBr.cccAr_isTotallyUnimodular}.\ref{item:tss_Brp_c2}.
 
         \item Note that
         \[
@@ -457,13 +457,13 @@
             \item If $D_{0}'' = \begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}$, then by item~\ref{item:tss_Bp_Deq} we have $D'' (X_{r}, j) = (d_{0}'' (j) - d_{1}'' (j)) \cdot c_{0}''  + d_{1}'' (j) \cdot c_{1}''$. By considering all possible cases for $d_{0}'' (j)$ and $d_{1}'' (j)$, we conclude that $D'' (X_{r}, j) \in \{0, \pm c_{0}'', \pm c_{1}'', \pm (c_{0}'' - c_{1}'')\}$.
         \end{enumerate}
 
-        \item Let $i \in X_{r}$. By Lemma~\ref{lem:three_sum_signing_B_r_props}.\ref{item:tss_Brp_c01}, $\begin{bmatrix} c_{0}'' (i) & c_{1}'' (i) \end{bmatrix} \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}} \setminus \left\{ \begin{bmatrix} 1 & -1 \end{bmatrix}, \begin{bmatrix} -1 & 1 \end{bmatrix} \right\}$. Consider two cases.
+        \item Let $i \in X_{r}$. By Lemma~\ref{MatrixSum3.HasTuBr.cccAr_isTotallyUnimodular}.\ref{item:tss_Brp_c01}, $\begin{bmatrix} c_{0}'' (i) & c_{1}'' (i) \end{bmatrix} \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}} \setminus \left\{ \begin{bmatrix} 1 & -1 \end{bmatrix}, \begin{bmatrix} -1 & 1 \end{bmatrix} \right\}$. Consider two cases.
         \begin{enumerate}
             \item If $D_{0}'' = \begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix}$, then by item~\ref{item:tss_Bp_Deq} we have $D'' (i, Y_{\ell}) = c_{0}'' (i) \cdot d_{0}''  + (-c_{1}'' (i)) \cdot d_{1}''$. By considering all possible cases for $c_{0}'' (i)$ and $c_{1}'' (i)$, we conclude that $D'' (i, Y_{\ell}) \in \{0, \pm d_{0}'', \pm d_{1}'', \pm d_{2}''\}$.
             \item If $D_{0}'' = \begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}$, then by item~\ref{item:tss_Bp_Deq} we have $D'' (i, Y_{\ell}) = c_{0}'' (i) \cdot d_{0}'' + (c_{1}'' (i) - c_{0}'' (i)) \cdot d_{1}''$. By considering all possible cases for $c_{0}'' (i)$ and $c_{1}'' (i)$, we conclude that $D'' (i, Y_{\ell}) \in \{0, \pm d_{0}'', \pm d_{1}'', \pm d_{2}''\}$.
         \end{enumerate}
 
-        \item By Lemma~\ref{lem:three_sum_signing_B_r_props}.\ref{item:tss_Brp_tu3}, $\begin{bmatrix} c_{0}'' & c_{1}'' & c_{2}'' & A_{r}'' \end{bmatrix}$ is TU. Since TUness is preserved under adjoining zero columns, copies of existing columns, and multiplying columns by $\pm 1$ factors, $\begin{bmatrix} 0 & \pm c_{0}'' & \pm c_{1}'' & \pm c_{2}'' & A_{r}'' \end{bmatrix}$ is also TU. By item~\ref{item:tss_Bp_Dcols}, $\begin{bmatrix} D'' & A_{r}'' \end{bmatrix}$ is a submatrix of the latter matrix, hence it is also TU.
+        \item By Lemma~\ref{MatrixSum3.HasTuBr.cccAr_isTotallyUnimodular}.\ref{item:tss_Brp_tu3}, $\begin{bmatrix} c_{0}'' & c_{1}'' & c_{2}'' & A_{r}'' \end{bmatrix}$ is TU. Since TUness is preserved under adjoining zero columns, copies of existing columns, and multiplying columns by $\pm 1$ factors, $\begin{bmatrix} 0 & \pm c_{0}'' & \pm c_{1}'' & \pm c_{2}'' & A_{r}'' \end{bmatrix}$ is also TU. By item~\ref{item:tss_Bp_Dcols}, $\begin{bmatrix} D'' & A_{r}'' \end{bmatrix}$ is a submatrix of the latter matrix, hence it is also TU.
 
         \item By Lemma~\ref{lem:three_sum_signing_B_l_props}.\ref{item:tss_Blp_tu3}, $\begin{bmatrix} A_{\ell}'' \\ d_{0}'' \\ d_{1}'' \\ d_{2}'' \end{bmatrix}$ is TU. Since TUness is preserved under adjoining zero rows, copies of existing rows, and multiplying rows by $\pm 1$ factors, $\begin{bmatrix} A_{\ell}'' \\ 0 \\ \pm d_{0}'' \\ \pm d_{1}'' \\ \pm d_{2}'' \end{bmatrix}$ is also TU. By item~\ref{item:tss_Bp_Drows}, $\begin{bmatrix} A_{\ell}'' \\ D'' \end{bmatrix}$ is a submatrix of the latter matrix, hence it is also TU.
     \end{enumerate}
@@ -473,10 +473,10 @@
 \section{Proof of Regularity}
 
 \begin{definition}
-    \label{def:three_sum_like_matrix}
+    \label{MatrixLikeSum3}
     \uses{Matrix.IsTotallyUnimodular}
     % \lean{}
-    % \leanok
+    \leanok
     Let $X_{\ell}$, $Y_{\ell}$, $X_{r}$, $Y_{r}$ be sets and let $c_{0}, c_{1} \in \mathbb{Q}^{X_{r}}$ be column vectors such that for every $i \in X_{r}$ we have $c_{0} (i), \ c_{1} (i), \ c_{0} (i) - c_{1} (i) \in \{0, \pm 1\}$. Define $\mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ to be the family of matrices of the form $\begin{bmatrix} A_{\ell} & 0 \\ D & A_{r} \end{bmatrix}$ where $A_{\ell} \in \mathbb{Q}^{X_{\ell} \times Y_{\ell}}$, $A_{r} \in \mathbb{Q}^{X_{r} \times Y_{r}}$, and $D \in \mathbb{Q}^{X_{r} \times Y_{\ell}}$ are such that:
     \begin{enumerate}
         \item\label{item:tsl_cols} for every $j \in Y_{\ell}$, $D (X_{r}, j) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$,
@@ -487,30 +487,30 @@
 
 \begin{lemma}
     \label{lem:three_sum_like_signing_B}
-    \uses{def:three_sum_signing_B,def:three_sum_like_matrix}
+    \uses{MatrixSum3.toCanonicalSigning,MatrixLikeSum3}
     % \lean{}
     % \leanok
-    Let $B''$ be from Definition~\ref{def:three_sum_signing_B}. Then $B'' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$ where $c_{0}'' = B'' (X_{r}, y_{0})$ and $c_{1}'' = B'' (X_{r}, y_{1})$.
+    Let $B''$ be from Definition~\ref{MatrixSum3.toCanonicalSigning}. Then $B'' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$ where $c_{0}'' = B'' (X_{r}, y_{0})$ and $c_{1}'' = B'' (X_{r}, y_{1})$.
 \end{lemma}
 
 \begin{proof}
-    \uses{lem:three_sum_signing_B_props,def:three_sum_like_matrix}
+    \uses{lem:three_sum_signing_B_props,MatrixLikeSum3}
     % \leanok
-    Recall that $c_{0}'' - c_{1}'' \in \{0, \pm 1\}^{X_{r}}$ by Lemma~\ref{lem:three_sum_signing_B_props}.\ref{item:tss_Bp_c2}, so $\mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$ is well-defined. To see that $B'' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$, note that all properties from Definition~\ref{def:three_sum_like_matrix} are satisfied: property~\ref{item:tsl_cols} holds by Lemma~\ref{lem:three_sum_signing_B_props}.\ref{item:tss_Bp_Dcols}, property~\ref{item:tsl_bot} holds by Lemma~\ref{lem:three_sum_signing_B_r_props}.\ref{item:tss_Brp_tu3}, and property~\ref{item:tsl_left} holds by Lemma~\ref{lem:three_sum_signing_B_props}.\ref{item:tss_Bp_AlD}.
+    Recall that $c_{0}'' - c_{1}'' \in \{0, \pm 1\}^{X_{r}}$ by Lemma~\ref{lem:three_sum_signing_B_props}.\ref{item:tss_Bp_c2}, so $\mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$ is well-defined. To see that $B'' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$, note that all properties from Definition~\ref{MatrixLikeSum3} are satisfied: property~\ref{item:tsl_cols} holds by Lemma~\ref{lem:three_sum_signing_B_props}.\ref{item:tss_Bp_Dcols}, property~\ref{item:tsl_bot} holds by Lemma~\ref{MatrixSum3.HasTuBr.cccAr_isTotallyUnimodular}.\ref{item:tss_Brp_tu3}, and property~\ref{item:tsl_left} holds by Lemma~\ref{lem:three_sum_signing_B_props}.\ref{item:tss_Bp_AlD}.
 \end{proof}
 
 \begin{lemma}
     \label{lem:three_sum_like_pivot}
-    \uses{def:three_sum_like_matrix,Matrix.shortTableauPivot}
+    \uses{MatrixLikeSum3,Matrix.shortTableauPivot}
     % \lean{}
     % \leanok
-    Let $C \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ from Definition~\ref{def:three_sum_like_matrix}. Let $x \in X_{\ell}$ and $y \in Y_{\ell}$ be such that $A_{\ell} (x, y) \neq 0$, and let $C'$ be the result of performing a short tableau pivot in $C$ on $(x, y)$. Then $C' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$.
+    Let $C \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ from Definition~\ref{MatrixLikeSum3}. Let $x \in X_{\ell}$ and $y \in Y_{\ell}$ be such that $A_{\ell} (x, y) \neq 0$, and let $C'$ be the result of performing a short tableau pivot in $C$ on $(x, y)$. Then $C' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$.
 \end{lemma}
 
 \begin{proof}
     \uses{Matrix.shortTableauPivot_zero,Matrix.IsTotallyUnimodular,Matrix.IsTotallyUnimodular.shortTableauPivot}
     % \leanok
-    Our goal is to show that $C'$ satisfies all properties from Definition~\ref{def:three_sum_like_matrix}. Let $C' = \begin{bmatrix} C_{11}' & C_{12}' \\ C_{21}' & C_{22}' \end{bmatrix}$, and let $\begin{bmatrix} A_{\ell}' \\ D' \end{bmatrix}$ be the result of performing a short tableau pivot on $(x, y)$ in $\begin{bmatrix} A_{\ell} \\ D \end{bmatrix}$. Observe the following.
+    Our goal is to show that $C'$ satisfies all properties from Definition~\ref{MatrixLikeSum3}. Let $C' = \begin{bmatrix} C_{11}' & C_{12}' \\ C_{21}' & C_{22}' \end{bmatrix}$, and let $\begin{bmatrix} A_{\ell}' \\ D' \end{bmatrix}$ be the result of performing a short tableau pivot on $(x, y)$ in $\begin{bmatrix} A_{\ell} \\ D \end{bmatrix}$. Observe the following.
 
     \begin{itemize}
         \item By Lemma~\ref{Matrix.shortTableauPivot_zero}, $C_{11}' = A_{\ell}'$, $C_{12}' = 0$, $C_{21}' = D'$, and $C_{22}' = A_{r}$.
@@ -528,20 +528,20 @@
 
 \begin{lemma}
     \label{lem:three_sum_like_tu}
-    \uses{def:three_sum_like_matrix,Matrix.IsTotallyUnimodular}
+    \uses{MatrixLikeSum3,Matrix.IsTotallyUnimodular}
     % \lean{}
     % \leanok
-    Let $C \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ from Definition~\ref{def:three_sum_like_matrix}. Then $C$ is TU.
+    Let $C \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ from Definition~\ref{MatrixLikeSum3}. Then $C$ is TU.
 \end{lemma}
 
 \begin{proof}
-    \uses{def:three_sum_like_matrix,Matrix.isTotallyUnimodular_iff_forall_isPartiallyUnimodular,shortTableauPivot_submatrix_det_abs_eq_div,lem:three_sum_like_pivot}
+    \uses{MatrixLikeSum3,Matrix.isTotallyUnimodular_iff_forall_isPartiallyUnimodular,shortTableauPivot_submatrix_det_abs_eq_div,lem:three_sum_like_pivot}
     % \leanok
-    By Lemma~\ref{Matrix.isTotallyUnimodular_iff_forall_isPartiallyUnimodular}, it suffices to show that $C$ is $k$-PU for every $k \in \mathbb{N}$. We prove this claim by induction on $k$. The base case with $k = 1$ holds, since properties~\ref{item:tsl_bot} and~\ref{item:tsl_left} in Definition~\ref{def:three_sum_like_matrix} imply that $A_{\ell}$, $A_{r}$, and $D$ are TU, so all their entries of $C = \begin{bmatrix} A_{\ell} & 0 \\ D & A_{r} \end{bmatrix}$ are in $\{0, \pm 1\}$, as desired.
+    By Lemma~\ref{Matrix.isTotallyUnimodular_iff_forall_isPartiallyUnimodular}, it suffices to show that $C$ is $k$-PU for every $k \in \mathbb{N}$. We prove this claim by induction on $k$. The base case with $k = 1$ holds, since properties~\ref{item:tsl_bot} and~\ref{item:tsl_left} in Definition~\ref{MatrixLikeSum3} imply that $A_{\ell}$, $A_{r}$, and $D$ are TU, so all their entries of $C = \begin{bmatrix} A_{\ell} & 0 \\ D & A_{r} \end{bmatrix}$ are in $\{0, \pm 1\}$, as desired.
 
     Suppose that for some $k \in \mathbb{N}$ we know that every $C' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ is $k$-PU. Our goal is to show that $C$ is $(k + 1)$-PU, i.e., that every $(k + 1) \times (k + 1)$ submatrix $S$ of $C$ has $\det V \in \{0, \pm 1\}$.
 
-    First, suppose that $V$ has no rows in $X_{\ell}$. Then $V$ is a submatrix of $\begin{bmatrix} D & A_{r} \end{bmatrix}$, which is TU by property~\ref{item:tsl_bot} in Definition~\ref{def:three_sum_like_matrix}, so $\det V \in \{0, \pm 1\}$. Thus, we may assume that $S$ contains a row $x_{\ell} \in X_{\ell}$.
+    First, suppose that $V$ has no rows in $X_{\ell}$. Then $V$ is a submatrix of $\begin{bmatrix} D & A_{r} \end{bmatrix}$, which is TU by property~\ref{item:tsl_bot} in Definition~\ref{MatrixLikeSum3}, so $\det V \in \{0, \pm 1\}$. Thus, we may assume that $S$ contains a row $x_{\ell} \in X_{\ell}$.
 
     Next, note that without loss of generality we may assume that there exists $y_{\ell} \in Y_{\ell}$ such that $V (x_{\ell}, y_{\ell}) \neq 0$. Indeed, if $V (x_{\ell}, y) = 0$ for all $y$, then $\det V = 0$ and we are done, and $V (x_{\ell}, y) = 0$ holds whenever $y \in Y_{r}$.
 
@@ -550,10 +550,10 @@
 
 \begin{lemma}
     \label{lem:three_sum_signing_B_tu}
-    \uses{def:three_sum_signing_B,Matrix.IsTotallyUnimodular}
+    \uses{MatrixSum3.toCanonicalSigning,Matrix.IsTotallyUnimodular}
     % \lean{}
     % \leanok
-    $B''$ from Definition~\ref{def:three_sum_signing_B} is TU.
+    $B''$ from Definition~\ref{MatrixSum3.toCanonicalSigning} is TU.
 \end{lemma}
 
 \begin{proof}
@@ -572,7 +572,7 @@
 \end{theorem}
 
 \begin{proof}
-    \uses{StandardRepr,Matroid.Is3sumOf,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,def:three_sum_signing_B,lem:three_sum_signing_B_valid,lem:three_sum_signing_B_tu}
+    \uses{StandardRepr,Matroid.Is3sumOf,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,MatrixSum3.toCanonicalSigning,lem:three_sum_signing_B_valid,lem:three_sum_signing_B_tu}
     % \leanok
-    Let $B_{\ell}$, $B_{r}$, and $B$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{Matroid.Is3sumOf}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings. Then the canonical signing $B''$ from Definition~\ref{def:three_sum_signing_B} is a TU signing of $B$. Indeed, $B''$ is a signing of $B$ by Lemma~\ref{lem:three_sum_signing_B_valid}, and $B''$ is TU by Lemma~\ref{lem:three_sum_signing_B_tu}. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
+    Let $B_{\ell}$, $B_{r}$, and $B$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{Matroid.Is3sumOf}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings. Then the canonical signing $B''$ from Definition~\ref{MatrixSum3.toCanonicalSigning} is a TU signing of $B$. Indeed, $B''$ is a signing of $B$ by Lemma~\ref{lem:three_sum_signing_B_valid}, and $B''$ is TU by Lemma~\ref{lem:three_sum_signing_B_tu}. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
 \end{proof}
