@@ -75,6 +75,7 @@ private lemma elem_union_drop3 {X : Set α} {x₀ x₁ x₂ : X} (hx₀ : x₁ �
 
 /-! ### Re-typing elements of the triplet intersection -/
 
+section triplets
 variable {Zₗ Zᵣ : Set α} {a₀ a₁ a₂ : α}
 
 private lemma Eq.mem3₀ₗ (hZZ : Zₗ ∩ Zᵣ = {a₀, a₁, a₂}) : a₀ ∈ Zₗ :=
@@ -134,43 +135,49 @@ private def Eq.interAll3_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $e) => `($(e).$(Lean.mkIdent `inter3all))
   | _ => throw ()
 
+end triplets
+
 
 /-! ## New approach to conversion from union form to block form and vice versa -/
 
-def Matrix.toBlockSummandₗ {α : Type} {Xₗ Yₗ : Set α} {F : Type} (Bₗ : Matrix Xₗ Yₗ F) (x₀ x₁ x₂ : Xₗ) (y₀ y₁ y₂ : Yₗ) :
+def Matrix.toBlockSummandₗ {Xₗ Yₗ : Set α} {F : Type} (Bₗ : Matrix Xₗ Yₗ F) (x₀ x₁ x₂ : Xₗ) (y₀ y₁ y₂ : Yₗ) :
     Matrix ((Xₗ.drop3 x₀ x₁ x₂ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ.drop3 y₀ y₁ y₂ ⊕ Fin 2) ⊕ Fin 1) F :=
   Bₗ.submatrix (·.casesOn (·.casesOn undrop3 ![x₂]) ![x₀, x₁]) (·.casesOn (·.casesOn undrop3 ![y₀, y₁]) ![y₂])
 
-def Matrix.toBlockSummandᵣ {α : Type} {Xᵣ Yᵣ : Set α} {F : Type} (Bᵣ : Matrix Xᵣ Yᵣ F) (x₀ x₁ x₂ : Xᵣ) (y₀ y₁ y₂ : Yᵣ) :
+def Matrix.toBlockSummandᵣ {Xᵣ Yᵣ : Set α} {F : Type} (Bᵣ : Matrix Xᵣ Yᵣ F) (x₀ x₁ x₂ : Xᵣ) (y₀ y₁ y₂ : Yᵣ) :
     Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ x₁ x₂)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ y₁ y₂)) F :=
   Bᵣ.submatrix (·.casesOn ![x₂] (·.casesOn ![x₀, x₁] undrop3)) (·.casesOn ![y₀, y₁] (·.casesOn ![y₂] undrop3))
 
-def Matrix.toSumUnion {α : Type} [DecidableEq α] {Xₗ Yₗ Xᵣ Yᵣ : Set α} {F : Type}
+variable [DecidableEq α]
+
+def Matrix.toSumUnion {Xₗ Yₗ Xᵣ Yᵣ : Set α} {F : Type}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
-    (M : Matrix ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
+    (A : Matrix ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
                 ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ)) F) :
     Matrix (Xₗ.drop2 x₀ₗ x₁ₗ ∪ Xᵣ.drop1 x₂ᵣ).Elem (Yₗ.drop1 y₂ₗ ∪ Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem F :=
-  M.submatrix
-    (fun i => if hi₂ₗ : i.val = x₂ₗ then ◩◪0 else
-              if hiₗ : i.val ∈ Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ then ◩◩⟨i, hiₗ⟩ else
-              if hi₀ᵣ : i.val = x₀ᵣ then ◪◩0 else
-              if hi₁ᵣ : i.val = x₁ᵣ then ◪◩1 else
-              if hiᵣ : i.val ∈ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ then ◪◪⟨i, hiᵣ⟩ else
-              False.elim (i.property.elim ↓(by simp_all) ↓(by simp_all)))
-    (fun j => if hj₀ₗ : j.val = y₀ₗ then ◩◪0 else
-              if hj₁ₗ : j.val = y₁ₗ then ◩◪1 else
-              if hjₗ : j.val ∈ Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ then ◩◩⟨j, hjₗ⟩ else
-              if hj₂ᵣ : j.val = y₂ᵣ then ◪◩0 else
-              if hjᵣ : j.val ∈ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then ◪◪⟨j, hjᵣ⟩ else
-              False.elim (j.property.elim ↓(by simp_all) ↓(by simp_all)))
+  A.submatrix
+    (fun i : (Xₗ.drop2 x₀ₗ x₁ₗ ∪ Xᵣ.drop1 x₂ᵣ).Elem =>
+      if hi₂ₗ : i.val = x₂ₗ then ◩◪0 else
+      if hiₗ : i.val ∈ Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ then ◩◩⟨i, hiₗ⟩ else
+      if hi₀ᵣ : i.val = x₀ᵣ then ◪◩0 else
+      if hi₁ᵣ : i.val = x₁ᵣ then ◪◩1 else
+      if hiᵣ : i.val ∈ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ then ◪◪⟨i, hiᵣ⟩ else
+      False.elim (i.property.elim ↓(by simp_all) ↓(by simp_all)))
+    (fun j : (Yₗ.drop1 y₂ₗ ∪ Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem =>
+      if hj₀ₗ : j.val = y₀ₗ then ◩◪0 else
+      if hj₁ₗ : j.val = y₁ₗ then ◩◪1 else
+      if hjₗ : j.val ∈ Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ then ◩◩⟨j, hjₗ⟩ else
+      if hj₂ᵣ : j.val = y₂ᵣ then ◪◩0 else
+      if hjᵣ : j.val ∈ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then ◪◪⟨j, hjᵣ⟩ else
+      False.elim (j.property.elim ↓(by simp_all) ↓(by simp_all)))
 
-def standardReprMatrixSum3 {α : Type} [DecidableEq α] (Sₗ Sᵣ : StandardRepr α Z2)
+def standardReprMatrixSum3 (Sₗ Sᵣ : StandardRepr α Z2)
     (x₀ₗ x₁ₗ x₂ₗ : Sₗ.X) (y₀ₗ y₁ₗ y₂ₗ : Sₗ.Y) (x₀ᵣ x₁ᵣ x₂ᵣ : Sᵣ.X) (y₀ᵣ y₁ᵣ y₂ᵣ : Sᵣ.Y) :
     MatrixSum3 (Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ) (Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ) (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ) (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ) Z2 :=
   MatrixSum3.fromBlockSummands (Sₗ.B.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ) (Sᵣ.B.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ)
 
-noncomputable def standardRepr3sumComposition {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+noncomputable def standardRepr3sumComposition {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
     StandardRepr α Z2 × Prop :=
   let ⟨⟨x₀ₗ, x₁ₗ, x₂ₗ⟩, ⟨x₀ᵣ, x₁ᵣ, x₂ᵣ⟩⟩ := hXX.interAll3
@@ -211,8 +218,6 @@ noncomputable def standardRepr3sumComposition {α : Type} [DecidableEq α] {Sₗ
 
 
 /-! ## The 3-sum of standard representations -/
-
-variable {α : Type} [DecidableEq α]
 
 /-- Convert `(X₁₁.Elem ⊕ X₁₂.Elem) ⊕ (X₂₁.Elem ⊕ X₂₂.Elem)` to `((X₁₁ ∪ X₁₂) ∪ (X₂₁ ∪ X₂₂)).Elem`. -/
 @[deprecated Matrix.toSumUnion (since := "2025-06-06")]
