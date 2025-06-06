@@ -157,17 +157,13 @@ def Matrix.toSumUnion {α : Type} [DecidableEq α] {Xₗ Yₗ Xᵣ Yᵣ : Set α
               if hi₀ᵣ : i.val = x₀ᵣ then ◪◩0 else
               if hi₁ᵣ : i.val = x₁ᵣ then ◪◩1 else
               if hiᵣ : i.val ∈ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ then ◪◪⟨i, hiᵣ⟩ else
-              (by
-                have contr : False := i.property.elim (by intro hi; simp_all) (by intro hi; simp_all)
-                exact contr.elim))
+              False.elim (i.property.elim ↓(by simp_all) ↓(by simp_all)))
     (fun j => if hj₀ₗ : j.val = y₀ₗ then ◩◪0 else
               if hj₁ₗ : j.val = y₁ₗ then ◩◪1 else
               if hjₗ : j.val ∈ Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ then ◩◩⟨j, hjₗ⟩ else
               if hj₂ᵣ : j.val = y₂ᵣ then ◪◩0 else
               if hjᵣ : j.val ∈ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then ◪◪⟨j, hjᵣ⟩ else
-              (by
-                have contr : False := j.property.elim (by intro hj; simp_all) (by intro hj; simp_all)
-                exact contr.elim))
+              False.elim (j.property.elim ↓(by simp_all) ↓(by simp_all)))
 
 def standardReprMatrixSum3 {α : Type} [DecidableEq α] (Sₗ Sᵣ : StandardRepr α Z2)
     (x₀ₗ x₁ₗ x₂ₗ : Sₗ.X) (y₀ₗ y₁ₗ y₂ₗ : Sₗ.Y) (x₀ᵣ x₁ᵣ x₂ᵣ : Sᵣ.X) (y₀ᵣ y₁ᵣ y₂ᵣ : Sᵣ.Y) :

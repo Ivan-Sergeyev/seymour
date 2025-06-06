@@ -122,7 +122,7 @@ lemma MatrixSum3.HasTuBᵣ.c₀_c₁_c₂_Aᵣ_isTotallyUnimodular {Xₗ Yₗ X�
           | inl z₂ =>
             cases z₂ with
             | inl => simp [hgj]
-            | inr => simp_all
+            | inr => tauto
           | inr => simp [*]
         | inr z₁ => cases z₁ <;> simp [hgj]
     else
