@@ -60,12 +60,24 @@ abbrev matrix3x3signed₁ :
 
 /-- Structural data of 3-sum of matrices. -/
 structure MatrixSum3 (Xₗ Yₗ Xᵣ Yᵣ : Type) (F : Type) where
-  Aₗ : Matrix (Xₗ ⊕ Fin 1) (Yₗ ⊕ Fin 2) F
-  Dₗ : Matrix (Fin 2) Yₗ F
+  Aₗ  : Matrix (Xₗ ⊕ Fin 1) (Yₗ ⊕ Fin 2) F
+  Dₗ  : Matrix (Fin 2) Yₗ F
   D₀ₗ : Matrix (Fin 2) (Fin 2) F
   D₀ᵣ : Matrix (Fin 2) (Fin 2) F
-  Dᵣ : Matrix Xᵣ (Fin 2) F
-  Aᵣ : Matrix (Fin 2 ⊕ Xᵣ) (Fin 1 ⊕ Yᵣ) F
+  Dᵣ  : Matrix Xᵣ (Fin 2) F
+  Aᵣ  : Matrix (Fin 2 ⊕ Xᵣ) (Fin 1 ⊕ Yᵣ) F
+
+/-- Constructs 3-sum from summands in block form. -/
+def MatrixSum3.fromBlockSummands {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type}
+    (Bₗ : Matrix ((Xₗ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Fin 1) F)
+    (Bᵣ : Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) F) :
+    MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F where
+  Aₗ  := Bₗ.toBlocks₁₁
+  Dₗ  := Bₗ.toBlocks₂₁.toCols₁
+  D₀ₗ := Bₗ.toBlocks₂₁.toCols₂
+  D₀ᵣ := Bᵣ.toBlocks₂₁.toRows₁
+  Dᵣ  := Bᵣ.toBlocks₂₁.toRows₂
+  Aᵣ  := Bᵣ.toBlocks₂₂
 
 /-- The bottom-left block of 3-sum. -/
 noncomputable abbrev MatrixSum3.D {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Field F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
@@ -82,12 +94,12 @@ noncomputable def MatrixSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Fie
 
 def MatrixSum3.transpose {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
   MatrixSum3 Yᵣ Xᵣ Yₗ Xₗ F where
-  Aₗ := S.Aᵣ.transpose.submatrix Sum.swap Sum.swap
-  Dₗ := S.Dᵣ.transpose
+  Aₗ  := S.Aᵣ.transpose.submatrix Sum.swap Sum.swap
+  Dₗ  := S.Dᵣ.transpose
   D₀ₗ := S.D₀ᵣ.transpose
   D₀ᵣ := S.D₀ₗ.transpose
-  Dᵣ := S.Dₗ.transpose
-  Aᵣ := S.Aₗ.transpose.submatrix Sum.swap Sum.swap
+  Dᵣ  := S.Dₗ.transpose
+  Aᵣ  := S.Aₗ.transpose.submatrix Sum.swap Sum.swap
 
 def backwards {α β γ δ : Type} : (α ⊕ β) ⊕ (γ ⊕ δ) ≃ (δ ⊕ γ) ⊕ (β ⊕ α) :=
   (Equiv.sumComm _ _).trans (Equiv.sumCongr (Equiv.sumComm γ δ) (Equiv.sumComm α β))
