@@ -1,3 +1,4 @@
+import Seymour.Matrix.Determinants
 import Seymour.Matroid.Operations.Sum3.CanonicalSigning
 import Seymour.Matroid.Operations.Sum3.Basic
 
@@ -44,10 +45,7 @@ lemma MatrixSum3.HasTuBᵣ_special_form_cols {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : M
   <;> have := congr_fun contr 1
   <;> simp_all [Matrix.det_fin_two]
 
-example (X Y : Type) (e : X ≃ Y) : e ∘ e.symm = id := by
-  exact Equiv.self_comp_symm e
-
-lemma MatrixSum3.HasTuBᵣ.c₀_c₂_Aᵣ_isTotallyUnimodular₀ {Xₗ Yₗ Xᵣ Yᵣ : Type}
+lemma MatrixSum3.HasTuBᵣ.c₀_c₂_Aᵣ_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ] {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.HasTuBᵣ) :
     (▮S.c₀ ◫ ▮(S.c₀ - S.c₁) ◫ S.Aᵣ).IsTotallyUnimodular := by
@@ -72,7 +70,7 @@ lemma MatrixSum3.HasTuBᵣ.c₀_c₂_Aᵣ_isTotallyUnimodular₀ {Xₗ Yₗ Xᵣ
   convert hScc.mul_cols hq
   ext _ ((_|_)|_) <;> simp [q]
 
-lemma MatrixSum3.HasTuBᵣ.c₂_c₁_Aᵣ_isTotallyUnimodular₀ {Xₗ Yₗ Xᵣ Yᵣ : Type}
+lemma MatrixSum3.HasTuBᵣ.c₂_c₁_Aᵣ_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ] {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.HasTuBᵣ) :
     (▮(S.c₀ - S.c₁) ◫ ▮S.c₁ ◫ S.Aᵣ).IsTotallyUnimodular := by
@@ -101,7 +99,54 @@ lemma MatrixSum3.HasTuBᵣ.c₀_c₁_c₂_Aᵣ_isTotallyUnimodular {Xₗ Yₗ X�
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ] {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.HasTuBᵣ) :
     (▮S.c₀ ◫ ▮S.c₁ ◫ ▮(S.c₀ - S.c₁) ◫ S.Aᵣ).IsTotallyUnimodular := by
-  sorry
+  intro k f g hf hg
+  -- Is `c₂` contained in the submatrix?
+  if hgc₂ : ∃ j, g j = ◩◪() then
+    obtain ⟨j₂, hj₂⟩ := hgc₂
+    -- Is `c₀` contained in the submatrix?
+    if hgc₀ : ∃ j, g j = ◩◩◩() then
+      obtain ⟨j₀, hj₀⟩ := hgc₀
+      -- Is `c₁` contained in the submatrix?
+      if hgc₁ : ∃ j, g j = ◩◩◪() then
+        obtain ⟨j₁, hj₁⟩ := hgc₁
+        use 0
+        symm
+        apply ((▮S.c₀ ◫ ▮S.c₁ ◫ ▮(S.c₀ - S.c₁) ◫ S.Aᵣ).submatrix f g).det_eq_zero_of_col_sub_col_eq_col j₀ j₁ j₂
+        simp [hj₀, hj₁, hj₂]
+        rfl
+      else
+        convert hS.c₀_c₂_Aᵣ_isTotallyUnimodular.det f ((·.map (·.casesOn (·.casesOn Sum.inl Sum.inl) Sum.inr) id) ∘ g)
+        ext i j
+        cases hgj : g j with
+        | inl z₃ => cases z₃ with
+          | inl z₂ =>
+            cases z₂ with
+            | inl => simp [hgj]
+            | inr => simp_all
+          | inr => simp [*]
+        | inr z₁ => cases z₁ <;> simp [hgj]
+    else
+      convert hS.c₂_c₁_Aᵣ_isTotallyUnimodular.det f ((·.map (·.casesOn (·.casesOn Sum.inr Sum.inr) Sum.inl) id) ∘ g)
+      ext i j
+      cases hgj : g j with
+      | inl z₃ => cases z₃ with
+        | inl z₂ =>
+          cases z₂ with
+          | inl => tauto
+          | inr => simp [hgj]
+        | inr => simp [*]
+      | inr z₁ => cases z₁ <;> simp [hgj]
+  else
+    -- Here we have a submatrix of the original matrix.
+    let f' : Fin k → Fin 1 ⊕ (Fin 2 ⊕ Xᵣ) := Sum.inr ∘ f
+    let g' : Fin k → Fin 2 ⊕ (Fin 1 ⊕ Yᵣ) := (·.map (·.casesOn equivUnitSumUnit ↓0) id) ∘ g
+    convert hS.det f' g'
+    ext i j
+    cases hgj : g j with
+    | inl z₃ => cases z₃ with
+      | inl z₂ => cases z₂ <;> simp [hgj, f', g']
+      | inr => tauto
+    | inr z₁ => cases z₁ <;> simp [hgj, f', g']
 
 lemma MatrixSum3.HasTuBᵣ.c₀_c₀_c₁_c₁_c₂_c₂_Aᵣ_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ] {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
