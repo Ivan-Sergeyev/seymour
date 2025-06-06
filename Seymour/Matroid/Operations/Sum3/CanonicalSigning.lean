@@ -29,7 +29,8 @@ lemma Matrix.submatrix3x3_eq {X Y : Type} (Q : Matrix X Y ℚ) (x₀ x₁ x₂ :
       (match · with
         | 0 => y₀
         | 1 => y₁
-        | 2 => y₂) := by
+        | 2 => y₂)
+    := by
   ext
   rw [Matrix.submatrix_apply]
   split <;> split <;> rfl

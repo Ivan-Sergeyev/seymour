@@ -59,7 +59,7 @@ lemma MatrixSum3.HasTuBᵣ.c₀_c₂_Aᵣ_isTotallyUnimodular₀ {Xₗ Yₗ Xᵣ
     (▮S.c₀ ◫ ▮(S.c₀ - S.c₁) ◫ S.Aᵣ).IsTotallyUnimodular := by
   let B : Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) ℚ := S.Bᵣ.shortTableauPivot ◩0 ◩0
   let B' : Matrix (Fin 2 ⊕ Xᵣ) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) ℚ := B.submatrix Sum.inr id
-  have B'_eq : B' = (▮(-S.c₀) ◫ ▮(S.c₁ - S.c₀) ◫ S.Aᵣ).submatrix id equivUnitSumUnit.leftCongr
+  have B'_eq : B' = (▮(-S.c₀) ◫ ▮(S.c₁ - S.c₀) ◫ S.Aᵣ).submatrix id equivUnitSumUnit.leftCongr.symm
   · ext _ (j₂ | _)
     · fin_cases j₂ <;> simp [Matrix.shortTableauPivot_eq, B, B']
     · simp [Matrix.shortTableauPivot_eq, B, B']
@@ -70,8 +70,8 @@ lemma MatrixSum3.HasTuBᵣ.c₀_c₂_Aᵣ_isTotallyUnimodular₀ {Xₗ Yₗ Xᵣ
   · apply hB.submatrix
   rw [B'_eq] at hB'
   have hScc : (▮(-S.c₀) ◫ ▮(S.c₁ - S.c₀) ◫ S.Aᵣ).IsTotallyUnimodular
-  · simpa only [Matrix.submatrix_submatrix, Equiv.self_comp_symm, Function.comp_id, Matrix.submatrix_id_id] using
-      hB'.submatrix id equivUnitSumUnit.leftCongr.symm
+  · simpa only [Matrix.submatrix_submatrix, Equiv.symm_comp_self, Function.comp_id, Matrix.submatrix_id_id] using
+      hB'.submatrix id equivUnitSumUnit.leftCongr
   let q : (Unit ⊕ Unit) ⊕ (Fin 1 ⊕ Yᵣ) → ℚ := (·.casesOn (-1) 1)
   have hq : ∀ i : (Unit ⊕ Unit) ⊕ (Fin 1 ⊕ Yᵣ), q i ∈ SignType.cast.range
   · rintro (_|_) <;> simp [q]
@@ -84,7 +84,7 @@ lemma MatrixSum3.HasTuBᵣ.c₂_c₁_Aᵣ_isTotallyUnimodular₀ {Xₗ Yₗ Xᵣ
     (▮(S.c₀ - S.c₁) ◫ ▮S.c₁ ◫ S.Aᵣ).IsTotallyUnimodular := by
   let B : Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) ℚ := S.Bᵣ.shortTableauPivot ◩0 ◩1
   let B' : Matrix (Fin 2 ⊕ Xᵣ) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) ℚ := B.submatrix Sum.inr id
-  have B'_eq : B' = (▮(S.c₀ - S.c₁) ◫ ▮(-S.c₁) ◫ S.Aᵣ).submatrix id equivUnitSumUnit.leftCongr
+  have B'_eq : B' = (▮(S.c₀ - S.c₁) ◫ ▮(-S.c₁) ◫ S.Aᵣ).submatrix id equivUnitSumUnit.leftCongr.symm
   · ext _ (j₂ | _)
     · fin_cases j₂ <;> simp [Matrix.shortTableauPivot_eq, B, B']
     · simp [Matrix.shortTableauPivot_eq, B, B']
@@ -95,8 +95,8 @@ lemma MatrixSum3.HasTuBᵣ.c₂_c₁_Aᵣ_isTotallyUnimodular₀ {Xₗ Yₗ Xᵣ
   · apply hB.submatrix
   rw [B'_eq] at hB'
   have hScc : (▮(S.c₀ - S.c₁) ◫ ▮(-S.c₁) ◫ S.Aᵣ).IsTotallyUnimodular
-  · simpa only [Matrix.submatrix_submatrix, Equiv.self_comp_symm, Function.comp_id, Matrix.submatrix_id_id] using
-      hB'.submatrix id equivUnitSumUnit.leftCongr.symm
+  · simpa only [Matrix.submatrix_submatrix, Equiv.symm_comp_self, Function.comp_id, Matrix.submatrix_id_id] using
+      hB'.submatrix id equivUnitSumUnit.leftCongr
   let q : (Unit ⊕ Unit) ⊕ (Fin 1 ⊕ Yᵣ) → ℚ := (·.casesOn (·.casesOn 1 (-1)) 1)
   have hq : ∀ i : (Unit ⊕ Unit) ⊕ (Fin 1 ⊕ Yᵣ), q i ∈ SignType.cast.range
   · rintro ((_|_)|_) <;> simp [q]

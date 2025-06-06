@@ -24,8 +24,8 @@ def equivFin2 {α : Type} [DecidableEq α] {Z : Set α} {z₀ z₁ : Z} (hzz : z
 ⟩
 
 @[simp]
-def equivUnitSumUnit : Fin 2 ≃ Unit ⊕ Unit :=
-  ⟨![◩(), ◪()], (·.casesOn ↓0 ↓1), (by fin_cases · <;> simp), (·.casesOn (by simp) (by simp))⟩
+def equivUnitSumUnit : Unit ⊕ Unit ≃ Fin 2 :=
+  ⟨(·.casesOn ↓0 ↓1), ![◩(), ◪()], (·.casesOn (by simp) (by simp)), (by fin_cases · <;> simp)⟩
 
 /-!
   We define the unsigned and the signed version of the special cases of the 3×3 submatrix in the intersection of the summands.
@@ -77,6 +77,7 @@ noncomputable def MatrixSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Fie
     Matrix ((Xₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ)) ((Yₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ)) F :=
   ⊞ S.Aₗ 0 S.D S.Aᵣ
 
+
 /-! ## Transposition -/
 
 def MatrixSum3.transpose {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
@@ -89,27 +90,18 @@ def MatrixSum3.transpose {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3
   Aᵣ := S.Aₗ.transpose.submatrix Sum.swap Sum.swap
 
 def backwards {α β γ δ : Type} : (α ⊕ β) ⊕ (γ ⊕ δ) ≃ (δ ⊕ γ) ⊕ (β ⊕ α) :=
-  (Equiv.sumComm _ _).trans (Equiv.sumCongr (Equiv.sumComm _ _) (Equiv.sumComm _ _))
+  (Equiv.sumComm _ _).trans (Equiv.sumCongr (Equiv.sumComm γ δ) (Equiv.sumComm α β))
 
 lemma MatrixSum3.transpose_matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Field F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F)
     (hS : S.D₀ₗ = S.D₀ᵣ) :
     S.transpose.matrix = S.matrix.transpose.submatrix backwards backwards := by
-  simp [backwards, MatrixSum3.transpose, MatrixSum3.matrix]
-  ext (_ | j) (i | _)
-  · rfl
-  · rfl
-  · cases j with
-    | inl =>
-      cases i with
-      | inl => simp
-      | inr => simp [hS]
-    | inr =>
-      cases i with
-      | inl => simp [hS, Matrix.fromBlocks_transpose, Matrix.transpose_nonsing_inv, Matrix.mul_assoc, -Matrix.transpose_apply]
-      | inr => simp
-  · rfl
+  ext (_ | (_|_)) ((_|_) | _)
+  all_goals try rfl
+  all_goals simp [hS, backwards, MatrixSum3.transpose, MatrixSum3.matrix, Matrix.fromBlocks_transpose,
+      Matrix.transpose_nonsing_inv, Matrix.mul_assoc]
 
-/-! ## Re-construction of summands -/
+
+/-! ## Reconstruction of summands -/
 
 /-- Reconstructed left summand. -/
 abbrev MatrixSum3.Bₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
