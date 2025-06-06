@@ -256,7 +256,7 @@ def standardReprMatrixSum3' (Sₗ Sᵣ : StandardRepr α Z2)
   Dᵣ := Matrix.of (fun i => ![Sᵣ.B (Set.diff_subset.elem i) y₀ᵣ, Sᵣ.B (Set.diff_subset.elem i) y₁ᵣ])
   Aᵣ := Sᵣ.B.submatrix (·.casesOn ![x₀ᵣ, x₁ᵣ] undrop3) (·.casesOn ↓y₂ᵣ undrop3)
 
-@[deprecated standardRepr3sumComposition_B (since := "2025-06-06")]
+@[deprecated standardRepr3sumComposition (since := "2025-06-06")]
 noncomputable def standardRepr3sumComposition_B' (Sₗ Sᵣ : StandardRepr α Z2)
     {x₀ₗ x₁ₗ x₂ₗ : Sₗ.X} {y₀ₗ y₁ₗ y₂ₗ : Sₗ.Y} {x₀ᵣ x₁ᵣ x₂ᵣ : Sᵣ.X} {y₀ᵣ y₁ᵣ y₂ᵣ : Sᵣ.Y}
     (hx₀ₗ : x₁ₗ ≠ x₂ₗ) (hx₁ₗ : x₀ₗ ≠ x₂ₗ) (hx₀ᵣ : x₁ᵣ ≠ x₂ᵣ) (hx₁ᵣ : x₀ᵣ ≠ x₂ᵣ) (hx₂ᵣ : x₁ᵣ ≠ x₀ᵣ)
