@@ -135,72 +135,18 @@ private def Eq.interAll3_unexpand : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 
-/-! ### Obtaining submatrices of interest -/
-
-@[simp]
-private abbrev Matrix.D₀ {F : Type} {X Y : Set α} (B : Matrix X Y F) (x₀ x₁ : X) (y₀ y₁ : Y) :
-    Matrix (Fin 2) (Fin 2) F :=
-  !![B x₀ y₀, B x₀ y₁; B x₁ y₀, B x₁ y₁]
-
-@[app_unexpander Matrix.D₀]
-private def Matrix.D₀_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $A) => `($(A).$(Lean.mkIdent `D₀))
-  | _ => throw ()
-
-@[simp]
-private abbrev Matrix.Dₗ {F : Type} {X Y : Set α} (B : Matrix X Y F) (x₀ x₁ : X) (y₀ y₁ y₂ : Y) :
-    Matrix (Fin 2) (Y.drop3 y₀ y₁ y₂).Elem F :=
-  ![B x₀ ∘ Set.diff_subset.elem, B x₁ ∘ Set.diff_subset.elem]
-
-@[app_unexpander Matrix.Dₗ]
-private def Matrix.Dₗ_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $A) => `($(A).$(Lean.mkIdent `Dₗ))
-  | _ => throw ()
-
-@[simp]
-private abbrev Matrix.Dᵣ {F : Type} {X Y : Set α} (B : Matrix X Y F) (x₀ x₁ x₂ : X) (y₀ y₁ : Y) :
-    Matrix (X.drop3 x₀ x₁ x₂) (Fin 2) F :=
-  Matrix.of (fun i => ![B (Set.diff_subset.elem i) y₀, B (Set.diff_subset.elem i) y₁])
-
-@[app_unexpander Matrix.Dᵣ]
-private def Matrix.Dᵣ_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $A) => `($(A).$(Lean.mkIdent `Dᵣ))
-  | _ => throw ()
-
-@[simp]
-private abbrev Matrix.Aₗ {F : Type} {X Y : Set α} (B : Matrix X Y F) (x₀ x₁ : X) (y₂ : Y) :
-    Matrix (X.drop2 x₀ x₁) (Y.drop1 y₂) F :=
-  B.submatrix Set.diff_subset.elem Set.diff_subset.elem
-
-@[app_unexpander Matrix.Aₗ]
-private def Matrix.Aₗ_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $A) => `($(A).$(Lean.mkIdent `Aₗ))
-  | _ => throw ()
-
-@[simp]
-private abbrev Matrix.Aᵣ {F : Type} {X Y : Set α} (B : Matrix X Y F) (x₂ : X) (y₀ y₁ : Y) :
-    Matrix (X.drop1 x₂) (Y.drop2 y₀ y₁) F :=
-  B.submatrix Set.diff_subset.elem Set.diff_subset.elem
-
-@[app_unexpander Matrix.Aᵣ]
-private def Matrix.Aᵣ_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $A) => `($(A).$(Lean.mkIdent `Aᵣ))
-  | _ => throw ()
-
-
 /-! ## The 3-sum of standard representations -/
 
 variable {α : Type} [DecidableEq α]
 
 def standardReprMatrixSum3 (Sₗ Sᵣ : StandardRepr α Z2)
     (x₀ₗ x₁ₗ x₂ₗ : Sₗ.X) (y₀ₗ y₁ₗ y₂ₗ : Sₗ.Y) (x₀ᵣ x₁ᵣ x₂ᵣ : Sᵣ.X) (y₀ᵣ y₁ᵣ y₂ᵣ : Sᵣ.Y) :
-    MatrixSum3 (Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ) (Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ) (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ) (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ) Z2
-    where
+    MatrixSum3 (Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ) (Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ) (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ) (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ) Z2 where
   Aₗ := Sₗ.B.submatrix (·.casesOn undrop3 ↓x₂ₗ) (·.casesOn undrop3 ![y₀ₗ, y₁ₗ])
-  Dₗ := Sₗ.B.Dₗ x₀ₗ x₁ₗ y₀ₗ y₁ₗ y₂ₗ
-  D₀ₗ := Sₗ.B.D₀ x₀ₗ x₁ₗ y₀ₗ y₁ₗ
-  D₀ᵣ := Sᵣ.B.D₀ x₀ᵣ x₁ᵣ y₀ᵣ y₁ᵣ
-  Dᵣ := Sᵣ.B.Dᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ
+  Dₗ := ![Sₗ.B x₀ₗ ∘ Set.diff_subset.elem, Sₗ.B x₁ₗ ∘ Set.diff_subset.elem]
+  D₀ₗ := !![Sₗ.B x₀ₗ y₀ₗ, Sₗ.B x₀ₗ y₁ₗ; Sₗ.B x₁ₗ y₀ₗ, Sₗ.B x₁ₗ y₁ₗ]
+  D₀ᵣ := !![Sᵣ.B x₀ᵣ y₀ᵣ, Sᵣ.B x₀ᵣ y₁ᵣ; Sᵣ.B x₁ᵣ y₀ᵣ, Sᵣ.B x₁ᵣ y₁ᵣ]
+  Dᵣ := Matrix.of (fun i => ![Sᵣ.B (Set.diff_subset.elem i) y₀ᵣ, Sᵣ.B (Set.diff_subset.elem i) y₁ᵣ])
   Aᵣ := Sᵣ.B.submatrix (·.casesOn ![x₀ᵣ, x₁ᵣ] undrop3) (·.casesOn ↓y₂ᵣ undrop3)
 
 /-- Convert `(X₁₁.Elem ⊕ X₁₂.Elem) ⊕ (X₂₁.Elem ⊕ X₂₂.Elem)` to `((X₁₁ ∪ X₁₂) ∪ (X₂₁ ∪ X₂₂)).Elem`. -/
@@ -210,10 +156,7 @@ def Sum.toUnionUnionUnion {X₁₁ X₁₂ X₂₁ X₂₂ : Set α} (i : (X₁�
 
 /-- Convert `((X₁₁ ∪ X₁₂) ∪ (X₂₁ ∪ X₂₂)).Elem` to `(X₁₁.Elem ⊕ X₁₂.Elem) ⊕ (X₂₁.Elem ⊕ X₂₂.Elem)`. -/
 def Subtype.toSumSumSum {X₁₁ X₁₂ X₂₁ X₂₂ : Set α}
-    [∀ a : α, Decidable (a ∈ X₁₁)]
-    [∀ a : α, Decidable (a ∈ X₁₂)]
-    [∀ a : α, Decidable (a ∈ X₂₁)]
-    [∀ a : α, Decidable (a ∈ X₂₂)]
+    [∀ a, Decidable (a ∈ X₁₁)] [∀ a, Decidable (a ∈ X₁₂)] [∀ a, Decidable (a ∈ X₂₁)] [∀ a, Decidable (a ∈ X₂₂)]
     (i : ((X₁₁ ∪ X₁₂) ∪ (X₂₁ ∪ X₂₂)).Elem) :
     (X₁₁.Elem ⊕ X₁₂.Elem) ⊕ (X₂₁.Elem ⊕ X₂₂.Elem) :=
   if hiX₁₁ : i.val ∈ X₁₁ then ◩◩⟨i, hiX₁₁⟩ else
@@ -224,14 +167,8 @@ def Subtype.toSumSumSum {X₁₁ X₁₂ X₂₁ X₂₂ : Set α}
 
 /-- Convert a nested block matrix to a matrix over nested set unions. -/
 def Matrix.toMatrixUnionNested {X₁₁ X₁₂ X₂₁ X₂₂ Y₁₁ Y₁₂ Y₂₁ Y₂₂ : Set α} {R : Type}
-    [∀ a : α, Decidable (a ∈ X₁₁)]
-    [∀ a : α, Decidable (a ∈ X₁₂)]
-    [∀ a : α, Decidable (a ∈ X₂₁)]
-    [∀ a : α, Decidable (a ∈ X₂₂)]
-    [∀ a : α, Decidable (a ∈ Y₁₁)]
-    [∀ a : α, Decidable (a ∈ Y₁₂)]
-    [∀ a : α, Decidable (a ∈ Y₂₁)]
-    [∀ a : α, Decidable (a ∈ Y₂₂)]
+    [∀ a, Decidable (a ∈ X₁₁)] [∀ a, Decidable (a ∈ X₁₂)] [∀ a, Decidable (a ∈ X₂₁)] [∀ a, Decidable (a ∈ X₂₂)]
+    [∀ a, Decidable (a ∈ Y₁₁)] [∀ a, Decidable (a ∈ Y₁₂)] [∀ a, Decidable (a ∈ Y₂₁)] [∀ a, Decidable (a ∈ Y₂₂)]
     (A : Matrix ((X₁₁.Elem ⊕ X₁₂.Elem) ⊕ (X₂₁.Elem ⊕ X₂₂.Elem)) ((Y₁₁.Elem ⊕ Y₁₂.Elem) ⊕ (Y₂₁.Elem ⊕ Y₂₂.Elem)) R) :
     Matrix ((X₁₁ ∪ X₁₂) ∪ (X₂₁ ∪ X₂₂)).Elem ((Y₁₁ ∪ Y₁₂) ∪ (Y₂₁ ∪ Y₂₂)).Elem R :=
   ((A ∘ Subtype.toSumSumSum) · ∘ Subtype.toSumSumSum)
@@ -291,9 +228,10 @@ noncomputable def standardRepr3sumComposition {Sₗ Sᵣ : StandardRepr α Z2} {
       inferInstance,
     ⟩,
     -- `D₀` is the same in `Bₗ` and `Bᵣ`
-    Sₗ.B.D₀ x₀ₗ x₁ₗ y₀ₗ y₁ₗ = Sᵣ.B.D₀ x₀ᵣ x₁ᵣ y₀ᵣ y₁ᵣ
+    !![Sₗ.B x₀ₗ y₀ₗ, Sₗ.B x₀ₗ y₁ₗ; Sₗ.B x₁ₗ y₀ₗ, Sₗ.B x₁ₗ y₁ₗ] = !![Sᵣ.B x₀ᵣ y₀ᵣ, Sᵣ.B x₀ᵣ y₁ᵣ; Sᵣ.B x₁ᵣ y₀ᵣ, Sᵣ.B x₁ᵣ y₁ᵣ]
     -- `D₀` has the correct form
-    ∧ (Sₗ.B.D₀ x₀ₗ x₁ₗ y₀ₗ y₁ₗ = 1 ∨ Sₗ.B.D₀ x₀ₗ x₁ₗ y₀ₗ y₁ₗ = !![1, 1; 0, 1])
+    ∧ (!![Sₗ.B x₀ₗ y₀ₗ, Sₗ.B x₀ₗ y₁ₗ; Sₗ.B x₁ₗ y₀ₗ, Sₗ.B x₁ₗ y₁ₗ] = 1 ∨
+       !![Sₗ.B x₀ₗ y₀ₗ, Sₗ.B x₀ₗ y₁ₗ; Sₗ.B x₁ₗ y₀ₗ, Sₗ.B x₁ₗ y₁ₗ] = !![1, 1; 0, 1])
     -- `Bₗ` has the correct structure outside of `Aₗ`, `Dₗ`, and `D₀`
     ∧ Sₗ.B x₀ₗ y₂ₗ = 1
     ∧ Sₗ.B x₁ₗ y₂ₗ = 1

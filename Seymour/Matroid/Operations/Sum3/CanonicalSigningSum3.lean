@@ -30,12 +30,6 @@ abbrev MatrixSum3.d₁ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3 X
     Yₗ ⊕ Fin 2 → F :=
   (S.Dₗ ◫ S.D₀ₗ) 1
 
-/-- Third special row of `S.Bₗ` used to generate `S.D`. -/
-@[simp]
-abbrev MatrixSum3.d₂ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Sub F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
-    Yₗ ⊕ Fin 2 → F :=
-  S.d₀ - S.d₁
-
 
 /-! ## Lemmas about extending bottom-right matrix with special rows and columns -/
 
@@ -130,7 +124,7 @@ lemma MatrixSum3.HasTuBᵣ_pmz_c₀_c₁_c₂_Aᵣ_isTotallyUnimodular {Xₗ Y�
 lemma MatrixSum3.HasTuBₗ_Aₗ_pm_d₀_d₁_d₂_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ] {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.HasTuBₗ) :
-    (S.Aₗ ⊟ ▬S.d₀ ⊟ ▬(-S.d₀) ⊟ ▬S.d₁ ⊟ ▬(-S.d₁) ⊟ ▬S.d₂ ⊟ ▬(-S.d₂) ⊟ ▬0).IsTotallyUnimodular := by
+    (S.Aₗ ⊟ ▬S.d₀ ⊟ ▬(-S.d₀) ⊟ ▬S.d₁ ⊟ ▬(-S.d₁) ⊟ ▬(S.d₀ - S.d₁) ⊟ ▬(S.d₁ - S.d₀) ⊟ ▬0).IsTotallyUnimodular := by
   sorry
 
 
@@ -191,7 +185,7 @@ lemma MatrixSum3.IsCanonicalSigning.D_eq_cols {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : 
 /-- Every row of the bottom-left block of a canonical signing of a 3-sum of matrices is in `{0, ±d₀, ±d₁, ±d₂}`. -/
 lemma MatrixSum3.IsCanonicalSigning.D_eq_rows {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.IsCanonicalSigning) :
-    ∀ i, S.D i = 0 ∨ S.D i = S.d₀ ∨ S.D i = -S.d₀ ∨ S.D i = S.d₁ ∨ S.D i = -S.d₁ ∨ S.D i = S.d₂ ∨ S.D i = -S.d₂ :=
+    ∀ i, S.D i = 0 ∨ S.D i = S.d₀ ∨ S.D i = -S.d₀ ∨ S.D i = S.d₁ ∨ S.D i = -S.d₁ ∨ S.D i = S.d₀ - S.d₁ ∨ S.D i = S.d₁ - S.d₀ :=
   sorry
 
 /-- The left block of a canonical signing of a 3-sum of matrices is totally unimodular. -/
