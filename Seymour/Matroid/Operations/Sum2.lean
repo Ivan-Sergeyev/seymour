@@ -5,7 +5,7 @@ import Seymour.Matrix.Determinants
 import Seymour.Matrix.PartialUnimodularity
 
 
--- ## Shorthands for convenience
+/-! ## Shorthands for convenience -/
 
 private abbrev Eq._ₗ {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : X :=
   ⟨a, Set.mem_of_mem_inter_left (ha.symm.subset rfl)⟩
@@ -58,7 +58,7 @@ private lemma Matrix.IsTotallyUnimodular.reglueCol {α R : Type} [CommRing R] {X
   apply hA.submatrix
 
 
--- ## Definition
+/-! ## Definition -/
 
 /-- `Matrix`-level 2-sum for matroids defined by their standard representation matrices; does not check legitimacy. -/
 abbrev matrix2sumComposition {R : Type} [Semiring R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
@@ -103,7 +103,7 @@ structure Matroid.Is2sumOf {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ M
   IsValid : (standardRepr2sumComposition ha hXY).snd
 
 
--- ## Specifics about pivoting for the proof of 2-sum regularity
+/-! ## Specifics about pivoting for the proof of 2-sum regularity -/
 
 -- `p` is the pivot row; `r` is the other row; `g` is a map from the columns of `r` to the columns of `p`
 private abbrev shortTableauPivotOtherRow {Y Y' R : Type} [DecidableEq Y'] [DivisionRing R]
@@ -182,7 +182,7 @@ private lemma Matrix.shortTableauPivot_abs_det_eq_submatrix_abs_det {F : Type} [
   exact ⟨f, g, hf, hg, hAfg.symm⟩
 
 
--- ## Total unimodularity after adjoining an outer product
+/-! ## Total unimodularity after adjoining an outer product -/
 
 private lemma Matrix.IsTotallyUnimodular.fromCols_pnz {X Y : Type} [DecidableEq Y] {A : Matrix X Y ℚ} {c : X → ℚ}
     (hAc : (A ◫ ▮c).IsTotallyUnimodular) :
@@ -220,7 +220,7 @@ private lemma matrix2sumComposition_bottom_isTotallyUnimodular {Xₗ Yₗ Xᵣ Y
   (hAc.fromCols_comm.fromCols_outer (hAr.apply ◪())).fromCols_comm
 
 
--- ## Proof of regularity of the 2-sum
+/-! ## Proof of regularity of the 2-sum -/
 
 private lemma matrix2sumComposition_isPartiallyUnimodular_1 {α : Type} {Xₗ Yₗ Xᵣ Yᵣ : Set α}
     {Aₗ : Matrix Xₗ Yₗ ℚ} {r : Yₗ → ℚ} {Aᵣ : Matrix Xᵣ Yᵣ ℚ} {c : Xᵣ → ℚ}

@@ -9,7 +9,7 @@ open scoped Matrix
 variable {X Y F : Type}
 
 
--- ## Elementary row operations
+/-! ## Elementary row operations -/
 
 /-- Multiply column `y` of `A` by factor `q` and keep the rest of `A` unchanged. -/
 private def Matrix.mulCol [DecidableEq Y] [Mul F] (A : Matrix X Y F) (y : Y) (q : F) :
@@ -262,7 +262,7 @@ private lemma Matrix.IsTotallyUnimodular.addRowMultiples [DecidableEq X] [Field 
       | neg => exact hAxy9 hs.symm
 
 
--- ## Long-tableau pivoting
+/-! ## Long-tableau pivoting -/
 
 /-- The result of pivoting in a long tableau. This definition makes sense only if `A x y` is non-zero.
     The recommending spelling when calling the function is `(A.longTableauPivot x y) i j` when pivoting in `A` on `[x,y]` and
@@ -324,7 +324,7 @@ lemma Matrix.longTableauPivot_linearIndepenOn [DecidableEq X] [Field F] (A : Mat
   rw [A.longTableauPivot_eq, Matrix.mulRow_linearIndepOn _ _ (one_div_ne_zero hAxy), A.addRowMultiples_linearIndepOn]
 
 
--- ## Short-tableau pivoting
+/-! ## Short-tableau pivoting -/
 
 /-- The result of pivoting in a short tableau. This definition makes sense only if `A x y` is non-zero.
     The recommending spelling when calling the function is `(A.shortTableauPivot x y) i j` when pivoting in `A` on `[x,y]` and
@@ -383,7 +383,7 @@ lemma Matrix.submatrix_shortTableauPivot [DecidableEq X] [DecidableEq Y] {X' Y' 
   aesop
 
 
--- ## Lemma 1 of Proof of Regularity of 2-Sum and 3-Sum of Matroids
+/-! ## Lemma 1 of Proof of Regularity of 2-Sum and 3-Sum of Matroids -/
 
 private lemma Matrix.shortTableauPivot_submatrix_succAbove_pivot_apply [Field F] {k : ℕ} (A : Matrix (Fin k.succ) (Fin k.succ) F)
     {x y : Fin k.succ} (i j : Fin k) :

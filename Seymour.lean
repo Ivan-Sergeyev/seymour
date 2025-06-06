@@ -3,7 +3,7 @@ import Seymour.HardDirection
 open scoped Matrix Set.Notation
 
 
--- ## Summary of basic definitions
+/-! ## Summary of basic definitions -/
 
 recall Z2 := Fin 2
 
@@ -59,7 +59,7 @@ recall Matrix.toMatrixUnionUnion {α : Type} {T₁ T₂ S₁ S₂ : Set α} {β 
   A.submatrix Subtype.toSum Subtype.toSum
 
 
--- ## Summary of 1-sum
+/-! ## Summary of 1-sum -/
 
 recall matrix1sumComposition {R : Type} [Zero R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
     (Aₗ : Matrix Xₗ Yₗ R) (Aᵣ : Matrix Xᵣ Yᵣ R) :
@@ -96,7 +96,7 @@ info: '_private.Seymour.0.Matroid_Is1sumOf_isRegular' depends on axioms: [propex
 #print axioms Matroid_Is1sumOf_isRegular
 
 
--- ## Summary of 2-sum
+/-! ## Summary of 2-sum -/
 
 recall matrix2sumComposition {R : Type} [Semiring R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
     (Aₗ : Matrix Xₗ Yₗ R) (x : Yₗ → R) (Aᵣ : Matrix Xᵣ Yᵣ R) (y : Xᵣ → R) :

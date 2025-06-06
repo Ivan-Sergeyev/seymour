@@ -3,14 +3,14 @@ import Seymour.Matrix.TotalUnimodularity
 import Seymour.Matroid.Constructors.StandardRepresentation
 
 
--- ## Primary definition of regularity (LI & TU over ℚ)
+/-! ## Primary definition of regularity (LI & TU over ℚ) -/
 
 /-- Matroid is regular iff it can be constructed from a `VectorMatroid` with a rational TU matrix. -/
 def Matroid.IsRegular {α : Type} (M : Matroid α) : Prop :=
   ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsTotallyUnimodular ∧ (VectorMatroid.mk X Y A).toMatroid = M
 
 
--- ## Secondary definition of regularity (LI over Z2 while TU over ℚ)
+/-! ## Secondary definition of regularity (LI over Z2 while TU over ℚ) -/
 
 /-- `LinearOrderedRing`-valued matrix `A` is a signing of `U` (matrix of the same size but different type) iff `A` has
     the same entries as `U` on respective positions up to signs. -/
@@ -28,7 +28,7 @@ def Matrix.HasTuSigning {X Y : Type} (U : Matrix X Y Z2) : Prop :=
   ∃ A : Matrix X Y ℚ, A.IsTuSigningOf U
 
 
--- ## Auxiliary stuff
+/-! ## Auxiliary stuff -/
 
 lemma Matrix.IsTotallyUnimodular.isTuSigningOf_support {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
     A.IsTuSigningOf A.support :=
@@ -289,7 +289,7 @@ private lemma VectorMatroid.toMatroid_isRegular_if_hasTuSigning (V : VectorMatro
     exact Rat.zero_ne_one hSV
 
 
--- ## Main results of this file
+/-! ## Main results of this file -/
 
 /-- Every regular matroid is binary. -/
 lemma Matroid.IsRegular.isBinary {M : Matroid α} (hM : M.IsRegular) :

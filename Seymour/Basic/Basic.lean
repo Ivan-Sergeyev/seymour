@@ -4,7 +4,7 @@ import Mathlib.Tactic
 import Linters
 
 
--- ## Notation
+/-! ## Notation -/
 
 /-- The finite field on 2 elements; write `Z2` for "value" type but `Fin 2` for "indexing" type. -/
 abbrev Z2 : Type := ZMod 2
@@ -76,7 +76,7 @@ def Function.support_unexpand : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 
--- ## Basic lemmas
+/-! ## Basic lemmas -/
 
 lemma and_congr_l {P₁ P₂ : Prop} (hP : P₁ ↔ P₂) (Q : Prop) : P₁ ∧ Q ↔ P₂ ∧ Q :=
   and_congr_left ↓hP
@@ -156,7 +156,7 @@ lemma sum_over_fin_succ_of_only_zeroth_nonzero {n : ℕ} [AddCommMonoid α] {f :
   exact hf
 
 
--- ## Conversion between set-based notions and type-based notions
+/-! ## Conversion between set-based notions and type-based notions -/
 
 variable {X Y : Set α}
 
@@ -228,7 +228,7 @@ lemma toUnion_toSum [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (h
   cases i <;> simp [hXY]
 
 
--- ## Aesop modifiers
+/-! ## Aesop modifiers -/
 
 attribute [aesop apply safe] Classical.choose_spec
 
