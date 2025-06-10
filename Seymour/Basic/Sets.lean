@@ -1,6 +1,8 @@
 import Seymour.Basic.Basic
 
 /-!
+# Sets
+
 This file provides lemmas about sets that are not present in Mathlib.
 -/
 

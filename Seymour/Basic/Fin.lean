@@ -1,5 +1,11 @@
 import Seymour.Basic.Basic
 
+/-!
+# Fin
+
+This file provides lemmas about 1-element, 2-element, and 3-element types that are not present in Mathlib.
+-/
+
 
 lemma fin1_eq_fin1 (a b : Fin 1) : a = b := by
   omega

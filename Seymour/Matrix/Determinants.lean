@@ -1,6 +1,11 @@
 import Seymour.Basic.Fin
 import Seymour.Matrix.Basic
 
+/-!
+# Determinants
+
+This file provides lemmas about determinants that are not present in Mathlib.
+-/
 
 /-- Lemma 10 (motivates the difference between the definition of 3-sum in our implementation and in Truemper's book). -/
 lemma Matrix.isUnit_2x2 (A : Matrix (Fin 2) (Fin 2) Z2) (hA : IsUnit A) :

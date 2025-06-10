@@ -2,6 +2,11 @@ import Seymour.Matrix.LinearIndependence
 import Seymour.Matrix.TotalUnimodularity
 import Seymour.Matroid.Constructors.StandardRepresentation
 
+/-!
+# Regularity
+
+Here we study regular matroids.
+-/
 
 /-! ## Primary definition of regularity (LI & TU over ℚ) -/
 

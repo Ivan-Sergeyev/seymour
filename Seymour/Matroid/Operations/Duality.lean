@@ -1,5 +1,11 @@
 import Seymour.Matroid.Properties.Regularity
 
+/-!
+# Matroid Duality
+
+Here we study the duals of matroids given by their standard representation.
+-/
+
 open scoped Matrix
 
 variable {α R : Type} [DecidableEq α]

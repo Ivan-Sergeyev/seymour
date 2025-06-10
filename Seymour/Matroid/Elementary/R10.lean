@@ -1,6 +1,11 @@
 import Seymour.Matroid.Properties.Graphicness
 import Seymour.Matrix.TotalUnimodularityTest
 
+/-!
+# Matroid R10
+
+This file studies the R10 matroid.
+-/
 
 def matrixR10auxZ2 : Matrix (Fin 5) (Fin 5) Z2 :=
   !![1, 0, 0, 1, 1; 1, 1, 0, 0, 1; 0, 1, 1, 0, 1; 0, 0, 1, 1, 1; 1, 1, 1, 1, 1]

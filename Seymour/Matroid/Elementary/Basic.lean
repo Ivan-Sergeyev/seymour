@@ -1,6 +1,11 @@
 import Mathlib.Data.Matroid.Basic
 import Seymour.Basic.Basic
 
+/-!
+# Matroid Basics
+
+This file provides basuc lemmas about matroids that are not present in Mathlib.
+-/
 
 variable {α : Type}
 

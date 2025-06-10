@@ -5,6 +5,11 @@ import Seymour.Basic.Sets
 import Seymour.Basic.SignTypeCast
 import Seymour.Matrix.Basic
 
+/-!
+# Total Unimodularity
+
+This file provides lemmas about total unimodularity that are not present in Mathlib.
+-/
 
 @[simp]
 lemma Matrix.empty_X_isTotallyUnimodular {X Y : Type} [IsEmpty X] {R : Type} [CommRing R] (A : Matrix X Y R) :

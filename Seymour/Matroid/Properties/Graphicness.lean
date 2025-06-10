@@ -1,5 +1,10 @@
 import Seymour.Matroid.Operations.Duality
 
+/-!
+# Graphicness
+
+Here we study graphic and cographic matroids.
+-/
 
 /-- Column of a node-edge incidence matrix is either all `0`,
     or has exactly one `+1` entry, exactly one `-1` entry, and all other elements `0`. -/

@@ -5,8 +5,13 @@ import Seymour.Matrix.Support
 import Seymour.Matroid.Constructors.BinaryMatroid
 import Seymour.Matroid.Elementary.Basic
 
-open scoped Matrix Set.Notation
+/-!
+# Standard Representation
 
+Here we study the standard representation of vector matroids.
+-/
+
+open scoped Matrix Set.Notation
 
 /-- Standard matrix representation of a vector matroid. -/
 structure StandardRepr (α R : Type) [DecidableEq α] where

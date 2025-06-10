@@ -5,8 +5,13 @@ import Mathlib.Data.Matroid.Sum
 import Seymour.Basic.Sets
 import Seymour.Matrix.LinearIndependence
 
-open scoped Matrix Set.Notation
+/-!
+# Binary Matroids
 
+Here we study vector matroids with emphasis on binary matroids.
+-/
+
+open scoped Matrix Set.Notation
 
 /-- Data representing a vector matroid. -/
 structure VectorMatroid (α R : Type) where

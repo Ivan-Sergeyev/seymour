@@ -2,6 +2,12 @@ import Seymour.Basic.SubmoduleSpans
 import Seymour.Matrix.Basic
 import Mathlib.Data.Matrix.Rank
 
+/-!
+# Linear Independence and Matrices
+
+This file provides lemmas about linear independence in the context of matrices that are not present in Mathlib.
+-/
+
 
 lemma Matrix.linearIndependent_iff_fromCols_zero {X Y R : Type} [Ring R] (A : Matrix X Y R) (Y₀ : Type) :
     LinearIndependent R A ↔ LinearIndependent R (A ◫ (0 : Matrix X Y₀ R)) := by

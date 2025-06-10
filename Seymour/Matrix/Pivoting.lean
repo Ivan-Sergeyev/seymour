@@ -4,10 +4,15 @@ import Seymour.Matrix.TotalUnimodularity
 import Mathlib.LinearAlgebra.Matrix.SchurComplement
 import Mathlib.LinearAlgebra.Matrix.Permutation
 
+/-!
+# Pivoting
+
+This file defines and studies pivoting in matrices. Pivoting is later used in many auxiliary constructions.
+-/
+
 open scoped Matrix
 
 variable {X Y F : Type}
-
 
 /-! ## Elementary row operations -/
 

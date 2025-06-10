@@ -3,6 +3,12 @@ import Seymour.Basic.Basic
 import Seymour.Basic.SignTypeCast
 import Seymour.Matrix.TotalUnimodularity
 
+/-!
+# Total Unimodularity Test
+
+This file provides means to (computably) test total unimodularity of small matrices.
+-/
+
 
 /-- Formally verified algorithm for testing total unimodularity. -/
 def Matrix.testTotallyUnimodular {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Bool :=

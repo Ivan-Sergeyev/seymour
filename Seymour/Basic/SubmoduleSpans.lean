@@ -1,10 +1,16 @@
 import Seymour.Basic.Basic
 
+/-!
+# Submodule Spans
+
+This file provides lemmas about the linear spans of vector sets that are not present in Mathlib.
+Currently, there are only two lemmas, both of which were proved by Peter Nelson.
+-/
 
 variable {α R O : Type} [DivisionRing R] [AddCommGroup O] [Module R O] {v : α → O} {s : Set α}
 
 -- Peter Nelson proved:
-lemma span_eq_of_maximal_subset_linearIndepOn  (t : Set α) (hs : Maximal (fun r : Set α => r ⊆ t ∧ LinearIndepOn R v r) s) :
+lemma span_eq_of_maximal_subset_linearIndepOn (t : Set α) (hs : Maximal (fun r : Set α => r ⊆ t ∧ LinearIndepOn R v r) s) :
     Submodule.span R (v '' s) = Submodule.span R (v '' t) := by
   apply le_antisymm (Submodule.span_mono (Set.image_mono hs.prop.left))
   rw [Submodule.span_le]

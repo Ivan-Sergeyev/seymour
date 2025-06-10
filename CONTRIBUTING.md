@@ -27,7 +27,7 @@ The guideline below is written primarily to assist you in reading the code.
 - Lines should not be longer than 128 characters (see the vertical ruler in VS Code) unless the line contains a long URL.
 - Starting a proof on a new line is recommended even in cases where the entire proof fits into the same line with the statement.
 - When the header of a declaration does not fit into one line, it is recommended to start the part after `:` on a new line.
-- Make 2 empty lines between imports and the content of the file.
+- Make 2 empty lines between imports and the content of the file (unless it has `/-! a top-level comment section -/` in which case 1 empty line goes above and 1 empty line goes below).
 - Make 1 empty line between the start of a section and a declaration.
 - Make 1 empty line between declarations of any kind.
 - Make 1 empty line between a declaration and the end of a section.

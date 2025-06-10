@@ -1,5 +1,10 @@
 import Seymour.Basic.Fin
 
+/-!
+# SignType and its images
+
+This file provides lemmas about `SignType.cast.range` (that is, `{0, ±1}` in various types) that are not present in Mathlib.
+-/
 
 lemma zero_iff_ratCast_zero_of_in_signTypeCastRange {a : ℚ} (ha : a ∈ SignType.cast.range) :
     a = 0 ↔ (a.cast : Z2) = 0 := by

@@ -4,6 +4,11 @@ import Seymour.Matroid.Properties.Regularity
 import Seymour.Matrix.Determinants
 import Seymour.Matrix.PartialUnimodularity
 
+/-!
+# Matroid 2-sum
+
+Here we study the 2-sum of matroids (starting with the 2-sum of matrices).
+-/
 
 /-! ## Shorthands for convenience -/
 

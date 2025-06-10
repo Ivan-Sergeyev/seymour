@@ -1,9 +1,15 @@
 import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 import Seymour.Basic.Fin
 
+/-!
+# Support Matrix
+
+This file defines the support matrix and provides some API about them.
+-/
 
 variable {X Y R : Type} [Zero R] [DecidableEq R]
 
+/-- Auxiliary `Z2`-valued matrix that has `1` on the position of all nonzero elements. -/
 @[simp]
 def Matrix.support (A : Matrix X Y R) : Matrix X Y Z2 :=
   Matrix.of (if A · · = 0 then 0 else 1)

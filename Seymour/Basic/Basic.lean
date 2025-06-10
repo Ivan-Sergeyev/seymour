@@ -3,6 +3,12 @@ import Mathlib.Data.Matrix.RowCol
 import Mathlib.Tactic
 import Linters
 
+/-!
+# Basics
+
+This is the stem file (imported by every other file in this project).
+This file provides notation used throughout the project, some very basic lemmas, and a little bit of configuration.
+-/
 
 /-! ## Notation -/
 
@@ -143,7 +149,7 @@ lemma sum_insert_elem {ι : Type} [DecidableEq ι] [AddCommMonoid α] {S : Set �
 
 lemma finset_toSet_sum {ι : Type} [AddCommMonoid α] {s : Finset ι} {S : Set ι} [Fintype S] (hsS : s.toSet = S) (f : ι → α) :
     ∑ i : s.toSet, f i = ∑ i : S, f i := by
-  apply Finset.sum_bij (fun a _ => ⟨a.val, hsS ▸ a.coe_prop⟩)
+  apply Finset.sum_bij (fun a => ↓⟨a.val, hsS ▸ a.coe_prop⟩)
   · simp
   · simp
   · aesop

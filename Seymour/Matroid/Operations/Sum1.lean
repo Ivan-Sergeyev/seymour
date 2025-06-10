@@ -1,5 +1,10 @@
 import Seymour.Matroid.Properties.Regularity
 
+/-!
+# Matroid 1-sum
+
+Here we study the 1-sum of matroids (starting with the 1-sum of matrices).
+-/
 
 /-- `Matrix`-level 1-sum for matroids defined by their standard representation matrices. -/
 abbrev matrix1sumComposition {R : Type} [Zero R] {Xₗ Yₗ Xᵣ Yᵣ : Type}

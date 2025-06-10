@@ -1,10 +1,17 @@
 import Seymour.Basic.Basic
 import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 
+/-!
+# Basic stuff about matrices
+
+This file provides a specific API about matrices for the purposes of our project.
+-/
+
 open scoped Matrix
 
-
 variable {α : Type}
+
+/-! ## Basic lemmas -/
 
 @[simp]
 lemma Matrix.one_fromCols_transpose [Zero α] [One α] {m n : Type} [DecidableEq m] (A : Matrix m n α) :
@@ -100,6 +107,8 @@ def Matrix.abs [LinearOrderedAddCommGroup α] {m n : Type} (A : Matrix m n α) :
 -- We redeclare `|·|` instead of using the existing notation because the official `abs` requires a lattice.
 macro:max atomic("|" noWs) A:term noWs "|" : term => `(Matrix.abs $A)
 
+
+/-! ## Conversion between set-indexed block-like matrices and type-indexed block matrices -/
 
 variable {T₁ T₂ S₁ S₂ : Set α} {β : Type}
   [∀ a, Decidable (a ∈ T₁)]

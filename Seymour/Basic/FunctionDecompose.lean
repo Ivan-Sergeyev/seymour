@@ -3,7 +3,7 @@ import Seymour.Basic.Basic
 /-!
 # Function to Sum decomposition
 
-Here we decompose a function `f : α → β₁ ⊕ β₂` into a function and two bijections: `α → α₁ ⊕ α₂ ≃ β₁ ⊕ β₂`
+Here we decompose a function of type `α → β₁ ⊕ β₂` into a function and two bijections: `α → α₁ ⊕ α₂ ≃ β₁ ⊕ β₂`
 -/
 
 variable {α β₁ β₂ : Type}

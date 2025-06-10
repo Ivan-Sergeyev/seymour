@@ -1,5 +1,10 @@
 import Seymour.Basic.Basic
 
+/-!
+# Functions to "half" Sum
+
+Here we study functions of type `α → β₁ ⊕ β₂` that happen to contain image in only one of the half of its codomain.
+-/
 
 variable {β₁ β₂ : Type}
 
