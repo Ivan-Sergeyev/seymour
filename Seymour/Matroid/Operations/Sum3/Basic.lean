@@ -6,23 +6,6 @@ import Seymour.Matroid.Properties.Regularity
 
 /-! ## Additional notation for convenience -/
 
-/-!
-  We provide canonical bijections between `Fin 1` or `Fin 2` and corresponding elements.
--/
-
-@[simp]
-def equivFin1 {α : Type} {Z : Set α} (z : Z) : Fin 1 ≃ Set.Elem {z.val} :=
-  Equiv.ofUnique (Fin 1) (Set.Elem {z.val})
-
-@[simp]
-def equivFin2 {α : Type} [DecidableEq α] {Z : Set α} {z₀ z₁ : Z} (hzz : z₁ ≠ z₀) : Fin 2 ≃ Set.Elem {z₀.val, z₁.val} :=
-⟨
-  ![⟨z₀.val, Set.mem_insert z₀.val {z₁.val}⟩, ⟨z₁.val, Set.mem_insert_of_mem z₀.val rfl⟩],
-  (if ·.val = z₀.val then 0 else 1),
-  (if h0 : · = 0 then by simp [h0] else have := fin2_eq_1_of_ne_0 h0; by aesop),
-  ↓(by aesop)
-⟩
-
 @[simp]
 def equivUnitSumUnit : Unit ⊕ Unit ≃ Fin 2 :=
   ⟨(·.casesOn ↓0 ↓1), ![◩(), ◪()], (·.casesOn (by simp) (by simp)), (by fin_cases · <;> simp)⟩

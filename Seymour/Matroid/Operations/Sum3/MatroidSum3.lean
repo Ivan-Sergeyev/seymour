@@ -10,8 +10,7 @@ import Seymour.Matroid.Operations.Sum3.MatrixLikeSum3
 variable {α : Type}
 
 /-- Remove one bundled element from a set. -/
-@[simp]
-private abbrev Set.drop1 (X : Set α) (x₀ : X) : Set α := X \ {x₀.val}
+private abbrev Set.drop1 (Z : Set α) (z₀ : Z) : Set α := Z \ {z₀.val}
 
 @[app_unexpander Set.drop1]
 private def Set.drop1_unexpand : Lean.PrettyPrinter.Unexpander
@@ -19,8 +18,7 @@ private def Set.drop1_unexpand : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 /-- Remove two bundled elements from a set. -/
-@[simp]
-private abbrev Set.drop2 (X : Set α) (x₀ x₁ : X) : Set α := X \ {x₀.val, x₁.val}
+private abbrev Set.drop2 (Z : Set α) (z₀ z₁ : Z) : Set α := Z \ {z₀.val, z₁.val}
 
 @[app_unexpander Set.drop2]
 private def Set.drop2_unexpand : Lean.PrettyPrinter.Unexpander
@@ -28,49 +26,25 @@ private def Set.drop2_unexpand : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 /-- Remove three bundled elements from a set. -/
-@[simp]
-private abbrev Set.drop3 (X : Set α) (x₀ x₁ x₂ : X) : Set α := X \ {x₀.val, x₁.val, x₂.val}
+private abbrev Set.drop3 (Z : Set α) (z₀ z₁ z₂ : Z) : Set α := Z \ {z₀.val, z₁.val, z₂.val}
 
 @[app_unexpander Set.drop3]
 private def Set.drop3_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $S) => `($(S).$(Lean.mkIdent `drop3))
   | _ => throw ()
 
-@[simp]
-private abbrev undrop1 {X : Set α} {x₀ : X} (i : X.drop1 x₀) : X :=
+private abbrev undrop3 {Z : Set α} {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z₁ z₂) : Z :=
   ⟨i.val, i.property.left⟩
 
-@[simp]
-private abbrev undrop2 {X : Set α} {x₀ x₁ : X} (i : X.drop2 x₀ x₁) : X :=
-  ⟨i.val, i.property.left⟩
+private lemma drop3_ne_fst {Z : Set α} {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z₁ z₂) : i.val ≠ z₀.val := by
+  have hi := i.property.right
+  simp at hi
+  exact hi.left
 
-@[simp]
-private abbrev undrop3 {X : Set α} {x₀ x₁ x₂ : X} (i : X.drop3 x₀ x₁ x₂) : X :=
-  ⟨i.val, i.property.left⟩
-
-private lemma drop3_union_pair {X : Set α} {x₀ x₁ x₂ : X} (hx₀ : x₁ ≠ x₂) (hx₁ : x₀ ≠ x₂) :
-    X.drop3 x₀ x₁ x₂ ∪ {x₀.val, x₁.val} = X.drop1 x₂ := by
-  ext a
-  rw [←Subtype.coe_ne_coe] at hx₀ hx₁
-  by_cases a = x₀ <;> by_cases a = x₁ <;> simp [*]
-
-private lemma pair_union_drop3 {X : Set α} {x₀ x₁ x₂ : X} (hx₀ : x₁ ≠ x₂) (hx₁ : x₀ ≠ x₂) :
-    {x₀.val, x₁.val} ∪ X.drop3 x₀ x₁ x₂ = X.drop1 x₂ := by
-  rw [Set.union_comm]
-  exact drop3_union_pair hx₀ hx₁
-
-private lemma drop3_union_elem {X : Set α} {x₀ x₁ x₂ : X} (hx₀ : x₁ ≠ x₂) (hx₁ : x₀ ≠ x₂) :
-    X.drop3 x₀ x₁ x₂ ∪ {x₂.val} = X.drop2 x₀ x₁ := by
-  ext a
-  rw [←Subtype.coe_ne_coe] at hx₀ hx₁
-  have := hx₀.symm
-  have := hx₁.symm
-  by_cases a = x₂ <;> simp [*]
-
-private lemma elem_union_drop3 {X : Set α} {x₀ x₁ x₂ : X} (hx₀ : x₁ ≠ x₂) (hx₁ : x₀ ≠ x₂) :
-    {x₂.val} ∪ X.drop3 x₀ x₁ x₂ = X.drop2 x₀ x₁ := by
-  rw [Set.union_comm]
-  exact drop3_union_elem hx₀ hx₁
+private lemma drop3_ne_snd {Z : Set α} {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z₁ z₂) : i.val ≠ z₁.val := by
+  have hi := i.property.right
+  simp at hi
+  exact hi.right.left
 
 
 /-! ### Re-typing elements of the triplet intersection -/
@@ -148,22 +122,14 @@ def Matrix.toBlockSummandᵣ {Xᵣ Yᵣ : Set α} {F : Type} (Bᵣ : Matrix Xᵣ
     Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ x₁ x₂)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ y₁ y₂)) F :=
   Bᵣ.submatrix (·.casesOn ![x₂] (·.casesOn ![x₀, x₁] undrop3)) (·.casesOn ![y₀, y₁] (·.casesOn ![y₂] undrop3))
 
-lemma Matrix.IsTotallyUnimodular.toBlockSummandₗ {Xₗ Yₗ : Set α} {F : Type} [CommRing F] {Bₗ : Matrix Xₗ Yₗ F}
-    (hBₗ : Bₗ.IsTotallyUnimodular) (x₀ x₁ x₂ : Xₗ) (y₀ y₁ y₂ : Yₗ) :
-    (Bₗ.toBlockSummandₗ x₀ x₁ x₂ y₀ y₁ y₂).IsTotallyUnimodular :=
-  hBₗ.submatrix _ _
-
-lemma Matrix.IsTotallyUnimodular.toBlockSummandᵣ {Xᵣ Yᵣ : Set α} {F : Type} [CommRing F] {Bᵣ : Matrix Xᵣ Yᵣ F}
-    (hBᵣ : Bᵣ.IsTotallyUnimodular) (x₀ x₁ x₂ : Xᵣ) (y₀ y₁ y₂ : Yᵣ) :
-    (Bᵣ.toBlockSummandᵣ x₀ x₁ x₂ y₀ y₁ y₂).IsTotallyUnimodular :=
-  hBᵣ.submatrix _ _
-
-lemma Matrix.IsSigningOf.toBlockSummandₗ {Xₗ Yₗ : Set α} {F : Type} [LinearOrderedRing F] {Bₗ : Matrix Xₗ Yₗ F} {n : ℕ} {Aₗ : Matrix Xₗ Yₗ (ZMod n)}
+private lemma Matrix.IsSigningOf.toBlockSummandₗ {Xₗ Yₗ : Set α} {F : Type} [LinearOrderedRing F]
+    {Bₗ : Matrix Xₗ Yₗ F} {n : ℕ} {Aₗ : Matrix Xₗ Yₗ (ZMod n)}
     (hBAₗ : Bₗ.IsSigningOf Aₗ) (x₀ x₁ x₂ : Xₗ) (y₀ y₁ y₂ : Yₗ) :
     (Bₗ.toBlockSummandₗ x₀ x₁ x₂ y₀ y₁ y₂).IsSigningOf (Aₗ.toBlockSummandₗ x₀ x₁ x₂ y₀ y₁ y₂) :=
   hBAₗ.submatrix _ _
 
-lemma Matrix.IsSigningOf.toBlockSummandᵣ {Xᵣ Yᵣ : Set α} {F : Type} [LinearOrderedRing F] {Bᵣ : Matrix Xᵣ Yᵣ F} {n : ℕ} {Aᵣ : Matrix Xᵣ Yᵣ (ZMod n)}
+private lemma Matrix.IsSigningOf.toBlockSummandᵣ {Xᵣ Yᵣ : Set α} {F : Type} [LinearOrderedRing F]
+    {Bᵣ : Matrix Xᵣ Yᵣ F} {n : ℕ} {Aᵣ : Matrix Xᵣ Yᵣ (ZMod n)}
     (hBAᵣ : Bᵣ.IsSigningOf Aᵣ) (x₀ x₁ x₂ : Xᵣ) (y₀ y₁ y₂ : Yᵣ) :
     (Bᵣ.toBlockSummandᵣ x₀ x₁ x₂ y₀ y₁ y₂).IsSigningOf (Aᵣ.toBlockSummandᵣ x₀ x₁ x₂ y₀ y₁ y₂) :=
   hBAᵣ.submatrix _ _
@@ -175,11 +141,15 @@ def standardReprMatrixSum3 (Sₗ Sᵣ : StandardRepr α Z2)
     MatrixSum3 (Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ) (Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ) (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ) (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ) Z2 :=
   MatrixSum3.fromBlockSummands (Sₗ.B.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ) (Sᵣ.B.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ)
 
-def Matrix.toSumUnion {Xₗ Yₗ Xᵣ Yᵣ : Set α} {F : Type}
+def Matrix.toDropUnionDrop {Xₗ Yₗ Xᵣ Yᵣ : Set α} {F : Type}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
-    (A : Matrix ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
-                ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ)) F) :
+    (A :
+      Matrix
+        ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
+        ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
+        F
+    ) :
     Matrix (Xₗ.drop2 x₀ₗ x₁ₗ ∪ Xᵣ.drop1 x₂ᵣ).Elem (Yₗ.drop1 y₂ₗ ∪ Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem F :=
   A.submatrix
     (fun i : (Xₗ.drop2 x₀ₗ x₁ₗ ∪ Xᵣ.drop1 x₂ᵣ).Elem =>
@@ -211,19 +181,19 @@ noncomputable def standardRepr3sumComposition {Sₗ Sᵣ : StandardRepr α Z2} {
     ⟨
       -- row indices
       (Sₗ.X.drop2 x₀ₗ x₁ₗ) ∪ (Sᵣ.X.drop1 x₂ᵣ),
-      -- column indices
+      -- col indices
       (Sₗ.Y.drop1 y₂ₗ) ∪ (Sᵣ.Y.drop2 y₀ᵣ y₁ᵣ),
-      -- row and column indices are disjoint
+      -- row and col indices are disjoint
       by
         rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
         exact
           ⟨⟨Sₗ.hXY.disjoint_sdiff_left.disjoint_sdiff_right, hYX.symm.disjoint_sdiff_left.disjoint_sdiff_right⟩,
           ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right, Sᵣ.hXY.disjoint_sdiff_left.disjoint_sdiff_right⟩⟩,
-      -- standard representation matrix
-      (standardReprMatrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).matrix.toSumUnion,
-      -- decidability of elements belonging to row indices
+      -- the standard representation matrix
+      (standardReprMatrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).matrix.toDropUnionDrop,
+      -- decidability of row indices
       inferInstance,
-      -- decidability of elements belonging to column indices
+      -- decidability of col indices
       inferInstance,
     ⟩,
     -- Correctness
@@ -341,7 +311,7 @@ lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} 
   · constructor
     · simp only [standardRepr3sumComposition, and_imp] at hSS
       constructor
-      · use Bₗ.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ, hBₗ.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ
+      · use Bₗ.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ, hBₗ.submatrix _ _
         convert hSBₗ.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ
         conv_rhs => rw [←(Sₗ.B.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ).fromBlocks_toBlocks]
         simp only [M, standardReprMatrixSum3, MatrixSum3.Bₗ, MatrixSum3.fromBlockSummands,
@@ -351,22 +321,12 @@ lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} 
           fin_cases j
           simp [Matrix.toBlockSummandₗ, Matrix.toBlocks₁₂]
           cases i with
-          | inl x =>
-            have hx₀ : x.val ≠ x₀
-            · have hx := x.property.right
-              simp at hx
-              exact hx.left
-            have hx₁ : x.val ≠ x₁
-            · have hx := x.property.right
-              simp at hx
-              exact hx.right.left
-            exact (hSS.right.right.right.right.right.right.right.left x.val x.property.left hx₀ hx₁).symm
-          | inr =>
-            exact (hSS.right.right.right.right.right.right.right.left x₂ hXX.mem3₂ₗ (by tauto) (by tauto)).symm
+          | inl x => exact (hSS.right.right.right.right.right.right.right.left x.val x.property.left (drop3_ne_fst x) (drop3_ne_snd x)).symm
+          | inr => exact (hSS.right.right.right.right.right.right.right.left x₂ hXX.mem3₂ₗ (by tauto) (by tauto)).symm
         · ext i j
           fin_cases j
           fin_cases i <;> tauto
-      · use Bᵣ.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ, hBᵣ.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
+      · use Bᵣ.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ, hBᵣ.submatrix _ _
         convert hSBᵣ.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
         conv_rhs => rw [←(Sᵣ.B.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).fromBlocks_toBlocks]
         simp only [M, standardReprMatrixSum3, MatrixSum3.Bᵣ, MatrixSum3.fromBlockSummands,
@@ -379,18 +339,8 @@ lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} 
           fin_cases i
           simp [Matrix.toBlockSummandᵣ, Matrix.toBlocks₁₂]
           cases j with
-          | inl =>
-            exact (hSS.right.right.right.right.right.right.right.right.right.right.right.right y₂ hYY.mem3₂ᵣ (by tauto) (by tauto)).symm
-          | inr y =>
-            have hy₀ : y.val ≠ y₀
-            · have hy := y.property.right
-              simp at hy
-              exact hy.left
-            have hy₁ : y.val ≠ y₁
-            · have hy := y.property.right
-              simp at hy
-              exact hy.right.left
-            exact (hSS.right.right.right.right.right.right.right.right.right.right.right.right y.val y.property.left hy₀ hy₁).symm
+          | inl => exact (hSS.right.right.right.right.right.right.right.right.right.right.right.right y₂ hYY.mem3₂ᵣ (by tauto) (by tauto)).symm
+          | inr y => exact (hSS.right.right.right.right.right.right.right.right.right.right.right.right y.val y.property.left (drop3_ne_fst y) (drop3_ne_snd y)).symm
     · cases hSS.right.right.left with
       | inl h1001 =>
         left
@@ -444,7 +394,7 @@ lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} 
           · rfl
   -- direct application of existing lemmas
   obtain ⟨B, hB, hBM⟩ := hM.HasTuSigning
-  use B.toSumUnion
+  use B.toDropUnionDrop
   constructor
   · apply hB.submatrix
   · apply hBM.submatrix
@@ -463,12 +413,6 @@ structure Matroid.Is3sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) where
   hMₗ : Sₗ.toMatroid = Mₗ
   hMᵣ : Sᵣ.toMatroid = Mᵣ
   (x₀ x₁ x₂ y₀ y₁ y₂ : α)
-  hx₀ : x₁ ≠ x₂
-  hx₁ : x₀ ≠ x₂
-  hx₂ : x₁ ≠ x₀
-  hy₀ : y₁ ≠ y₂
-  hy₁ : y₀ ≠ y₂
-  hy₂ : y₁ ≠ y₀
   hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}
   hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}
   hXY : Sₗ.X ⫗ Sᵣ.Y
@@ -477,7 +421,7 @@ structure Matroid.Is3sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) where
   IsValid : (standardRepr3sumComposition hXX hYY hXY hYX).snd
 
 instance Matroid.Is3sumOf.finS {M Mₗ Mᵣ : Matroid α} (hM : M.Is3sumOf Mₗ Mᵣ) : Finite hM.S.X := by
-  obtain ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, rfl, _⟩ := hM
+  obtain ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, rfl, _⟩ := hM
   apply Finite.Set.finite_union
 
 /-- 3-sum of two regular matroids is a regular matroid.
@@ -486,7 +430,7 @@ theorem Matroid.Is3sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
     (hM : M.Is3sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
   have := hM.finS
-  obtain ⟨_, _, _, _, _, rfl, rfl, rfl, _, _, _, _, _, _, _, _,_, _, _, _, _, _, _, _, rfl, hMMM⟩ := hM
+  obtain ⟨_, _, _, _, _, rfl, rfl, rfl, _, _, _, _, _, _, _, _,_, _, rfl, hMMM⟩ := hM
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
   apply standardRepr3sumComposition_hasTuSigning
   · exact hMₗ
