@@ -219,7 +219,7 @@ noncomputable def standardRepr3sumComposition {Sₗ Sᵣ : StandardRepr α Z2} {
   ⟩
 
 lemma standardRepr3sumComposition_X {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α} (hx₀ : x₁ ≠ x₂) (hx₁ : x₀ ≠ x₂)
-    (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
+    {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X} :
     (standardRepr3sumComposition hXX hYY hXY hYX).fst.X = Sₗ.X ∪ Sᵣ.X := by
   ext a
   if hax₂ : a = x₂ then
@@ -232,7 +232,7 @@ lemma standardRepr3sumComposition_X {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ 
     simp [standardRepr3sumComposition, *]
 
 lemma standardRepr3sumComposition_Y {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α} (hy₀ : y₁ ≠ y₂) (hy₁ : y₀ ≠ y₂)
-    (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
+    {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X} :
     (standardRepr3sumComposition hXX hYY hXY hYX).fst.Y = Sₗ.Y ∪ Sᵣ.Y := by
   ext a
   if hay₂ : a = y₂ then
@@ -245,43 +245,40 @@ lemma standardRepr3sumComposition_Y {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ 
     simp [standardRepr3sumComposition, *]
 
 lemma standardRepr3sumComposition_Bₗ₀₀ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
-    (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X)
+    {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSS : (standardRepr3sumComposition hXX hYY hXY hYX).snd) :
     Sₗ.B ⟨x₀, hXX.mem3₀ₗ⟩ ⟨y₀, hYY.mem3₀ₗ⟩ = 1 :=
   hSS.right.right.left.casesOn (congr_fun₂ · 0 0) (congr_fun₂ · 0 0)
 
 lemma standardRepr3sumComposition_Bᵣ₀₀ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
-    (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X)
+    {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSS : (standardRepr3sumComposition hXX hYY hXY hYX).snd) :
-    Sᵣ.B ⟨x₀, hXX.mem3₀ᵣ⟩ ⟨y₀, hYY.mem3₀ᵣ⟩ = 1 := by
-  rw [←standardRepr3sumComposition_Bₗ₀₀ hXX hYY hXY hYX hSS]
-  exact congr_fun₂ hSS.right.left.symm 0 0
+    Sᵣ.B ⟨x₀, hXX.mem3₀ᵣ⟩ ⟨y₀, hYY.mem3₀ᵣ⟩ = 1 :=
+  (standardRepr3sumComposition_Bₗ₀₀ hSS).symm ▸ congr_fun₂ hSS.right.left.symm 0 0
 
 lemma standardRepr3sumComposition_Bₗ₁₀ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
-    (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X)
+    {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSS : (standardRepr3sumComposition hXX hYY hXY hYX).snd) :
     Sₗ.B ⟨x₁, hXX.mem3₁ₗ⟩ ⟨y₀, hYY.mem3₀ₗ⟩ = 0 :=
   hSS.right.right.left.casesOn (congr_fun₂ · 1 0) (congr_fun₂ · 1 0)
 
 lemma standardRepr3sumComposition_Bᵣ₁₀ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
-    (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X)
+    {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSS : (standardRepr3sumComposition hXX hYY hXY hYX).snd) :
-    Sᵣ.B ⟨x₁, hXX.mem3₁ᵣ⟩ ⟨y₀, hYY.mem3₀ᵣ⟩ = 0 := by
-  rw [←standardRepr3sumComposition_Bₗ₁₀ hXX hYY hXY hYX hSS]
-  exact congr_fun₂ hSS.right.left.symm 1 0
+    Sᵣ.B ⟨x₁, hXX.mem3₁ᵣ⟩ ⟨y₀, hYY.mem3₀ᵣ⟩ = 0 :=
+  (standardRepr3sumComposition_Bₗ₁₀ hSS).symm ▸ congr_fun₂ hSS.right.left.symm 1 0
 
 lemma standardRepr3sumComposition_Bₗ₁₁ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
-    (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X)
+    {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSS : (standardRepr3sumComposition hXX hYY hXY hYX).snd) :
     Sₗ.B ⟨x₁, hXX.mem3₁ₗ⟩ ⟨y₁, hYY.mem3₁ₗ⟩ = 1 :=
   hSS.right.right.left.casesOn (congr_fun₂ · 1 1) (congr_fun₂ · 1 1)
 
 lemma standardRepr3sumComposition_Bᵣ₁₁ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
-    (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X)
+    {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSS : (standardRepr3sumComposition hXX hYY hXY hYX).snd) :
-    Sᵣ.B ⟨x₁, hXX.mem3₁ᵣ⟩ ⟨y₁, hYY.mem3₁ᵣ⟩ = 1 := by
-  rw [←standardRepr3sumComposition_Bₗ₁₁ hXX hYY hXY hYX hSS]
-  exact congr_fun₂ hSS.right.left.symm 1 1
+    Sᵣ.B ⟨x₁, hXX.mem3₁ᵣ⟩ ⟨y₁, hYY.mem3₁ᵣ⟩ = 1 :=
+  (standardRepr3sumComposition_Bₗ₁₁ hSS).symm ▸ congr_fun₂ hSS.right.left.symm 1 1
 
 lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X)
@@ -347,22 +344,22 @@ lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} 
         constructor
         · ext i j
           fin_cases i <;> fin_cases j
-          · exact standardRepr3sumComposition_Bₗ₀₀ hXX hYY hXY hYX hSS
+          · exact standardRepr3sumComposition_Bₗ₀₀ hSS
           · exact congr_fun₂ h1001 0 1
           · rfl
-          · exact standardRepr3sumComposition_Bₗ₁₀ hXX hYY hXY hYX hSS
-          · exact standardRepr3sumComposition_Bₗ₁₁ hXX hYY hXY hYX hSS
+          · exact standardRepr3sumComposition_Bₗ₁₀ hSS
+          · exact standardRepr3sumComposition_Bₗ₁₁ hSS
           · rfl
           · simp only [standardRepr3sumComposition] at hSS; tauto
           · simp only [standardRepr3sumComposition] at hSS; tauto
           · rfl
         · ext i j
           fin_cases i <;> fin_cases j
-          · exact standardRepr3sumComposition_Bᵣ₀₀ hXX hYY hXY hYX hSS
+          · exact standardRepr3sumComposition_Bᵣ₀₀ hSS
           · convert congr_fun₂ hSS.right.left.symm 0 1 ▸ congr_fun₂ h1001 0 1
           · simp only [standardRepr3sumComposition] at hSS; tauto
-          · exact standardRepr3sumComposition_Bᵣ₁₀ hXX hYY hXY hYX hSS
-          · exact standardRepr3sumComposition_Bᵣ₁₁ hXX hYY hXY hYX hSS
+          · exact standardRepr3sumComposition_Bᵣ₁₀ hSS
+          · exact standardRepr3sumComposition_Bᵣ₁₁ hSS
           · simp only [standardRepr3sumComposition] at hSS; tauto
           · rfl
           · rfl
@@ -372,22 +369,22 @@ lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} 
         constructor
         · ext i j
           fin_cases i <;> fin_cases j
-          · exact standardRepr3sumComposition_Bₗ₀₀ hXX hYY hXY hYX hSS
+          · exact standardRepr3sumComposition_Bₗ₀₀ hSS
           · exact congr_fun₂ h1101 0 1
           · rfl
-          · exact standardRepr3sumComposition_Bₗ₁₀ hXX hYY hXY hYX hSS
-          · exact standardRepr3sumComposition_Bₗ₁₁ hXX hYY hXY hYX hSS
+          · exact standardRepr3sumComposition_Bₗ₁₀ hSS
+          · exact standardRepr3sumComposition_Bₗ₁₁ hSS
           · rfl
           · simp only [standardRepr3sumComposition] at hSS; tauto
           · simp only [standardRepr3sumComposition] at hSS; tauto
           · rfl
         · ext i j
           fin_cases i <;> fin_cases j
-          · exact standardRepr3sumComposition_Bᵣ₀₀ hXX hYY hXY hYX hSS
+          · exact standardRepr3sumComposition_Bᵣ₀₀ hSS
           · convert congr_fun₂ hSS.right.left.symm 0 1 ▸ congr_fun₂ h1101 0 1
           · simp only [standardRepr3sumComposition] at hSS; tauto
-          · exact standardRepr3sumComposition_Bᵣ₁₀ hXX hYY hXY hYX hSS
-          · exact standardRepr3sumComposition_Bᵣ₁₁ hXX hYY hXY hYX hSS
+          · exact standardRepr3sumComposition_Bᵣ₁₀ hSS
+          · exact standardRepr3sumComposition_Bᵣ₁₁ hSS
           · simp only [standardRepr3sumComposition] at hSS; tauto
           · rfl
           · rfl
