@@ -67,6 +67,34 @@ structure MatrixSum3 (Xₗ Yₗ Xᵣ Yᵣ : Type) (F : Type) where
   Dᵣ  : Matrix Xᵣ (Fin 2) F
   Aᵣ  : Matrix (Fin 2 ⊕ Xᵣ) (Fin 1 ⊕ Yᵣ) F
 
+/-- The bottom-left block of 3-sum. -/
+noncomputable abbrev MatrixSum3.D {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Field F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
+    Matrix (Fin 2 ⊕ Xᵣ) (Yₗ ⊕ Fin 2) F :=
+  ⊞ S.Dₗ S.D₀ₗ (S.Dᵣ * S.D₀ₗ⁻¹ * S.Dₗ) S.Dᵣ
+
+/-- The resulting matrix of 3-sum. -/
+noncomputable def MatrixSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Field F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
+    Matrix ((Xₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ)) ((Yₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ)) F :=
+  ⊞ S.Aₗ 0 S.D S.Aᵣ
+
+
+/-! ## Conversion of summands -/
+
+-- todo: maybe move definitions in comments below from MatroidSum3.lean here
+-- /-- Converts the right summand matrix to block form. -/
+-- def Matrix.toBlockSummandₗ {α : Type} {Xₗ Yₗ : Set α} {F : Type} (Bₗ : Matrix Xₗ Yₗ F) (x₀ x₁ x₂ : Xₗ) (y₀ y₁ y₂ : Yₗ) :
+--     Matrix (((Xₗ \ {x₀.val, x₁.val, x₂.val}).Elem ⊕ Fin 1) ⊕ Fin 2) (((Yₗ \ {y₀.val, y₁.val, y₂.val}).Elem ⊕ Fin 2) ⊕ Fin 1) F :=
+--   Bₗ.submatrix
+--     (·.casesOn (·.casesOn (fun i => ⟨i.val, i.property.left⟩) ![x₂]) ![x₀, x₁])
+--     (·.casesOn (·.casesOn (fun i => ⟨i.val, i.property.left⟩) ![y₀, y₁]) ![y₂])
+
+-- /-- Converts the left summand matrix to block form. -/
+-- def Matrix.toBlockSummandᵣ {α : Type} {Xᵣ Yᵣ : Set α} {F : Type} (Bᵣ : Matrix Xᵣ Yᵣ F) (x₀ x₁ x₂ : Xᵣ) (y₀ y₁ y₂ : Yᵣ) :
+--     Matrix (Fin 1 ⊕ (Fin 2 ⊕ (Xᵣ \ {x₀.val, x₁.val, x₂.val}).Elem)) (Fin 2 ⊕ (Fin 1 ⊕ (Yᵣ \ {y₀.val, y₁.val, y₂.val}).Elem)) F :=
+--   Bᵣ.submatrix
+--     (·.casesOn ![x₂] (·.casesOn ![x₀, x₁] (fun i => ⟨i.val, i.property.left⟩)))
+--     (·.casesOn ![y₀, y₁] (·.casesOn ![y₂] (fun i => ⟨i.val, i.property.left⟩)))
+
 /-- Constructs 3-sum from summands in block form. -/
 def MatrixSum3.fromBlockSummands {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type}
     (Bₗ : Matrix ((Xₗ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Fin 1) F)
@@ -79,58 +107,22 @@ def MatrixSum3.fromBlockSummands {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type}
   Dᵣ  := Bᵣ.toBlocks₂₁.toRows₂
   Aᵣ  := Bᵣ.toBlocks₂₂
 
-/-- The bottom-left block of 3-sum. -/
-noncomputable abbrev MatrixSum3.D {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Field F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
-    Matrix (Fin 2 ⊕ Xᵣ) (Yₗ ⊕ Fin 2) F :=
-  ⊞ S.Dₗ S.D₀ₗ (S.Dᵣ * S.D₀ₗ⁻¹ * S.Dₗ) S.Dᵣ
-
-/-- The resulting matrix of 3-sum. -/
-noncomputable def MatrixSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Field F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
-    Matrix ((Xₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ)) ((Yₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ)) F :=
-  ⊞ S.Aₗ 0 S.D S.Aᵣ
-
-
-/-! ## Transposition -/
-
-def MatrixSum3.transpose {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
-  MatrixSum3 Yᵣ Xᵣ Yₗ Xₗ F where
-  Aₗ  := S.Aᵣ.transpose.submatrix Sum.swap Sum.swap
-  Dₗ  := S.Dᵣ.transpose
-  D₀ₗ := S.D₀ᵣ.transpose
-  D₀ᵣ := S.D₀ₗ.transpose
-  Dᵣ  := S.Dₗ.transpose
-  Aᵣ  := S.Aₗ.transpose.submatrix Sum.swap Sum.swap
-
-def backwards {α β γ δ : Type} : (α ⊕ β) ⊕ (γ ⊕ δ) ≃ (δ ⊕ γ) ⊕ (β ⊕ α) :=
-  (Equiv.sumComm _ _).trans (Equiv.sumCongr (Equiv.sumComm γ δ) (Equiv.sumComm α β))
-
-lemma MatrixSum3.transpose_matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Field F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F)
-    (hS : S.D₀ₗ = S.D₀ᵣ) :
-    S.transpose.matrix = S.matrix.transpose.submatrix backwards backwards := by
-  ext (_ | (_|_)) ((_|_) | _)
-  all_goals try rfl
-  all_goals simp [hS, backwards, MatrixSum3.transpose, MatrixSum3.matrix, Matrix.fromBlocks_transpose,
-      Matrix.transpose_nonsing_inv, Matrix.mul_assoc]
-
-
-/-! ## Reconstruction of summands -/
-
-/-- Reconstructed left summand. -/
+/-- Reconstructs the left summand from the matrix 3-sum structure. -/
 abbrev MatrixSum3.Bₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
     Matrix ((Xₗ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Fin 1) F :=
   ⊞ S.Aₗ 0 (S.Dₗ ◫ S.D₀ₗ) !![1; 1]
 
-/-- Reconstructed right summand. -/
+/-- Reconstructs the right summand from the matrix 3-sum structure. -/
 abbrev MatrixSum3.Bᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
     Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) F :=
   ⊞ !![1, 1] 0 (S.D₀ᵣ ⊟ S.Dᵣ) S.Aᵣ
 
-/-- Reconstructed left summand's 3×3 submatrix in the intersection of the summands. -/
+/-- The 3×3 submatrix of the reconstructed left summand in the intersection of the summands. -/
 abbrev MatrixSum3.Sₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
     Matrix (Fin 3) (Fin 3) F :=
   S.Bₗ.submatrix ![◪0, ◪1, ◩◪0] ![◩◪0, ◩◪1, ◪0]
 
-/-- Reconstructed right summand's 3×3 submatrix in the intersection of the summands. -/
+/-- The 3×3 submatrix of the reconstructed right summand in the intersection of the summands. -/
 abbrev MatrixSum3.Sᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
     Matrix (Fin 3) (Fin 3) F :=
   S.Bᵣ.submatrix ![◪◩0, ◪◩1, ◩0] ![◩0, ◩1, ◪◩0]
@@ -218,3 +210,26 @@ abbrev MatrixSum3.HasTuBᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type}
 abbrev MatrixSum3.HasTuBₗᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type}
     (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) : Prop :=
   S.HasTuBₗ ∧ S.HasTuBᵣ
+
+
+/-! ## Transposition -/
+
+def MatrixSum3.transpose {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
+  MatrixSum3 Yᵣ Xᵣ Yₗ Xₗ F where
+  Aₗ  := S.Aᵣ.transpose.submatrix Sum.swap Sum.swap
+  Dₗ  := S.Dᵣ.transpose
+  D₀ₗ := S.D₀ᵣ.transpose
+  D₀ᵣ := S.D₀ₗ.transpose
+  Dᵣ  := S.Dₗ.transpose
+  Aᵣ  := S.Aₗ.transpose.submatrix Sum.swap Sum.swap
+
+def backwards {α β γ δ : Type} : (α ⊕ β) ⊕ (γ ⊕ δ) ≃ (δ ⊕ γ) ⊕ (β ⊕ α) :=
+  (Equiv.sumComm _ _).trans (Equiv.sumCongr (Equiv.sumComm γ δ) (Equiv.sumComm α β))
+
+lemma MatrixSum3.transpose_matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Field F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F)
+    (hS : S.D₀ₗ = S.D₀ᵣ) :
+    S.transpose.matrix = S.matrix.transpose.submatrix backwards backwards := by
+  ext (_ | (_|_)) ((_|_) | _)
+  all_goals try rfl
+  all_goals simp [hS, backwards, MatrixSum3.transpose, MatrixSum3.matrix, Matrix.fromBlocks_transpose,
+      Matrix.transpose_nonsing_inv, Matrix.mul_assoc]
