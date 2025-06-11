@@ -33,7 +33,7 @@ private def Set.drop3_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $S) => `($(S).$(Lean.mkIdent `drop3))
   | _ => throw ()
 
-private abbrev undrop3 {Z : Set α} {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z₁ z₂) : Z :=
+private def undrop3 {Z : Set α} {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z₁ z₂) : Z :=
   ⟨i.val, i.property.left⟩
 
 private lemma drop3_ne_fst {Z : Set α} {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z₁ z₂) : i.val ≠ z₀.val := by
@@ -254,7 +254,7 @@ lemma standardRepr3sumComposition_Bᵣ₀₀ {Sₗ Sᵣ : StandardRepr α Z2} {x
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSS : (standardRepr3sumComposition hXX hYY hXY hYX).snd) :
     Sᵣ.B ⟨x₀, hXX.mem3₀ᵣ⟩ ⟨y₀, hYY.mem3₀ᵣ⟩ = 1 :=
-  (standardRepr3sumComposition_Bₗ₀₀ hSS).symm ▸ congr_fun₂ hSS.right.left.symm 0 0
+  standardRepr3sumComposition_Bₗ₀₀ hSS ▸ congr_fun₂ hSS.right.left.symm 0 0
 
 lemma standardRepr3sumComposition_Bₗ₁₀ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
@@ -266,7 +266,7 @@ lemma standardRepr3sumComposition_Bᵣ₁₀ {Sₗ Sᵣ : StandardRepr α Z2} {x
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSS : (standardRepr3sumComposition hXX hYY hXY hYX).snd) :
     Sᵣ.B ⟨x₁, hXX.mem3₁ᵣ⟩ ⟨y₀, hYY.mem3₀ᵣ⟩ = 0 :=
-  (standardRepr3sumComposition_Bₗ₁₀ hSS).symm ▸ congr_fun₂ hSS.right.left.symm 1 0
+  standardRepr3sumComposition_Bₗ₁₀ hSS ▸ congr_fun₂ hSS.right.left.symm 1 0
 
 lemma standardRepr3sumComposition_Bₗ₁₁ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
@@ -278,7 +278,7 @@ lemma standardRepr3sumComposition_Bᵣ₁₁ {Sₗ Sᵣ : StandardRepr α Z2} {x
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSS : (standardRepr3sumComposition hXX hYY hXY hYX).snd) :
     Sᵣ.B ⟨x₁, hXX.mem3₁ᵣ⟩ ⟨y₁, hYY.mem3₁ᵣ⟩ = 1 :=
-  (standardRepr3sumComposition_Bₗ₁₁ hSS).symm ▸ congr_fun₂ hSS.right.left.symm 1 1
+  standardRepr3sumComposition_Bₗ₁₁ hSS ▸ congr_fun₂ hSS.right.left.symm 1 1
 
 lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X)
