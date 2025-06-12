@@ -27,49 +27,108 @@ abbrev MatrixLikeSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Xᵣ → 
 -/
 
 abbrev Matrix.shortTableauPivotOuterRow {X Y : Type} [DecidableEq X] [DecidableEq Y]
-  (A : Matrix X Y ℚ) (r : Y → ℚ) (y : Y) :
-  Matrix X Y ℚ :=
+    (A : Matrix X Y ℚ) (r : Y → ℚ) (y : Y) :
+    Matrix X Y ℚ :=
   ((▬r ⊟ A).shortTableauPivot ◩() y).toRows₂
 
-lemma MatrixLikeSum3.shortTableauPivot₁₁_Aₗ_eq {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
+lemma MatrixLikeSum3.shortTableauPivot_Aₗ_eq {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
     {c₀ c₁ : Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) (x : Xₗ) (y : Yₗ) :
     M.Aₗ.shortTableauPivot x y = ((M.Aₗ ⊟ M.D).shortTableauPivot ◩x y).toRows₁ := by
   ext i j
   simp
 
-lemma MatrixLikeSum3.shortTableauPivot₁₁_D_eq {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
+lemma MatrixLikeSum3.shortTableauPivot_D_eq {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
     {c₀ c₁ : Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) (x : Xₗ) (y : Yₗ) :
     M.D.shortTableauPivotOuterRow (M.Aₗ x) y = ((M.Aₗ ⊟ M.D).shortTableauPivot ◩x y).toRows₂ := by
   ext i j
   simp
 
--- more generally:
--- lemma Matrix.shortTableauPivotOuterMatrix_eq {X₁ X₂ Y : Type} [DecidableEq X₁] [DecidableEq X₂] [DecidableEq Y]
---     (A₁ : Matrix X₁ Y ℚ) (A₂ : Matrix X₂ Y ℚ) (x : X₁) (y : Y) :
---     ((A₁ ⊟ A₂).shortTableauPivot ◩x y).toRows₂ = A₂.shortTableauPivotOuterRow (A₁ x) y := by
---   ext i j
---   simp
-
-lemma MatrixLikeSum3.shortTableauPivot₁₁_hAₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
+lemma MatrixLikeSum3.shortTableauPivot_hAₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
     {c₀ c₁ : Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) {x : Xₗ} {y : Yₗ} (hxy : M.Aₗ x y ≠ 0) :
     (M.Aₗ.shortTableauPivot x y ⊟ M.D.shortTableauPivotOuterRow (M.Aₗ x) y).IsTotallyUnimodular := by
-  rw [M.shortTableauPivot₁₁_D_eq x y, M.shortTableauPivot₁₁_Aₗ_eq x y, Matrix.fromRows_toRows]
+  rw [M.shortTableauPivot_D_eq x y, M.shortTableauPivot_Aₗ_eq x y, Matrix.fromRows_toRows]
   exact M.hAₗ.shortTableauPivot hxy
 
 -- crux of lemma 59
-lemma MatrixLikeSum3.shortTableauPivot₁₁_D_eq_cols {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
+lemma MatrixLikeSum3.shortTableauPivot_D_hasColsIn {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
     {c₀ c₁ : Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) {x : Xₗ} {y : Yₗ} (hxy : M.Aₗ x y ≠ 0) :
-    (M.D.shortTableauPivotOuterRow (M.Aₗ x) y).HasColsIn c₀ c₁ :=
-  sorry
+    (M.D.shortTableauPivotOuterRow (M.Aₗ x) y).HasColsIn c₀ c₁ := by
+  intro j
+  have hAxy : M.Aₗ x y = 1 ∨ M.Aₗ x y = -1
+  · obtain ⟨s, hs⟩ := M.hAₗ.apply ◩x y
+    cases s <;> tauto
+  if hjy : j = y then
+    cases hAxy with
+    | inl h1 =>
+      simp [h1, hjy, Matrix.shortTableauPivotOuterRow, Matrix.shortTableauPivot_eq]
+      rcases M.hD y with (h0 | hpc₀ | hmc₀ | hpc₁ | hmc₁ | hc₀₁ | hc₁₀)
+      · left
+        simp_all [congr_fun h0]
+      · right
+        right
+        left
+        simp [*, congr_fun hpc₀]
+        rfl
+      · right
+        left
+        simp [*, congr_fun hmc₀]
+      · right
+        right
+        right
+        right
+        left
+        simp [*, congr_fun hpc₁]
+        rfl
+      · right
+        right
+        right
+        left
+        simp [*, congr_fun hmc₁]
+      · right
+        right
+        right
+        right
+        right
+        right
+        simp [*, congr_fun hc₀₁]
+        rfl
+      · right
+        right
+        right
+        right
+        right
+        left
+        simp [*, congr_fun hc₁₀]
+        rfl
+    | inr h9 =>
+      simp [h9, hjy, Matrix.shortTableauPivotOuterRow, Matrix.shortTableauPivot_eq]
+      apply M.hD
+  else
+    obtain ⟨s, hs⟩ := M.hAₗ.apply ◩x j
+    cases s with
+    | zero =>
+      simp at hs
+      simp [←hs, hjy]
+      apply M.hD
+    | pos =>
+      simp at hs
+      simp [←hs, hjy]
+      clear hs
+      -- rcases hAxy with (hAxy1 | hAxy9)
+      -- <;> rcases M.hD y with (hy0 | hypc₀ | hymc₀ | hypc₁ | hymc₁ | hyc₀₁ | hyc₁₀)
+      -- <;> rcases M.hD j with (hj0 | hjpc₀ | hjmc₀ | hjpc₁ | hjmc₁ | hjc₀₁ | hjc₁₀)
+      sorry
+    | neg =>
+      sorry
 
-def MatrixLikeSum3.shortTableauPivot₁₁ {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
+def MatrixLikeSum3.shortTableauPivot {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
     {c₀ c₁ : Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) {x : Xₗ} {y : Yₗ} (hxy : M.Aₗ x y ≠ 0) :
     MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁ where
   Aₗ  := M.Aₗ.shortTableauPivot x y
   D   := M.D.shortTableauPivotOuterRow (M.Aₗ x) y
   Aᵣ  := M.Aᵣ
-  hAₗ := M.shortTableauPivot₁₁_hAₗ hxy
-  hD  := M.shortTableauPivot₁₁_D_eq_cols hxy
+  hAₗ := M.shortTableauPivot_hAₗ hxy
+  hD  := M.shortTableauPivot_D_hasColsIn hxy
   hAᵣ := M.hAᵣ
 
 

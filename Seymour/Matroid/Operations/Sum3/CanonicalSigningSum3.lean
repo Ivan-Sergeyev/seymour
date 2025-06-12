@@ -217,7 +217,7 @@ lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : T
 /-! ## Properties -/
 
 abbrev Matrix.HasColsIn {X Y F : Type} [Zero F] [Neg F] [Sub F] (A : Matrix X Y F) (c₀ : X → F) (c₁ : X → F) : Prop :=
-  ∀ j, (A · j) = 0 ∨ (A · j) = c₀ ∨ (A · j) = -c₀ ∨ (A · j) = c₁ ∨ (A · j) = -c₁ ∨ (A · j) = c₀ - c₁ ∨ (A · j) = c₁ - c₀
+  ∀ j : Y, (A · j) = 0 ∨ (A · j) = c₀ ∨ (A · j) = -c₀ ∨ (A · j) = c₁ ∨ (A · j) = -c₁ ∨ (A · j) = c₀ - c₁ ∨ (A · j) = c₁ - c₀
 
 /-- The bottom-left block of a canonical signing of a 3-sum of matrices in the first special case. -/
 lemma MatrixSum3.IsCanonicalSigning.D_eq_sum_outer₀ {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
