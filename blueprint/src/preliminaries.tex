@@ -15,8 +15,7 @@
     \label{Matrix.det}
     \uses{Matrix}
     \leanok
-    Let $A$ be a square matrix over a commutative ring.
-    Determinant of $A$ is the sum over all permutations, sign of the permutation times the product of (TODO write properly).
+    Let $A$ be a square matrix over a commutative ring. Determinant of $A$ is the sum over all permutations, sign of the permutation times the product of ... . \todo{complete definition}.
 \end{definition}
 
 \begin{definition}
@@ -114,7 +113,6 @@
 \end{lemma}
 
 \begin{proof}
-    % \uses{}
     \leanok
     \SeeLean
 \end{proof}
@@ -154,7 +152,6 @@
 \end{lemma}
 
 \begin{proof}
-    % \uses{}
     \leanok
     Follows by direct calculation.
 \end{proof}
@@ -168,7 +165,6 @@
 \end{lemma}
 
 \begin{proof}
-    % \uses{}
     \leanok
     This follows by a direct calculation. Indeed, because of the $0$ block in $B$, $B_{12}$ and $B_{22}$ remain unchanged, and since $\begin{bmatrix} B_{11} \\ B_{21} \end{bmatrix}$ is a submatrix of $B$ containing the pivot element, performing a short tableau pivot in it is equivalent to performing a short tableau pivot in $B$ and then taking the corresponding submatrix.
 \end{proof}
@@ -182,7 +178,6 @@
 \end{lemma}
 
 \begin{proof}
-    % \uses{}
     \leanok
     Let $X = \{1, \dots, k\} \setminus \{x\}$ and $Y = \{1, \dots, k\} \setminus \{y\}$, and let $A'' = A' (X, Y)$. Since $A''$ does not contain the pivot row or the pivot column, $\forall (i, j) \in X \times Y$ we have $A'' (i, j) = A (i, j) - \frac{A (i, y) \cdot A (x, j)}{A (x, y)}$. For $\forall j \in Y$, let $B_{j}$ be the matrix obtained from $A$ by removing row $x$ and column $j$, and let $B_{j}''$ be the matrix obtained from $A''$ by replacing column $j$ with $A (X, y)$ (i.e., the pivot column without the pivot element). The cofactor expansion along row $x$ in $A$ yields
     \[
@@ -218,9 +213,8 @@
 
 \begin{definition}
     \label{Matroid}
-    \uses{}
     \leanok
-    TODO
+    \todo[inline]{Add definition of matroids}
 \end{definition}
 
 \begin{definition}
@@ -247,7 +241,6 @@
 \end{lemma}
 
 \begin{proof}
-    % \uses{}
     \leanok
     \SeeLean
 \end{proof}
@@ -262,8 +255,7 @@
 %     Let $A \in \mathbb{Q}^{X \times Y}$ be a matrix, let $M$ be the vector matroid of $A$, and let $B$ be a base of $M$. Then there exists a standard representation matrix $S \in \mathbb{Q}^{B \times (Y \setminus B)}$ of $M$.
 % \end{lemma}
 
-% \begin{proof}
-%     % \uses{}
+% \begin{proof
 %     \leanok
 %     \SeeLean
 % \end{proof}
@@ -277,7 +269,6 @@
 \end{lemma}
 
 \begin{proof}
-    \uses{}
     \leanok
     \SeeLean
 \end{proof}
@@ -320,7 +311,6 @@
 \end{lemma}
 
 \begin{proof}
-    % \uses{}
     \leanok
     Definitional equality.
 \end{proof}
@@ -334,7 +324,6 @@
 \end{lemma}
 
 \begin{proof}
-    % \uses{}
     \leanok
     Definitional equality.
 \end{proof}
@@ -348,7 +337,6 @@
 \end{lemma}
 
 \begin{proof}
-    % \uses{}
     \leanok
     Check elementwise equality.
 \end{proof}
@@ -362,7 +350,6 @@
 \end{lemma}
 
 \begin{proof}
-    % \uses{}
     \leanok
     \SeeLean
 \end{proof}
@@ -376,7 +363,6 @@
 \end{lemma}
 
 \begin{proof}
-    % \uses{}
     \leanok
     This result is proved in Mathlib.
 \end{proof}
