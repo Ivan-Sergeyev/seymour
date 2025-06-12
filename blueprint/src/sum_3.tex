@@ -573,6 +573,6 @@
 
 \begin{proof}
     \uses{StandardRepr,Matroid.Is3sumOf,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,MatrixSum3.toCanonicalSigning,lem:three_sum_signing_B_valid,lem:three_sum_signing_B_tu}
-    % \leanok
+    \leanok
     Let $B_{\ell}$, $B_{r}$, and $B$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{Matroid.Is3sumOf}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings. Then the canonical signing $B''$ from Definition~\ref{MatrixSum3.toCanonicalSigning} is a TU signing of $B$. Indeed, $B''$ is a signing of $B$ by Lemma~\ref{lem:three_sum_signing_B_valid}, and $B''$ is TU by Lemma~\ref{lem:three_sum_signing_B_tu}. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
 \end{proof}
