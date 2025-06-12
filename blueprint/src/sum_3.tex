@@ -309,7 +309,7 @@
     \label{lem:three_sum_signing_B_valid}
     \uses{MatrixSum3.toCanonicalSigning}
     % \lean{}
-    % \leanok
+    \leanok
     $B''$ from Definition~\ref{MatrixSum3.toCanonicalSigning} is a signing of $B$.
 \end{lemma}
 
@@ -395,7 +395,7 @@
     \label{lem:three_sum_signing_B_l_props}
     \uses{MatrixSum3.matrix,Matrix.IsTuSigningOf,Matrix.toCanonicalSigning}
     % \lean{}
-    % \leanok
+    \leanok
     Suppose that $B_{\ell}$ from Definition~\ref{MatrixSum3.matrix} has a TU signing $B_{\ell}'$. Let $B_{\ell}''$ be the canonical re-signing (from Definition~\ref{Matrix.toCanonicalSigning}) of $B_{\ell}'$. Let $d_{0}'' = B_{\ell}'' (x_{0}, Y_{\ell})$, $d_{1}'' = B_{\ell}'' (x_{1}, Y_{\ell})$, and $d_{2}'' = d_{0}'' - d_{1}''$. Then the following statements hold.
     \begin{enumerate}
         \item\label{item:tss_Blp_d01} For every $j \in Y_{\ell}$, $\begin{bmatrix} d_{0}'' (i) \\ d_{1}'' (j) \end{bmatrix} \in \{0, \pm 1\}^{\{x_{0}, x_{1}\}} \setminus \left\{ \begin{bmatrix} 1 \\ -1 \end{bmatrix}, \begin{bmatrix} -1 \\ 1 \end{bmatrix} \right\}$.
@@ -416,14 +416,14 @@
     \label{lem:three_sum_signing_B_props}
     \uses{MatrixSum3.toCanonicalSigning,Matrix.IsTotallyUnimodular}
     % \lean{}
-    % \leanok
+    \leanok
     Let $B''$ be from Definition~\ref{MatrixSum3.toCanonicalSigning}. Let $c_{0}'' = B'' (X_{r}, y_{0})$, $c_{1}'' = B'' (X_{r}, y_{1})$, and $c_{2}'' = c_{0}'' - c_{1}''$. Similarly, let $d_{0}'' = B'' (x_{0}, Y_{\ell})$, $d_{1}'' = B'' (x_{1}, Y_{\ell})$, and $d_{2}'' = d_{0}'' - d_{1}''$. Then the following statements hold.
     \begin{enumerate}
         \item\label{item:tss_Bp_c2} For every $i \in X_{r}$, $c_{2}'' (i) \in \{0, \pm 1\}$.
         \item\label{item:tss_Bp_Deq} If $D_{0}'' = \begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix}$, then $D'' = c_{0}'' \otimes d_{0}'' - c_{1}'' \otimes d_{1}''$. If $D_{0}'' = \begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}$, then $D'' = c_{0}'' \otimes d_{0}'' - c_{0}'' \otimes d_{1}'' + c_{1}'' \otimes d_{1}''$.
         \item\label{item:tss_Bp_Dcols} For every $j \in Y_{\ell}$, $D'' (X_{r}, j) \in \{0, \pm c_{0}'', \pm c_{1}'', \pm c_{2}''\}$.
         \item\label{item:tss_Bp_Drows} For every $i \in X_{r}$, $D'' (i, Y_{\ell}) \in \{0, \pm d_{0}'', \pm d_{1}'', \pm d_{2}''\}$.
-        \item\label{item:tss_Bp_DAr} $\begin{bmatrix} D'' & A_{r}'' \end{bmatrix}$ is TU.
+        % \item\label{item:tss_Bp_DAr} $\begin{bmatrix} D'' & A_{r}'' \end{bmatrix}$ is TU.
         \item\label{item:tss_Bp_AlD} $\begin{bmatrix} A_{\ell}'' \\ D'' \end{bmatrix}$ is TU.
     \end{enumerate}
 \end{lemma}
@@ -463,7 +463,7 @@
             \item If $D_{0}'' = \begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}$, then by item~\ref{item:tss_Bp_Deq} we have $D'' (i, Y_{\ell}) = c_{0}'' (i) \cdot d_{0}'' + (c_{1}'' (i) - c_{0}'' (i)) \cdot d_{1}''$. By considering all possible cases for $c_{0}'' (i)$ and $c_{1}'' (i)$, we conclude that $D'' (i, Y_{\ell}) \in \{0, \pm d_{0}'', \pm d_{1}'', \pm d_{2}''\}$.
         \end{enumerate}
 
-        \item By Lemma~\ref{MatrixSum3.HasTuBr.cccAr_isTotallyUnimodular}.\ref{item:tss_Brp_tu3}, $\begin{bmatrix} c_{0}'' & c_{1}'' & c_{2}'' & A_{r}'' \end{bmatrix}$ is TU. Since TUness is preserved under adjoining zero columns, copies of existing columns, and multiplying columns by $\pm 1$ factors, $\begin{bmatrix} 0 & \pm c_{0}'' & \pm c_{1}'' & \pm c_{2}'' & A_{r}'' \end{bmatrix}$ is also TU. By item~\ref{item:tss_Bp_Dcols}, $\begin{bmatrix} D'' & A_{r}'' \end{bmatrix}$ is a submatrix of the latter matrix, hence it is also TU.
+        % \item By Lemma~\ref{MatrixSum3.HasTuBr.cccAr_isTotallyUnimodular}.\ref{item:tss_Brp_tu3}, $\begin{bmatrix} c_{0}'' & c_{1}'' & c_{2}'' & A_{r}'' \end{bmatrix}$ is TU. Since TUness is preserved under adjoining zero columns, copies of existing columns, and multiplying columns by $\pm 1$ factors, $\begin{bmatrix} 0 & \pm c_{0}'' & \pm c_{1}'' & \pm c_{2}'' & A_{r}'' \end{bmatrix}$ is also TU. By item~\ref{item:tss_Bp_Dcols}, $\begin{bmatrix} D'' & A_{r}'' \end{bmatrix}$ is a submatrix of the latter matrix, hence it is also TU.
 
         \item By Lemma~\ref{lem:three_sum_signing_B_l_props}.\ref{item:tss_Blp_tu3}, $\begin{bmatrix} A_{\ell}'' \\ d_{0}'' \\ d_{1}'' \\ d_{2}'' \end{bmatrix}$ is TU. Since TUness is preserved under adjoining zero rows, copies of existing rows, and multiplying rows by $\pm 1$ factors, $\begin{bmatrix} A_{\ell}'' \\ 0 \\ \pm d_{0}'' \\ \pm d_{1}'' \\ \pm d_{2}'' \end{bmatrix}$ is also TU. By item~\ref{item:tss_Bp_Drows}, $\begin{bmatrix} A_{\ell}'' \\ D'' \end{bmatrix}$ is a submatrix of the latter matrix, hence it is also TU.
     \end{enumerate}
@@ -489,7 +489,7 @@
     \label{lem:three_sum_like_signing_B}
     \uses{MatrixSum3.toCanonicalSigning,MatrixLikeSum3}
     % \lean{}
-    % \leanok
+    \leanok
     Let $B''$ be from Definition~\ref{MatrixSum3.toCanonicalSigning}. Then $B'' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$ where $c_{0}'' = B'' (X_{r}, y_{0})$ and $c_{1}'' = B'' (X_{r}, y_{1})$.
 \end{lemma}
 
@@ -503,7 +503,7 @@
     \label{lem:three_sum_like_pivot}
     \uses{MatrixLikeSum3,Matrix.shortTableauPivot}
     % \lean{}
-    % \leanok
+    \leanok
     Let $C \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ from Definition~\ref{MatrixLikeSum3}. Let $x \in X_{\ell}$ and $y \in Y_{\ell}$ be such that $A_{\ell} (x, y) \neq 0$, and let $C'$ be the result of performing a short tableau pivot in $C$ on $(x, y)$. Then $C' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$.
 \end{lemma}
 
@@ -530,7 +530,7 @@
     \label{lem:three_sum_like_tu}
     \uses{MatrixLikeSum3,Matrix.IsTotallyUnimodular}
     % \lean{}
-    % \leanok
+    \leanok
     Let $C \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ from Definition~\ref{MatrixLikeSum3}. Then $C$ is TU.
 \end{lemma}
 
@@ -552,7 +552,7 @@
     \label{lem:three_sum_signing_B_tu}
     \uses{MatrixSum3.toCanonicalSigning,Matrix.IsTotallyUnimodular}
     % \lean{}
-    % \leanok
+    \leanok
     $B''$ from Definition~\ref{MatrixSum3.toCanonicalSigning} is TU.
 \end{lemma}
 
