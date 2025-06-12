@@ -6,17 +6,16 @@ import Seymour.Matroid.Operations.Sum3.CanonicalSigningSum3
 /-! ## Definition -/
 
 /-- Structural data of 3-sum-like matrices. -/
-structure MatrixLikeSum3 (Xₗ Yₗ Xᵣ Yᵣ : Type) where
-  (c₀ c₁ : Xᵣ → ℚ)
-  Aₗ : Matrix Xₗ Yₗ ℚ
-  D : Matrix Xᵣ Yₗ ℚ
-  Aᵣ : Matrix Xᵣ Yᵣ ℚ
+structure MatrixLikeSum3 (Xₗ Yₗ Xᵣ Yᵣ : Type) (c₀ c₁ : Xᵣ → ℚ) where
+  Aₗ  : Matrix Xₗ Yₗ ℚ
+  D   : Matrix Xᵣ Yₗ ℚ
+  Aᵣ  : Matrix Xᵣ Yᵣ ℚ
   hAₗ : (Aₗ ⊟ D).IsTotallyUnimodular
-  hD : ∀ j, (D · j) = 0 ∨ (D · j) = c₀ ∨ (D · j) = -c₀ ∨ (D · j) = c₁ ∨ (D · j) = -c₁ ∨ (D · j) = c₀ - c₁ ∨ (D · j) = c₁ - c₀
+  hD  : D.HasColsIn c₀ c₁
   hAᵣ : (▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁) ◫ Aᵣ).IsTotallyUnimodular
 
 /-- The resulting 3-sum-like matrix. -/
-abbrev MatrixLikeSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ) :
+abbrev MatrixLikeSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) :
     Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) ℚ :=
   ⊞ M.Aₗ 0 M.D M.Aᵣ
 
@@ -27,13 +26,51 @@ abbrev MatrixLikeSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} (M : MatrixLikeSum3 X�
   In this section we prove that pivoting in the top-left block of a 3-sum-like matrix yields a 3-sum-like matrix.
 -/
 
-/-- The top-left block of a 3-sum-like matrix is totally unimodular. -/
-lemma MatrixLikeSum3.Aₗ_IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ) :
-    M.Aₗ.IsTotallyUnimodular := by
-  sorry -- todo: follows from M.hAₗ
+abbrev Matrix.shortTableauPivotOuterRow {X Y : Type} [DecidableEq X] [DecidableEq Y]
+  (A : Matrix X Y ℚ) (r : Y → ℚ) (y : Y) :
+  Matrix X Y ℚ :=
+  ((▬r ⊟ A).shortTableauPivot ◩() y).toRows₂
 
+lemma MatrixLikeSum3.shortTableauPivot₁₁_Aₗ_eq {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
+    {c₀ c₁ : Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) (x : Xₗ) (y : Yₗ) :
+    M.Aₗ.shortTableauPivot x y = ((M.Aₗ ⊟ M.D).shortTableauPivot ◩x y).toRows₁ := by
+  ext i j
+  simp
 
--- todo: state key lemma
+lemma MatrixLikeSum3.shortTableauPivot₁₁_D_eq {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
+    {c₀ c₁ : Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) (x : Xₗ) (y : Yₗ) :
+    M.D.shortTableauPivotOuterRow (M.Aₗ x) y = ((M.Aₗ ⊟ M.D).shortTableauPivot ◩x y).toRows₂ := by
+  ext i j
+  simp
+
+-- more generally:
+-- lemma Matrix.shortTableauPivotOuterMatrix_eq {X₁ X₂ Y : Type} [DecidableEq X₁] [DecidableEq X₂] [DecidableEq Y]
+--     (A₁ : Matrix X₁ Y ℚ) (A₂ : Matrix X₂ Y ℚ) (x : X₁) (y : Y) :
+--     ((A₁ ⊟ A₂).shortTableauPivot ◩x y).toRows₂ = A₂.shortTableauPivotOuterRow (A₁ x) y := by
+--   ext i j
+--   simp
+
+lemma MatrixLikeSum3.shortTableauPivot₁₁_hAₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
+    {c₀ c₁ : Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) {x : Xₗ} {y : Yₗ} (hxy : M.Aₗ x y ≠ 0) :
+    (M.Aₗ.shortTableauPivot x y ⊟ M.D.shortTableauPivotOuterRow (M.Aₗ x) y).IsTotallyUnimodular := by
+  rw [M.shortTableauPivot₁₁_D_eq x y, M.shortTableauPivot₁₁_Aₗ_eq x y, Matrix.fromRows_toRows]
+  exact M.hAₗ.shortTableauPivot hxy
+
+-- crux of lemma 59
+lemma MatrixLikeSum3.shortTableauPivot₁₁_D_eq_cols {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
+    {c₀ c₁ : Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) {x : Xₗ} {y : Yₗ} (hxy : M.Aₗ x y ≠ 0) :
+    (M.D.shortTableauPivotOuterRow (M.Aₗ x) y).HasColsIn c₀ c₁ :=
+  sorry
+
+def MatrixLikeSum3.shortTableauPivot₁₁ {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
+    {c₀ c₁ : Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) {x : Xₗ} {y : Yₗ} (hxy : M.Aₗ x y ≠ 0) :
+    MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁ where
+  Aₗ  := M.Aₗ.shortTableauPivot x y
+  D   := M.D.shortTableauPivotOuterRow (M.Aₗ x) y
+  Aᵣ  := M.Aᵣ
+  hAₗ := M.shortTableauPivot₁₁_hAₗ hxy
+  hD  := M.shortTableauPivot₁₁_D_eq_cols hxy
+  hAᵣ := M.hAᵣ
 
 
 /-! ## Total unimodularity -/
@@ -43,7 +80,7 @@ lemma MatrixLikeSum3.Aₗ_IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} (M : 
 -/
 
 /-- Every 3-sum-like matrix is totally unimodular. -/
-lemma MatrixLikeSum3.IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ) :
+lemma MatrixLikeSum3.IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) :
     M.matrix.IsTotallyUnimodular :=
   sorry  -- todo: adapt proof of total unimodularity of 2-sum
 
@@ -58,9 +95,7 @@ lemma MatrixLikeSum3.IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} (M : Matri
 noncomputable def MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3 {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ} (hS : S.IsCanonicalSigning) :
-    MatrixLikeSum3 (Xₗ ⊕ Fin 1) (Yₗ ⊕ Fin 2) (Fin 2 ⊕ Xᵣ) (Fin 1 ⊕ Yᵣ) where
-  c₀ := S.c₀
-  c₁ := S.c₁
+    MatrixLikeSum3 (Xₗ ⊕ Fin 1) (Yₗ ⊕ Fin 2) (Fin 2 ⊕ Xᵣ) (Fin 1 ⊕ Yᵣ) S.c₀ S.c₁ where
   Aₗ := S.Aₗ
   D := S.D
   Aᵣ := S.Aᵣ
