@@ -280,6 +280,9 @@ lemma standardRepr3sumComposition_Bᵣ₁₁ {Sₗ Sᵣ : StandardRepr α Z2} {x
     Sᵣ.B ⟨x₁, hXX.mem3₁ᵣ⟩ ⟨y₁, hYY.mem3₁ᵣ⟩ = 1 :=
   standardRepr3sumComposition_Bₗ₁₁ hSS ▸ congr_fun₂ hSS.right.left.symm 1 1
 
+-- Perhaps a weaker tactic than `tauto` would suffice; enough to destruct `let`s and `and`s.
+local macro "valid3sum" : tactic => `(tactic| unfold standardRepr3sumComposition at * <;> tauto)
+
 lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X)
     (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning)
@@ -350,17 +353,17 @@ lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} 
           · exact standardRepr3sumComposition_Bₗ₁₀ hSS
           · exact standardRepr3sumComposition_Bₗ₁₁ hSS
           · rfl
-          · simp only [standardRepr3sumComposition] at hSS; tauto
-          · simp only [standardRepr3sumComposition] at hSS; tauto
+          · valid3sum
+          · valid3sum
           · rfl
         · ext i j
           fin_cases i <;> fin_cases j
           · exact standardRepr3sumComposition_Bᵣ₀₀ hSS
           · convert congr_fun₂ hSS.right.left.symm 0 1 ▸ congr_fun₂ h1001 0 1
-          · simp only [standardRepr3sumComposition] at hSS; tauto
+          · valid3sum
           · exact standardRepr3sumComposition_Bᵣ₁₀ hSS
           · exact standardRepr3sumComposition_Bᵣ₁₁ hSS
-          · simp only [standardRepr3sumComposition] at hSS; tauto
+          · valid3sum
           · rfl
           · rfl
           · rfl
@@ -375,17 +378,17 @@ lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} 
           · exact standardRepr3sumComposition_Bₗ₁₀ hSS
           · exact standardRepr3sumComposition_Bₗ₁₁ hSS
           · rfl
-          · simp only [standardRepr3sumComposition] at hSS; tauto
-          · simp only [standardRepr3sumComposition] at hSS; tauto
+          · valid3sum
+          · valid3sum
           · rfl
         · ext i j
           fin_cases i <;> fin_cases j
           · exact standardRepr3sumComposition_Bᵣ₀₀ hSS
           · convert congr_fun₂ hSS.right.left.symm 0 1 ▸ congr_fun₂ h1101 0 1
-          · simp only [standardRepr3sumComposition] at hSS; tauto
+          · valid3sum
           · exact standardRepr3sumComposition_Bᵣ₁₀ hSS
           · exact standardRepr3sumComposition_Bᵣ₁₁ hSS
-          · simp only [standardRepr3sumComposition] at hSS; tauto
+          · valid3sum
           · rfl
           · rfl
           · rfl
