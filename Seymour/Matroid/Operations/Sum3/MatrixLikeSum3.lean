@@ -11,7 +11,7 @@ structure MatrixLikeSum3 (Xₗ Yₗ Xᵣ Yᵣ : Type) (c₀ c₁ : Xᵣ → ℚ)
   D   : Matrix Xᵣ Yₗ ℚ
   Aᵣ  : Matrix Xᵣ Yᵣ ℚ
   hAₗ : (Aₗ ⊟ D).IsTotallyUnimodular
-  hD  : D.HasColsIn' c₀ c₁
+  hD  : ∀ j, VecIsParallel3 (D · j) c₀ c₁ (c₀ - c₁)
   hAᵣ : (▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁) ◫ Aᵣ).IsTotallyUnimodular
 
 /-- The resulting 3-sum-like matrix. -/
@@ -26,19 +26,6 @@ abbrev MatrixLikeSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Xᵣ → 
   In this section we prove that pivoting in the top-left block of a 3-sum-like matrix yields a 3-sum-like matrix.
 -/
 
-private lemma ccVecSet_cases {X F : Type} [Zero F] [Neg F] [Sub F] {c₀ : X → F} {c₁ : X → F} {v : X → F} :
-    v ∈ ccVecSet c₀ c₁ ↔ v = 0 ∨ v = c₀ ∨ v = -c₀ ∨ v = c₁ ∨ v = -c₁ ∨ v = c₀ - c₁ ∨ v = c₁ - c₀ :=
-  Set.mem_def
-
-private lemma neg_in_ccVecSet {X F : Type} [Field F] {c₀ : X → F} {c₁ : X → F} {v : X → F} (hv : v ∈ ccVecSet c₀ c₁) :
-    -v ∈ ccVecSet c₀ c₁ := by
-  rw [ccVecSet_cases] at hv ⊢
-  rcases hv with (hv | hv | hv | hv | hv | hv | hv)
-  all_goals
-    rw [hv]
-    ring_nf
-    simp only [true_or, or_true]
-
 @[simp]
 private abbrev matrixStackTwoValsTwoCols {X F : Type} [Zero F] [One F] [Neg F] (u : X → F) (v : X → F) (q : SignType) :
     Matrix (Unit ⊕ X) (Unit ⊕ Unit) F :=
@@ -46,8 +33,8 @@ private abbrev matrixStackTwoValsTwoCols {X F : Type} [Zero F] [One F] [Neg F] (
 
 private lemma Matrix.shortTableauPivot_col_in_ccVecSet_0 {X F : Type} [Field F] [DecidableEq X] {c₀ : X → F} {c₁ : X → F}
     (A : Matrix (Unit ⊕ X) (Unit ⊕ Unit) F)
-    (hA₁₁ : A ◩() ◩() = 1) (hA₁₂ : A ◩() ◪() = 0) (hA₂₂ : (A ◪· ◪()) ∈ ccVecSet c₀ c₁) :
-    ((A.shortTableauPivot ◩() ◩()) ◪· ◪()) ∈ ccVecSet c₀ c₁ := by
+    (hA₁₁ : A ◩() ◩() = 1) (hA₁₂ : A ◩() ◪() = 0) (hA₂₂ : VecIsParallel3 (A ◪· ◪()) c₀ c₁ (c₀ - c₁)) :
+    VecIsParallel3 ((A.shortTableauPivot ◩() ◩()) ◪· ◪()) c₀ c₁ (c₀ - c₁) := by
   simp [hA₁₁, hA₁₂, hA₂₂]
 
 set_option maxHeartbeats 0 in
@@ -55,16 +42,16 @@ private lemma matrixStackTwoValsTwoCols9_shortTableauPivot {X : Type} [Decidable
     {c₀ : X → ℚ} {c₁ : X → ℚ} (hcc : (▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular)
     (u : X → ℚ) (v : X → ℚ)
     (hA : (matrixStackTwoValsTwoCols u v SignType.neg).IsTotallyUnimodular)
-    (hucc : u ∈ ccVecSet c₀ c₁) (hvcc : v ∈ ccVecSet c₀ c₁) :
-    (((matrixStackTwoValsTwoCols u v SignType.neg).shortTableauPivot ◩() ◩()) ◪· ◪()) ∈ ccVecSet c₀ c₁ := by
+    (hucc : VecIsParallel3 u c₀ c₁ (c₀ - c₁)) (hvcc : VecIsParallel3 v c₀ c₁ (c₀ - c₁)) :
+    VecIsParallel3 (((matrixStackTwoValsTwoCols u v SignType.neg).shortTableauPivot ◩() ◩()) ◪· ◪()) c₀ c₁ (c₀ - c₁) := by
   simp
   rw [show (fun x : X => v x + u x) = v + u by rfl]
-  cases ccVecSet_cases.→ hucc with
+  cases hucc with
   | inl hu0 =>
     simp [hu0]
     exact hvcc
   | inr huc =>
-    cases ccVecSet_cases.→ hvcc with
+    cases hvcc with
     | inl hv0 =>
       simp [hv0]
       right
@@ -72,7 +59,7 @@ private lemma matrixStackTwoValsTwoCols9_shortTableauPivot {X : Type} [Decidable
     | inr hvc =>
       rcases huc with (hu | hu | hu | hu | hu | hu) <;> rcases hvc with (hv | hv | hv | hv | hv | hv) <;> simp [hu, hv]
       all_goals
-        clear hucc hvcc
+        unfold VecIsParallel3
         ring_nf
         try tauto
       · -- 1) hu : u = c₀, hv : v = c₀
@@ -183,9 +170,10 @@ private lemma matrixStackTwoValsTwoCols9_shortTableauPivot {X : Type} [Decidable
 
 private lemma Matrix.IsTotallyUnimodular.shortTableauPivot_col_in_ccVecSet_9 {X : Type} [DecidableEq X]
     {c₀ : X → ℚ} {c₁ : X → ℚ} {A : Matrix (Unit ⊕ X) (Unit ⊕ Unit) ℚ} (hA : A.IsTotallyUnimodular)
-    (hA₁₁ : A ◩() ◩() = 1) (hA₁₂ : A ◩() ◪() = -1) (hA₂₁ : (A ◪· ◩()) ∈ ccVecSet c₀ c₁) (hA₂₂ : (A ◪· ◪()) ∈ ccVecSet c₀ c₁)
+    (hA₁₁ : A ◩() ◩() = 1) (hA₁₂ : A ◩() ◪() = -1)
+    (hA₂₁ : VecIsParallel3 (A ◪· ◩()) c₀ c₁ (c₀ - c₁)) (hA₂₂ : VecIsParallel3 (A ◪· ◪()) c₀ c₁ (c₀ - c₁))
     (hcc : (▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular) :
-    ((A.shortTableauPivot ◩() ◩()) ◪· ◪()) ∈ ccVecSet c₀ c₁ := by
+    VecIsParallel3 ((A.shortTableauPivot ◩() ◩()) ◪· ◪()) c₀ c₁ (c₀ - c₁) := by
   have A_eq : A = matrixStackTwoValsTwoCols (fun x => A ◪x ◩()) (fun x => A ◪x ◪()) SignType.neg
   · ext (_|_) (_|_)
     · exact hA₁₁
@@ -196,16 +184,17 @@ private lemma Matrix.IsTotallyUnimodular.shortTableauPivot_col_in_ccVecSet_9 {X 
 
 private lemma Matrix.IsTotallyUnimodular.shortTableauPivot_col_in_ccVecSet_1 {X F : Type} [Field F] [DecidableEq X]
     {c₀ : X → F} {c₁ : X → F} {A : Matrix (Unit ⊕ X) (Unit ⊕ Unit) F} (hA : A.IsTotallyUnimodular)
-    (hA₁₁ : A ◩() ◩() = 1) (hA₁₂ : A ◩() ◪() = 1) (hA₂₁ : (A ◪· ◩()) ∈ ccVecSet c₀ c₁) (hA₂₂ : (A ◪· ◪()) ∈ ccVecSet c₀ c₁)
+    (hA₁₁ : A ◩() ◩() = 1) (hA₁₂ : A ◩() ◪() = 1)
+    (hA₂₁ : VecIsParallel3 (A ◪· ◩()) c₀ c₁ (c₀ - c₁)) (hA₂₂ : VecIsParallel3 (A ◪· ◪()) c₀ c₁ (c₀ - c₁))
     (hcc : (▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular) :
-    ((A.shortTableauPivot ◩() ◩()) ◪· ◪()) ∈ ccVecSet c₀ c₁ := by
+    VecIsParallel3 ((A.shortTableauPivot ◩() ◩()) ◪· ◪()) c₀ c₁ (c₀ - c₁) := by
   sorry -- TODO reduce to `Matrix.IsTotallyUnimodular.shortTableauPivot_col_in_ccVecSet_9`
 
 private lemma Matrix.IsTotallyUnimodular.shortTableauPivot_col_in_ccVecSet {X : Type} [DecidableEq X]
-    {c₀ : X → ℚ} {c₁ : X → ℚ} {A : Matrix (Unit ⊕ X) (Unit ⊕ Unit) ℚ} (hA : A.IsTotallyUnimodular)
-    (hA₁₁ : A ◩() ◩() ≠ 0) (hA₂₁ : (A ◪· ◩()) ∈ ccVecSet c₀ c₁) (hA₂₂ : (A ◪· ◪()) ∈ ccVecSet c₀ c₁)
+    {c₀ : X → ℚ} {c₁ : X → ℚ} {A : Matrix (Unit ⊕ X) (Unit ⊕ Unit) ℚ} (hA : A.IsTotallyUnimodular) (hA₁₁ : A ◩() ◩() ≠ 0)
+    (hA₂₁ : VecIsParallel3 (A ◪· ◩()) c₀ c₁ (c₀ - c₁)) (hA₂₂ : VecIsParallel3 (A ◪· ◪()) c₀ c₁ (c₀ - c₁))
     (hcc : (▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular) :
-    ((A.shortTableauPivot ◩() ◩()) ◪· ◪()) ∈ ccVecSet c₀ c₁ := by
+    VecIsParallel3 ((A.shortTableauPivot ◩() ◩()) ◪· ◪()) c₀ c₁ (c₀ - c₁) := by
   obtain ⟨sₗ, hsₗ⟩ := hA.apply ◩() ◩()
   cases sₗ with
   | zero =>
@@ -229,7 +218,7 @@ private lemma Matrix.IsTotallyUnimodular.shortTableauPivot_col_in_ccVecSet {X : 
         (Matrix.of (fun i : Unit ⊕ X => fun j : Unit ⊕ Unit => A i j * q i)).shortTableauPivot_col_in_ccVecSet_0
           (by simp [←hsₗ, q])
           (by simp [←hsᵣ, q])
-          (show _ ∈ ccVecSet c₀ c₁ by simp [*, q, neg_in_ccVecSet])
+          (show VecIsParallel3 _ c₀ c₁ (c₀ - c₁) by simp [*, q, VecIsParallel3_neg])
         using 2
       simp only [shortTableauPivot_eq, of_apply, reduceCtorEq, ↓reduceIte]
       ring
@@ -282,16 +271,16 @@ private lemma MatrixLikeSum3.shortTableauPivot_hAₗ {Xₗ Yₗ Xᵣ Yᵣ : Type
 private lemma MatrixLikeSum3.shortTableauPivot_D_cols_in_ccVecSet {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
     {c₀ c₁ : Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) {x : Xₗ} {y : Yₗ} (hxy : M.Aₗ x y ≠ 0) (j : Yₗ) :
-    ((M.D.shortTableauPivotOuterRow (M.Aₗ x) y) · j) ∈ ccVecSet c₀ c₁ := by
+    VecIsParallel3 ((M.D.shortTableauPivotOuterRow (M.Aₗ x) y) · j) c₀ c₁ (c₀ - c₁) := by
   if hjy : j = y then
     have hAxy : M.Aₗ x y = 1 ∨ M.Aₗ x y = -1
     · obtain ⟨s, hs⟩ := M.hAₗ.apply ◩x y
       cases s <;> tauto
-    have hPC : (-M.D · y / M.Aₗ x y) ∈ ccVecSet c₀ c₁
+    have hPC : VecIsParallel3 (-M.D · y / M.Aₗ x y) c₀ c₁ (c₀ - c₁)
     · cases hAxy with
       | inl h1 =>
         simp only [h1, div_one]
-        exact neg_in_ccVecSet (M.hD y)
+        exact VecIsParallel3_neg (M.hD y)
       | inr h9 =>
         simp only [h9, neg_div_neg_eq, div_one]
         exact M.hD y
