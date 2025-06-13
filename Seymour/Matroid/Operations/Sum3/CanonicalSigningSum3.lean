@@ -216,6 +216,16 @@ lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : T
 
 /-! ## Properties -/
 
+private abbrev VecSet {X F : Type} [Zero F] [Neg F] [Sub F] (c₀ : X → F) (c₁ : X → F) : Set (X → F) :=
+  {0, c₀, -c₀, c₁, -c₁, c₀ - c₁, c₁ - c₀}
+
+private abbrev Matrix.HasColsIn' {X Y F : Type} [Zero F] [Neg F] [Sub F] (A : Matrix X Y F) (c₀ : X → F) (c₁ : X → F) : Prop :=
+  ∀ j : Y, (A · j) ∈ VecSet c₀ c₁
+
+private abbrev Matrix.HasRowsIn' {X Y F : Type} [Zero F] [Neg F] [Sub F] (A : Matrix X Y F) (d₀ : Y → F) (d₁ : Y → F) : Prop :=
+  ∀ i : X, A i ∈ VecSet d₀ d₁
+
+@[deprecated VecSet (since := "2025-06-13")]
 abbrev Matrix.HasColsIn {X Y F : Type} [Zero F] [Neg F] [Sub F] (A : Matrix X Y F) (c₀ : X → F) (c₁ : X → F) : Prop :=
   ∀ j : Y, (A · j) = 0 ∨ (A · j) = c₀ ∨ (A · j) = -c₀ ∨ (A · j) = c₁ ∨ (A · j) = -c₁ ∨ (A · j) = c₀ - c₁ ∨ (A · j) = c₁ - c₀
 
