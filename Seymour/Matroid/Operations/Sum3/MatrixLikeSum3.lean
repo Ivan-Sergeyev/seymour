@@ -220,7 +220,7 @@ private lemma Matrix.IsTotallyUnimodular.shortTableauPivot_col_in_ccVecSet {X : 
           (by simp [←hsᵣ, q])
           (show VecIsParallel3 _ c₀ c₁ (c₀ - c₁) by simp [*, q, VecIsParallel3_neg])
         using 2
-      simp only [shortTableauPivot_eq, of_apply, reduceCtorEq, ↓reduceIte]
+      simp only [Matrix.shortTableauPivot_eq, Matrix.of_apply, reduceCtorEq, ↓reduceIte]
       ring
     | pos =>
       convert
