@@ -26,60 +26,62 @@ abbrev MatrixLikeSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Xᵣ → 
   In this section we prove that pivoting in the top-left block of a 3-sum-like matrix yields a 3-sum-like matrix.
 -/
 
-private lemma neg_in_ccVecSet {X F : Type} [Zero F] [Neg F] [Sub F] {c₀ : X → F} {c₁ : X → F}
-    {v : X → F} (hv : v ∈ ccVecSet c₀ c₁) : -v ∈ ccVecSet c₀ c₁ :=
-  sorry
+private lemma ccVecSet_cases {X F : Type} [Zero F] [Neg F] [Sub F] {c₀ : X → F} {c₁ : X → F} {v : X → F} :
+    v ∈ ccVecSet c₀ c₁ ↔ v = 0 ∨ v = c₀ ∨ v = -c₀ ∨ v = c₁ ∨ v = -c₁ ∨ v = c₀ - c₁ ∨ v = c₁ - c₀ :=
+  Set.mem_def
+
+private lemma neg_in_ccVecSet {X F : Type} [Field F] {c₀ : X → F} {c₁ : X → F} {v : X → F} (hv : v ∈ ccVecSet c₀ c₁) :
+    -v ∈ ccVecSet c₀ c₁ := by
+  rw [ccVecSet_cases] at hv ⊢
+  rcases hv with (hv | hv | hv | hv | hv | hv | hv)
+  all_goals
+    rw [hv]
+    ring_nf
+    simp only [true_or, or_true]
+
+@[simp]
+abbrev MatrixStackTwoValsTwoCols_0 {X F : Type} [One F] [Zero F] (u : X → F) (v : X → F) :
+    Matrix (Unit ⊕ X) (Unit ⊕ Unit) F :=
+  ▮(·.casesOn ↓1 u) ◫ ▮(·.casesOn ↓0 v)
 
 private lemma shortTableauPivot_ccVecSet_0 {X F : Type} [Field F] [DecidableEq X] {c₀ : X → F} {c₁ : X → F}
-    {A : Matrix (Unit ⊕ X) (Unit ⊕ Unit) F}
-    (hA₁₁ : A ◩() ◩() = 1) (hA₁₂ : A ◩() ◪() = 0) (hA₂₂ : (A ◪· ◪()) ∈ ccVecSet c₀ c₁) :
-    ((A.shortTableauPivot ◩() ◩()) ◪· ◪()) ∈ ccVecSet c₀ c₁ := by
-  simp [hA₁₁, hA₁₂, hA₂₂]
+    (u : X → F) (v : X → F) (hv : v ∈ ccVecSet c₀ c₁) :
+    (((MatrixStackTwoValsTwoCols_0 u v).shortTableauPivot ◩() ◩()) ◪· ◪()) ∈ ccVecSet c₀ c₁ := by
+  simp [hv]
 
-private lemma shortTableauPivot_ccVecSet_1 {X F : Type} [Field F] [DecidableEq X] {c₀ : X → F} {c₁ : X → F}
-    (hc : (▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular)
-    {A : Matrix (Unit ⊕ X) (Unit ⊕ Unit) F} (hA : A.IsTotallyUnimodular)
-    (hA₁₁ : A ◩() ◩() = 1) (hA₁₂ : A ◩() ◪() = 1) (hA₂₁ : (A ◪· ◩()) ∈ ccVecSet c₀ c₁) (hA₂₂ : (A ◪· ◪()) ∈ ccVecSet c₀ c₁) :
-    ((A.shortTableauPivot ◩() ◩()) ◪· ◪()) ∈ ccVecSet c₀ c₁ := by
-  simp [hA₁₁, hA₁₂, hA₂₂]
-  have hA₂₁' := hA₂₁
-  cases hA₂₁ with
-  | inl hA₂₁0 =>
-    simp [congr_fun hA₂₁0]
-    exact hA₂₂
-  | inr hA₂₁c =>
-    cases hA₂₂ with
-    | inl hA₂₂0 =>
-      simp [congr_fun hA₂₂0]
-      exact neg_in_ccVecSet hA₂₁'
-    | inr hA₂₂c =>
-      sorry -- 6 x 6 cases
+@[simp]
+abbrev MatrixStackTwoValsTwoCols_9 {X F : Type} [One F] [Neg F] (u : X → F) (v : X → F) :
+    Matrix (Unit ⊕ X) (Unit ⊕ Unit) F :=
+  ▮(·.casesOn ↓1 u) ◫ ▮(·.casesOn ↓(-1) v)
 
 set_option maxHeartbeats 0 in
 private lemma shortTableauPivot_ccVecSet_9 {X F : Type} [Field F] [DecidableEq X] {c₀ : X → F} {c₁ : X → F}
-    (hc : (▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular)
-    {A : Matrix (Unit ⊕ X) (Unit ⊕ Unit) F} (hA : A.IsTotallyUnimodular)
-    (hA₁₁ : A ◩() ◩() = 1) (hA₁₂ : A ◩() ◪() = -1) (hA₂₁ : (A ◪· ◩()) ∈ ccVecSet c₀ c₁) (hA₂₂ : (A ◪· ◪()) ∈ ccVecSet c₀ c₁) :
-    ((A.shortTableauPivot ◩() ◩()) ◪· ◪()) ∈ ccVecSet c₀ c₁ := by
-  simp [hA₁₁, hA₁₂, hA₂₂]
-  have hA₂₁' := hA₂₁
-  cases hA₂₁ with
-  | inl hA₂₁0 =>
-    simp [congr_fun hA₂₁0]
-    exact hA₂₂
-  | inr hA₂₁c =>
-    cases hA₂₂ with
-    | inl hA₂₂0 =>
-      simp [congr_fun hA₂₂0]
-      exact hA₂₁'
-    | inr hA₂₂c =>
-      rcases hA₂₁c with (hA₂₁c | hA₂₁c | hA₂₁c | hA₂₁c | hA₂₁c | hA₂₁c)
-      <;> rcases hA₂₂c with (hA₂₂c | hA₂₂c | hA₂₂c | hA₂₂c | hA₂₂c | hA₂₂c)
-      <;> simp [congr_fun hA₂₁c, congr_fun hA₂₂c]
-      <;> clear hA₂₁c hA₂₂c hA₂₁'
-      sorry
-      -- <;> try aesop
-      all_goals sorry
+    (hc : (▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular) (u : X → F) (v : X → F)
+    (hA : (MatrixStackTwoValsTwoCols_9 u v).IsTotallyUnimodular)
+    (hu : u ∈ ccVecSet c₀ c₁) (hv : v ∈ ccVecSet c₀ c₁) :
+    (((MatrixStackTwoValsTwoCols_9 u v).shortTableauPivot ◩() ◩()) ◪· ◪()) ∈ ccVecSet c₀ c₁ := by
+  simp
+  have t : (fun x => v x + u x) = v + u := rfl
+  rw [t]
+  clear t
+  cases ccVecSet_cases.→ hu with
+  | inl hu0 =>
+      simp [hu0]
+      exact hv
+  | inr huc =>
+    cases ccVecSet_cases.→ hv with
+    | inl hv0 =>
+      simp [hv0]
+      right
+      exact huc
+    | inr hvc =>
+      rcases huc with (huc | huc | huc | huc | huc | huc)
+      <;> rcases hvc with (hvc | hvc | hvc | hvc | hvc | hvc)
+      <;> simp [huc, hvc]
+      all_goals ring_nf
+      all_goals try tauto
+      all_goals left
+      all_goals sorry -- prove using TUness
 
 private lemma pivot_in_ccVecSet {X F : Type} [Field F] [DecidableEq X] {c₀ : X → F} {c₁ : X → F}
     (hc : (▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular)
