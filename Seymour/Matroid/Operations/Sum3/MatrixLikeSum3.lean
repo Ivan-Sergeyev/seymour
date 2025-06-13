@@ -39,7 +39,7 @@ private lemma neg_in_ccVecSet {X F : Type} [Field F] {c₀ : X → F} {c₁ : X 
     ring_nf
     simp only [true_or, or_true]
 
-private lemma Matrix.shortTableauPivot_in_ccVecSet_0 {X F : Type} [Field F] [DecidableEq X] {c₀ : X → F} {c₁ : X → F}
+private lemma Matrix.shortTableauPivot_col_in_ccVecSet_0 {X F : Type} [Field F] [DecidableEq X] {c₀ : X → F} {c₁ : X → F}
     (A : Matrix (Unit ⊕ X) (Unit ⊕ Unit) F)
     (hA₁₁ : A ◩() ◩() = 1) (hA₁₂ : A ◩() ◪() = 0) (hA₂₂ : (A ◪· ◪()) ∈ ccVecSet c₀ c₁) :
     ((A.shortTableauPivot ◩() ◩()) ◪· ◪()) ∈ ccVecSet c₀ c₁ := by
@@ -52,7 +52,7 @@ private abbrev matrixStackTwoValsTwoCols9 {X F : Type} [One F] [Neg F] (u : X �
 
 set_option maxHeartbeats 0 in
 private lemma matrixStackTwoValsTwoCols9_shortTableauPivot {X F : Type} [Field F] [DecidableEq X]
-    {c₀ : X → F} {c₁ : X → F} (hc : (▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular) (u : X → F) (v : X → F)
+    {c₀ : X → F} {c₁ : X → F} (hcc : (▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular) (u : X → F) (v : X → F)
     (hA : (matrixStackTwoValsTwoCols9 u v).IsTotallyUnimodular)
     (hucc : u ∈ ccVecSet c₀ c₁) (hvcc : v ∈ ccVecSet c₀ c₁) :
     (((matrixStackTwoValsTwoCols9 u v).shortTableauPivot ◩() ◩()) ◪· ◪()) ∈ ccVecSet c₀ c₁ := by
@@ -77,10 +77,10 @@ private lemma matrixStackTwoValsTwoCols9_shortTableauPivot {X F : Type} [Field F
       all_goals left
       all_goals sorry -- prove using TUness
 
-private lemma Matrix.IsTotallyUnimodular.shortTableauPivot_in_ccVecSet_9 {X F : Type} [Field F] [DecidableEq X]
+private lemma Matrix.IsTotallyUnimodular.shortTableauPivot_col_in_ccVecSet_9 {X F : Type} [Field F] [DecidableEq X]
     {c₀ : X → F} {c₁ : X → F} {A : Matrix (Unit ⊕ X) (Unit ⊕ Unit) F} (hA : A.IsTotallyUnimodular)
     (hA₁₁ : A ◩() ◩() = 1) (hA₁₂ : A ◩() ◪() = -1) (hA₂₁ : (A ◪· ◩()) ∈ ccVecSet c₀ c₁) (hA₂₂ : (A ◪· ◪()) ∈ ccVecSet c₀ c₁)
-    (hc : (▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular) :
+    (hcc : (▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular) :
     ((A.shortTableauPivot ◩() ◩()) ◪· ◪()) ∈ ccVecSet c₀ c₁ := by
   have A_eq : A = matrixStackTwoValsTwoCols9 (fun x => A ◪x ◩()) fun x => A ◪x ◪()
   · ext (_|_) (_|_)
@@ -88,35 +88,69 @@ private lemma Matrix.IsTotallyUnimodular.shortTableauPivot_in_ccVecSet_9 {X F : 
     · exact hA₁₂
     · simp
     · simp
-  exact A_eq ▸ matrixStackTwoValsTwoCols9_shortTableauPivot hc (A ◪· ◩()) (A ◪· ◪()) (A_eq ▸ hA) hA₂₁ hA₂₂
+  exact A_eq ▸ matrixStackTwoValsTwoCols9_shortTableauPivot hcc (A ◪· ◩()) (A ◪· ◪()) (A_eq ▸ hA) hA₂₁ hA₂₂
 
-private lemma Matrix.IsTotallyUnimodular.shortTableauPivot_in_ccVecSet_1 {X F : Type} [Field F] [DecidableEq X]
+private lemma Matrix.IsTotallyUnimodular.shortTableauPivot_col_in_ccVecSet_1 {X F : Type} [Field F] [DecidableEq X]
     {c₀ : X → F} {c₁ : X → F} {A : Matrix (Unit ⊕ X) (Unit ⊕ Unit) F} (hA : A.IsTotallyUnimodular)
     (hA₁₁ : A ◩() ◩() = 1) (hA₁₂ : A ◩() ◪() = 1) (hA₂₁ : (A ◪· ◩()) ∈ ccVecSet c₀ c₁) (hA₂₂ : (A ◪· ◪()) ∈ ccVecSet c₀ c₁)
-    (hc : (▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular) :
+    (hcc : (▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular) :
     ((A.shortTableauPivot ◩() ◩()) ◪· ◪()) ∈ ccVecSet c₀ c₁ := by
-  sorry -- TODO reduce to `Matrix.IsTotallyUnimodular.shortTableauPivot_in_ccVecSet_9`
+  sorry -- TODO reduce to `Matrix.IsTotallyUnimodular.shortTableauPivot_col_in_ccVecSet_9`
 
 private lemma Matrix.IsTotallyUnimodular.shortTableauPivot_col_in_ccVecSet {X F : Type} [Field F] [DecidableEq X]
     {c₀ : X → F} {c₁ : X → F} {A : Matrix (Unit ⊕ X) (Unit ⊕ Unit) F} (hA : A.IsTotallyUnimodular)
-    (hc : (▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular)
-    (hA₁₁ : A ◩() ◩() ≠ 0) (hA₂₁ : (A ◪· ◩()) ∈ ccVecSet c₀ c₁) (hA₂₂ : (A ◪· ◪()) ∈ ccVecSet c₀ c₁) :
+    (hA₁₁ : A ◩() ◩() ≠ 0) (hA₂₁ : (A ◪· ◩()) ∈ ccVecSet c₀ c₁) (hA₂₂ : (A ◪· ◪()) ∈ ccVecSet c₀ c₁)
+    (hcc : (▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁)).IsTotallyUnimodular) :
     ((A.shortTableauPivot ◩() ◩()) ◪· ◪()) ∈ ccVecSet c₀ c₁ := by
-  obtain ⟨s, hs⟩ := hA.apply ◩() ◩()
-  cases s with
+  obtain ⟨sₗ, hsₗ⟩ := hA.apply ◩() ◩()
+  cases sₗ with
   | zero =>
     exfalso
-    exact hA₁₁ hs.symm
+    exact hA₁₁ hsₗ.symm
   | pos =>
-    obtain ⟨s', hs'⟩ := hA.apply ◩() ◪()
-    cases s' with
-    | zero => exact A.shortTableauPivot_in_ccVecSet_0 hs.symm hs'.symm hA₂₂
-    | pos => exact hA.shortTableauPivot_in_ccVecSet_1 hs.symm hs'.symm hA₂₁ hA₂₂ hc
-    | neg => exact hA.shortTableauPivot_in_ccVecSet_9 hs.symm hs'.symm hA₂₁ hA₂₂ hc
+    obtain ⟨sᵣ, hsᵣ⟩ := hA.apply ◩() ◪()
+    cases sᵣ with
+    | zero => exact A.shortTableauPivot_col_in_ccVecSet_0 hsₗ.symm hsᵣ.symm hA₂₂
+    | pos => exact hA.shortTableauPivot_col_in_ccVecSet_1 hsₗ.symm hsᵣ.symm hA₂₁ hA₂₂ hcc
+    | neg => exact hA.shortTableauPivot_col_in_ccVecSet_9 hsₗ.symm hsᵣ.symm hA₂₁ hA₂₂ hcc
   | neg =>
-    simp at hs
-    have := hA.mul_rows (q := (·.casesOn ↓(-1) ↓1)) (by rintro (_|_) <;> simp)
-    sorry
+    let q : Unit ⊕ X → F := (·.casesOn ↓(-1) ↓1)
+    have hq : ∀ i, q i ∈ SignType.cast.range
+    · rintro (_|_) <;> simp [q]
+    have hAq := hA.mul_rows hq
+    obtain ⟨sᵣ, hsᵣ⟩ := hA.apply ◩() ◪()
+    cases sᵣ with
+    | zero =>
+      convert
+        (Matrix.of (fun i : Unit ⊕ X => fun j : Unit ⊕ Unit => A i j * q i)).shortTableauPivot_col_in_ccVecSet_0
+          (by simp [←hsₗ, q])
+          (by simp [←hsᵣ, q])
+          (show _ ∈ ccVecSet c₀ c₁ by simp [*, q, neg_in_ccVecSet])
+        using 2
+      simp only [shortTableauPivot_eq, of_apply, reduceCtorEq, ↓reduceIte]
+      ring
+    | pos =>
+      convert
+        hAq.shortTableauPivot_col_in_ccVecSet_9
+          (by simp [←hsₗ, q])
+          (by simp [←hsᵣ, q])
+          (by simp [hA₂₁, q])
+          (by simp [hA₂₂, q])
+          hcc
+        using 2
+      simp only [Matrix.shortTableauPivot_eq, Matrix.of_apply, reduceCtorEq, ↓reduceIte]
+      ring
+    | neg =>
+      convert
+        hAq.shortTableauPivot_col_in_ccVecSet_1
+          (by simp [←hsₗ, q])
+          (by simp [←hsᵣ, q])
+          (by simp [hA₂₁, q])
+          (by simp [hA₂₂, q])
+          hcc
+        using 2
+      simp only [Matrix.shortTableauPivot_eq, Matrix.of_apply, reduceCtorEq, ↓reduceIte]
+      ring
 
 private abbrev Matrix.shortTableauPivotOuterRow {X Y : Type} [DecidableEq X] [DecidableEq Y]
     (A : Matrix X Y ℚ) (r : Y → ℚ) (y : Y) :
@@ -164,7 +198,7 @@ private lemma MatrixLikeSum3.shortTableauPivot_D_cols_in_ccVecSet {Xₗ Yₗ X�
     have hA : A.IsTotallyUnimodular
     · convert M.hAₗ.submatrix (fun i : Unit ⊕ Xᵣ => i.map ↓x id) (fun u : Unit ⊕ Unit => u.casesOn ↓y ↓j)
       aesop
-    simpa [hjy] using hA.shortTableauPivot_col_in_ccVecSet (M.hAᵣ.submatrix id Sum.inl) hxy (M.hD y) (M.hD j)
+    simpa [hjy] using hA.shortTableauPivot_col_in_ccVecSet hxy (M.hD y) (M.hD j) (M.hAᵣ.submatrix id Sum.inl)
 
 def MatrixLikeSum3.shortTableauPivot {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
     {c₀ c₁ : Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) {x : Xₗ} {y : Yₗ} (hxy : M.Aₗ x y ≠ 0) :
