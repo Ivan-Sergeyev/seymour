@@ -37,61 +37,56 @@ lemma MatrixLikeSum3.hAᵣext₂ {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Yᵣ]
 
 lemma MatrixLikeSum3.hAᵣD {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Yᵣ] {c₀ c₁ : Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) :
     (M.D ◫ M.Aᵣ).IsTotallyUnimodular := by
-  have : ∀ j, Decidable ((M.D · j) = 0) := fun j => Classical.propDecidable ((M.D · j) = 0)
-  have : ∀ j, Decidable ((M.D · j) = c₀) := fun j => Classical.propDecidable ((M.D · j) = c₀)
-  have : ∀ j, Decidable ((M.D · j) = -c₀) := fun j => Classical.propDecidable ((M.D · j) = -c₀)
-  have : ∀ j, Decidable ((M.D · j) = c₁) := fun j => Classical.propDecidable ((M.D · j) = c₁)
-  have : ∀ j, Decidable ((M.D · j) = -c₁) := fun j => Classical.propDecidable ((M.D · j) = -c₁)
-  have : ∀ j, Decidable ((M.D · j) = c₀ - c₁) := fun j => Classical.propDecidable ((M.D · j) = c₀ - c₁)
-  have : ∀ j, Decidable ((M.D · j) = c₁ - c₀) := fun j => Classical.propDecidable ((M.D · j) = c₁ - c₀)
+  classical
   let e : (Yₗ ⊕ Yᵣ → (Unit ⊕ (((((Unit ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Yᵣ)) :=
-    fun j => j.casesOn (fun j =>
-      if h0 : (M.D · j) = 0 then ◩() else
-      if hpc₀ : (M.D · j) = c₀ then ◪◩◩◩◩◩◩() else
-      if hmc₀ : (M.D · j) = -c₀ then ◪◩◩◩◩◩◪() else
-      if hpc₁ : (M.D · j) = c₁ then ◪◩◩◩◩◪() else
-      if hmc₁ : (M.D · j) = -c₁ then ◪◩◩◩◪() else
-      if hpc₂ : (M.D · j) = c₀ - c₁ then ◪◩◩◪() else
-      if hmc₂ : (M.D · j) = c₁ - c₀ then ◪◩◪() else
-      (by have := M.hD j; aesop) -- todo: use False.elim?
-    ) (Sum.inr ∘ Sum.inr)
-  have he : (M.D ◫ M.Aᵣ) = (▮0 ◫ (▮c₀ ◫ ▮(-c₀) ◫ ▮c₁ ◫ ▮(-c₁) ◫ ▮(c₀ - c₁) ◫ ▮(c₁ - c₀) ◫ M.Aᵣ)).submatrix id e := by
-    ext i j
-    cases j with
-    | inl jₗ =>
-        simp only [Matrix.fromCols_apply_inl, Matrix.replicateCol_zero, Matrix.submatrix_apply, id_eq]
-        wlog h0 : ¬(M.D · jₗ) = 0
-        · rw [not_not] at h0
-          simp [e, h0, congrFun h0 i]
-        wlog hpc₀ : ¬(M.D · jₗ) = c₀
-        · rw [not_not] at hpc₀
-          simp [e, h0]
-          simp [hpc₀, congrFun hpc₀ i] -- todo: merge simp's in one line?
-        wlog  hmc₀ : ¬(M.D · jₗ) = -c₀
-        · rw [not_not] at hmc₀
-          simp [e, h0, hpc₀]
-          simp [hmc₀, congrFun hmc₀ i] -- todo: merge simp's in one line?
-        wlog hpc₁ : ¬(M.D · jₗ) = c₁
-        · rw [not_not] at hpc₁
-          simp [e, h0, hpc₀, hmc₀]
-          simp [hpc₁, congrFun hpc₁ i] -- todo: merge simp's in one line?
-        wlog hmc₁ : ¬(M.D · jₗ) = -c₁
-        · rw [not_not] at hmc₁
-          simp [e, h0, hpc₀, hmc₀, hpc₁]
-          simp [hmc₁, congrFun hmc₁ i] -- todo: merge simp's in one line?
-        wlog hpc₂ : ¬(M.D · jₗ) = c₀ - c₁
-        · rw [not_not] at hpc₂
-          simp [e, h0, hpc₀, hmc₀, hpc₁, hmc₁]
-          simp [hpc₂, congrFun hpc₂ i] -- todo: merge simp's in one line?
-        wlog hmc₂ : ¬(M.D · jₗ) = c₁ - c₀
-        · rw [not_not] at hmc₂
-          simp [e, h0, hpc₀, hmc₀, hpc₁, hmc₁, hpc₂]
-          simp [hmc₂, congrFun hmc₂ i] -- todo: merge simp's in one line?
-        exfalso
-        have := M.hD jₗ
-        aesop -- todo: use False.elim?
-    | inr jᵣ => rfl
-  exact he ▸ M.hAᵣext₂.submatrix id e
+    (·.casesOn
+      (fun j =>
+        if h0 : (M.D · j) = 0 then ◩() else
+        if hpc₀ : (M.D · j) = c₀ then ◪◩◩◩◩◩◩() else
+        if hmc₀ : (M.D · j) = -c₀ then ◪◩◩◩◩◩◪() else
+        if hpc₁ : (M.D · j) = c₁ then ◪◩◩◩◩◪() else
+        if hmc₁ : (M.D · j) = -c₁ then ◪◩◩◩◪() else
+        if hpc₂ : (M.D · j) = c₀ - c₁ then ◪◩◩◪() else
+        if hmc₂ : (M.D · j) = c₁ - c₀ then ◪◩◪() else
+        (False.elim (by have := M.hD j; aesop)))
+      (Sum.inr ∘ Sum.inr))
+  convert M.hAᵣext₂.submatrix id e
+  ext i j
+  cases j with
+  | inl jₗ =>
+    simp only [Matrix.fromCols_apply_inl, Matrix.replicateCol_zero, Matrix.submatrix_apply, id_eq]
+    wlog h0 : ¬(M.D · jₗ) = 0
+    · rw [not_not] at h0
+      simp [e, h0, congr_fun h0 i]
+    wlog hpc₀ : ¬(M.D · jₗ) = c₀
+    · rw [not_not] at hpc₀
+      simp only [e, h0]
+      simp [hpc₀, congr_fun hpc₀ i]
+    wlog hmc₀ : ¬(M.D · jₗ) = -c₀
+    · rw [not_not] at hmc₀
+      simp only [e, h0, hpc₀]
+      simp [hmc₀, congr_fun hmc₀ i]
+    wlog hpc₁ : ¬(M.D · jₗ) = c₁
+    · rw [not_not] at hpc₁
+      simp only [e, h0, hpc₀, hmc₀]
+      simp [hpc₁, congr_fun hpc₁ i]
+    wlog hmc₁ : ¬(M.D · jₗ) = -c₁
+    · rw [not_not] at hmc₁
+      simp only [e, h0, hpc₀, hmc₀, hpc₁]
+      simp [hmc₁, congr_fun hmc₁ i]
+    wlog hpc₂ : ¬(M.D · jₗ) = c₀ - c₁
+    · rw [not_not] at hpc₂
+      simp only [e, h0, hpc₀, hmc₀, hpc₁, hmc₁]
+      simp [hpc₂, congr_fun hpc₂ i]
+    wlog hmc₂ : ¬(M.D · jₗ) = c₁ - c₀
+    · rw [not_not] at hmc₂
+      simp only [e, h0, hpc₀, hmc₀, hpc₁, hmc₁, hpc₂]
+      simp [hmc₂, congr_fun hmc₂ i]
+    exfalso
+    have hMD := M.hD jₗ
+    simp only [VecIsParallel3, neg_sub] at hMD
+    tauto
+  | inr => rfl
 
 
 /-! ## Pivoting -/
