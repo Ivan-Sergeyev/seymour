@@ -27,9 +27,9 @@ abbrev MatrixLikeSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Xᵣ → 
 -/
 
 @[simp]
-private abbrev matrixStackTwoValsTwoCols {X F : Type} [Zero F] [One F] [Neg F] (u : X → F) (v : X → F) (q : SignType) :
+private abbrev matrixStackTwoValsTwoCols {X F : Type} [Zero F] [One F] [Neg F] (u v : X → F) (s : SignType) :
     Matrix (Unit ⊕ X) (Unit ⊕ Unit) F :=
-  ▮(·.casesOn ↓1 u) ◫ ▮(·.casesOn ↓q.cast v)
+  ▮(·.casesOn ↓1 u) ◫ ▮(·.casesOn ↓s.cast v)
 
 private lemma Matrix.shortTableauPivot_col_in_ccVecSet_0 {X F : Type} [Field F] [DecidableEq X] {c₀ : X → F} {c₁ : X → F}
     (A : Matrix (Unit ⊕ X) (Unit ⊕ Unit) F)
@@ -139,9 +139,9 @@ private lemma matrixStackTwoValsTwoCols9_shortTableauPivot {X : Type} [Decidable
         -- similar to on_goal 1, but with c₀ - c₁ (instead of c₀)
         left
         ext i
-        have hc₀c₁i := hcc.apply i ◪()
-        rw [Matrix.fromCols_apply_inr, Matrix.replicateCol_apply] at hc₀c₁i
-        obtain ⟨s₁, hs₁⟩ := hc₀c₁i
+        have hicc := hcc.apply i ◪()
+        rw [Matrix.fromCols_apply_inr, Matrix.replicateCol_apply] at hicc
+        obtain ⟨s₁, hs₁⟩ := hicc
         have hdet := hA.det ![◩(), ◪i] ![◩(), ◪()]
         simp [Matrix.det_fin_two, hu, hv] at hdet
         obtain ⟨s₂, hs₂⟩ := hdet
@@ -157,9 +157,9 @@ private lemma matrixStackTwoValsTwoCols9_shortTableauPivot {X : Type} [Decidable
         -- similar to 15), but with minor adjustments
         left
         ext i
-        have hc₀c₁i := hcc.apply i ◪()
-        rw [Matrix.fromCols_apply_inr, Matrix.replicateCol_apply] at hc₀c₁i
-        obtain ⟨s₁, hs₁⟩ := hc₀c₁i
+        have hicc := hcc.apply i ◪()
+        rw [Matrix.fromCols_apply_inr, Matrix.replicateCol_apply] at hicc
+        obtain ⟨s₁, hs₁⟩ := hicc
         have hdet := hA.det ![◩(), ◪i] ![◩(), ◪()]
         simp [Matrix.det_fin_two, hu, hv] at hdet
         obtain ⟨s₂, hs₂⟩ := hdet
@@ -218,7 +218,7 @@ private lemma Matrix.IsTotallyUnimodular.shortTableauPivot_col_in_ccVecSet {X : 
         (Matrix.of (fun i : Unit ⊕ X => fun j : Unit ⊕ Unit => A i j * q i)).shortTableauPivot_col_in_ccVecSet_0
           (by simp [←hsₗ, q])
           (by simp [←hsᵣ, q])
-          (show VecIsParallel3 _ c₀ c₁ (c₀ - c₁) by simp [*, q, VecIsParallel3_neg])
+          (show VecIsParallel3 _ c₀ c₁ (c₀ - c₁) by simp [*, q, vecIsParallel3_neg])
         using 2
       simp only [Matrix.shortTableauPivot_eq, Matrix.of_apply, reduceCtorEq, ↓reduceIte]
       ring
@@ -280,7 +280,7 @@ private lemma MatrixLikeSum3.shortTableauPivot_D_cols_in_ccVecSet {Xₗ Yₗ X�
     · cases hAxy with
       | inl h1 =>
         simp only [h1, div_one]
-        exact VecIsParallel3_neg (M.hD y)
+        exact vecIsParallel3_neg (M.hD y)
       | inr h9 =>
         simp only [h9, neg_div_neg_eq, div_one]
         exact M.hD y

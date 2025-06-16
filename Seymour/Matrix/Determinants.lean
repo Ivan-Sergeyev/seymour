@@ -82,10 +82,10 @@ lemma Matrix.isUnit_2x2 (A : Matrix (Fin 2) (Fin 2) Z2) (hA : IsUnit A) :
 
 variable {Z R : Type} [Fintype Z] [DecidableEq Z] [CommRing R]
 
-lemma Matrix.det_eq_zero_of_col_mul_col (A : Matrix Z Z R) (j₀ j₁ : Z) (hjj : j₀ ≠ j₁) (k : R)
-    (hAjj : ∀ x, A x j₀ = k * A x j₁) :
+lemma Matrix.det_eq_zero_of_col_eq_mul_col (A : Matrix Z Z R) (j₀ j₁ : Z) (hjj : j₀ ≠ j₁) (k : R)
+    (hAjj : ∀ i : Z, A i j₀ = k * A i j₁) :
     A.det = (0 : R) := by
-  rw [← Matrix.det_updateCol_add_smul_self A hjj (k * -1)]
+  rw [←Matrix.det_updateCol_add_smul_self A hjj (k * -1)]
   simp_rw [smul_eq_mul]
   conv in _ * _ => rw [mul_comm, ←mul_assoc, mul_comm (A k j₁), ←hAjj k, mul_neg, mul_one]
   conv in _ + _ => rw [add_neg_cancel]
@@ -94,37 +94,38 @@ lemma Matrix.det_eq_zero_of_col_mul_col (A : Matrix Z Z R) (j₀ j₁ : Z) (hjj 
 lemma Matrix.det_eq_zero_of_col_sub_col_eq_col [CommRing R] [IsDomain R] (A : Matrix Z Z R) (j₀ j₁ j₂ : Z)
     (hAjjj : (A · j₀) - (A · j₁) = (A · j₂)) :
     A.det = (0 : R) := by
-  wlog h₁ : j₀ ≠ j₁
-  · push_neg at h₁
-    subst h₁
+  wlog hj₂ : j₀ ≠ j₁
+  · push_neg at hj₂
+    subst hj₂
     rw [sub_self, funext_iff] at hAjjj
     exact Matrix.det_eq_zero_of_column_eq_zero j₂ (Eq.symm <| hAjjj ·)
-  wlog h₂ : j₀ ≠ j₂
-  · push_neg at h₂
-    subst h₂
+  wlog hj₁ : j₀ ≠ j₂
+  · push_neg at hj₁
+    subst hj₁
     rw [sub_eq_self, funext_iff] at hAjjj
     exact Matrix.det_eq_zero_of_column_eq_zero j₁ (hAjjj ·)
-  wlog h₃ : j₁ ≠ j₂
-  · push_neg at h₃
-    subst h₃
+  wlog hj₀ : j₁ ≠ j₂
+  · push_neg at hj₀
+    subst hj₀
     rw [funext_iff] at hAjjj
     simp_rw [Pi.sub_apply, sub_eq_iff_eq_add] at hAjjj
-    conv at hAjjj in _ = _ => rw [← mul_one (A x j₁), ←left_distrib, mul_comm]
-    exact Matrix.det_eq_zero_of_col_mul_col A _ _ h₁ (1 + 1) hAjjj
+    conv at hAjjj in _ = _ => rw [←mul_one (A x j₁), ←left_distrib, mul_comm]
+    exact Matrix.det_eq_zero_of_col_eq_mul_col A j₀ j₁ hj₂ (1 + 1) hAjjj
   simp_rw [funext_iff, Pi.sub_apply] at hAjjj
   rw [←Matrix.exists_mulVec_eq_zero_iff]
-  use (fun j => if h₁ : j = j₀ then -1 else if h₂ : j = j₁ then 1 else if h₃ : j = j₂ then 1 else 0), (by simpa using congr_fun · j₀)
+  use (fun j : Z => if _ : j = j₀ then -1 else if _ : j = j₁ then 1 else if _ : j = j₂ then 1 else 0)
+  use (by simpa using congr_fun · j₀)
   ext i
   simp only [Matrix.mulVec, dotProduct, mul_dite, mul_one, mul_neg, mul_zero, Pi.zero_apply]
   specialize hAjjj i
-  let f := fun (x : Z) => if x = j₀ then -A i j₀ else if x = j₁ then A i j₁ else if x = j₂ then A i j₀ - A i j₁ else 0
-  conv_lhs => enter [2, x, 2, h]; rw [h, show -A i j₀ = f x by unfold f; split_ifs; rfl]
-  conv_lhs => enter [2, x, 3, h₁, 2, h]; rw [h, show A i j₁ = f x by unfold f; split_ifs; rfl]
-  conv_lhs => enter [2, x, 3, h₁, 3, h₂, 2, h₃]; rw [h₃, ← hAjjj, show A i j₀ - A i j₁ = f x by unfold f; split_ifs; rfl]
+  let f := fun (z : Z) => if z = j₀ then -A i j₀ else if z = j₁ then A i j₁ else if z = j₂ then A i j₀ - A i j₁ else 0
+  conv_lhs => enter [2, x, 2, hxj₀]; rw [hxj₀, show -A i j₀ = f x by unfold f; split_ifs; rfl]
+  conv_lhs => enter [2, x, 3, hj₂, 2, hxj₁]; rw [hxj₁, show A i j₁ = f x by unfold f; split_ifs; rfl]
+  conv_lhs => enter [2, x, 3, hj₂, 3, hj₁, 2, hj₀]; rw [hj₀, ←hAjjj, show A i j₀ - A i j₁ = f x by unfold f; split_ifs; rfl]
   simp_rw [dite_eq_ite, ←Finset.mem_singleton, ←ite_or, ←Finset.mem_union, ←Finset.insert_eq]
-  rw [Finset.sum_ite_mem Finset.univ (j₀ ᕃ j₁ ᕃ {j₂}) f, Finset.univ_inter, Finset.sum_insert (by simp [h₁, h₂]),
-    Finset.sum_insert (h₃.elim <| Finset.mem_singleton.→ ·), Finset.sum_singleton, Finset.mem_singleton]
-  simp [f, iff_false_intro (h₁.symm), iff_false_intro (h₂.symm), iff_false_intro (h₃), h₃.symm]
+  rw [Finset.univ.sum_ite_mem _ f, Finset.univ_inter, Finset.sum_insert (by simp [hj₂, hj₁]),
+    Finset.sum_insert (hj₀.elim <| Finset.mem_singleton.→ ·), Finset.sum_singleton, Finset.mem_singleton]
+  simp [f, hj₀.symm, hj₁.symm, hj₂.symm]
 
 variable {X Y : Type}
 

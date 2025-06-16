@@ -216,18 +216,17 @@ lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : T
 
 /-! ## Properties -/
 
-abbrev VecIsParallel3 {X F : Type} [Zero F] [Neg F] (v : X → F) (c₀ : X → F) (c₁ : X → F) (c₂ : X → F) : Prop :=
+abbrev VecIsParallel3 {X F : Type} [Zero F] [Neg F] (v : X → F) (c₀ c₁ c₂ : X → F) : Prop :=
   v = 0 ∨ v = c₀ ∨ v = -c₀ ∨ v = c₁ ∨ v = -c₁ ∨ v = c₂ ∨ v = -c₂
 
-lemma VecIsParallel3_neg {X F : Type} [Field F] {v : X → F} {c₀ : X → F} {c₁ : X → F} {c₂ : X → F}
+lemma vecIsParallel3_neg {X F : Type} [Field F] {v : X → F} {c₀ c₁ c₂ : X → F}
     (hv : VecIsParallel3 v c₀ c₁ c₂) :
     VecIsParallel3 (-v) c₀ c₁ c₂ := by
   rcases hv with (hv | hv | hv | hv | hv | hv | hv)
   all_goals
     rw [hv]
     ring_nf
-    unfold VecIsParallel3
-    simp only [true_or, or_true]
+    simp only [VecIsParallel3, true_or, or_true]
 
 /-- The bottom-left block of a canonical signing of a 3-sum of matrices in the first special case. -/
 lemma MatrixSum3.IsCanonicalSigning.D_eq_sum_outer₀ {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
@@ -244,13 +243,13 @@ lemma MatrixSum3.IsCanonicalSigning.D_eq_sum_outer₁ {Xₗ Yₗ Xᵣ Yᵣ : Typ
 /-- Every column of the bottom-left block of a canonical signing of a 3-sum of matrices is in `{0, ±c₀, ±c₁, ±c₂}`. -/
 lemma MatrixSum3.IsCanonicalSigning.D_eq_cols {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.IsCanonicalSigning) :
-    ∀ j, VecIsParallel3 (S.D · j) S.c₀ S.c₁ (S.c₀ - S.c₁) :=
+    ∀ j : Yₗ ⊕ Fin 2, VecIsParallel3 (S.D · j) S.c₀ S.c₁ (S.c₀ - S.c₁) :=
   sorry
 
 /-- Every row of the bottom-left block of a canonical signing of a 3-sum of matrices is in `{0, ±d₀, ±d₁, ±d₂}`. -/
 lemma MatrixSum3.IsCanonicalSigning.D_eq_rows {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.IsCanonicalSigning) :
-    ∀ i, VecIsParallel3 (S.D i) S.d₀ S.d₁ (S.d₀ - S.d₁) :=
+    ∀ i : Fin 2 ⊕ Xᵣ, VecIsParallel3 (S.D i) S.d₀ S.d₁ (S.d₀ - S.d₁) :=
   sorry
 
 /-- The left block of a canonical signing of a 3-sum of matrices is totally unimodular. -/
