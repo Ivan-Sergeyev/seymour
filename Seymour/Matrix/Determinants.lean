@@ -89,7 +89,7 @@ lemma Matrix.det_eq_zero_of_col_eq_mul_col (A : Matrix Z Z R) (j₀ j₁ : Z) (h
   simp_rw [smul_eq_mul]
   conv in _ * _ => rw [mul_comm, ←mul_assoc, mul_comm (A k j₁), ←hAjj k, mul_neg, mul_one]
   conv in _ + _ => rw [add_neg_cancel]
-  refine Matrix.det_eq_zero_of_column_eq_zero j₀ fun i => Matrix.updateCol_self
+  exact Matrix.det_eq_zero_of_column_eq_zero j₀ ↓Matrix.updateCol_self
 
 lemma Matrix.det_eq_zero_of_col_sub_col_eq_col [CommRing R] [IsDomain R] (A : Matrix Z Z R) (j₀ j₁ j₂ : Z)
     (hAjjj : (A · j₀) - (A · j₁) = (A · j₂)) :

@@ -164,35 +164,13 @@ abbrev MatrixSum3.Has3x3signed₀₁ {Xₗ Yₗ Xᵣ Yᵣ : Type}
 
 /-! ## Total unimodularity of summands -/
 
-/-- Reconstructed left summand has a totally unimodular signing. -/
-abbrev MatrixSum3.HasTuSigningBₗ {Xₗ Yₗ Xᵣ Yᵣ : Type}
-    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2) : Prop :=
-  S.Bₗ.HasTuSigning
-
-/-- Reconstructed right summand has a totally unimodular signing. -/
-abbrev MatrixSum3.HasTuSigningBᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type}
-    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2) : Prop :=
-  S.Bᵣ.HasTuSigning
-
-/-- Both reconstructed summands have a totally unimodular signing. -/
-abbrev MatrixSum3.HasTuSigningBₗᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type}
-    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2) : Prop :=
-  S.HasTuSigningBₗ ∧ S.HasTuSigningBᵣ
-
 /-- Reconstructed left summand is totally unimodular. -/
-abbrev MatrixSum3.HasTuBₗ {Xₗ Yₗ Xᵣ Yᵣ : Type}
-    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) : Prop :=
+abbrev MatrixSum3.HasTuBₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) : Prop :=
   S.Bₗ.IsTotallyUnimodular
 
 /-- Reconstructed right summand is totally unimodular. -/
-abbrev MatrixSum3.HasTuBᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type}
-    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) : Prop :=
+abbrev MatrixSum3.HasTuBᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) : Prop :=
   S.Bᵣ.IsTotallyUnimodular
-
-/-- Both reconstructed summands are totally unimodular. -/
-abbrev MatrixSum3.HasTuBₗᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type}
-    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) : Prop :=
-  S.HasTuBₗ ∧ S.HasTuBᵣ
 
 
 /-! ## Transposition -/
@@ -206,7 +184,7 @@ def MatrixSum3.transpose {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3
   Dᵣ  := S.Dₗ.transpose
   Aᵣ  := S.Aₗ.transpose.submatrix Sum.swap Sum.swap
 
-def backwards {α β γ δ : Type} : (α ⊕ β) ⊕ (γ ⊕ δ) ≃ (δ ⊕ γ) ⊕ (β ⊕ α) :=
+private def backwards {α β γ δ : Type} : (α ⊕ β) ⊕ (γ ⊕ δ) ≃ (δ ⊕ γ) ⊕ (β ⊕ α) :=
   (Equiv.sumComm _ _).trans (Equiv.sumCongr (Equiv.sumComm γ δ) (Equiv.sumComm α β))
 
 lemma MatrixSum3.transpose_matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Field F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F)
