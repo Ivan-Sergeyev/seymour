@@ -142,19 +142,53 @@ private lemma matrixStackTwoValsTwoCols9_shortTableauPivot {X : Type} [Decidable
         obtain ⟨s₂, hs₂⟩ := hdet
         cases s₀ <;> simp [←hs₀, ←sub_eq_add_neg] at hs₂ ⊢
       · -- 2) hu : u = c₀, hv : v = c₁
-        -- requires additional assumption, otherwise counterexample:
-        -- #eval (!![1, -1; 1, 0; 0, 1] : Matrix (Fin 3) (Fin 2) ℚ).testTotallyUnimodular -- true
-        -- #eval (!![1, -1; 1, 0; 0, 1] : Matrix (Fin 3) (Fin 2) ℚ).shortTableauPivot 0 0 -- !![1, -1; -1, 1; 0, 1]
-        -- #eval (!![1, -1; -1, 1; 0, 1] : Matrix (Fin 3) (Fin 2) ℚ).testTotallyUnimodular -- true
-        -- #eval (!![1, 0, 1; 0, 1, -1] : Matrix (Fin 2) (Fin 3) ℚ).testTotallyUnimodular -- true
-        have : ∃ i, ∃ j, c₀ i = 1 ∧ c₀ j = 0 ∧ ((c₁ i = 0 ∧ c₁ j = -1) ∨ (c₁ i = 1 ∧ c₁ j = 1)) := sorry
-        -- #eval (!![1, -1; 1, 0; 0, -1] : Matrix (Fin 3) (Fin 2) ℚ).testTotallyUnimodular -- true
-        -- #eval (!![1, -1; 1, 0; 0, -1] : Matrix (Fin 3) (Fin 2) ℚ).shortTableauPivot 0 0 -- !![1, -1; -1, 1; 0, -1]
-        -- #eval (!![1, -1; -1, 1; 0, -1] : Matrix (Fin 3) (Fin 2) ℚ).testTotallyUnimodular -- true
-        -- #eval (!![1, 0, 1; 0, -1, 1] : Matrix (Fin 2) (Fin 3) ℚ).testTotallyUnimodular -- true
-        sorry
+        -- can be solved with the following additional assumptions:
+        have h_add_ass : ∃ i, ∃ j,
+          (c₀ i = 1 ∧ c₀ j = 0)
+          ∧ ((c₁ i = 0 ∧ c₁ j = -1) ∨ (c₁ i = 1 ∧ c₁ j = 1))
+          ∧ (!![1, -1, 0; u i, v i, 1; u j, v j, 1].IsTotallyUnimodular) := sorry
+        obtain ⟨i, j, hc₀, hc₁, hS⟩ := h_add_ass
+        have t1 : !![1, -1, 0; u i, v i, 1; u j, v j, 1] 0 0 ≠ 0 := (ne_of_beq_false rfl).symm
+        have t2 := hS.shortTableauPivot t1
+        have t3 : !![1, -1, 0; u i, v i, 1; u j, v j, 1].shortTableauPivot 0 0
+            = !![1, -1, 0; -u i, v i + u i, 1; -u j, v j + u j, 1] := by
+          ext i j
+          fin_cases i <;> fin_cases j <;> simp [Matrix.shortTableauPivot_eq]
+        rw [t3] at t2
+        cases hc₁ with
+        | inl hc₁₀ =>
+            have t4 := t2.det ![1, 2] ![1, 2]
+            have t5 : !![1, -1, 0; -u i, v i + u i, 1; -u j, v j + u j, 1].submatrix ![1, 2] ![1, 2]
+              = !![v i + u i, 1; v j + u j, 1] := Matrix.eta_fin_two _
+            rw [t5] at t4
+            simp [hu, hv, hc₀, hc₁₀] at t4
+        | inr hc₁₁ =>
+            have t6 := t2.apply 1 1
+            simp [hu, hv, hc₀, hc₁₁] at t6
       · -- 3) hu : u = c₀, hv : v = c₀ - c₁
-        sorry
+        -- can be solved with the following additional assumptions:
+        have h_add_ass : ∃ i, ∃ j,
+          (c₀ i = 1 ∧ c₀ j = 0)
+          ∧ ((c₁ i = 0 ∧ c₁ j = -1) ∨ (c₁ i = 1 ∧ c₁ j = 1))
+          ∧ (!![1, -1, 0; u i, v i, 1; u j, v j, 1].IsTotallyUnimodular) := sorry
+        obtain ⟨i, j, hc₀, hc₁, hS⟩ := h_add_ass
+        have t1 : !![1, -1, 0; u i, v i, 1; u j, v j, 1] 0 0 ≠ 0 := (ne_of_beq_false rfl).symm
+        have t2 := hS.shortTableauPivot t1
+        have t3 : !![1, -1, 0; u i, v i, 1; u j, v j, 1].shortTableauPivot 0 0
+            = !![1, -1, 0; -u i, v i + u i, 1; -u j, v j + u j, 1] := by
+          ext i j
+          fin_cases i <;> fin_cases j <;> simp [Matrix.shortTableauPivot_eq]
+        rw [t3] at t2
+        cases hc₁ with
+        | inl hc₁₀ =>
+            have t6 := t2.apply 1 1
+            simp [hu, hv, hc₀, hc₁₀] at t6
+        | inr hc₁₁ =>
+            have t4 := t2.det ![1, 2] ![1, 2]
+            have t5 : !![1, -1, 0; -u i, v i + u i, 1; -u j, v j + u j, 1].submatrix ![1, 2] ![1, 2]
+              = !![v i + u i, 1; v j + u j, 1] := Matrix.eta_fin_two _
+            rw [t5] at t4
+            simp [hu, hv, hc₀, hc₁₁] at t4
       · -- 4) hu : u = -c₀, hv : v = -c₀
         -- same as 1)
         left
@@ -167,11 +201,103 @@ private lemma matrixStackTwoValsTwoCols9_shortTableauPivot {X : Type} [Decidable
         obtain ⟨s₂, hs₂⟩ := hdet
         cases s₀ <;> simp [←hs₀, ←sub_eq_add_neg] at hs₂ ⊢
       · -- 5) hu : u = -c₀, hv : v = -c₁
-        sorry
+        -- can be solved with the following additional assumptions:
+        have h_add_ass : ∃ i, ∃ j,
+          (c₀ i = 1 ∧ c₀ j = 0)
+          ∧ ((c₁ i = 0 ∧ c₁ j = -1) ∨ (c₁ i = 1 ∧ c₁ j = 1))
+          ∧ (!![1, -1, 0; u i, v i, 1; u j, v j, 1].IsTotallyUnimodular) := sorry
+        obtain ⟨i, j, hc₀, hc₁, hS⟩ := h_add_ass
+        have t1 : !![1, -1, 0; u i, v i, 1; u j, v j, 1] 0 0 ≠ 0 := (ne_of_beq_false rfl).symm
+        have t2 := hS.shortTableauPivot t1
+        have t3 : !![1, -1, 0; u i, v i, 1; u j, v j, 1].shortTableauPivot 0 0
+            = !![1, -1, 0; -u i, v i + u i, 1; -u j, v j + u j, 1] := by
+          ext i j
+          fin_cases i <;> fin_cases j <;> simp [Matrix.shortTableauPivot_eq]
+        rw [t3] at t2
+        cases hc₁ with
+        | inl hc₁₀ =>
+            have t4 := t2.det ![1, 2] ![1, 2]
+            have t5 : !![1, -1, 0; -u i, v i + u i, 1; -u j, v j + u j, 1].submatrix ![1, 2] ![1, 2]
+              = !![v i + u i, 1; v j + u j, 1] := Matrix.eta_fin_two _
+            rw [t5] at t4
+            simp [hu, hv, hc₀, hc₁₀] at t4
+        | inr hc₁₁ =>
+            have t6 := t2.apply 1 1
+            simp [hu, hv, hc₀, hc₁₁] at t6
+            exfalso
+            clear * - t6
+            obtain ⟨s, hs⟩ := t6
+            cases s with
+            | zero =>
+                simp only [SignType.zero_eq_zero, SignType.coe_zero] at hs
+                linarith
+            | neg =>
+                simp only [SignType.neg_eq_neg_one, SignType.coe_neg_one] at hs
+                linarith
+            | pos =>
+                simp only [SignType.pos_eq_one, SignType.coe_one] at hs
+                linarith
       · -- 6) hu : u = -c₀, hv : v = c₁ - c₀
-        sorry
+        -- can be solved with the following additional assumptions:
+        have h_add_ass : ∃ i, ∃ j,
+          (c₀ i = 1 ∧ c₀ j = 0)
+          ∧ ((c₁ i = 0 ∧ c₁ j = -1) ∨ (c₁ i = 1 ∧ c₁ j = 1))
+          ∧ (!![1, -1, 0; u i, v i, 1; u j, v j, 1].IsTotallyUnimodular) := sorry
+        obtain ⟨i, j, hc₀, hc₁, hS⟩ := h_add_ass
+        have t1 : !![1, -1, 0; u i, v i, 1; u j, v j, 1] 0 0 ≠ 0 := (ne_of_beq_false rfl).symm
+        have t2 := hS.shortTableauPivot t1
+        have t3 : !![1, -1, 0; u i, v i, 1; u j, v j, 1].shortTableauPivot 0 0
+            = !![1, -1, 0; -u i, v i + u i, 1; -u j, v j + u j, 1] := by
+          ext i j
+          fin_cases i <;> fin_cases j <;> simp [Matrix.shortTableauPivot_eq]
+        rw [t3] at t2
+        cases hc₁ with
+        | inl hc₁₀ =>
+            have t6 := t2.apply 1 1
+            simp [hu, hv, hc₀, hc₁₀] at t6
+            exfalso
+            clear * - t6
+            obtain ⟨s, hs⟩ := t6
+            cases s with
+            | zero =>
+                simp only [SignType.zero_eq_zero, SignType.coe_zero] at hs
+                linarith
+            | neg =>
+                simp only [SignType.neg_eq_neg_one, SignType.coe_neg_one] at hs
+                linarith
+            | pos =>
+                simp only [SignType.pos_eq_one, SignType.coe_one] at hs
+                linarith
+        | inr hc₁₁ =>
+            have t4 := t2.det ![1, 2] ![1, 2]
+            have t5 : !![1, -1, 0; -u i, v i + u i, 1; -u j, v j + u j, 1].submatrix ![1, 2] ![1, 2]
+              = !![v i + u i, 1; v j + u j, 1] := Matrix.eta_fin_two _
+            rw [t5] at t4
+            simp [hu, hv, hc₀, hc₁₁] at t4
       · -- 7) hu : u = c₁, hv : v = c₀
-        sorry
+        -- can be solved with the following additional assumptions:
+        have h_add_ass : ∃ i, ∃ j,
+          (c₀ i = 1 ∧ c₀ j = 0)
+          ∧ ((c₁ i = 0 ∧ c₁ j = -1) ∨ (c₁ i = 1 ∧ c₁ j = 1))
+          ∧ (!![1, -1, 0; u i, v i, 1; u j, v j, 1].IsTotallyUnimodular) := sorry
+        obtain ⟨i, j, hc₀, hc₁, hS⟩ := h_add_ass
+        have t1 : !![1, -1, 0; u i, v i, 1; u j, v j, 1] 0 0 ≠ 0 := (ne_of_beq_false rfl).symm
+        have t2 := hS.shortTableauPivot t1
+        have t3 : !![1, -1, 0; u i, v i, 1; u j, v j, 1].shortTableauPivot 0 0
+            = !![1, -1, 0; -u i, v i + u i, 1; -u j, v j + u j, 1] := by
+          ext i j
+          fin_cases i <;> fin_cases j <;> simp [Matrix.shortTableauPivot_eq]
+        rw [t3] at t2
+        cases hc₁ with
+        | inl hc₁₀ =>
+            have t4 := t2.det ![1, 2] ![1, 2]
+            have t5 : !![1, -1, 0; -u i, v i + u i, 1; -u j, v j + u j, 1].submatrix ![1, 2] ![1, 2]
+              = !![v i + u i, 1; v j + u j, 1] := Matrix.eta_fin_two _
+            rw [t5] at t4
+            simp [hu, hv, hc₀, hc₁₀] at t4
+        | inr hc₁₁ =>
+            have t6 := t2.apply 1 1
+            simp [hu, hv, hc₀, hc₁₁] at t6
       · -- 8) hu : u = c₁, hv : v = c₁
         -- similar to 1), but with c₁ instead of c₀
         left
@@ -184,9 +310,76 @@ private lemma matrixStackTwoValsTwoCols9_shortTableauPivot {X : Type} [Decidable
         obtain ⟨s₂, hs₂⟩ := hdet
         cases s₁ <;> simp [←hs₁, ←sub_eq_add_neg] at hs₂ ⊢
       · -- 9) hu : u = c₁, hv : v = c₁ - c₀
-        sorry
+        -- can be solved with the following additional assumptions:
+        have h_add_ass : ∃ i, ∃ j,
+          (c₀ i = 1 ∧ c₀ j = 0)
+          ∧ ((c₁ i = 0 ∧ c₁ j = -1) ∨ (c₁ i = 1 ∧ c₁ j = 1))
+          ∧ (!![1, -1, 0; u i, v i, 1; u j, v j, 1].IsTotallyUnimodular) := sorry
+        obtain ⟨i, j, hc₀, hc₁, hS⟩ := h_add_ass
+        have t1 : !![1, -1, 0; u i, v i, 1; u j, v j, 1] 0 0 ≠ 0 := (ne_of_beq_false rfl).symm
+        have t2 := hS.shortTableauPivot t1
+        have t3 : !![1, -1, 0; u i, v i, 1; u j, v j, 1].shortTableauPivot 0 0
+            = !![1, -1, 0; -u i, v i + u i, 1; -u j, v j + u j, 1] := by
+          ext i j
+          fin_cases i <;> fin_cases j <;> simp [Matrix.shortTableauPivot_eq]
+        rw [t3] at t2
+        cases hc₁ with
+        | inl hc₁₀ =>
+            have t6 := t2.apply 2 1
+            simp [hu, hv, hc₀, hc₁₀] at t6
+            exfalso
+            clear * - t6
+            obtain ⟨s, hs⟩ := t6
+            cases s with
+            | zero =>
+                simp only [SignType.zero_eq_zero, SignType.coe_zero] at hs
+                linarith
+            | neg =>
+                simp only [SignType.neg_eq_neg_one, SignType.coe_neg_one] at hs
+                linarith
+            | pos =>
+                simp only [SignType.pos_eq_one, SignType.coe_one] at hs
+                linarith
+        | inr hc₁₁ =>
+            have t6 := t2.apply 2 1
+            simp [hu, hv, hc₀, hc₁₁] at t6
       · -- 10) hu : u = -c₁, hv : v = -c₀
-        sorry
+        -- can be solved with the following additional assumptions:
+        have h_add_ass : ∃ i, ∃ j,
+          (c₀ i = 1 ∧ c₀ j = 0)
+          ∧ ((c₁ i = 0 ∧ c₁ j = -1) ∨ (c₁ i = 1 ∧ c₁ j = 1))
+          ∧ (!![1, -1, 0; u i, v i, 1; u j, v j, 1].IsTotallyUnimodular) := sorry
+        obtain ⟨i, j, hc₀, hc₁, hS⟩ := h_add_ass
+        have t1 : !![1, -1, 0; u i, v i, 1; u j, v j, 1] 0 0 ≠ 0 := (ne_of_beq_false rfl).symm
+        have t2 := hS.shortTableauPivot t1
+        have t3 : !![1, -1, 0; u i, v i, 1; u j, v j, 1].shortTableauPivot 0 0
+            = !![1, -1, 0; -u i, v i + u i, 1; -u j, v j + u j, 1] := by
+          ext i j
+          fin_cases i <;> fin_cases j <;> simp [Matrix.shortTableauPivot_eq]
+        rw [t3] at t2
+        cases hc₁ with
+        | inl hc₁₀ =>
+            have t4 := t2.det ![1, 2] ![1, 2]
+            have t5 : !![1, -1, 0; -u i, v i + u i, 1; -u j, v j + u j, 1].submatrix ![1, 2] ![1, 2]
+              = !![v i + u i, 1; v j + u j, 1] := Matrix.eta_fin_two _
+            rw [t5] at t4
+            simp [hu, hv, hc₀, hc₁₀] at t4
+        | inr hc₁₁ =>
+            have t6 := t2.apply 1 1
+            simp [hu, hv, hc₀, hc₁₁] at t6
+            exfalso
+            clear * - t6
+            obtain ⟨s, hs⟩ := t6
+            cases s with
+            | zero =>
+                simp only [SignType.zero_eq_zero, SignType.coe_zero] at hs
+                linarith
+            | neg =>
+                simp only [SignType.neg_eq_neg_one, SignType.coe_neg_one] at hs
+                linarith
+            | pos =>
+                simp only [SignType.pos_eq_one, SignType.coe_one] at hs
+                linarith
       · -- 11) hu : u = -c₁, hv : v = -c₁
         -- same as 8)
         left
@@ -199,11 +392,97 @@ private lemma matrixStackTwoValsTwoCols9_shortTableauPivot {X : Type} [Decidable
         obtain ⟨s₂, hs₂⟩ := hdet
         cases s₁ <;> simp [←hs₁, ←sub_eq_add_neg] at hs₂ ⊢
       · -- 12) hu : u = -c₁, hv : v = c₀ - c₁
-        sorry
+        -- can be solved with the following additional assumptions:
+        have h_add_ass : ∃ i, ∃ j,
+          (c₀ i = 1 ∧ c₀ j = 0)
+          ∧ ((c₁ i = 0 ∧ c₁ j = -1) ∨ (c₁ i = 1 ∧ c₁ j = 1))
+          ∧ (!![1, -1, 0; u i, v i, 1; u j, v j, 1].IsTotallyUnimodular) := sorry
+        obtain ⟨i, j, hc₀, hc₁, hS⟩ := h_add_ass
+        have t1 : !![1, -1, 0; u i, v i, 1; u j, v j, 1] 0 0 ≠ 0 := (ne_of_beq_false rfl).symm
+        have t2 := hS.shortTableauPivot t1
+        have t3 : !![1, -1, 0; u i, v i, 1; u j, v j, 1].shortTableauPivot 0 0
+            = !![1, -1, 0; -u i, v i + u i, 1; -u j, v j + u j, 1] := by
+          ext i j
+          fin_cases i <;> fin_cases j <;> simp [Matrix.shortTableauPivot_eq]
+        rw [t3] at t2
+        cases hc₁ with
+        | inl hc₁₀ =>
+            have t6 := t2.apply 2 1
+            simp [hu, hv, hc₀, hc₁₀] at t6
+        | inr hc₁₁ =>
+            have t6 := t2.apply 2 1
+            simp [hu, hv, hc₀, hc₁₁] at t6
+            exfalso
+            clear * - t6
+            obtain ⟨s, hs⟩ := t6
+            cases s with
+            | zero =>
+                simp only [SignType.zero_eq_zero, SignType.coe_zero] at hs
+                linarith
+            | neg =>
+                simp only [SignType.neg_eq_neg_one, SignType.coe_neg_one] at hs
+                linarith
+            | pos =>
+                simp only [SignType.pos_eq_one, SignType.coe_one] at hs
+                linarith
       · -- 13) hu : u = c₀ - c₁, hv : v = c₀
-        sorry
+        -- can be solved with the following additional assumptions:
+        have h_add_ass : ∃ i, ∃ j,
+          (c₀ i = 1 ∧ c₀ j = 0)
+          ∧ ((c₁ i = 0 ∧ c₁ j = -1) ∨ (c₁ i = 1 ∧ c₁ j = 1))
+          ∧ (!![1, -1, 0; u i, v i, 1; u j, v j, 1].IsTotallyUnimodular) := sorry
+        obtain ⟨i, j, hc₀, hc₁, hS⟩ := h_add_ass
+        have t1 : !![1, -1, 0; u i, v i, 1; u j, v j, 1] 0 0 ≠ 0 := (ne_of_beq_false rfl).symm
+        have t2 := hS.shortTableauPivot t1
+        have t3 : !![1, -1, 0; u i, v i, 1; u j, v j, 1].shortTableauPivot 0 0
+            = !![1, -1, 0; -u i, v i + u i, 1; -u j, v j + u j, 1] := by
+          ext i j
+          fin_cases i <;> fin_cases j <;> simp [Matrix.shortTableauPivot_eq]
+        rw [t3] at t2
+        cases hc₁ with
+        | inl hc₁₀ =>
+            have t6 := t2.apply 1 1
+            simp [hu, hv, hc₀, hc₁₀] at t6
+        | inr hc₁₁ =>
+            have t4 := t2.det ![1, 2] ![1, 2]
+            have t5 : !![1, -1, 0; -u i, v i + u i, 1; -u j, v j + u j, 1].submatrix ![1, 2] ![1, 2]
+              = !![v i + u i, 1; v j + u j, 1] := Matrix.eta_fin_two _
+            rw [t5] at t4
+            simp [hu, hv, hc₀, hc₁₁] at t4
       · -- 14) hu : u = c₀ - c₁, hv : v = -c₁
-        sorry
+        -- can be solved with the following additional assumptions:
+        have h_add_ass : ∃ i, ∃ j,
+          (c₀ i = 1 ∧ c₀ j = 0)
+          ∧ ((c₁ i = 0 ∧ c₁ j = -1) ∨ (c₁ i = 1 ∧ c₁ j = 1))
+          ∧ (!![1, -1, 0; u i, v i, 1; u j, v j, 1].IsTotallyUnimodular) := sorry
+        obtain ⟨i, j, hc₀, hc₁, hS⟩ := h_add_ass
+        have t1 : !![1, -1, 0; u i, v i, 1; u j, v j, 1] 0 0 ≠ 0 := (ne_of_beq_false rfl).symm
+        have t2 := hS.shortTableauPivot t1
+        have t3 : !![1, -1, 0; u i, v i, 1; u j, v j, 1].shortTableauPivot 0 0
+            = !![1, -1, 0; -u i, v i + u i, 1; -u j, v j + u j, 1] := by
+          ext i j
+          fin_cases i <;> fin_cases j <;> simp [Matrix.shortTableauPivot_eq]
+        rw [t3] at t2
+        cases hc₁ with
+        | inl hc₁₀ =>
+            have t6 := t2.apply 2 1
+            simp [hu, hv, hc₀, hc₁₀] at t6
+        | inr hc₁₁ =>
+            have t6 := t2.apply 2 1
+            simp [hu, hv, hc₀, hc₁₁] at t6
+            exfalso
+            clear * - t6
+            obtain ⟨s, hs⟩ := t6
+            cases s with
+            | zero =>
+                simp only [SignType.zero_eq_zero, SignType.coe_zero] at hs
+                linarith
+            | neg =>
+                simp only [SignType.neg_eq_neg_one, SignType.coe_neg_one] at hs
+                linarith
+            | pos =>
+                simp only [SignType.pos_eq_one, SignType.coe_one] at hs
+                linarith
       · -- 15) hu : u = c₀ - c₁, hv : v = c₀ - c₁
         -- similar to on_goal 1, but with c₀ - c₁ (instead of c₀)
         left
@@ -219,9 +498,76 @@ private lemma matrixStackTwoValsTwoCols9_shortTableauPivot {X : Type} [Decidable
         rw [sub_eq_add_neg, neg_sub, ←mul_two] at hs₂
         cases s₁ <;> cases s₂ <;> simp [←hs₁] at hs₂ ⊢ <;> linarith only [hs₂]
       · -- 16) hu : u = c₁ - c₀, hv : v = -c₀
-        sorry
+        -- can be solved with the following additional assumptions:
+        have h_add_ass : ∃ i, ∃ j,
+          (c₀ i = 1 ∧ c₀ j = 0)
+          ∧ ((c₁ i = 0 ∧ c₁ j = -1) ∨ (c₁ i = 1 ∧ c₁ j = 1))
+          ∧ (!![1, -1, 0; u i, v i, 1; u j, v j, 1].IsTotallyUnimodular) := sorry
+        obtain ⟨i, j, hc₀, hc₁, hS⟩ := h_add_ass
+        have t1 : !![1, -1, 0; u i, v i, 1; u j, v j, 1] 0 0 ≠ 0 := (ne_of_beq_false rfl).symm
+        have t2 := hS.shortTableauPivot t1
+        have t3 : !![1, -1, 0; u i, v i, 1; u j, v j, 1].shortTableauPivot 0 0
+            = !![1, -1, 0; -u i, v i + u i, 1; -u j, v j + u j, 1] := by
+          ext i j
+          fin_cases i <;> fin_cases j <;> simp [Matrix.shortTableauPivot_eq]
+        rw [t3] at t2
+        cases hc₁ with
+        | inl hc₁₀ =>
+            have t6 := t2.apply 1 1
+            simp [hu, hv, hc₀, hc₁₀] at t6
+            exfalso
+            clear * - t6
+            obtain ⟨s, hs⟩ := t6
+            cases s with
+            | zero =>
+                simp only [SignType.zero_eq_zero, SignType.coe_zero] at hs
+                linarith
+            | neg =>
+                simp only [SignType.neg_eq_neg_one, SignType.coe_neg_one] at hs
+                linarith
+            | pos =>
+                simp only [SignType.pos_eq_one, SignType.coe_one] at hs
+                linarith
+        | inr hc₁₁ =>
+            have t4 := t2.det ![1, 2] ![1, 2]
+            have t5 : !![1, -1, 0; -u i, v i + u i, 1; -u j, v j + u j, 1].submatrix ![1, 2] ![1, 2]
+              = !![v i + u i, 1; v j + u j, 1] := Matrix.eta_fin_two _
+            rw [t5] at t4
+            simp [hu, hv, hc₀, hc₁₁] at t4
       · -- 17) hu : u = c₁ - c₀, hv : v = c₁
-        sorry
+        -- can be solved with the following additional assumptions:
+        have h_add_ass : ∃ i, ∃ j,
+          (c₀ i = 1 ∧ c₀ j = 0)
+          ∧ ((c₁ i = 0 ∧ c₁ j = -1) ∨ (c₁ i = 1 ∧ c₁ j = 1))
+          ∧ (!![1, -1, 0; u i, v i, 1; u j, v j, 1].IsTotallyUnimodular) := sorry
+        obtain ⟨i, j, hc₀, hc₁, hS⟩ := h_add_ass
+        have t1 : !![1, -1, 0; u i, v i, 1; u j, v j, 1] 0 0 ≠ 0 := (ne_of_beq_false rfl).symm
+        have t2 := hS.shortTableauPivot t1
+        have t3 : !![1, -1, 0; u i, v i, 1; u j, v j, 1].shortTableauPivot 0 0
+            = !![1, -1, 0; -u i, v i + u i, 1; -u j, v j + u j, 1] := by
+          ext i j
+          fin_cases i <;> fin_cases j <;> simp [Matrix.shortTableauPivot_eq]
+        rw [t3] at t2
+        cases hc₁ with
+        | inl hc₁₀ =>
+            have t6 := t2.apply 2 1
+            simp [hu, hv, hc₀, hc₁₀] at t6
+            exfalso
+            clear * - t6
+            obtain ⟨s, hs⟩ := t6
+            cases s with
+            | zero =>
+                simp only [SignType.zero_eq_zero, SignType.coe_zero] at hs
+                linarith
+            | neg =>
+                simp only [SignType.neg_eq_neg_one, SignType.coe_neg_one] at hs
+                linarith
+            | pos =>
+                simp only [SignType.pos_eq_one, SignType.coe_one] at hs
+                linarith
+        | inr hc₁₁ =>
+            have t6 := t2.apply 2 1
+            simp [hu, hv, hc₀, hc₁₁] at t6
       · -- 18) hu : u = c₁ - c₀, hv : v = c₁ - c₀
         -- similar to 15), but with minor adjustments
         left
