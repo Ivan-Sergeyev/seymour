@@ -1,5 +1,11 @@
 import Seymour.Matrix.Basic
 
+/-!
+# Partial Unimodularity
+
+This file is about matrices that are totally unimodular up to certain size of the square submatrix.
+-/
+
 variable {X Y R : Type} [CommRing R]
 
 /-- Matrix `A` satisfies TUness for submatrices up to `k`×`k` size, i.e.,

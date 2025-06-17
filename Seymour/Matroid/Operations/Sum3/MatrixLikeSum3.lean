@@ -32,7 +32,7 @@ abbrev MatrixLikeSum3.shortTableauPivotAₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} [Decida
   M.Aₗ.shortTableauPivot x y
 
 /-- Equivalent expression for `Aₗ` after pivoting on an element in `Aₗ`. -/
-lemma MatrixLikeSum3.shortTableauPivotAₗ_eq {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
+private lemma MatrixLikeSum3.shortTableauPivotAₗ_eq {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
     {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) (x : Xₗ) (y : Yₗ) :
     M.shortTableauPivotAₗ x y = ((M.Aₗ ⊟ M.D).shortTableauPivot ◩x y).toRows₁ := by
   ext
@@ -45,14 +45,14 @@ abbrev MatrixLikeSum3.shortTableauPivotD {Xₗ Yₗ Xᵣ Yᵣ : Type} [Decidable
   ((▬(M.Aₗ x) ⊟ M.D).shortTableauPivot ◩() y).toRows₂
 
 /-- Equivalent expression for `D` after pivoting on an element in `Aₗ`. -/
-lemma MatrixLikeSum3.shortTableauPivotD_eq {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
+private lemma MatrixLikeSum3.shortTableauPivotD_eq {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
     {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) (x : Xₗ) (y : Yₗ) :
     M.shortTableauPivotD x y = ((M.Aₗ ⊟ M.D).shortTableauPivot ◩x y).toRows₂ := by
   ext
   simp
 
 /-- After pivoting on an element in `Aₗ`, adjoining `Aₗ` and `D` (row-wise) still gives a totally unimodular matrix. -/
-lemma MatrixLikeSum3.shortTableauPivot_leftTU {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
+private lemma MatrixLikeSum3.shortTableauPivot_leftTU {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
      {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) {x : Xₗ} {y : Yₗ} (hxy : M.Aₗ x y ≠ 0) :
     (M.shortTableauPivotAₗ x y ⊟ M.shortTableauPivotD x y).IsTotallyUnimodular := by
   rw [M.shortTableauPivotD_eq x y, M.shortTableauPivotAₗ_eq x y, Matrix.fromRows_toRows]
@@ -60,39 +60,39 @@ lemma MatrixLikeSum3.shortTableauPivot_leftTU {Xₗ Yₗ Xᵣ Yᵣ : Type} [Deci
 
 /-! Auxiliary results about multiplying columns of the left block by `0, ±1` factors . -/
 
-abbrev Matrix.mulCols {X Y F : Type} [Mul F] (A : Matrix X Y F) (q : Y → F) :
+private abbrev Matrix.mulCols {X Y F : Type} [Mul F] (A : Matrix X Y F) (q : Y → F) :
     Matrix X Y F :=
   Matrix.of (fun i : X => fun j : Y => A i j * q j)
 
-abbrev MatrixLikeSum3.mulColsAₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁)
+private abbrev MatrixLikeSum3.mulColsAₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁)
     (q : Yₗ → ℚ) :
     Matrix Xₗ Yₗ ℚ :=
   M.Aₗ.mulCols q
 
-lemma MatrixLikeSum3.mulColsAₗ_eq {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁)
+private lemma MatrixLikeSum3.mulColsAₗ_eq {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁)
     (q : Yₗ → ℚ) :
     M.mulColsAₗ q = ((M.Aₗ ⊟ M.D).mulCols q).toRows₁ := by
   ext
   simp only [Matrix.of_apply, Matrix.toRows₁_apply, Matrix.fromRows_apply_inl]
 
-abbrev MatrixLikeSum3.mulColsD {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁)
+private abbrev MatrixLikeSum3.mulColsD {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁)
     (q : Yₗ → ℚ) :
     Matrix (Fin 2 ⊕ Xᵣ) Yₗ ℚ :=
   Matrix.of (fun i : Fin 2 ⊕ Xᵣ => fun j : Yₗ => M.D i j * q j)
 
-lemma MatrixLikeSum3.mulColsD_eq {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁)
+private lemma MatrixLikeSum3.mulColsD_eq {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁)
     (q : Yₗ → ℚ) :
     M.mulColsD q = ((M.Aₗ ⊟ M.D).mulCols q).toRows₂ := by
   ext
   simp only [Matrix.of_apply, Matrix.toRows₂_apply, Matrix.fromRows_apply_inr]
 
-lemma MatrixLikeSum3.mulCols_leftTU {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Yₗ] {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ}
+private lemma MatrixLikeSum3.mulCols_leftTU {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Yₗ] {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ}
     (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) {q : Yₗ → ℚ} (hq : ∀ j : Yₗ, q j ∈ SignType.cast.range) :
     (M.mulColsAₗ q ⊟ M.mulColsD q).IsTotallyUnimodular := by
   rw [M.mulColsAₗ_eq, M.mulColsD_eq, Matrix.fromRows_toRows]
   exact M.LeftTU.mul_cols hq
 
-lemma MatrixLikeSum3.mulCols_auxTU {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Xᵣ] [DecidableEq Yₗ]
+private lemma MatrixLikeSum3.mulCols_auxTU {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Xᵣ] [DecidableEq Yₗ]
     {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) {q : Yₗ → ℚ} (hq : ∀ j : Yₗ, q j ∈ SignType.cast.range) :
     (⊞ (M.mulColsAₗ q) 0 (M.mulColsD q).toRows₁ !![1; 1]).IsTotallyUnimodular := by
   let q' : Yₗ ⊕ Fin 1 → ℚ := (·.casesOn q 1)
@@ -131,7 +131,7 @@ lemma SignType.neq_neg_one_add_neg_one (s : SignType) : s.cast ≠ (-1 : ℚ) + 
     norm_num at hs
 
 set_option maxHeartbeats 666666 in
-lemma MatrixLikeSum3.vecIsParallel3 {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
+private lemma MatrixLikeSum3.vecIsParallel3 {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
     {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) {x : Xₗ} {y j : Yₗ} (hAₗ : M.Aₗ x j / M.Aₗ x y = -1) :
     VecIsParallel3 (fun i : Fin 2 ⊕ Xᵣ => M.D i j + M.D i y) c₀ c₁ (c₀ - c₁) := by
   cases M.Parallels y with
@@ -172,7 +172,7 @@ lemma MatrixLikeSum3.vecIsParallel3 {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq X�
       all_goals try simp [huc, hvc, hc₁, M.Col10, SignType.neq_neg_one_add_neg_one] at huv01 -- reduces from 8 to 0 cases
 
 /-- After pivoting on an element in `Aₗ`, columns of resulting `D` are still generated by `c₀` and `c₁`. -/
-lemma MatrixLikeSum3.shortTableauPivot_vecIsParallel3 {Xₗ Yₗ Xᵣ Yᵣ : Type}
+private lemma MatrixLikeSum3.shortTableauPivot_vecIsParallel3 {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
     {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) {x : Xₗ} {y : Yₗ} (hxy : M.Aₗ x y ≠ 0) (j : Yₗ) :
     VecIsParallel3 ((M.shortTableauPivotD x y) · j) c₀ c₁ (c₀ - c₁) := by
@@ -241,7 +241,7 @@ lemma MatrixLikeSum3.shortTableauPivot_vecIsParallel3 {Xₗ Yₗ Xᵣ Yᵣ : Typ
         simp [hjy, congr_fun hMDAₗ i]
       exact hMDj ▸ M.vecIsParallel3 h9
 
-lemma MatrixLikeSum3.shortTableauPivot_auxTU {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
+private lemma MatrixLikeSum3.shortTableauPivot_auxTU {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
     {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) {x : Xₗ} {y : Yₗ} (hxy : M.Aₗ x y ≠ 0) :
     (⊞ (M.shortTableauPivotAₗ x y) 0 (M.shortTableauPivotD x y).toRows₁ !![1; 1]).IsTotallyUnimodular := by
   have hxy' : (⊞ M.Aₗ 0 M.D.toRows₁ !![1; 1]) ◩x ◩y ≠ 0 := hxy
@@ -338,7 +338,7 @@ lemma MatrixLikeSum3.D_Aᵣ_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {c�
 /-- Every 3-sum-like matrix is totally unimodular. -/
 lemma MatrixLikeSum3.IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) :
     M.matrix.IsTotallyUnimodular :=
-  sorry  -- todo: adapt proof of total unimodularity of 2-sum
+  sorry -- Evgenia is working on this.
 
 
 /-! ## Implications for canonical signing of 3-sum of matrices -/

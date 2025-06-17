@@ -1,8 +1,8 @@
+import Mathlib.LinearAlgebra.Matrix.SchurComplement
+import Mathlib.LinearAlgebra.Matrix.Permutation
 import Seymour.Basic.Fin
 import Seymour.Basic.SignTypeCast
 import Seymour.Matrix.TotalUnimodularity
-import Mathlib.LinearAlgebra.Matrix.SchurComplement
-import Mathlib.LinearAlgebra.Matrix.Permutation
 
 /-!
 # Pivoting

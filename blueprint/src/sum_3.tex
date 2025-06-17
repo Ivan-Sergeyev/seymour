@@ -486,7 +486,7 @@
 \end{definition}
 
 \begin{lemma}
-    \label{lem:three_sum_like_signing_B}
+    \label{MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3}
     \uses{MatrixSum3.toCanonicalSigning,MatrixLikeSum3}
     % \lean{}
     \leanok
@@ -495,7 +495,7 @@
 
 \begin{proof}
     \uses{MatrixSum3.IsCanonicalSigning.Al_D_isTotallyUnimodular,MatrixLikeSum3}
-    % \leanok
+    \leanok
     Recall that $c_{0}'' - c_{1}'' \in \{0, \pm 1\}^{X_{r}}$ by Lemma~\ref{MatrixSum3.IsCanonicalSigning.Al_D_isTotallyUnimodular}.\ref{item:tss_Bp_c2}, so $\mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$ is well-defined. To see that $B'' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$, note that all properties from Definition~\ref{MatrixLikeSum3} are satisfied: property~\ref{item:tsl_cols} holds by Lemma~\ref{MatrixSum3.IsCanonicalSigning.Al_D_isTotallyUnimodular}.\ref{item:tss_Bp_Dcols}, property~\ref{item:tsl_bot} holds by Lemma~\ref{MatrixSum3.HasTuBr.cccAr_isTotallyUnimodular}.\ref{item:tss_Brp_tu3}, and property~\ref{item:tsl_left} holds by Lemma~\ref{MatrixSum3.IsCanonicalSigning.Al_D_isTotallyUnimodular}.\ref{item:tss_Bp_AlD}.
 \end{proof}
 
@@ -557,10 +557,10 @@
 \end{lemma}
 
 \begin{proof}
-    \uses{lem:three_sum_like_signing_B,MatrixLikeSum3.IsTotallyUnimodular}
+    \uses{MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3,MatrixLikeSum3.IsTotallyUnimodular}
     \leanok
-    Combine the results of Lemmas~\ref{lem:three_sum_like_signing_B} and~\ref{MatrixLikeSum3.IsTotallyUnimodular}.
-    % By Lemma~\ref{lem:three_sum_like_signing_B}, $B'' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$, and by Lemma~\ref{MatrixLikeSum3.IsTotallyUnimodular}, every matrix in $\mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$ is TU.
+    Combine the results of Lemmas~\ref{MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3} and~\ref{MatrixLikeSum3.IsTotallyUnimodular}.
+    % By Lemma~\ref{MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3}, $B'' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$, and by Lemma~\ref{MatrixLikeSum3.IsTotallyUnimodular}, every matrix in $\mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$ is TU.
 \end{proof}
 
 \begin{theorem}

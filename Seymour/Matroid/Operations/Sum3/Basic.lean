@@ -16,26 +16,22 @@ def equivUnitSumUnit : Unit ⊕ Unit ≃ Fin 2 :=
 
 /-- Unsigned version of the first special case of the 3×3 submatrix in the intersection of the summands. -/
 @[simp]
-abbrev matrix3x3unsigned₀ (F : Type) [Zero F] [One F] :
-    Matrix (Fin 3) (Fin 3) F :=
+abbrev matrix3x3unsigned₀ (F : Type) [Zero F] [One F] : Matrix (Fin 3) (Fin 3) F :=
   !![1, 0, 1; 0, 1, 1; 1, 1, 0]
 
 /-- Unsigned version of the second special case of the 3×3 submatrix in the intersection of the summands. -/
 @[simp]
-abbrev matrix3x3unsigned₁ (F : Type) [Zero F] [One F] :
-    Matrix (Fin 3) (Fin 3) F :=
+abbrev matrix3x3unsigned₁ (F : Type) [Zero F] [One F] : Matrix (Fin 3) (Fin 3) F :=
   !![1, 1, 1; 0, 1, 1; 1, 1, 0]
 
 /-- Signed version of the first special case of the 3×3 submatrix in the intersection of the summands. -/
 @[simp]
-abbrev matrix3x3signed₀ :
-    Matrix (Fin 3) (Fin 3) ℚ :=
+abbrev matrix3x3signed₀ : Matrix (Fin 3) (Fin 3) ℚ :=
   !![1, 0, 1; 0, -1, 1; 1, 1, 0]
 
 /-- Signed version of the second special case of the 3×3 submatrix in the intersection of the summands. -/
 @[simp]
-abbrev matrix3x3signed₁ :
-    Matrix (Fin 3) (Fin 3) ℚ :=
+abbrev matrix3x3signed₁ : Matrix (Fin 3) (Fin 3) ℚ :=
   matrix3x3unsigned₁ ℚ
 
 
@@ -190,7 +186,7 @@ private def backwards {α β γ δ : Type} : (α ⊕ β) ⊕ (γ ⊕ δ) ≃ (δ
 lemma MatrixSum3.transpose_matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Field F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F)
     (hS : S.D₀ₗ = S.D₀ᵣ) :
     S.transpose.matrix = S.matrix.transpose.submatrix backwards backwards := by
-  ext (_ | (_|_)) ((_|_) | _)
+  ext (_|(_|_)) ((_|_)|_)
   all_goals try rfl
   all_goals simp [hS, backwards, MatrixSum3.transpose, MatrixSum3.matrix, Matrix.fromBlocks_transpose,
       Matrix.transpose_nonsing_inv, Matrix.mul_assoc]
