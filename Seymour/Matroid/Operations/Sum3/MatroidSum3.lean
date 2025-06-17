@@ -302,10 +302,10 @@ lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} 
   let y₁ᵣ : Sᵣ.Y := ⟨y₁, hYY.mem3₁ᵣ⟩
   let y₂ₗ : Sₗ.Y := ⟨y₂, hYY.mem3₂ₗ⟩
   let y₂ᵣ : Sᵣ.Y := ⟨y₂, hYY.mem3₂ᵣ⟩
-  -- signing witnesses
+  -- signings of summands
   obtain ⟨Bₗ, hBₗ, hSBₗ⟩ := hSₗ
   obtain ⟨Bᵣ, hBᵣ, hSBᵣ⟩ := hSᵣ
-  -- signing of the entire thing
+  -- signing of the result
   let M := standardReprMatrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
   have hM : M.HasCanonicalSigning
   · constructor
