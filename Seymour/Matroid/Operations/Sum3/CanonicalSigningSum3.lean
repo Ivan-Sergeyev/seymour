@@ -1,6 +1,5 @@
 import Seymour.Matrix.Determinants
 import Seymour.Matroid.Operations.Sum3.CanonicalSigning
-import Seymour.Matroid.Operations.Sum3.Basic
 
 
 /-! # Canonical signing of 3-sum of matrices -/
