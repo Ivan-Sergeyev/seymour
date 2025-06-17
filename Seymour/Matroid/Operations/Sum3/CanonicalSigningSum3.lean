@@ -228,7 +228,7 @@ lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : T
 abbrev VecIsParallel3 {X F : Type} [Zero F] [Neg F] (v : X → F) (c₀ c₁ c₂ : X → F) : Prop :=
   v = 0 ∨ v = c₀ ∨ v = -c₀ ∨ v = c₁ ∨ v = -c₁ ∨ v = c₂ ∨ v = -c₂
 
-lemma vecIsParallel3_neg {X F : Type} [Field F] {v : X → F} {c₀ c₁ c₂ : X → F}
+lemma VecIsParallel3.neg {X F : Type} [Field F] {v : X → F} {c₀ c₁ c₂ : X → F}
     (hv : VecIsParallel3 v c₀ c₁ c₂) :
     VecIsParallel3 (-v) c₀ c₁ c₂ := by
   rcases hv with (hv | hv | hv | hv | hv | hv | hv)
@@ -236,6 +236,25 @@ lemma vecIsParallel3_neg {X F : Type} [Field F] {v : X → F} {c₀ c₁ c₂ : 
     rw [hv]
     ring_nf
     simp only [VecIsParallel3, true_or, or_true]
+
+lemma VecIsParallel3.mul_sign {X F : Type} [Field F] {v : X → F} {c₀ c₁ c₂ : X → F}
+    (hv : VecIsParallel3 v c₀ c₁ c₂) {q : F} (hq : q ∈ SignType.cast.range) :
+    VecIsParallel3 (fun i : X => v i * q) c₀ c₁ c₂ := by
+  obtain ⟨s, hs⟩ := hq
+  cases s with
+  | zero =>
+    simp only [SignType.zero_eq_zero, SignType.coe_zero] at hs
+    simp only [←hs, mul_zero]
+    left
+    rfl
+  | pos =>
+    simp only [SignType.pos_eq_one, SignType.coe_one] at hs
+    simp [←hs]
+    exact hv
+  | neg =>
+    simp only [SignType.neg_eq_neg_one, SignType.coe_neg, SignType.coe_one] at hs
+    simp only [←hs, mul_neg, mul_one]
+    exact hv.neg
 
 /-- The bottom-left block of a canonical signing of a 3-sum of matrices in the first special case. -/
 lemma MatrixSum3.IsCanonicalSigning.D_eq_sum_outer₀ {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
