@@ -9,7 +9,6 @@ import Seymour.Matrix.TotalUnimodularity
 This file provides means to (computably) test total unimodularity of small matrices.
 -/
 
-
 /-- Formally verified algorithm for testing total unimodularity. -/
 def Matrix.testTotallyUnimodular {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Bool :=
   ∀ k : ℕ, k ≤ min m n → ∀ x : Fin k → Fin m, ∀ y : Fin k → Fin n, (A.submatrix x y).det ∈ SignType.cast.range

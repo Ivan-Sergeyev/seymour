@@ -1,5 +1,5 @@
-import Seymour.Basic.Basic
 import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
+import Seymour.Basic.Basic
 
 /-!
 # Basic stuff about matrices
