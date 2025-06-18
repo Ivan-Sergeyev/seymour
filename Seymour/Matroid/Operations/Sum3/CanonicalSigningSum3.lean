@@ -282,9 +282,60 @@ lemma MatrixSum3.IsCanonicalSigning.D_eq_rows {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : 
 
 /-- The left block of a canonical signing of a 3-sum of matrices is totally unimodular. -/
 lemma MatrixSum3.IsCanonicalSigning.Aₗ_D_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
+    [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     (hS : S.IsCanonicalSigning) :
-    (S.Aₗ ⊟ S.D).IsTotallyUnimodular :=
-  sorry
+    (S.Aₗ ⊟ S.D).IsTotallyUnimodular := by
+  classical
+  let e : ((Xₗ ⊕ Fin 1) ⊕ Fin 2 ⊕ Xᵣ →
+      (Unit ⊕ (((((Unit ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Xₗ ⊕ Fin 1)) :=
+    (·.casesOn
+      (Sum.inr ∘ Sum.inr)
+      fun j ↦
+        if h0 : S.D j = 0 then ◩() else
+        if hpc₀ : S.D j = S.d₀ then ◪◩◩◩◩◩◩() else
+        if hmc₀ : S.D j = -S.d₀ then ◪◩◩◩◩◩◪() else
+        if hpc₁ : S.D j = S.d₁ then ◪◩◩◩◩◪() else
+        if hmc₁ : S.D j = -S.d₁ then ◪◩◩◩◪() else
+        if hpc₂ : S.D j = S.d₀ - S.d₁ then ◪◩◩◪() else
+        if hmc₂ : S.D j = S.d₁ - S.d₀ then ◪◩◪() else
+        False.elim (have := hS.D_eq_rows j; by aesop))
+  convert (MatrixSum3.HasTuBₗ.pmz_d₀_d₁_d₂_Aₗ_isTotallyUnimodular hS.1.1).submatrix e id
+  ext i j
+  cases i with
+  | inl => rfl
+  | inr i =>
+    simp only [Matrix.fromRows_apply_inr, Matrix.replicateRow_zero, Fin.isValue, Matrix.submatrix_apply, id_eq]
+    wlog h0 : ¬ S.D i = 0
+    · rw [not_not] at h0
+      simp [e, h0, congr_fun h0 j]
+    wlog hpd₀ : ¬ S.D i = S.d₀
+    · rw [not_not] at hpd₀
+      simp only [e, h0]
+      simp [hpd₀, congr_fun hpd₀ j]
+    wlog hmd₀ : ¬ S.D i = -S.d₀
+    · rw [not_not] at hmd₀
+      simp only [e, h0, hpd₀]
+      simp [hmd₀, congr_fun hmd₀ j]
+    wlog hpd₁ : ¬ S.D i = S.d₁
+    · rw [not_not] at hpd₁
+      simp only [e, h0, hpd₀, hmd₀]
+      simp [hpd₁, congr_fun hpd₁ j]
+    wlog hmd₁ : ¬ S.D i = -S.d₁
+    · rw [not_not] at hmd₁
+      simp only [e, h0, hpd₀, hmd₀, hpd₁]
+      simp [hmd₁, congr_fun hmd₁ j]
+    wlog hpd₂ : ¬ S.D i = S.d₀ - S.d₁
+    · rw [not_not] at hpd₂
+      simp only [e, h0, hpd₀, hmd₀, hpd₁, hmd₁]
+      simp [hpd₂, congr_fun hpd₂ j]
+    wlog hmd₂ : ¬ S.D i = S.d₁ - S.d₀
+    · rw [not_not] at hmd₂
+      simp only [e, h0, hpd₀, hmd₀, hpd₁, hmd₁, hpd₂]
+      simp [hmd₂, congr_fun hmd₂ j]
+    exfalso
+    have h := hS.D_eq_rows i
+    rw [VecIsParallel3, neg_sub S.d₀ S.d₁] at h
+    tauto
 
 /-- The extension of the bottom-right block of a canonical signing of a 3-sum of matrices with special columns is totally
     unimodular. -/
