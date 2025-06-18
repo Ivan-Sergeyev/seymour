@@ -373,7 +373,10 @@ noncomputable def MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3 {Xₗ Yₗ Xᵣ
   LeftTU := hS.Aₗ_D_isTotallyUnimodular
   Parallels := hS.D_eq_cols
   BottomTU := hS.c₀_c₁_c₂_Aᵣ_isTotallyUnimodular
-  AuxTU := hS.left.left
+  AuxTU := by
+    convert hS.left.left
+    exact hS.hSAᵣ.left.symm
+    exact hS.hSAᵣ.right.symm
   Col10 := hS.col10
   Col0911 := hS.col0911
 
@@ -389,4 +392,4 @@ lemma MatrixSum3.HasCanonicalSigning.HasTuSigning {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) :
     S.matrix.HasTuSigning :=
-  ⟨(S.toCanonicalSigning hS.left.left hS.left.right).matrix, hS.isCanonicalSigning.IsTotallyUnimodular, hS.toCanonicalSigning⟩
+  ⟨hS.toCanonicalSigning.matrix, hS.toCanonicalSigning_isCanonicalSigning.IsTotallyUnimodular, hS.toCanonicalSigning_isSigning⟩

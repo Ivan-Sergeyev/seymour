@@ -324,6 +324,14 @@ lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} 
           | inl x => exact (hSS.right.right.right.right.right.right.right.left x.val x.property.left (drop3_ne_fst x) (drop3_ne_snd x)).symm
           | inr => exact (hSS.right.right.right.right.right.right.right.left x₂ hXX.mem3₂ₗ (by tauto) (by tauto)).symm
         · ext i j
+          have : Sₗ.B x₀ₗ y₂ₗ = Sᵣ.B x₀ᵣ y₂ᵣ := by
+            have h1 : Sₗ.B x₀ₗ y₂ₗ = 1 := hSS.right.right.right.left
+            have h2 : Sᵣ.B x₀ᵣ y₂ᵣ = 1 := hSS.right.right.right.right.right.right.right.right.left
+            rw [h1, h2]
+          have : Sₗ.B x₁ₗ y₂ₗ = Sᵣ.B x₁ᵣ y₂ᵣ := by
+            have h1 :Sₗ.B x₁ₗ y₂ₗ = 1 := hSS.right.right.right.right.left
+            have h2 : Sᵣ.B x₁ᵣ y₂ᵣ = 1 := hSS.right.right.right.right.right.right.right.right.right.left
+            rw [h1, h2]
           fin_cases j
           fin_cases i <;> tauto
       · use Bᵣ.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ, hBᵣ.submatrix _ _
@@ -333,6 +341,14 @@ lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} 
           Matrix.fromRows_toRows, Matrix.fromBlocks_inj, and_true]
         constructor
         · ext i j
+          have : Sₗ.B x₂ₗ y₀ₗ = Sᵣ.B x₂ᵣ y₀ᵣ := by
+            have h1 : Sₗ.B x₂ₗ y₀ₗ = 1 := hSS.right.right.right.right.right.left
+            have h2 : Sᵣ.B x₂ᵣ y₀ᵣ = 1 := hSS.right.right.right.right.right.right.right.right.right.right.left
+            rw [h1, h2]
+          have : Sₗ.B x₂ₗ y₁ₗ = Sᵣ.B x₂ᵣ y₁ᵣ := by
+            have h1 : Sₗ.B x₂ₗ y₁ₗ = 1 := hSS.right.right.right.right.right.right.left
+            have h2 : Sᵣ.B x₂ᵣ y₁ᵣ = 1 := hSS.right.right.right.right.right.right.right.right.right.right.right.left
+            rw [h1, h2]
           fin_cases i
           fin_cases j <;> tauto
         · ext i j
@@ -349,10 +365,10 @@ lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} 
           fin_cases i <;> fin_cases j
           · exact standardRepr3sumComposition_Bₗ₀₀ hSS
           · exact congr_fun₂ h1001 0 1
-          · rfl
+          · exact hSS.right.right.right.right.right.right.right.right.left
           · exact standardRepr3sumComposition_Bₗ₁₀ hSS
           · exact standardRepr3sumComposition_Bₗ₁₁ hSS
-          · rfl
+          · exact hSS.right.right.right.right.right.right.right.right.right.left
           · valid3sum
           · valid3sum
           · rfl
@@ -364,8 +380,8 @@ lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} 
           · exact standardRepr3sumComposition_Bᵣ₁₀ hSS
           · exact standardRepr3sumComposition_Bᵣ₁₁ hSS
           · valid3sum
-          · rfl
-          · rfl
+          · exact hSS.right.right.right.right.right.left
+          · exact hSS.right.right.right.right.right.right.left
           · rfl
       | inr h1101 =>
         right
@@ -374,10 +390,10 @@ lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} 
           fin_cases i <;> fin_cases j
           · exact standardRepr3sumComposition_Bₗ₀₀ hSS
           · exact congr_fun₂ h1101 0 1
-          · rfl
+          · exact hSS.right.right.right.right.right.right.right.right.left
           · exact standardRepr3sumComposition_Bₗ₁₀ hSS
           · exact standardRepr3sumComposition_Bₗ₁₁ hSS
-          · rfl
+          · exact hSS.right.right.right.right.right.right.right.right.right.left
           · valid3sum
           · valid3sum
           · rfl
@@ -389,8 +405,8 @@ lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} 
           · exact standardRepr3sumComposition_Bᵣ₁₀ hSS
           · exact standardRepr3sumComposition_Bᵣ₁₁ hSS
           · valid3sum
-          · rfl
-          · rfl
+          · exact hSS.right.right.right.right.right.left
+          · exact hSS.right.right.right.right.right.right.left
           · rfl
   -- direct application of existing lemmas
   obtain ⟨B, hB, hBM⟩ := hM.HasTuSigning
