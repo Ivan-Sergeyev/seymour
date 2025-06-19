@@ -140,7 +140,7 @@ def Matrix.IsTuCanonicalSigning₁ {X Y : Type} (Q : Matrix X Y ℚ) (x₀ x₁ 
   ∧ (y₁ ≠ y₀ ∧ y₂ ≠ y₀ ∧ y₂ ≠ y₁)
   ∧ Q.submatrix3x3 x₀ x₁ x₂ y₀ y₁ y₂ = matrix3x3signed₁
 
-/-- Sufficient condition for existence of a TU canonical signing in the first spcial case. -/
+/-- Sufficient condition for existence of a TU canonical signing in the first special case. -/
 def Matrix.HasTuCanonicalSigning₀ {X Y : Type} (Q : Matrix X Y ℚ) (x₀ x₁ x₂ : X) (y₀ y₁ y₂ : Y) : Prop :=
   Q.IsTotallyUnimodular
   ∧ (x₁ ≠ x₀ ∧ x₂ ≠ x₀ ∧ x₂ ≠ x₁)
