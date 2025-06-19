@@ -220,16 +220,16 @@ lemma Matrix.HasTuCanonicalSigning₁.toCanonicalSigning_submatrix3x3 {X Y : Typ
   <;> simp only [mul_one, mul_neg, neg_zero, neg_neg, *]
   <;> simp [*] at hd₁ hd₂
 
-/-- Re-signing a TU matrix in the first special case yields its canonically signed version. -/
-lemma Matrix.HasTuCanonicalSigning₀.toCanonicalSigning {X Y : Type} [DecidableEq X] [DecidableEq Y] {Q : Matrix X Y ℚ}
-    {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y} (hQ : Q.HasTuCanonicalSigning₀ x₀ x₁ x₂ y₀ y₁ y₂) :
+/-- Canonical re-signing of a TU matrix yields its canonically signed version in the first special case. -/
+lemma Matrix.HasTuCanonicalSigning₀.toCanonicalSigning_IsTuCanonicalSigning₀ {X Y : Type} [DecidableEq X] [DecidableEq Y]
+    {Q : Matrix X Y ℚ} {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y} (hQ : Q.HasTuCanonicalSigning₀ x₀ x₁ x₂ y₀ y₁ y₂) :
     (Q.toCanonicalSigning x₀ x₁ x₂ y₀ y₁ y₂).IsTuCanonicalSigning₀ x₀ x₁ x₂ y₀ y₁ y₂ :=
   have ⟨hQtu, hxxx, hyyy, _⟩ := hQ
   ⟨hQtu.toCanonicalSigning x₀ x₁ x₂ y₀ y₁ y₂, hxxx, hyyy, hQ.toCanonicalSigning_submatrix3x3⟩
 
-/-- Re-signing a TU matrix in the second special case yields its canonically signed version. -/
-lemma Matrix.HasTuCanonicalSigning₁.toCanonicalSigning {X Y : Type} [DecidableEq X] [DecidableEq Y] {Q : Matrix X Y ℚ}
-    {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y} (hQ : Q.HasTuCanonicalSigning₁ x₀ x₁ x₂ y₀ y₁ y₂) :
+/-- Canonical re-signing of a TU matrix yields its canonically signed version in the second special case. -/
+lemma Matrix.HasTuCanonicalSigning₁.toCanonicalSigning_IsTuCanonicalSigning₁ {X Y : Type} [DecidableEq X] [DecidableEq Y]
+    {Q : Matrix X Y ℚ} {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y} (hQ : Q.HasTuCanonicalSigning₁ x₀ x₁ x₂ y₀ y₁ y₂) :
     (Q.toCanonicalSigning x₀ x₁ x₂ y₀ y₁ y₂).IsTuCanonicalSigning₁ x₀ x₁ x₂ y₀ y₁ y₂ :=
   have ⟨hQtu, hxxx, hyyy, _⟩ := hQ
   ⟨hQtu.toCanonicalSigning x₀ x₁ x₂ y₀ y₁ y₂, hxxx, hyyy, hQ.toCanonicalSigning_submatrix3x3⟩

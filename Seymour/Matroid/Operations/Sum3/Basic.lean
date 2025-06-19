@@ -89,12 +89,42 @@ def MatrixSum3.fromBlockSummands {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type}
 /-- Reconstructs the left summand from the matrix 3-sum structure. -/
 abbrev MatrixSum3.Bₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
     Matrix ((Xₗ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Fin 1) F :=
-  ⊞ S.Aₗ 0 (S.Dₗ ◫ S.D₀ₗ) !![1; 1]
+  ⊞ S.Aₗ 0 (S.Dₗ ◫ S.D₀ₗ) !![S.Aᵣ ◩0 ◩0; S.Aᵣ ◩1 ◩0]
 
 /-- Reconstructs the right summand from the matrix 3-sum structure. -/
 abbrev MatrixSum3.Bᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
     Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) F :=
-  ⊞ !![1, 1] 0 (S.D₀ᵣ ⊟ S.Dᵣ) S.Aᵣ
+  ⊞ !![S.Aₗ ◪0 ◪0, S.Aₗ ◪0 ◪1] 0 (S.D₀ᵣ ⊟ S.Dᵣ) S.Aᵣ
+
+/-- If the 3-sum is constructed from summands in block form, reconstructing the left summand yields the original one. -/
+lemma MatrixSum3.fromBlockSummands_Bₗ_eq {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F]
+    (Bₗ : Matrix ((Xₗ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Fin 1) F)
+    (Bᵣ : Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) F)
+    (hBₗ : Bₗ ◪0 ◪0 = Bᵣ ◪◩0 ◪◩0 ∧ Bₗ ◪1 ◪0 = Bᵣ ◪◩1 ◪◩0 ∧ ∀ i, Bₗ ◩i ◪0 = 0) :
+    (MatrixSum3.fromBlockSummands Bₗ Bᵣ).Bₗ = Bₗ := by
+  ext i j
+  cases j with
+  | inl jₗ => cases jₗ <;> cases i <;> tauto
+  | inr jᵣ =>
+    fin_cases jᵣ
+    cases i with
+    | inl iₗ => have := hBₗ.right.right iₗ; tauto
+    | inr iᵣ => fin_cases iᵣ <;> tauto
+
+/-- If the 3-sum is constructed from summands in block form, reconstructing the right summand yields the original one. -/
+lemma MatrixSum3.fromBlockSummands_Bᵣ_eq {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F]
+    (Bₗ : Matrix ((Xₗ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Fin 1) F)
+    (Bᵣ : Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) F)
+    (hBᵣ : Bᵣ ◩0 ◩0 = Bₗ ◩◪0 ◩◪0 ∧ Bᵣ ◩0 ◩1 = Bₗ ◩◪0 ◩◪1 ∧ ∀ i, Bᵣ ◩0 ◪i = 0) :
+    (MatrixSum3.fromBlockSummands Bₗ Bᵣ).Bᵣ = Bᵣ := by
+  ext i j
+  cases i with
+  | inl iₗ =>
+    fin_cases iₗ
+    cases j with
+    | inl jₗ => fin_cases jₗ <;> tauto
+    | inr jᵣ => have := hBᵣ.right.right jᵣ; tauto
+  | inr iᵣ => cases iᵣ <;> cases j <;> tauto
 
 /-- The 3×3 submatrix of the reconstructed left summand in the intersection of the summands. -/
 abbrev MatrixSum3.Sₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
