@@ -336,7 +336,7 @@ lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_isSigning {Xₗ Yₗ X�
 
 /-! ## Lemmas about extending bottom-right block with special columns and top-left block with special rows -/
 
-lemma MatrixSum3.HasTuBᵣ_special_form_cols {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
+lemma MatrixSum3.HasTuBᵣ.special_form_cols {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.HasTuBᵣ) (hSAₗ : S.Aₗ ◪0 ◪0 = 1 ∧ S.Aₗ ◪0 ◪1 = 1) :
     ∀ i : Fin 2 ⊕ Xᵣ, ![S.c₀ i, S.c₁ i] ≠ ![1, -1] ∧ ![S.c₀ i, S.c₁ i] ≠ ![-1, 1] := by
   intro i
@@ -480,6 +480,17 @@ lemma MatrixSum3.HasTuBₗ.pmz_d₀_d₁_d₂_Aₗ_isTotallyUnimodular {Xₗ Y�
   convert (hS'.pmz_c₀_c₁_c₂_Aᵣ_isTotallyUnimodular hSAᵣ).submatrix Sum.swap (Sum.map id (Sum.map id Sum.swap))
   aesop
 
+/-- Lemma 55.1 -/
+lemma MatrixSum3.HasTuBₗ.special_form_cols {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
+    (hS : S.HasTuBₗ) (hSAᵣ : S.Aᵣ ◩0 ◩0 = 1 ∧ S.Aᵣ ◩1 ◩0 = 1) :
+    ∀ i : Yₗ ⊕ Fin 2, ![S.d₀ i, S.d₁ i] ≠ ![1, -1] ∧ ![S.d₀ i, S.d₁ i] ≠ ![-1, 1] := by
+  intro i
+  have := hS.det (Z := Fin 2) ![◪0, ◪1] ![◩i, ◪0] --![◩0, ◩1] ![◪i, ◩0]
+  constructor
+  <;> intro contr
+  <;> have := congr_fun contr 0
+  <;> have := congr_fun contr 1
+  <;> simp_all [Matrix.det_fin_two]
 
 /-! ## Properties of canonical signings of 3-sums -/
 
@@ -507,17 +518,57 @@ lemma MatrixSum3.IsCanonicalSigning.D_eq_sum_outer₁ {Xₗ Yₗ Xᵣ Yᵣ : Typ
     S.D = S.c₀ ⊗ S.d₀ - S.c₀ ⊗ S.d₁ + S.c₁ ⊗ S.d₁ :=
   sorry
 
-/-- Every col of the bottom-left block of a canonical signing of a 3-sum of matrices is in `{0, ±c₀, ±c₁, ±c₂}`. -/
+/-- Every col of the bottom-left block of a canonical signing of a 3-sum of matrices is in
+`{0, ±c₀, ±c₁, ±c₂}`. Lemma 56.3. -/
 lemma MatrixSum3.IsCanonicalSigning.D_eq_cols {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.IsCanonicalSigning) :
-    ∀ j : Yₗ ⊕ Fin 2, VecIsParallel3 (S.D · j) S.c₀ S.c₁ (S.c₀ - S.c₁) :=
-  sorry
+    ∀ j : Yₗ ⊕ Fin 2, VecIsParallel3 (S.D · j) S.c₀ S.c₁ (S.c₀ - S.c₁) := by
+  intro j
+  have hTuBₗ : S.HasTuBₗ := hS.left.left
+  have h₁ := hTuBₗ.special_form_cols hS.hSAᵣ j
+  rcases hS.right with ⟨hDₗ,hDᵣ⟩|⟨hDₗ,hDᵣ⟩
+  --Apply the appropriate theorem based on whether it's [1 0; 0 -1] or [1 1; 0 1]
+  ( have h₂ := hS.D_eq_sum_outer₀ hDₗ); swap
+  ( have h₂ := hS.D_eq_sum_outer₁ hDₗ)
+  --At this point the proof for each branch is essentially identical
+  all_goals {
+    simp_rw [h₂]
+    obtain ⟨y, hy⟩ : S.d₀ j ∈ SignType.cast.range := hS.left.left.apply ◪0 ◩j
+    obtain ⟨z, hz⟩ : S.d₁ j ∈ SignType.cast.range := hS.left.left.apply ◪1 ◩j
+    eta_expand
+    rcases y <;> rcases z
+    <;> simp only [SignType.pos_eq_one, SignType.coe_one, SignType.zero_eq_zero,
+      SignType.coe_zero, SignType.neg_eq_neg_one, SignType.coe_neg] at hy hz
+    <;> simp [-c₀, -c₁, ←hy, ←hz, VecIsParallel3, Pi.zero_def, Pi.neg_def, sub_eq_add_neg] at h₁ ⊢
+    repeat refine .inr ?_
+    ext; abel
+  }
 
-/-- Every row of the bottom-left block of a canonical signing of a 3-sum of matrices is in `{0, ±d₀, ±d₁, ±d₂}`. -/
+/-- Every row of the bottom-left block of a canonical signing of a 3-sum of matrices is in
+`{0, ±d₀, ±d₁, ±d₂}`. Lemma 56.4. -/
 lemma MatrixSum3.IsCanonicalSigning.D_eq_rows {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.IsCanonicalSigning) :
-    ∀ i : Fin 2 ⊕ Xᵣ, VecIsParallel3 (S.D i) S.d₀ S.d₁ (S.d₀ - S.d₁) :=
-  sorry
+    ∀ i : Fin 2 ⊕ Xᵣ, VecIsParallel3 (S.D i) S.d₀ S.d₁ (S.d₀ - S.d₁) := by
+  intro j
+  have hTuBᵣ : S.HasTuBᵣ := hS.left.right
+  have h₁ := hTuBᵣ.special_form_cols hS.hSAₗ j
+  rcases hS.right with ⟨hDₗ,hDᵣ⟩|⟨hDₗ,hDᵣ⟩
+  --Apply the appropriate theorem based on whether it's [1 0; 0 -1] or [1 1; 0 1]
+  ( have h₂ := hS.D_eq_sum_outer₀ hDₗ); swap
+  ( have h₂ := hS.D_eq_sum_outer₁ hDₗ)
+  --At this point the proof for each branch is essentially identical
+  all_goals {
+    simp_rw [h₂]
+    obtain ⟨y, hy⟩ : S.c₀ j ∈ SignType.cast.range := hS.left.right.apply ◪j ◩0
+    obtain ⟨z, hz⟩ : S.c₁ j ∈ SignType.cast.range := hS.left.right.apply ◪j ◩1
+    eta_expand
+    rcases y <;> rcases z
+    <;> simp only [SignType.pos_eq_one, SignType.coe_one, SignType.zero_eq_zero,
+      SignType.coe_zero, SignType.neg_eq_neg_one, SignType.coe_neg] at hy hz
+    <;> simp [-c₀, -c₁, ←hy, ←hz, VecIsParallel3, Pi.zero_def, Pi.neg_def, sub_eq_add_neg] at h₁ ⊢
+    repeat refine .inr ?_
+    ext; abel
+  }
 
 /-- The left block of a canonical signing of a 3-sum of matrices is totally unimodular. -/
 lemma MatrixSum3.IsCanonicalSigning.Aₗ_D_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
