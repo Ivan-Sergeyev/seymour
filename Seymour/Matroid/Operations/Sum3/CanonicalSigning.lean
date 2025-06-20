@@ -29,15 +29,6 @@ def Matrix.toCanonicalSigning_unexpand : Lean.PrettyPrinter.Unexpander
 
 /-! ## General results -/
 
-set_option maxHeartbeats 333333 in
-/-- Canonical re-signing of a matrix has the same absolute value as the original matrix. -/
-@[simp]
-lemma Matrix.toCanonicalSigning_apply_abs {X Y : Type} [DecidableEq X] [DecidableEq Y]
-    (Q : Matrix X Y ℚ) {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y}
-    (_ : |Q x₀ y₀| = 1) (_ : |Q x₀ y₂| = 1) (_ : |Q x₂ y₀| = 1) (_ : |Q x₁ y₂| = 1) (_ : |Q x₂ y₁| = 1) (i : X) (j : Y) :
-    |(Q.toCanonicalSigning x₀ x₁ x₂ y₀ y₁ y₂) i j| = |Q i j| := by
-  aesop (add simp [abs_mul, Matrix.toCanonicalSigning])
-
 /-- Canonical re-signing of a TU matrix is TU. -/
 lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Type} [DecidableEq X] [DecidableEq Y] {Q : Matrix X Y ℚ}
     (hQ : Q.IsTotallyUnimodular) (x₀ x₁ x₂ : X) (y₀ y₁ y₂ : Y) :
@@ -127,66 +118,6 @@ def Matrix.HasTuCanonicalSigning₁_unexpand : Lean.PrettyPrinter.Unexpander
 
 
 /-! ## Lemmas about distinctness of row and column indices -/
-
-lemma Matrix.IsTuCanonicalSigning₀.distinct_x₀_x₁_x₂ {X Y : Type} {Q : Matrix X Y ℚ} {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y}
-    (hQ : Q.IsTuCanonicalSigning₀ x₀ x₁ x₂ y₀ y₁ y₂) :
-    x₁ ≠ x₀ ∧ x₂ ≠ x₀ ∧ x₂ ≠ x₁ := by
-  constructor
-  on_goal 2 => constructor
-  all_goals
-    by_contra hxx
-    rw [hxx] at hQ
-    have hQ01 := congr_fun₂ hQ.right 0 1
-    have hQ11 := congr_fun₂ hQ.right 1 1
-    have hQ21 := congr_fun₂ hQ.right 2 1
-    simp at hQ01 hQ11 hQ21
-    linarith
-
-lemma Matrix.IsTuCanonicalSigning₀.distinct_y₀_y₁_y₂ {X Y : Type} {Q : Matrix X Y ℚ} {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y}
-    (hQ : Q.IsTuCanonicalSigning₀ x₀ x₁ x₂ y₀ y₁ y₂) :
-    y₁ ≠ y₀ ∧ y₂ ≠ y₀ ∧ y₂ ≠ y₁ := by
-  constructor
-  on_goal 2 => constructor
-  all_goals
-    by_contra hyy
-    rw [hyy] at hQ
-    have hQ10 := congr_fun₂ hQ.right 1 0
-    have hQ11 := congr_fun₂ hQ.right 1 1
-    have hQ12 := congr_fun₂ hQ.right 1 2
-    simp at hQ10 hQ11 hQ12
-    linarith
-
-lemma Matrix.IsTuCanonicalSigning₁.distinct_x₀_x₁_x₂ {X Y : Type} {Q : Matrix X Y ℚ} {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y}
-    (hQ : Q.IsTuCanonicalSigning₁ x₀ x₁ x₂ y₀ y₁ y₂) :
-    x₁ ≠ x₀ ∧ x₂ ≠ x₀ ∧ x₂ ≠ x₁ := by
-  constructor
-  on_goal 2 => constructor
-  all_goals
-    by_contra hxx
-    rw [hxx] at hQ
-    have hQ01 := congr_fun₂ hQ.right 0 0
-    have hQ11 := congr_fun₂ hQ.right 1 0
-    have hQ21 := congr_fun₂ hQ.right 2 0
-    have hQ02 := congr_fun₂ hQ.right 0 2
-    have hQ22 := congr_fun₂ hQ.right 2 2
-    simp at hQ01 hQ11 hQ21 hQ02 hQ22
-    linarith
-
-lemma Matrix.IsTuCanonicalSigning₁.distinct_y₀_y₁_y₂ {X Y : Type} {Q : Matrix X Y ℚ} {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y}
-    (hQ : Q.IsTuCanonicalSigning₁ x₀ x₁ x₂ y₀ y₁ y₂) :
-    y₁ ≠ y₀ ∧ y₂ ≠ y₀ ∧ y₂ ≠ y₁ := by
-  constructor
-  on_goal 2 => constructor
-  all_goals
-    by_contra hyy
-    rw [hyy] at hQ
-    have hQ10 := congr_fun₂ hQ.right 1 0
-    have hQ11 := congr_fun₂ hQ.right 1 1
-    have hQ12 := congr_fun₂ hQ.right 1 2
-    have hQ21 := congr_fun₂ hQ.right 2 1
-    have hQ22 := congr_fun₂ hQ.right 2 2
-    simp at hQ10 hQ11 hQ12 hQ21 hQ22
-    linarith
 
 lemma Matrix.HasTuCanonicalSigning₀.distinct_x₀_x₁_x₂ {X Y : Type} {Q : Matrix X Y ℚ} {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y}
     (hQ : Q.HasTuCanonicalSigning₀ x₀ x₁ x₂ y₀ y₁ y₂) :
@@ -307,15 +238,3 @@ lemma Matrix.HasTuCanonicalSigning₁.toCanonicalSigning_submatrix3x3 {X Y : Typ
     cases hQ₀₀ <;> cases hQ₀₁ <;> cases hQ₀₂ <;> cases hQ₁₁ <;> cases hQ₁₂ <;> cases hQ₂₀ <;> cases hQ₂₁
     <;> simp only [mul_one, mul_neg, neg_zero, neg_neg, *]
     <;> simp [*] at hd₁ hd₂
-
-/-- Canonical re-signing of a TU matrix yields its canonically signed version in the first special case. -/
-lemma Matrix.HasTuCanonicalSigning₀.toCanonicalSigning_IsTuCanonicalSigning₀ {X Y : Type} [DecidableEq X] [DecidableEq Y]
-    {Q : Matrix X Y ℚ} {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y} (hQ : Q.HasTuCanonicalSigning₀ x₀ x₁ x₂ y₀ y₁ y₂) :
-    (Q.toCanonicalSigning x₀ x₁ x₂ y₀ y₁ y₂).IsTuCanonicalSigning₀ x₀ x₁ x₂ y₀ y₁ y₂ :=
-  ⟨hQ.left.toCanonicalSigning x₀ x₁ x₂ y₀ y₁ y₂, hQ.toCanonicalSigning_submatrix3x3⟩
-
-/-- Canonical re-signing of a TU matrix yields its canonically signed version in the second special case. -/
-lemma Matrix.HasTuCanonicalSigning₁.toCanonicalSigning_IsTuCanonicalSigning₁ {X Y : Type} [DecidableEq X] [DecidableEq Y]
-    {Q : Matrix X Y ℚ} {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y} (hQ : Q.HasTuCanonicalSigning₁ x₀ x₁ x₂ y₀ y₁ y₂) :
-    (Q.toCanonicalSigning x₀ x₁ x₂ y₀ y₁ y₂).IsTuCanonicalSigning₁ x₀ x₁ x₂ y₀ y₁ y₂ :=
-  ⟨hQ.left.toCanonicalSigning x₀ x₁ x₂ y₀ y₁ y₂, hQ.toCanonicalSigning_submatrix3x3⟩

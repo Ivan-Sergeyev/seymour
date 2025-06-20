@@ -59,21 +59,6 @@ noncomputable def MatrixSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Fie
 
 /-! ## Conversion of summands -/
 
--- todo: maybe move definitions in comments below from MatroidSum3.lean here
--- /-- Converts the right summand matrix to block form. -/
--- def Matrix.toBlockSummandₗ {α : Type} {Xₗ Yₗ : Set α} {F : Type} (Bₗ : Matrix Xₗ Yₗ F) (x₀ x₁ x₂ : Xₗ) (y₀ y₁ y₂ : Yₗ) :
---     Matrix (((Xₗ \ {x₀.val, x₁.val, x₂.val}).Elem ⊕ Fin 1) ⊕ Fin 2) (((Yₗ \ {y₀.val, y₁.val, y₂.val}).Elem ⊕ Fin 2) ⊕ Fin 1) F :=
---   Bₗ.submatrix
---     (·.casesOn (·.casesOn (fun i => ⟨i.val, i.property.left⟩) ![x₂]) ![x₀, x₁])
---     (·.casesOn (·.casesOn (fun i => ⟨i.val, i.property.left⟩) ![y₀, y₁]) ![y₂])
-
--- /-- Converts the left summand matrix to block form. -/
--- def Matrix.toBlockSummandᵣ {α : Type} {Xᵣ Yᵣ : Set α} {F : Type} (Bᵣ : Matrix Xᵣ Yᵣ F) (x₀ x₁ x₂ : Xᵣ) (y₀ y₁ y₂ : Yᵣ) :
---     Matrix (Fin 1 ⊕ (Fin 2 ⊕ (Xᵣ \ {x₀.val, x₁.val, x₂.val}).Elem)) (Fin 2 ⊕ (Fin 1 ⊕ (Yᵣ \ {y₀.val, y₁.val, y₂.val}).Elem)) F :=
---   Bᵣ.submatrix
---     (·.casesOn ![x₂] (·.casesOn ![x₀, x₁] (fun i => ⟨i.val, i.property.left⟩)))
---     (·.casesOn ![y₀, y₁] (·.casesOn ![y₂] (fun i => ⟨i.val, i.property.left⟩)))
-
 /-- Constructs 3-sum from summands in block form. -/
 def MatrixSum3.fromBlockSummands {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type}
     (Bₗ : Matrix ((Xₗ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Fin 1) F)
@@ -135,57 +120,6 @@ abbrev MatrixSum3.Sₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] 
 abbrev MatrixSum3.Sᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
     Matrix (Fin 3) (Fin 3) F :=
   S.Bᵣ.submatrix ![◪◩0, ◪◩1, ◩0] ![◩0, ◩1, ◪◩0]
-
-
-/-! ## Correctness -/
-
-/-- Equality of absolute values of the 2×2 submatrices in the intersection of the summands. -/
-abbrev MatrixSum3.HasEqD₀ₗD₀ᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) : Prop :=
-  S.D₀ₗ = S.D₀ᵣ
-
-/-- Equality of absolute values of the 3×3 submatrices in the intersection of the summands. -/
-abbrev MatrixSum3.HasEqSₗSᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) : Prop :=
-  S.Sₗ = S.Sᵣ
-
-/-- Equality of the 2×2 submatrices in the intersection of the summands. -/
-abbrev MatrixSum3.HasEqAbsD₀ₗD₀ᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [LinearOrderedAddCommGroup F]
-    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) : Prop :=
-  |S.D₀ₗ| = |S.D₀ᵣ|
-
-/-- Equality of the 3×3 submatrices in the intersection of the summands. -/
-abbrev MatrixSum3.HasEqAbsSₗSᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] [LinearOrderedAddCommGroup F]
-    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) : Prop :=
-  |S.Sₗ| = |S.Sᵣ|
-
-/-- Absolute values of the 3×3 submatrices in the intersection of the summands match the first special case. -/
-abbrev MatrixSum3.Has3x3abs₀ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] [LinearOrderedAddCommGroup F]
-    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) : Prop :=
-  |S.Sₗ| = matrix3x3unsigned₀ F ∧ |S.Sᵣ| = matrix3x3unsigned₀ F
-
-/-- Absolute values of the 3×3 submatrices in the intersection of the summands match the second special case. -/
-abbrev MatrixSum3.Has3x3abs₁ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] [LinearOrderedAddCommGroup F]
-    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) : Prop :=
-  |S.Sₗ| = matrix3x3unsigned₁ F ∧ |S.Sᵣ| = matrix3x3unsigned₁ F
-
-/-- Absolute values of the 3×3 submatrices in the intersection of the summands match the first or the second special case. -/
-abbrev MatrixSum3.Has3x3abs₀₁ {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type} [Zero F] [One F] [LinearOrderedAddCommGroup F]
-    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) : Prop :=
-  S.Has3x3abs₀ ∨ S.Has3x3abs₁
-
-/-- The signed 3×3 submatrices in the intersection of the summands match the first special case. -/
-abbrev MatrixSum3.Has3x3signed₀ {Xₗ Yₗ Xᵣ Yᵣ : Type}
-    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) : Prop :=
-  S.Sₗ = matrix3x3signed₀ ∧ S.Sᵣ = matrix3x3signed₀
-
-/-- The signed 3×3 submatrices in the intersection of the summands match the second special case. -/
-abbrev MatrixSum3.Has3x3signed₁ {Xₗ Yₗ Xᵣ Yᵣ : Type}
-    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) : Prop :=
-  S.Sₗ = matrix3x3signed₁ ∧ S.Sᵣ = matrix3x3signed₁
-
-/-- The signed 3×3 submatrices in the intersection of the summands match the first or the second special case. -/
-abbrev MatrixSum3.Has3x3signed₀₁ {Xₗ Yₗ Xᵣ Yᵣ : Type}
-    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) : Prop :=
-  S.Has3x3signed₀ ∨ S.Has3x3signed₁
 
 
 /-! ## Total unimodularity of summands -/

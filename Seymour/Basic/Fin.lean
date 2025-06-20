@@ -71,3 +71,59 @@ lemma Z2val_toRat_mul_Z2val_toRat (a b : Z2) : (a.val : ℚ) * (b.val : ℚ) = (
 @[simp]
 lemma cast_1_fromZ2_toRat : ZMod.cast (1 : Z2) = (1 : ℚ) := by
   decide
+
+lemma abs_add_eq_zmod_cast {a b : Z2} {a' b' : ℚ} (haa : |a'| = a.cast) (hbb : |b'| = b.cast)
+    (hab : a' + b' ∈ SignType.cast.range) :
+    |a' + b'| = (a + b).cast := by
+  cases Z2_eq_0_or_1 a with
+  | inl ha0 =>
+    rw [ha0, ZMod.cast_zero, abs_eq_zero] at haa
+    rw [ha0, haa, zero_add, zero_add, hbb]
+  | inr ha1 =>
+    cases Z2_eq_0_or_1 b with
+    | inl hb0 =>
+      rw [hb0, ZMod.cast_zero, abs_eq_zero] at hbb
+      rw [hb0, hbb, add_zero, add_zero, haa]
+    | inr hb1 =>
+      rw [ha1, cast_1_fromZ2_toRat, abs_eq rfl] at haa
+      rw [hb1, cast_1_fromZ2_toRat, abs_eq rfl] at hbb
+      rw [ha1, hb1, show (1 : Z2) + (1 : Z2) = (0 : Z2) by rfl, ZMod.cast_zero, abs_eq_zero]
+      cases haa <;> cases hbb <;> simp_all
+      all_goals
+        exfalso
+        obtain ⟨s, hs⟩ := hab
+        cases s <;> norm_num at hs
+
+lemma abs_add_add_eq_zmod_cast {a b c : Z2} {a' b' c' : ℚ} (haa : |a'| = a.cast) (hbb : |b'| = b.cast) (hcc : |c'| = c.cast)
+    (habc : a' + b' + c' ∈ SignType.cast.range) :
+    |a' + b' + c'| = (a + b + c).cast := by
+  cases Z2_eq_0_or_1 a with
+  | inl ha0 =>
+    rw [ha0, ZMod.cast_zero, abs_eq_zero] at haa
+    rw [haa, zero_add] at habc ⊢
+    rw [ha0, zero_add]
+    exact abs_add_eq_zmod_cast hbb hcc habc
+  | inr ha1 =>
+    cases Z2_eq_0_or_1 b with
+    | inl hb0 =>
+      rw [hb0, ZMod.cast_zero, abs_eq_zero] at hbb
+      rw [hbb, add_zero] at habc ⊢
+      rw [hb0, add_zero]
+      exact abs_add_eq_zmod_cast haa hcc habc
+    | inr hb1 =>
+      cases Z2_eq_0_or_1 c with
+      | inl hc0 =>
+        rw [hc0, ZMod.cast_zero, abs_eq_zero] at hcc
+        rw [hcc, add_zero] at habc ⊢
+        rw [hc0, add_zero]
+        exact abs_add_eq_zmod_cast haa hbb habc
+      | inr hc1 =>
+        rw [ha1, cast_1_fromZ2_toRat, abs_eq rfl] at haa
+        rw [hb1, cast_1_fromZ2_toRat, abs_eq rfl] at hbb
+        rw [hc1, cast_1_fromZ2_toRat, abs_eq rfl] at hcc
+        rw [ha1, hb1, hc1, show (1 : Z2) + (1 : Z2) + (1 : Z2) = (1 : Z2) by rfl, cast_1_fromZ2_toRat]
+        cases haa <;> cases hbb <;> cases hcc <;> simp_all
+        all_goals
+          exfalso
+          obtain ⟨s, hs⟩ := habc
+          cases s <;> norm_num at hs
