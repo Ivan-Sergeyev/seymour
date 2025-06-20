@@ -42,7 +42,7 @@ lemma Z3_eq_1_of_ne_0_2 {a : Z3} (ha0 : a ≠ 0) (ha2 : a ≠ 2) : a = 1 :=
 lemma Z3_eq_0_of_ne_1_2 {a : Z3} (ha1 : a ≠ 1) (ha2 : a ≠ 2) : a = 0 :=
   fin3_eq_0_of_ne_1_2 ha1 ha2
 
-lemma Z2_eq_0_or_1 (a : Z2) : a = 0 ∨ a = 1 := by
+lemma Z2.eq_0_or_1 (a : Z2) : a = 0 ∨ a = 1 := by
   rw [←ZMod.val_eq_zero]
   by_cases ha : a.val = 0
   · left
@@ -64,23 +64,29 @@ lemma Z2_ext_iff (a b : Z2) : a = b ↔ a.val = b.val := by
   · exact congr_arg ZMod.val
   · exact Z2_ext
 
-lemma Z2val_toRat_mul_Z2val_toRat (a b : Z2) : (a.val : ℚ) * (b.val : ℚ) = ((a*b).val : ℚ) := by
-  fin_cases a <;> fin_cases b <;> simp
-  apply one_mul
+lemma Z2.valCast_in_signTypeCastRange (x : Z2) :
+    (x.val.cast : ℚ) ∈ SignType.cast.range := by
+  rcases x.eq_0_or_1 with hx | hx
+  <;> rw [hx]
+  <;> [use SignType.zero; use SignType.pos]
+  <;> rfl
 
 @[simp]
 lemma cast_1_fromZ2_toRat : ZMod.cast (1 : Z2) = (1 : ℚ) := by
   decide
 
+lemma Z2val_toRat_mul_Z2val_toRat (a b : Z2) : (a.val : ℚ) * (b.val : ℚ) = ((a*b).val : ℚ) := by
+  fin_cases a <;> fin_cases b <;> simp
+
 lemma abs_add_eq_zmod_cast {a b : Z2} {a' b' : ℚ} (haa : |a'| = a.cast) (hbb : |b'| = b.cast)
     (hab : a' + b' ∈ SignType.cast.range) :
     |a' + b'| = (a + b).cast := by
-  cases Z2_eq_0_or_1 a with
+  cases a.eq_0_or_1 with
   | inl ha0 =>
     rw [ha0, ZMod.cast_zero, abs_eq_zero] at haa
     rw [ha0, haa, zero_add, zero_add, hbb]
   | inr ha1 =>
-    cases Z2_eq_0_or_1 b with
+    cases b.eq_0_or_1 with
     | inl hb0 =>
       rw [hb0, ZMod.cast_zero, abs_eq_zero] at hbb
       rw [hb0, hbb, add_zero, add_zero, haa]
@@ -97,21 +103,21 @@ lemma abs_add_eq_zmod_cast {a b : Z2} {a' b' : ℚ} (haa : |a'| = a.cast) (hbb :
 lemma abs_add_add_eq_zmod_cast {a b c : Z2} {a' b' c' : ℚ} (haa : |a'| = a.cast) (hbb : |b'| = b.cast) (hcc : |c'| = c.cast)
     (habc : a' + b' + c' ∈ SignType.cast.range) :
     |a' + b' + c'| = (a + b + c).cast := by
-  cases Z2_eq_0_or_1 a with
+  cases a.eq_0_or_1 with
   | inl ha0 =>
     rw [ha0, ZMod.cast_zero, abs_eq_zero] at haa
     rw [haa, zero_add] at habc ⊢
     rw [ha0, zero_add]
     exact abs_add_eq_zmod_cast hbb hcc habc
   | inr ha1 =>
-    cases Z2_eq_0_or_1 b with
+    cases b.eq_0_or_1 with
     | inl hb0 =>
       rw [hb0, ZMod.cast_zero, abs_eq_zero] at hbb
       rw [hbb, add_zero] at habc ⊢
       rw [hb0, add_zero]
       exact abs_add_eq_zmod_cast haa hcc habc
     | inr hb1 =>
-      cases Z2_eq_0_or_1 c with
+      cases c.eq_0_or_1 with
       | inl hc0 =>
         rw [hc0, ZMod.cast_zero, abs_eq_zero] at hcc
         rw [hcc, add_zero] at habc ⊢
@@ -127,3 +133,7 @@ lemma abs_add_add_eq_zmod_cast {a b c : Z2} {a' b' c' : ℚ} (haa : |a'| = a.cas
           exfalso
           obtain ⟨s, hs⟩ := habc
           cases s <;> norm_num at hs
+
+@[simp]
+def equivUnitSumUnit : Unit ⊕ Unit ≃ Fin 2 :=
+  ⟨(·.casesOn ↓0 ↓1), ![◩(), ◪()], (·.casesOn (by simp) (by simp)), (by fin_cases · <;> simp)⟩
