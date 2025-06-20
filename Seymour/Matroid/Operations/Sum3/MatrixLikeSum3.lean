@@ -365,55 +365,30 @@ lemma MatrixLikeSum3.IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁
       | inl => exact Matrix.submatrix_apply .. ▸ hgj ▸ hfiₗ ▸ hgₗ j _ hgj
       | inr => exact Matrix.submatrix_apply .. ▸ hgj ▸ hfiₗ ▸ rfl
     obtain ⟨j₀, y₀, hgj₀, notZero⟩ := hgₗ
-
-    -- Show the pivot entry is ±1
     have hAxy1 : M.Aₗ xₗ y₀ = 1 ∨ M.Aₗ xₗ y₀ = -1 := by
       obtain ⟨s, hs⟩ := (M.LeftTU.comp_rows Sum.inl).apply xₗ y₀
       cases s with
       | zero => exact (notZero hs.symm).elim
       | pos => exact Or.inl hs.symm
       | neg => exact Or.inr hs.symm
-    
-    -- Show the submatrix entry is ±1
     have hArAc1 : (M.matrix.submatrix f g) iₗ j₀ = 1 ∨ (M.matrix.submatrix f g) iₗ j₀ = -1 := by
       rw [Matrix.submatrix_apply, hfiₗ, hgj₀]
       exact hAxy1
     rw [in_signTypeCastRange_iff_abs]
-    -- Apply short tableau pivot lemma to the submatrix
-    obtain ⟨f', g', -, -, DET⟩ := (M.matrix.submatrix f g).shortTableauPivot_abs_det_eq_submatrix_abs_det hArAc1
-    
-    rw [DET]
-    rw [M.matrix.submatrix_shortTableauPivot hf hg iₗ j₀]
-    rw [hfiₗ, hgj₀]
-    rw [Matrix.submatrix_submatrix]
-    rw [←in_signTypeCastRange_iff_abs]
-    ----------------------------------------------------------
-    unfold Matrix.IsPartiallyUnimodular at ih
-    
-    -- rw [MatrixLikeSum3.matrix_shortTableauPivot_eq M notZero]
-  
-    -- S'' ((M.matrix.submatrix f g).shortTableauPivot iₗ j₀).submatrix f' g'
-    -- let M' := 
+    obtain ⟨f', g', -, -, hArAc⟩ := (M.matrix.submatrix f g).shortTableauPivot_abs_det_eq_submatrix_abs_det hArAc1
+    rw [hArAc, M.matrix.submatrix_shortTableauPivot hf hg iₗ j₀, hfiₗ, hgj₀, Matrix.submatrix_submatrix, ←in_signTypeCastRange_iff_abs]
     convert ih (M.shortTableauPivot notZero) (f ∘ f') (g ∘ g')
-    
     ext i j
-    
     cases i with
     | inl iₗ => 
       cases j with
-      | inl jₗ =>  -- Aₗ block
-        unfold MatrixLikeSum3.matrix MatrixLikeSum3.shortTableauPivot
-        simp
-      | inr jᵣ => simp  -- 0 block
+      | inl jₗ => simp [MatrixLikeSum3.shortTableauPivot]
+      | inr jᵣ => simp
     | inr iᵣ =>
       cases j with  
-      | inl jₗ =>  -- D block
-        unfold MatrixLikeSum3.matrix MatrixLikeSum3.shortTableauPivot
-        simp
-      | inr jᵣ =>  -- Aᵣ block
-        unfold MatrixLikeSum3.matrix MatrixLikeSum3.shortTableauPivot
-        simp
-    
+      | inl jₗ => simp [MatrixLikeSum3.shortTableauPivot]
+      | inr jᵣ => simp [MatrixLikeSum3.shortTableauPivot]
+
 
 /-! ## Implications for canonical signing of 3-sum of matrices -/
 
