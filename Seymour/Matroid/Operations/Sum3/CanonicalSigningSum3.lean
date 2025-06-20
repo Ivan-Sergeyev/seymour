@@ -908,7 +908,7 @@ lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_D_isSigning {Xₗ Yₗ X
       cases hS.toCanonicalSigning_isCanonicalSigning.right with
       | inl hSS =>
         obtain ⟨hBₗ', hBᵣ'⟩ := hSS
-        have hD₀ₗ : S.D₀ₗ = !![1, 0; 0, 1] := by stop
+        have hD₀ₗ : S.D₀ₗ = !![1, 0; 0, 1] := by
           ext i j
           have hD₀ₗij := hS.toCanonicalSigning_D₀ₗ_isSigning i j
           have hBₗ'ij := congr_fun₂ hBₗ' i j
@@ -920,7 +920,7 @@ lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_D_isSigning {Xₗ Yₗ X
           · cases Z2_eq_0_or_1 (S.D₀ₗ 0 1) <;> simp_all
           · cases Z2_eq_0_or_1 (S.D₀ₗ 1 0) <;> simp_all
           · cases Z2_eq_0_or_1 (S.D₀ₗ 1 1) <;> simp_all
-        have hD₀ₗ' : hS.toCanonicalSigning.D₀ₗ = !![1, 0; 0, -1] := by stop
+        have hD₀ₗ' : hS.toCanonicalSigning.D₀ₗ = !![1, 0; 0, -1] := by
           ext i j
           have hBₗ'ij := congr_fun₂ hBₗ' i j
           fin_cases i <;> fin_cases j <;> exact hBₗ'ij
