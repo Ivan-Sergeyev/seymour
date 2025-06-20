@@ -18,9 +18,6 @@ lemma Matrix.linearIndependent_iff_fromCols_zero {X Y R : Type} [Ring R] (A : Ma
   · simpa using congr_fun hscA ◩j
   · exact j.casesOn (by simpa using congr_fun hscA ·) (by simp)
 
-
-section fromPeterNelson
-
 private lemma LinearIndepOn.exists_maximal {ι R O : Type} [DivisionRing R] [AddCommGroup O] [Module R O] {t : Set ι}
     {v : ι → O} {s₀ : Set ι} (hRv : LinearIndepOn R v s₀) (ht : s₀ ⊆ t) :
     ∃ s : Set ι, s₀ ⊆ s ∧ Maximal (fun r : Set ι => r ⊆ t ∧ LinearIndepOn R v r) s :=
@@ -136,8 +133,6 @@ private lemma IsRowBasis.encard_eq [Field R] {s : Set m} {A : Matrix m n R} (hA 
   exact (basis_encard_le_aux hA ht).antisymm (basis_encard_le_aux ht hA)
 
 end Matrix
-
-end fromPeterNelson
 
 
 open scoped Matrix
