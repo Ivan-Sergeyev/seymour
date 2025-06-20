@@ -170,7 +170,7 @@ private lemma Matrix.IsTotallyUnimodular.fromRows_pivot {α : Type} [DecidableEq
       congr_fun₂ ((A ⊟ ▬r).submatrix_shortTableauPivot Sum.inl_injective Function.injective_id x y) iₗ j)
     ↓(A.shortTableauPivot_adjoinRow_eq r x y j)))
 
-private lemma Matrix.shortTableauPivot_abs_det_eq_submatrix_abs_det {F : Type} [LinearOrderedField F] {k : ℕ}
+lemma Matrix.shortTableauPivot_abs_det_eq_submatrix_abs_det {F : Type} [LinearOrderedField F] {k : ℕ}
     (A : Matrix (Fin k.succ) (Fin k.succ) F) {i j : Fin k.succ} (hAij : A i j = 1 ∨ A i j = -1) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
       |A.det| = |((A.shortTableauPivot i j).submatrix f g).det| := by

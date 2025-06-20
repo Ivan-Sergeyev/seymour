@@ -1,5 +1,7 @@
 import Seymour.Matroid.Operations.Sum3.CanonicalSigningSum3
-
+import Seymour.Matrix.PartialUnimodularity
+import Seymour.Matroid.Operations.Sum2
+import Seymour.Matrix.Pivoting
 
 /-! # Family of 3-sum-like matrices -/
 
@@ -336,9 +338,56 @@ lemma MatrixLikeSum3.D_Aᵣ_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {c�
   | inr => rfl
 
 /-- Every 3-sum-like matrix is totally unimodular. -/
-lemma MatrixLikeSum3.IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) :
-    M.matrix.IsTotallyUnimodular :=
-  sorry -- Evgenia is working on this.
+lemma MatrixLikeSum3.IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ] (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) : M.matrix.IsTotallyUnimodular := by
+  rw [Matrix.isTotallyUnimodular_iff_forall_isPartiallyUnimodular]
+  intro k
+  induction k generalizing M with
+  | zero => simp [Matrix.IsPartiallyUnimodular]
+  | succ n ih =>
+    intro f g
+    wlog hf : f.Injective
+    · exact M.matrix.submatrix_det_zero_of_not_injective_rows g hf ▸ zero_in_signTypeCastRange
+    wlog hg : g.Injective
+    · exact M.matrix.submatrix_det_zero_of_not_injective_cols f hg ▸ zero_in_signTypeCastRange
+    wlog hfₗ : ∃ iₗ : Fin (n + 1), ∃ xₗ : Xₗ, f iₗ = ◩xₗ
+    · push_neg at hfₗ
+      convert M.D_Aᵣ_isTotallyUnimodular.det (fn_of_sum_ne_inl hfₗ) g using 2
+      ext
+      rewrite [Matrix.submatrix_apply, Matrix.submatrix_apply, eq_of_fn_sum_ne_inl hfₗ]
+      rfl
+    obtain ⟨iₗ, xₗ, hfiₗ⟩ := hfₗ
+    wlog hgₗ : ∃ j₀ : Fin (n + 1), ∃ yₗ : Yₗ, (g j₀ = ◩yₗ ∧ M.Aₗ xₗ yₗ ≠ 0)
+    · push_neg at hgₗ
+      convert zero_in_signTypeCastRange
+      apply ((MatrixLikeSum3.matrix M).submatrix f g).det_eq_zero_of_row_eq_zero  iₗ
+      intro j
+      cases hgj : g j with
+      | inl => exact Matrix.submatrix_apply .. ▸ hgj ▸ hfiₗ ▸ hgₗ j _ hgj
+      | inr => exact Matrix.submatrix_apply .. ▸ hgj ▸ hfiₗ ▸ rfl
+    obtain ⟨j₀, y₀, hgj₀, notZero⟩ := hgₗ
+    have hAxy1 : M.Aₗ xₗ y₀ = 1 ∨ M.Aₗ xₗ y₀ = -1 := by
+      obtain ⟨s, hs⟩ := (M.LeftTU.comp_rows Sum.inl).apply xₗ y₀
+      cases s with
+      | zero => exact (notZero hs.symm).elim
+      | pos => exact Or.inl hs.symm
+      | neg => exact Or.inr hs.symm
+    have hArAc1 : (M.matrix.submatrix f g) iₗ j₀ = 1 ∨ (M.matrix.submatrix f g) iₗ j₀ = -1 := by
+      rw [Matrix.submatrix_apply, hfiₗ, hgj₀]
+      exact hAxy1
+    rw [in_signTypeCastRange_iff_abs]
+    obtain ⟨f', g', -, -, hArAc⟩ := (M.matrix.submatrix f g).shortTableauPivot_abs_det_eq_submatrix_abs_det hArAc1
+    rw [hArAc, M.matrix.submatrix_shortTableauPivot hf hg iₗ j₀, hfiₗ, hgj₀, Matrix.submatrix_submatrix, ←in_signTypeCastRange_iff_abs]
+    convert ih (M.shortTableauPivot notZero) (f ∘ f') (g ∘ g')
+    ext i j
+    cases i with
+    | inl iₗ => 
+      cases j with
+      | inl jₗ => simp [MatrixLikeSum3.shortTableauPivot]
+      | inr jᵣ => simp
+    | inr iᵣ =>
+      cases j with  
+      | inl jₗ => simp [MatrixLikeSum3.shortTableauPivot]
+      | inr jᵣ => simp [MatrixLikeSum3.shortTableauPivot]
 
 
 /-! ## Implications for canonical signing of 3-sum of matrices -/
