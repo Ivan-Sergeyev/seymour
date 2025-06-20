@@ -175,7 +175,6 @@ private lemma MatrixSum3.transpose_matrix {Xₗ Yₗ Xᵣ Yᵣ : Type} {F : Type
       Matrix.transpose_nonsing_inv, Matrix.mul_assoc]
 
 
-
 /-! # Canonical signing of matrices -/
 
 /-! ## Definition -/
@@ -1231,7 +1230,7 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSIgning_Dₗ_elem_mul_D�
   rw [abs_mul, Z2_cast_mul, hS.toCanonicalSigning_Dₗ_isSigning i₀ jₗ, hS.toCanonicalSigning_Dᵣ_isSigning iᵣ j₀]
   exact Rat.mul_comm ↑(ZMod.val (S.Dₗ i₀ jₗ)) ↑(ZMod.val (S.Dᵣ iᵣ j₀))
 
-set_option maxHeartbeats 0 in
+set_option maxHeartbeats 666666 in
 private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_D_isSigning {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) :
@@ -1323,7 +1322,6 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_isSigning {Xₗ 
   · rfl
   · apply hS.toCanonicalSigning_D_isSigning
   · apply hS.toCanonicalSigning_Aᵣ_isSigning
-
 
 
 /-! # Family of 3-sum-like matrices -/
@@ -1803,7 +1801,6 @@ private lemma MatrixSum3.HasCanonicalSigning.HasTuSigning {Xₗ Yₗ Xᵣ Yᵣ :
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) :
     S.matrix.HasTuSigning :=
   ⟨hS.toCanonicalSigning.matrix, hS.toCanonicalSigning_isCanonicalSigning.IsTotallyUnimodular, hS.toCanonicalSigning_isSigning⟩
-
 
 
 /-! # Matroid-level 3-sum -/
