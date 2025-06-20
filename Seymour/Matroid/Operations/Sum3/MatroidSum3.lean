@@ -452,3 +452,10 @@ theorem Matroid.Is3sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
   · exact hMₗ
   · exact hMᵣ
   · exact hMMM
+
+
+/--
+info: 'Matroid.Is3sumOf.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms Matroid.Is3sumOf.isRegular
