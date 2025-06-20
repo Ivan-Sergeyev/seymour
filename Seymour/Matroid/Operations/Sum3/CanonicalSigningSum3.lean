@@ -787,9 +787,8 @@ lemma neg_in_signTypeCastRange_iff {x : ℚ} : -x ∈ SignType.cast.range ↔ x 
 
 lemma MatrixSum3.HasCanonicalSigning.toCanonicalSIgning_Dₗᵣ_in_SignTypeCastRange {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
-    {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) :
-    ∀ iᵣ jₗ, hS.toCanonicalSigning.D ◪iᵣ ◩jₗ ∈ SignType.cast.range := by
-  intro iᵣ jₗ
+    {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) (iᵣ : Xᵣ) (jₗ : Yₗ) :
+    hS.toCanonicalSigning.D ◪iᵣ ◩jₗ ∈ SignType.cast.range := by
   rcases hS.toCanonicalSigning_isCanonicalSigning.D_eq_cols ◩jₗ with hc | hc | hc | hc | hc | hc | hc
   <;> rw [congr_fun hc ◪iᵣ]
   · exact zero_in_signTypeCastRange
@@ -802,6 +801,92 @@ lemma MatrixSum3.HasCanonicalSigning.toCanonicalSIgning_Dₗᵣ_in_SignTypeCastR
   · exact hS.toCanonicalSIgning_c₂_in_SignTypeCastRange ◪iᵣ
   · rw [Pi.neg_apply, neg_in_signTypeCastRange_iff]
     exact hS.toCanonicalSIgning_c₂_in_SignTypeCastRange ◪iᵣ
+
+lemma Z2_cast_mul (a b : Z2) : (ZMod.cast (a * b) : ℚ) = (ZMod.cast a : ℚ) * (ZMod.cast b : ℚ) := by
+  cases Z2_eq_0_or_1 a <;> cases Z2_eq_0_or_1 b <;> simp [*]
+
+lemma MatrixSum3.HasCanonicalSigning.choose_Dₗ_elem_mul_Dᵣ_isSigning {Xₗ Yₗ Xᵣ Yᵣ : Type}
+    [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
+    {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) (iᵣ : Xᵣ) (jₗ : Yₗ) (i₀ j₀ : Fin 2) :
+    |hS.left.left.choose ◪i₀ ◩◩jₗ * hS.left.right.choose ◪◪iᵣ ◩j₀| = ZMod.cast (S.Dᵣ iᵣ j₀ * S.Dₗ i₀ jₗ) := by
+  rw [abs_mul]
+  have hDₗ' := hS.left.left.choose_spec.right ◪i₀ ◩◩jₗ
+  have hDᵣ' := hS.left.right.choose_spec.right ◪◪iᵣ ◩j₀
+  rw [Z2_cast_mul, hDₗ', hDᵣ']
+  exact Rat.mul_comm ↑(ZMod.val (S.Dₗ i₀ jₗ)) ↑(ZMod.val (S.Dᵣ iᵣ j₀))
+
+lemma MatrixSum3.HasCanonicalSigning.toCanonicalSIgning_Dₗ_elem_mul_Dᵣ_isSigning {Xₗ Yₗ Xᵣ Yᵣ : Type}
+    [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
+    {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) (iᵣ : Xᵣ) (jₗ : Yₗ) (i₀ j₀ : Fin 2) :
+    |hS.toCanonicalSigning.Dₗ i₀ jₗ * hS.toCanonicalSigning.Dᵣ iᵣ j₀| = ZMod.cast (S.Dᵣ iᵣ j₀ * S.Dₗ i₀ jₗ) := by
+  rw [abs_mul]
+  have hDₗ' := hS.toCanonicalSigning_Dₗ_isSigning i₀ jₗ
+  have hDᵣ' := hS.toCanonicalSigning_Dᵣ_isSigning iᵣ j₀
+  rw [Z2_cast_mul, hDₗ', hDᵣ']
+  exact Rat.mul_comm ↑(ZMod.val (S.Dₗ i₀ jₗ)) ↑(ZMod.val (S.Dᵣ iᵣ j₀))
+
+lemma abs_add_eq_zmod_cast {a b : Z2} {a' b' : ℚ} (haa : |a'| = a.cast) (hbb : |b'| = b.cast)
+    (hab : a' + b' ∈ SignType.cast.range) :
+    |a' + b'| = (a + b).cast := by
+  cases Z2_eq_0_or_1 a with
+  | inl ha0 =>
+    rw [ha0, ZMod.cast_zero, abs_eq_zero] at haa
+    rw [ha0, haa, zero_add, zero_add, hbb]
+  | inr ha1 =>
+    cases Z2_eq_0_or_1 b with
+    | inl hb0 =>
+      rw [hb0, ZMod.cast_zero, abs_eq_zero] at hbb
+      rw [hb0, hbb, add_zero, add_zero, haa]
+    | inr hb1 =>
+      rw [ha1, cast_1_fromZ2_toRat, abs_eq rfl] at haa
+      rw [hb1, cast_1_fromZ2_toRat, abs_eq rfl] at hbb
+      rw [ha1, hb1, show (1 : Z2) + (1 : Z2) = (0 : Z2) by rfl, ZMod.cast_zero, abs_eq_zero]
+      rcases haa with ha' | ha' <;> rcases hbb with hb' | hb' -- @Martin: is using vanilla cases better here?
+      all_goals
+        simp only [ha', hb', add_neg_cancel, neg_add_cancel]
+      all_goals
+        exfalso
+        rw [ha', hb', Set.mem_range] at hab
+        obtain ⟨s, hs⟩ := hab
+        cases s <;> norm_num at hs -- @Martin: close enough or optimize?
+
+lemma abs_add_add_eq_zmod_cast {a b c : Z2} {a' b' c' : ℚ} (haa : |a'| = a.cast) (hbb : |b'| = b.cast) (hcc : |c'| = c.cast)
+    (habc : a' + b' + c' ∈ SignType.cast.range) :
+    |a' + b' + c'| = (a + b + c).cast := by
+  cases Z2_eq_0_or_1 a with
+  | inl ha0 =>
+    rw [ha0, ZMod.cast_zero, abs_eq_zero] at haa
+    rw [haa, zero_add] at habc ⊢
+    rw [ha0, zero_add]
+    exact abs_add_eq_zmod_cast hbb hcc habc
+  | inr ha1 =>
+    cases Z2_eq_0_or_1 b with
+    | inl hb0 =>
+      rw [hb0, ZMod.cast_zero, abs_eq_zero] at hbb
+      rw [hbb, add_zero] at habc ⊢
+      rw [hb0, add_zero]
+      exact abs_add_eq_zmod_cast haa hcc habc
+    | inr hb1 =>
+      cases Z2_eq_0_or_1 c with
+      | inl hc0 =>
+        rw [hc0, ZMod.cast_zero, abs_eq_zero] at hcc
+        rw [hcc, add_zero] at habc ⊢
+        rw [hc0, add_zero]
+        exact abs_add_eq_zmod_cast haa hbb habc
+      | inr hc1 =>
+        rw [ha1, cast_1_fromZ2_toRat, abs_eq rfl] at haa
+        rw [hb1, cast_1_fromZ2_toRat, abs_eq rfl] at hbb
+        rw [hc1, cast_1_fromZ2_toRat, abs_eq rfl] at hcc
+        rw [ha1, hb1, hc1, show (1 : Z2) + (1 : Z2) + (1 : Z2) = (1 : Z2) by rfl, cast_1_fromZ2_toRat]
+        rcases haa with ha' | ha' <;> rcases hbb with hb' | hb' <;> rcases hcc with hc' | hc'
+        all_goals
+          simp only [ha', hb', hc',
+            add_neg_cancel, add_neg_cancel_right, neg_add_cancel, neg_add_cancel_right, zero_add, abs_one, abs_neg]
+        all_goals
+          exfalso
+          rw [ha', hb', hc', Set.mem_range] at habc
+          obtain ⟨s, hs⟩ := habc
+          cases s <;> norm_num at hs
 
 set_option maxHeartbeats 0 in
 lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_D_isSigning {Xₗ Yₗ Xᵣ Yᵣ : Type}
@@ -817,140 +902,72 @@ lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_D_isSigning {Xₗ Yₗ X
   | inr iᵣ =>
     cases j with
     | inl jₗ =>
-      have hs := hS.toCanonicalSIgning_Dₗᵣ_in_SignTypeCastRange iᵣ jₗ
+      obtain ⟨s, hs⟩ := hS.toCanonicalSIgning_Dₗᵣ_in_SignTypeCastRange iᵣ jₗ
+      rw [←hs]
       simp [Matrix.mul_apply] at hs ⊢
-      unfold MatrixSum3.HasCanonicalSigning.toCanonicalSigning MatrixSum3.fromBlockSummands at hs ⊢
-      simp [Matrix.toBlocks₂₁, Matrix.toCols₂, Matrix.inv_def, Matrix.det_fin_two, Matrix.adjugate_fin_two] at hs ⊢
-      unfold Matrix.HasTuSigning.toCanonicalSummandₗ Matrix.HasTuSigning.toCanonicalSummandᵣ Matrix.toCanonicalSigning at hs ⊢
-      simp at hs
-      rcases hS.summands_HasTuCanonicalSigning with ⟨hBₗ', hBᵣ'⟩ | ⟨hBₗ', hBᵣ'⟩
-      · -- note: this is essentially re-proving `D_eq_sum_outer₀`
-        have new_goal : |hS.left.right.choose ◪◪iᵣ ◩0
-            * hS.left.right.choose ◩0 ◩0
-            * hS.left.left.choose ◩◪0 ◩◪0
-            * hS.left.left.choose ◪0 ◩◪0
-            * hS.left.left.choose ◪0 ◩◩jₗ
-            + hS.left.left.choose ◩◪0 ◩◪1
-            * hS.left.left.choose ◪1 ◩◪1
-            * hS.left.right.choose ◪◪iᵣ ◩1
-            * hS.left.right.choose ◩0 ◩1
-            * hS.left.left.choose ◪1 ◩◩jₗ| = ZMod.cast (S.Dᵣ iᵣ 0 * S.Dₗ 0 jₗ + S.Dᵣ iᵣ 1 * S.Dₗ 1 jₗ)
-        · have : |hS.left.right.choose ◪◪iᵣ ◩0 * hS.left.left.choose ◪0 ◩◩jₗ| = S.Dᵣ iᵣ 0 * S.Dₗ 0 jₗ := by sorry
-          have : |hS.left.right.choose ◪◪iᵣ ◩1 * hS.left.left.choose ◪1 ◩◩jₗ| = S.Dᵣ iᵣ 1 * S.Dₗ 1 jₗ := by sorry
-          set Bₗ' := hS.left.left.choose
-          set Bᵣ' := hS.left.right.choose
-          sorry
-          -- have hBᵣ'iᵣ0 := hBᵣ'.left.apply ◪◪iᵣ ◩0
-          -- have hSᵣ'20 := congr_fun₂ hBᵣ'.right 2 0
-          -- have hSₗ'20 := congr_fun₂ hBₗ'.right 2 0
-          -- have hSₗ'00 := congr_fun₂ hBₗ'.right 0 0
-          -- have hBₗ'0jₗ := hBₗ'.left.apply ◪0 ◩◩jₗ
-          -- have hSₗ'21 := congr_fun₂ hBₗ'.right 2 1
-          -- have hSₗ'11 := congr_fun₂ hBₗ'.right 1 1
-          -- have hBᵣ'iᵣ1 := hBᵣ'.left.apply ◪◪iᵣ ◩1
-          -- have hSᵣ'21 := congr_fun₂ hBᵣ'.right 2 1
-          -- have hSₗ'1jₗ := hBₗ'.left.apply ◪1 ◩◩jₗ
-          -- simp [Matrix.abs, abs_eq] at hBᵣ'iᵣ0 hSᵣ'20 hSₗ'20 hSₗ'00 hBₗ'0jₗ hSₗ'21 hSₗ'11 hBᵣ'iᵣ1 hSᵣ'21 hSₗ'1jₗ
-        · stop -- todo: this guards perofrmance-intensive computation to improve compilation speed; remove when proof finished
-          clear hBᵣ'
-          have hSₗ'00 := congr_fun₂ hBₗ'.right 0 0
-          have hSₗ'01 := congr_fun₂ hBₗ'.right 0 1
-          have hSₗ'02 := congr_fun₂ hBₗ'.right 0 2
-          have hSₗ'10 := congr_fun₂ hBₗ'.right 1 0
-          have hSₗ'11 := congr_fun₂ hBₗ'.right 1 1
-          have hSₗ'12 := congr_fun₂ hBₗ'.right 1 2
-          have hSₗ'20 := congr_fun₂ hBₗ'.right 2 0
-          have hSₗ'21 := congr_fun₂ hBₗ'.right 2 1
-          simp [Matrix.abs, abs_eq] at hSₗ'00 hSₗ'01 hSₗ'02 hSₗ'10 hSₗ'11 hSₗ'12 hSₗ'20 hSₗ'21
-          simp [hSₗ'01,
-                hSₗ'10,
-                pn_inv_eq_self hSₗ'00,
-                pn_inv_eq_self hSₗ'02,
-                pn_inv_eq_self hSₗ'11,
-                pn_inv_eq_self hSₗ'12,
-                pn_inv_eq_self hSₗ'20,
-                pn_inv_eq_self hSₗ'21]
-          ring_nf
-          simp [pn_pow_5 hSₗ'00,
-                pn_pow_6 hSₗ'00,
-                pn_pow_2 hSₗ'02,
-                pn_pow_2 hSₗ'11,
-                pn_pow_2 hSₗ'12,
-                pn_pow_5 hSₗ'20,
-                pn_pow_6 hSₗ'20,
-                pn_pow_2 hSₗ'21]
-          clear hSₗ'00 hSₗ'01 hSₗ'02 hSₗ'10 hSₗ'11 hSₗ'12 hSₗ'20 hSₗ'21
-          have hSₗ : S.Sₗ = matrix3x3unsigned₀ Z2 := by sorry -- todo: follows from `hBₗ'`
-          have hD₀ₗ : S.D₀ₗ = !![1, 0; 0, 1] := by
-            ext i j
-            have := congr_fun₂ hSₗ i j
-            fin_cases i <;> fin_cases j <;> exact this
-          have hD₀ₗ00 := congr_fun₂ hD₀ₗ 0 0
-          have hD₀ₗ01 := congr_fun₂ hD₀ₗ 0 1
-          have hD₀ₗ10 := congr_fun₂ hD₀ₗ 1 0
-          have hD₀ₗ11 := congr_fun₂ hD₀ₗ 1 1
-          simp [hD₀ₗ00, hD₀ₗ01, hD₀ₗ10, hD₀ₗ11]
-          clear hD₀ₗ00 hD₀ₗ01 hD₀ₗ10 hD₀ₗ11
-          exact new_goal
-      · -- note: this is essentially re-proving `D_eq_sum_outer₁`
-        have new_goal :  |-(hS.left.right.choose ◪◪iᵣ ◩0
-            * hS.left.right.choose ◩0 ◩0
-            * hS.left.left.choose ◩◪0 ◩◪0
-            * hS.left.left.choose ◪0 ◩◪0
-            * hS.left.left.choose ◪1 ◩◪1
-            * hS.left.left.choose ◪0 ◩◪1
-            * hS.left.left.choose ◪1 ◩◩jₗ)
-            + hS.left.right.choose ◪◪iᵣ ◩0
-            * hS.left.right.choose ◩0 ◩0
-            * hS.left.left.choose ◩◪0 ◩◪0
-            * hS.left.left.choose ◪0 ◩◪0
-            * hS.left.left.choose ◪0 ◩◩jₗ
-            + hS.left.left.choose ◩◪0 ◩◪1
-            * hS.left.left.choose ◪1 ◩◪1
-            * hS.left.right.choose ◪◪iᵣ ◩1
-            * hS.left.right.choose ◩0 ◩1
-            * hS.left.left.choose ◪1 ◩◩jₗ| = ZMod.cast (S.Dᵣ iᵣ 0 * S.Dₗ 0 jₗ + S.Dᵣ iᵣ 0 * S.Dₗ 1 jₗ + S.Dᵣ iᵣ 1 * S.Dₗ 1 jₗ)
-        · set Bₗ' := hS.left.left.choose
-          set Bᵣ' := hS.left.right.choose
-          sorry
-        · stop -- todo: this guards perofrmance-intensive computation to improve compilation speed; remove when proof finished
-          have hSₗ'00 := congr_fun₂ hBₗ'.right 0 0
-          have hSₗ'02 := congr_fun₂ hBₗ'.right 0 2
-          have hSₗ'10 := congr_fun₂ hBₗ'.right 1 0
-          have hSₗ'11 := congr_fun₂ hBₗ'.right 1 1
-          have hSₗ'12 := congr_fun₂ hBₗ'.right 1 2
-          have hSₗ'20 := congr_fun₂ hBₗ'.right 2 0
-          have hSₗ'21 := congr_fun₂ hBₗ'.right 2 1
-          simp [Matrix.abs, abs_eq] at hSₗ'00 hSₗ'02 hSₗ'10 hSₗ'11 hSₗ'12 hSₗ'20 hSₗ'21
-          simp [hSₗ'10]
-          simp [pn_inv_eq_self hSₗ'00]
-          simp [pn_inv_eq_self hSₗ'02]
-          simp [pn_inv_eq_self hSₗ'11]
-          simp [pn_inv_eq_self hSₗ'12]
-          simp [pn_inv_eq_self hSₗ'20]
-          simp [pn_inv_eq_self hSₗ'21]
-          ring_nf
-          simp [pn_pow_5 hSₗ'00,
-                pn_pow_6 hSₗ'00,
-                pn_pow_2 hSₗ'02,
-                pn_pow_2 hSₗ'11,
-                pn_pow_2 hSₗ'12,
-                pn_pow_5 hSₗ'20,
-                pn_pow_6 hSₗ'20,
-                pn_pow_2 hSₗ'21]
-          clear hSₗ'00 hSₗ'02 hSₗ'10 hSₗ'11 hSₗ'12 hSₗ'20 hSₗ'21
-          have hSₗ : S.Sₗ = matrix3x3unsigned₁ Z2 := by sorry -- todo: follows from `hBₗ'`
-          have hD₀ₗ : S.D₀ₗ = !![1, 1; 0, 1] := by
-            ext i j
-            have := congr_fun₂ hSₗ i j
-            fin_cases i <;> fin_cases j <;> exact this
-          have hD₀ₗ00 := congr_fun₂ hD₀ₗ 0 0
-          have hD₀ₗ01 := congr_fun₂ hD₀ₗ 0 1
-          have hD₀ₗ10 := congr_fun₂ hD₀ₗ 1 0
-          have hD₀ₗ11 := congr_fun₂ hD₀ₗ 1 1
-          simp [hD₀ₗ00, hD₀ₗ01, hD₀ₗ10, hD₀ₗ11]
-          clear hD₀ₗ00 hD₀ₗ01 hD₀ₗ10 hD₀ₗ11
-          exact new_goal
+      cases hS.toCanonicalSigning_isCanonicalSigning.right with
+      | inl hSS =>
+        obtain ⟨hBₗ', hBᵣ'⟩ := hSS
+        have hD₀ₗ : S.D₀ₗ = !![1, 0; 0, 1] := by stop
+          ext i j
+          have hD₀ₗij := hS.toCanonicalSigning_D₀ₗ_isSigning i j
+          have hBₗ'ij := congr_fun₂ hBₗ' i j
+          fin_cases i <;> fin_cases j
+          <;> simp at hD₀ₗij hBₗ'ij ⊢
+          <;> simp [hBₗ'ij] at hD₀ₗij
+          <;> clear * - hD₀ₗij
+          · cases Z2_eq_0_or_1 (S.D₀ₗ 0 0) <;> simp_all -- @Matrin: please fix this monstrosity
+          · cases Z2_eq_0_or_1 (S.D₀ₗ 0 1) <;> simp_all
+          · cases Z2_eq_0_or_1 (S.D₀ₗ 1 0) <;> simp_all
+          · cases Z2_eq_0_or_1 (S.D₀ₗ 1 1) <;> simp_all
+        have hD₀ₗ' : hS.toCanonicalSigning.D₀ₗ = !![1, 0; 0, -1] := by stop
+          ext i j
+          have hBₗ'ij := congr_fun₂ hBₗ' i j
+          fin_cases i <;> fin_cases j <;> exact hBₗ'ij
+        rw [hD₀ₗ]
+        rw [hD₀ₗ'] at hs
+        rw [Matrix.inv_def, Matrix.det_fin_two, Matrix.adjugate_fin_two] at hs ⊢
+        simp [inv_neg] at hs ⊢
+        rw [hs]
+        apply abs_add_eq_zmod_cast
+        · rw [mul_comm]
+          exact hS.toCanonicalSIgning_Dₗ_elem_mul_Dᵣ_isSigning iᵣ jₗ 0 0
+        · rw [abs_neg, mul_comm]
+          exact hS.toCanonicalSIgning_Dₗ_elem_mul_Dᵣ_isSigning iᵣ jₗ 1 1
+        · exact hs ▸ Set.mem_range_self s
+      | inr hSS =>
+        obtain ⟨hBₗ', hBᵣ'⟩ := hSS
+        have hD₀ₗ : S.D₀ₗ = !![1, 1; 0, 1] := by
+          ext i j
+          have hD₀ₗij := hS.toCanonicalSigning_D₀ₗ_isSigning i j
+          have hBₗ'ij := congr_fun₂ hBₗ' i j
+          fin_cases i <;> fin_cases j
+          <;> simp at hD₀ₗij hBₗ'ij ⊢
+          <;> simp [hBₗ'ij] at hD₀ₗij
+          <;> clear * - hD₀ₗij
+          · cases Z2_eq_0_or_1 (S.D₀ₗ 0 0) <;> simp_all -- @Matrin: please fix this monstrosity
+          · cases Z2_eq_0_or_1 (S.D₀ₗ 0 1) <;> simp_all
+          · cases Z2_eq_0_or_1 (S.D₀ₗ 1 0) <;> simp_all
+          · cases Z2_eq_0_or_1 (S.D₀ₗ 1 1) <;> simp_all
+        rw [hD₀ₗ]
+        have hD₀ₗ' : hS.toCanonicalSigning.D₀ₗ = !![1, 1; 0, 1] := by
+          ext i j
+          have hBₗ'ij := congr_fun₂ hBₗ' i j
+          fin_cases i <;> fin_cases j <;> exact hBₗ'ij
+        rw [hD₀ₗ'] at hs
+        rw [Matrix.inv_def, Matrix.det_fin_two, Matrix.adjugate_fin_two] at hs ⊢
+        simp [inv_neg] at hs ⊢
+        simp [add_mul, ←add_assoc] at hs ⊢
+        rw [hs]
+        have habc : (s.cast : ℚ) ∈ SignType.cast.range := Set.mem_range_self s
+        rw [hs] at habc
+        have hDₗᵣ00 := hS.toCanonicalSIgning_Dₗ_elem_mul_Dᵣ_isSigning iᵣ jₗ 0 0
+        rw [mul_comm] at hDₗᵣ00
+        have hDₗᵣ01 := hS.toCanonicalSIgning_Dₗ_elem_mul_Dᵣ_isSigning iᵣ jₗ 1 0
+        rw [mul_comm, ←abs_neg] at hDₗᵣ01
+        have hDₗᵣ11 := hS.toCanonicalSIgning_Dₗ_elem_mul_Dᵣ_isSigning iᵣ jₗ 1 1
+        rw [mul_comm] at hDₗᵣ11
+        exact abs_add_add_eq_zmod_cast hDₗᵣ00 hDₗᵣ01 hDₗᵣ11 habc
     | inr jᵣ => exact hS.toCanonicalSigning_Dᵣ_isSigning iᵣ jᵣ
 
 /-- Canonical re-signing yields a signing of the original 3-sum of marices. -/
@@ -964,9 +981,3 @@ lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_isSigning {Xₗ Yₗ X�
   · rfl
   · exact hS.toCanonicalSigning_D_isSigning _ _
   · exact hS.toCanonicalSigning_Aᵣ_isSigning _ _
-
-/-! ## Correcntess -/
-
-/-!
-  In this section we prove that `MatrixSum3.HasCanonicalSigning.toCanonicalSigning` is indeed a signing of the original 3-sum.
--/
