@@ -1,8 +1,8 @@
 import Seymour.Basic.FunctionToHalfSum
-import Seymour.Matrix.Pivoting
-import Seymour.Matroid.Properties.Regularity
 import Seymour.Matrix.Determinants
 import Seymour.Matrix.PartialUnimodularity
+import Seymour.Matrix.Pivoting
+import Seymour.Matroid.Properties.Regularity
 
 /-!
 # Matroid 2-sum
