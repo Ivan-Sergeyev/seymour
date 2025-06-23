@@ -141,29 +141,6 @@ private def MatrixSum3.Sᵣ_unexpand : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 
-/-! ## Transposition -/
-
-private def MatrixSum3.transpose {Xₗ Yₗ Xᵣ Yᵣ F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
-  MatrixSum3 Yᵣ Xᵣ Yₗ Xₗ F where
-  Aₗ  := S.Aᵣ.transpose.submatrix Sum.swap Sum.swap
-  Dₗ  := S.Dᵣ.transpose
-  D₀ₗ := S.D₀ᵣ.transpose
-  D₀ᵣ := S.D₀ₗ.transpose
-  Dᵣ  := S.Dₗ.transpose
-  Aᵣ  := S.Aₗ.transpose.submatrix Sum.swap Sum.swap
-
-private def backwards {α β γ δ : Type} : (α ⊕ β) ⊕ (γ ⊕ δ) ≃ (δ ⊕ γ) ⊕ (β ⊕ α) :=
-  (Equiv.sumComm _ _).trans (Equiv.sumCongr (Equiv.sumComm γ δ) (Equiv.sumComm α β))
-
-private lemma MatrixSum3.transpose_matrix {Xₗ Yₗ Xᵣ Yᵣ F : Type} [CommRing F] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F)
-    (hS : S.D₀ₗ = S.D₀ᵣ) :
-    S.transpose.matrix = S.matrix.transpose.submatrix backwards backwards := by
-  ext (_|(_|_)) ((_|_)|_)
-  all_goals try rfl
-  all_goals simp [hS, backwards, MatrixSum3.transpose, MatrixSum3.matrix, Matrix.fromBlocks_transpose,
-      Matrix.transpose_nonsing_inv, Matrix.mul_assoc]
-
-
 /-! # Canonical signing of matrices -/
 
 /-! ## Definition -/
@@ -734,6 +711,15 @@ private lemma MatrixSum3.pmz_c₀_c₁_c₂_Aᵣ_isTotallyUnimodular_of_Bᵣ {X�
     (show ∀ j, (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn 1 (-1)) 1) (-1)) 1) (-1)) 1) j ∈
         SignType.cast.range by rintro ((((((_|_)|_)|_)|_)|_)|_) <;> simp)).zero_fromCols Unit
   aesop
+
+private def MatrixSum3.transpose {Xₗ Yₗ Xᵣ Yᵣ F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
+    MatrixSum3 Yᵣ Xᵣ Yₗ Xₗ F where
+  Aₗ  := S.Aᵣ.transpose.submatrix Sum.swap Sum.swap
+  Dₗ  := S.Dᵣ.transpose
+  D₀ₗ := S.D₀ᵣ.transpose
+  D₀ᵣ := S.D₀ₗ.transpose
+  Dᵣ  := S.Dₗ.transpose
+  Aᵣ  := S.Aₗ.transpose.submatrix Sum.swap Sum.swap
 
 private lemma MatrixSum3.pmz_d₀_d₁_d₂_Aₗ_isTotallyUnimodular_of_Bₗ {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
