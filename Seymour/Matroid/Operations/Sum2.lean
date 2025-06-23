@@ -170,22 +170,6 @@ private lemma Matrix.IsTotallyUnimodular.fromRows_pivot {α : Type} [DecidableEq
       congr_fun₂ ((A ⊟ ▬r).submatrix_shortTableauPivot Sum.inl_injective Function.injective_id x y) iₗ j)
     ↓(A.shortTableauPivot_adjoinRow_eq r x y j)))
 
-lemma Matrix.shortTableauPivot_abs_det_eq_submatrix_abs_det {F : Type} [LinearOrderedField F] {k : ℕ}
-    (A : Matrix (Fin k.succ) (Fin k.succ) F) {i j : Fin k.succ} (hAij : A i j = 1 ∨ A i j = -1) :
-    ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
-      |A.det| = |((A.shortTableauPivot i j).submatrix f g).det| := by
-  have hAij0 : A i j ≠ 0
-  · cases hAij with
-    | inl h1 => exact ne_zero_of_eq_one h1
-    | inr h9 => simp [h9]
-  obtain ⟨f, g, hf, hg, hAfg⟩ := shortTableauPivot_submatrix_det_abs_eq_div hAij0
-  have hAij_abs : |A i j| = 1
-  · cases hAij with
-    | inl h1 => rw [h1, abs_one]
-    | inr h9 => rw [h9, abs_neg, abs_one]
-  rw [hAij_abs, div_one] at hAfg
-  exact ⟨f, g, hf, hg, hAfg.symm⟩
-
 
 /-! ## Total unimodularity after adjoining an outer product -/
 
@@ -284,7 +268,7 @@ private lemma matrix2sumComposition_isTotallyUnimodular {α : Type} [DecidableEq
       · rw [Matrix.submatrix_apply, hfiₗ, hgj₀]
         exact hAxy1
       obtain ⟨f', g', -, -, hArAc⟩ :=
-        ((matrix2sumComposition Aₗ r Aᵣ c).submatrix f g).shortTableauPivot_abs_det_eq_submatrix_abs_det hArAc1
+        ((matrix2sumComposition Aₗ r Aᵣ c).submatrix f g).abs_det_eq_shortTableauPivot_submatrix_abs_det hArAc1
       rw [in_signTypeCastRange_iff_abs, hArAc, (matrix2sumComposition Aₗ r Aᵣ c).submatrix_shortTableauPivot hf hg iₗ j₀,
         hfiₗ, hgj₀, Matrix.submatrix_submatrix, matrix2sumComposition_shortTableauPivot Aₗ r Aᵣ c,
         ←in_signTypeCastRange_iff_abs]

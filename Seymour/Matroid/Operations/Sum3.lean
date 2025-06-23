@@ -1,4 +1,8 @@
-import Seymour.Matroid.Operations.Sum2 -- TODO upstream reused parts, make 3-sum not depend on 2-sum
+import Seymour.Basic.FunctionToHalfSum
+import Seymour.Matrix.Determinants
+import Seymour.Matrix.PartialUnimodularity
+import Seymour.Matrix.Pivoting
+import Seymour.Matroid.Properties.Regularity
 
 
 /-! # Matrix-level 3-sum -/
@@ -536,7 +540,7 @@ noncomputable def MatrixSum3.HasCanonicalSigning.toCanonicalSigning {Xₗ Yₗ X
   In this section we prove that `MatrixSum3.HasCanonicalSigning.toCanonicalSigning` satisfies `IsCanonicalSigning`.
 -/
 
-private lemma MatrixSum3.HasCanonicalSigning.summands_HasTuCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Type}
+private lemma MatrixSum3.HasCanonicalSigning.summands_hasTuCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Type}
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) :
     hS.left.left.choose.HasTuCanonicalSigning₀ ◪0 ◪1 ◩◪0 ◩◪0 ◩◪1 ◪0 ∧
     hS.left.right.choose.HasTuCanonicalSigning₀ ◪◩0 ◪◩1 ◩0 ◩0 ◩1 ◪◩0 ∨
@@ -560,7 +564,7 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_Bₗ_eq {Xₗ Y�
     hS.toCanonicalSigning.Bₗ = hS.left.left.toCanonicalSummandₗ := by
   unfold MatrixSum3.HasCanonicalSigning.toCanonicalSigning
   rw [MatrixSum3.fromBlockSummands_Bₗ_eq]
-  rcases hS.summands_HasTuCanonicalSigning with ⟨hBₗ, hBᵣ⟩ | ⟨hBₗ, hBᵣ⟩
+  rcases hS.summands_hasTuCanonicalSigning with ⟨hBₗ, hBᵣ⟩ | ⟨hBₗ, hBᵣ⟩
   all_goals
     simp only [Matrix.HasTuSigning.toCanonicalSummandₗ, Matrix.HasTuSigning.toCanonicalSummandᵣ]
     refine ⟨?_, ?_, ?_⟩
@@ -586,7 +590,7 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_Bᵣ_eq {Xₗ Y�
     hS.toCanonicalSigning.Bᵣ = hS.left.right.toCanonicalSummandᵣ := by
   unfold MatrixSum3.HasCanonicalSigning.toCanonicalSigning
   rw [MatrixSum3.fromBlockSummands_Bᵣ_eq]
-  rcases hS.summands_HasTuCanonicalSigning with ⟨hBₗ, hBᵣ⟩ | ⟨hBₗ, hBᵣ⟩
+  rcases hS.summands_hasTuCanonicalSigning with ⟨hBₗ, hBᵣ⟩ | ⟨hBₗ, hBᵣ⟩
   all_goals
     simp only [Matrix.HasTuSigning.toCanonicalSummandₗ, Matrix.HasTuSigning.toCanonicalSummandᵣ]
     refine ⟨?_, ?_, ?_⟩
@@ -617,7 +621,7 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_isCanonicalSigni
     · apply hS.left.right.choose_spec.left.toCanonicalSigning
   · unfold MatrixSum3.Sₗ MatrixSum3.Sᵣ
     rw [MatrixSum3.HasCanonicalSigning.toCanonicalSigning_Bₗ_eq, MatrixSum3.HasCanonicalSigning.toCanonicalSigning_Bᵣ_eq]
-    rcases hS.summands_HasTuCanonicalSigning with hS' | hS' <;> [left; right]
+    rcases hS.summands_hasTuCanonicalSigning with hS' | hS' <;> [left; right]
     all_goals
       exact ⟨hS'.left.toCanonicalSigning_submatrix3x3, hS'.right.toCanonicalSigning_submatrix3x3⟩
 
@@ -1742,7 +1746,7 @@ private lemma MatrixLikeSum3.IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {c
       rw [Matrix.submatrix_apply, hfiₗ, hgj₀]
       exact hAxy1
     rw [in_signTypeCastRange_iff_abs]
-    obtain ⟨f', g', -, -, hMffgg⟩ := (M.matrix.submatrix f g).shortTableauPivot_abs_det_eq_submatrix_abs_det hMfg19
+    obtain ⟨f', g', -, -, hMffgg⟩ := (M.matrix.submatrix f g).abs_det_eq_shortTableauPivot_submatrix_abs_det hMfg19
     rw [hMffgg, M.matrix.submatrix_shortTableauPivot hf hg iₗ j₀, hfiₗ, hgj₀,
       Matrix.submatrix_submatrix, ←in_signTypeCastRange_iff_abs]
     convert ih (M.shortTableauPivot hAxy0) (f ∘ f') (g ∘ g')
