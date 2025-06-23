@@ -555,7 +555,7 @@ lemma VectorMatroid.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G 
             ext
             simpa using g.injective ·.symm)
           simpa [haz] using hfA
-    apply W.toMatroid.base_not_ssubset_indep hWG hWjG
+    apply hWG.not_ssubset_indep hWjG
     exact ⟨G.subset_insert j, Set.not_subset.← ⟨j, G.mem_insert j, hj.right⟩⟩
   have hA :
     W.A.submatrix (e'.leftCongr.trans e) hGY.equiv =
