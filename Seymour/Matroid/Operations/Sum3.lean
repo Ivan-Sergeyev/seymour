@@ -156,7 +156,7 @@ private abbrev MatrixSum3.HasTuBᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type} (S : MatrixSum3
 
 /-! ## Transposition -/
 
-def MatrixSum3.transpose {Xₗ Yₗ Xᵣ Yᵣ F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
+private def MatrixSum3.transpose {Xₗ Yₗ Xᵣ Yᵣ F : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ F) :
   MatrixSum3 Yᵣ Xᵣ Yₗ Xₗ F where
   Aₗ  := S.Aᵣ.transpose.submatrix Sum.swap Sum.swap
   Dₗ  := S.Dᵣ.transpose
@@ -255,24 +255,6 @@ private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Type} [Decida
 
 
 /-! ## Definition of re-signing in two special cases -/
-
-/-- Proposition that `Q` is a TU canonical signing in the first special case. -/
-private def Matrix.IsTuCanonicalSigning₀ {X Y : Type} (Q : Matrix X Y ℚ) (x₀ x₁ x₂ : X) (y₀ y₁ y₂ : Y) : Prop :=
-  Q.IsTotallyUnimodular ∧ Q.submatrix ![x₀, x₁, x₂] ![y₀, y₁, y₂] = matrix3x3signed₀
-
-@[app_unexpander Matrix.IsTuCanonicalSigning₀]
-private def Matrix.IsTuCanonicalSigning₀_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $Q) => `($(Q).$(Lean.mkIdent `IsTuCanonicalSigning₀))
-  | _ => throw ()
-
-/-- Proposition that `Q` is a TU canonical signing in the second special case. -/
-private def Matrix.IsTuCanonicalSigning₁ {X Y : Type} (Q : Matrix X Y ℚ) (x₀ x₁ x₂ : X) (y₀ y₁ y₂ : Y) : Prop :=
-  Q.IsTotallyUnimodular ∧ Q.submatrix ![x₀, x₁, x₂] ![y₀, y₁, y₂] = matrix3x3signed₁
-
-@[app_unexpander Matrix.IsTuCanonicalSigning₁]
-private def Matrix.IsTuCanonicalSigning₁_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $Q) => `($(Q).$(Lean.mkIdent `IsTuCanonicalSigning₁))
-  | _ => throw ()
 
 /-- Sufficient condition for existence of a TU canonical signing in the first special case. -/
 private def Matrix.HasTuCanonicalSigning₀ {X Y : Type} (Q : Matrix X Y ℚ) (x₀ x₁ x₂ : X) (y₀ y₁ y₂ : Y) : Prop :=
@@ -501,13 +483,13 @@ private lemma Function.IsParallelTo.mul_sign {X F : Type} [CommRing F] {v : X �
 /-! ## Auxiliary definitions -/
 
 /-- Sufficient condition for existence of a canonical signing of a 3-sum of matrices over `Z2`. -/
-def MatrixSum3.HasCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2) : Prop :=
+private def MatrixSum3.HasCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2) : Prop :=
   (S.Bₗ.HasTuSigning ∧ S.Bᵣ.HasTuSigning)
   ∧ ((S.Sₗ = matrix3x3unsigned₀ Z2 ∧ S.Sᵣ = matrix3x3unsigned₀ Z2) ∨
      (S.Sₗ = matrix3x3unsigned₁ Z2 ∧ S.Sᵣ = matrix3x3unsigned₁ Z2))
 
 /-- Proposition that `S` is a canonical signing of a 3-sum of matrices. -/
-def MatrixSum3.IsCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) : Prop :=
+private def MatrixSum3.IsCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) : Prop :=
   (S.Bₗ.IsTotallyUnimodular ∧ S.Bᵣ.IsTotallyUnimodular)
   ∧ ((S.Sₗ = matrix3x3signed₀ ∧ S.Sᵣ = matrix3x3signed₀) ∨
      (S.Sₗ = matrix3x3signed₁ ∧ S.Sᵣ = matrix3x3signed₁))
@@ -525,7 +507,7 @@ private noncomputable abbrev Matrix.HasTuSigning.toCanonicalSummandᵣ {Xᵣ Y�
   hBᵣ.choose.toCanonicalSigning ◪◩0 ◪◩1 ◩0 ◩0 ◩1 ◪◩0
 
 /-- Canonical re-signing of a 3-sum of matrices over `Z2`. -/
-noncomputable def MatrixSum3.HasCanonicalSigning.toCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Type}
+private noncomputable def MatrixSum3.HasCanonicalSigning.toCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) :
     MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ :=
@@ -627,9 +609,8 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_isCanonicalSigni
 /-! ## Lemmas about extending bottom-right block with special columns and top-left block with special rows -/
 
 private lemma MatrixSum3.HasTuBᵣ.special_form_cols {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
-    (hS : S.HasTuBᵣ) (hSAₗ : S.Aₗ ◪0 ◪0 = 1 ∧ S.Aₗ ◪0 ◪1 = 1) :
-    ∀ i : Fin 2 ⊕ Xᵣ, ![S.c₀ i, S.c₁ i] ≠ ![1, -1] ∧ ![S.c₀ i, S.c₁ i] ≠ ![-1, 1] := by
-  intro i
+    (hS : S.HasTuBᵣ) (hSAₗ : S.Aₗ ◪0 ◪0 = 1 ∧ S.Aₗ ◪0 ◪1 = 1) (i : Fin 2 ⊕ Xᵣ) :
+    ![S.c₀ i, S.c₁ i] ≠ ![1, -1] ∧ ![S.c₀ i, S.c₁ i] ≠ ![-1, 1] := by
   have := hS.det ![◪i, ◩0] ![◩0, ◩1]
   constructor
   <;> intro contr
@@ -772,10 +753,9 @@ private lemma MatrixSum3.HasTuBₗ.pmz_d₀_d₁_d₂_Aₗ_isTotallyUnimodular {
 
 /-- Lemma 55.1 -/
 private lemma MatrixSum3.HasTuBₗ.special_form_cols {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
-    (hS : S.HasTuBₗ) (hSAᵣ : S.Aᵣ ◩0 ◩0 = 1 ∧ S.Aᵣ ◩1 ◩0 = 1) :
-    ∀ i : Yₗ ⊕ Fin 2, ![S.d₀ i, S.d₁ i] ≠ ![1, -1] ∧ ![S.d₀ i, S.d₁ i] ≠ ![-1, 1] := by
-  intro i
-  have := hS.det (Z := Fin 2) ![◪0, ◪1] ![◩i, ◪0] --![◩0, ◩1] ![◪i, ◩0]
+    (hS : S.HasTuBₗ) (hSAᵣ : S.Aᵣ ◩0 ◩0 = 1 ∧ S.Aᵣ ◩1 ◩0 = 1) (i : Yₗ ⊕ Fin 2) :
+    ![S.d₀ i, S.d₁ i] ≠ ![1, -1] ∧ ![S.d₀ i, S.d₁ i] ≠ ![-1, 1] := by
+  have := hS.det ![◪0, ◪1] ![◩i, ◪0]
   constructor
   <;> intro contr
   <;> have := congr_fun contr 0
@@ -785,13 +765,13 @@ private lemma MatrixSum3.HasTuBₗ.special_form_cols {Xₗ Yₗ Xᵣ Yᵣ : Type
 
 /-! ## Properties of canonical signings of 3-sums -/
 
-private lemma MatrixSum3.IsCanonicalSigning.hSAₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
+private lemma MatrixSum3.IsCanonicalSigning.Aₗ_elem {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.IsCanonicalSigning) :
     S.Aₗ ◪0 ◪0 = 1 ∧ S.Aₗ ◪0 ◪1 = 1 := by
   rcases hS.right with hSS | hSS
   <;> exact ⟨congr_fun₂ hSS.left 2 0, congr_fun₂ hSS.left 2 1⟩
 
-private lemma MatrixSum3.IsCanonicalSigning.hSAᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
+private lemma MatrixSum3.IsCanonicalSigning.Aᵣ_elem {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.IsCanonicalSigning) :
     S.Aᵣ ◩0 ◩0 = 1 ∧ S.Aᵣ ◩1 ◩0 = 1 := by
   rcases hS.right with hSS | hSS
@@ -872,7 +852,7 @@ private lemma MatrixSum3.IsCanonicalSigning.D_eq_cols {Xₗ Yₗ Xᵣ Yᵣ : Typ
     (hS : S.IsCanonicalSigning) (j : Yₗ ⊕ Fin 2) :
     (S.D · j).IsParallelTo S.c₀ S.c₁ (S.c₀ - S.c₁) := by
   have hTuBₗ : S.HasTuBₗ := hS.left.left
-  have hj := hTuBₗ.special_form_cols hS.hSAᵣ j
+  have hj := hTuBₗ.special_form_cols hS.Aᵣ_elem j
   rcases hS.right with ⟨hDₗ, hDᵣ⟩ | ⟨hDₗ, hDᵣ⟩
   on_goal 1 => have hD := hS.D_eq_sum_outer₀ hDₗ
   on_goal 2 => have hD := hS.D_eq_sum_outer₁ hDₗ
@@ -894,7 +874,7 @@ private lemma MatrixSum3.IsCanonicalSigning.D_eq_rows {Xₗ Yₗ Xᵣ Yᵣ : Typ
     (hS : S.IsCanonicalSigning) (i : Fin 2 ⊕ Xᵣ) :
     (S.D i).IsParallelTo S.d₀ S.d₁ (S.d₀ - S.d₁) := by
   have hTuBᵣ : S.HasTuBᵣ := hS.left.right
-  have hi := hTuBᵣ.special_form_cols hS.hSAₗ i
+  have hi := hTuBᵣ.special_form_cols hS.Aₗ_elem i
   rcases hS.right with ⟨hDₗ, hDᵣ⟩ | ⟨hDₗ, hDᵣ⟩
   on_goal 1 => have hD := hS.D_eq_sum_outer₀ hDₗ
   on_goal 2 => have hD := hS.D_eq_sum_outer₁ hDₗ
@@ -929,7 +909,7 @@ private lemma MatrixSum3.IsCanonicalSigning.Aₗ_D_isTotallyUnimodular {Xₗ Y�
         if hpc₂ : S.D j = S.d₀ - S.d₁ then ◪◩◩◪() else
         if hmc₂ : S.D j = S.d₁ - S.d₀ then ◪◩◪() else
         False.elim (have := hS.D_eq_rows j; by aesop))
-  convert (MatrixSum3.HasTuBₗ.pmz_d₀_d₁_d₂_Aₗ_isTotallyUnimodular hS.left.left hS.hSAᵣ).submatrix e id
+  convert (MatrixSum3.HasTuBₗ.pmz_d₀_d₁_d₂_Aₗ_isTotallyUnimodular hS.left.left hS.Aᵣ_elem).submatrix e id
   ext i j
   cases i with
   | inl => rfl
@@ -973,7 +953,7 @@ private lemma MatrixSum3.IsCanonicalSigning.c₀_c₁_c₂_Aᵣ_isTotallyUnimodu
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ} (hS : S.IsCanonicalSigning) :
     (▮S.c₀ ◫ ▮S.c₁ ◫ ▮(S.c₀ - S.c₁) ◫ S.Aᵣ).IsTotallyUnimodular :=
-  MatrixSum3.HasTuBᵣ.c₀_c₁_c₂_Aᵣ_isTotallyUnimodular hS.left.right hS.hSAₗ
+  MatrixSum3.HasTuBᵣ.c₀_c₁_c₂_Aᵣ_isTotallyUnimodular hS.left.right hS.Aₗ_elem
 
 
 /-! ## Correctness -/
@@ -982,7 +962,7 @@ private lemma MatrixSum3.IsCanonicalSigning.c₀_c₁_c₂_Aᵣ_isTotallyUnimodu
   In this section we prove that `MatrixSum3.HasCanonicalSigning.toCanonicalSigning` is indeed a signing of the original 3-sum.
 -/
 
-private lemma Matrix.toCanonicalSigning_apply_abs' {X Y : Type} [DecidableEq X] [DecidableEq Y]
+private lemma Matrix.toCanonicalSigning_apply_abs {X Y : Type} [DecidableEq X] [DecidableEq Y]
     (Q : Matrix X Y ℚ) {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y}
     (hQ : |Q.submatrix ![x₀, x₁, x₂] ![y₀, y₁, y₂]| = matrix3x3unsigned₀ ℚ
         ∨ |Q.submatrix ![x₀, x₁, x₂] ![y₀, y₁, y₂]| = matrix3x3unsigned₁ ℚ)
@@ -1006,7 +986,7 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_Bₗ_isSigning {
     hS.toCanonicalSigning.Bₗ.IsSigningOf S.Bₗ := by
   rw [hS.toCanonicalSigning_Bₗ_eq]
   intro i j
-  convert hS.left.left.choose.toCanonicalSigning_apply_abs' ?_ i j
+  convert hS.left.left.choose.toCanonicalSigning_apply_abs ?_ i j
   · exact (hS.left.left.choose_spec.right i j).symm
   · rcases hS.right with ⟨hSS, _⟩ | ⟨hSS, _⟩ <;> [left; right]
     all_goals
@@ -1020,13 +1000,13 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_Bₗ_isSigning {
       try simp at hSij
       rw [hSij]
 
-private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_isSigningBᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type}
+private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_Bᵣ_isSigning {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) :
     hS.toCanonicalSigning.Bᵣ.IsSigningOf S.Bᵣ := by
   rw [hS.toCanonicalSigning_Bᵣ_eq]
   intro i j
-  convert hS.left.right.choose.toCanonicalSigning_apply_abs' ?_ i j
+  convert hS.left.right.choose.toCanonicalSigning_apply_abs ?_ i j
   · exact (hS.left.right.choose_spec.right i j).symm
   · rcases hS.right with ⟨_, hSS⟩ | ⟨_, hSS⟩ <;> [left; right]
     all_goals
@@ -1062,69 +1042,26 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_Aᵣ_isSigning {
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) :
     hS.toCanonicalSigning.Aᵣ.IsSigningOf S.Aᵣ :=
- (hS.toCanonicalSigning_isSigningBᵣ ◪· ◪·)
+ (hS.toCanonicalSigning_Bᵣ_isSigning ◪· ◪·)
 
 private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_Dᵣ_isSigning {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) :
     hS.toCanonicalSigning.Dᵣ.IsSigningOf S.Dᵣ :=
-  (hS.toCanonicalSigning_isSigningBᵣ ◪◪· ◩·)
+  (hS.toCanonicalSigning_Bᵣ_isSigning ◪◪· ◩·)
 
 private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_D₀ᵣ_isSigning {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) :
     hS.toCanonicalSigning.D₀ᵣ.IsSigningOf S.D₀ᵣ :=
-  (hS.toCanonicalSigning_isSigningBᵣ ◪◩· ◩·)
-
-private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_D₀ₗ_eq {Xₗ Yₗ Xᵣ Yᵣ : Type}
-    [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
-    {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) :
-    hS.toCanonicalSigning.D₀ₗ = !![1, 0; 0, -1] ∨ hS.toCanonicalSigning.D₀ₗ = !![1, 1; 0, 1] := by
-  rcases hS.toCanonicalSigning_isCanonicalSigning.right with ⟨hSₗ, _⟩ | ⟨hSₗ, _⟩
-  <;> [left; right]
-  all_goals
-    ext i j
-    have hSₗij := congr_fun₂ hSₗ i j
-    fin_cases i <;> fin_cases j <;> exact hSₗij
-
-private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_D₀ᵣ_eq {Xₗ Yₗ Xᵣ Yᵣ : Type}
-    [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
-    {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) :
-    hS.toCanonicalSigning.D₀ᵣ = !![1, 0; 0, -1] ∨ hS.toCanonicalSigning.D₀ᵣ = !![1, 1; 0, 1] := by
-  rcases hS.toCanonicalSigning_isCanonicalSigning.right with ⟨_, hSᵣ⟩ | ⟨_, hSᵣ⟩
-  <;> [left; right]
-  all_goals
-    ext i j
-    have hSᵣij := congr_fun₂ hSᵣ i j
-    fin_cases i <;> fin_cases j <;> exact hSᵣij
-
-private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_D₀ₗ_eq_D₀ᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type}
-    [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
-    {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) :
-    hS.toCanonicalSigning.D₀ₗ = hS.toCanonicalSigning.D₀ᵣ := by
-  rcases hS.toCanonicalSigning_isCanonicalSigning.right with ⟨hSₗ, hSᵣ⟩ | ⟨hSₗ, hSᵣ⟩
-  all_goals
-    ext i j
-    have hSₗij := congr_fun₂ hSₗ i j
-    have hSᵣij := congr_fun₂ hSᵣ i j
-    fin_cases i <;> fin_cases j <;> simp at hSₗij hSᵣij <;> simp [hSₗij, hSᵣij]
-
-private lemma signing_mul {a' b' : ℚ} {a b : Z2}
-    (haa : |a'| = a.val) (hbb : |b'| = b.val) : |a' * b'| = (a * b).val := by
-  rcases a.eq_0_or_1 with ha | ha
-  <;> rcases b.eq_0_or_1 with hb | hb
-  all_goals
-    rw [ha] at haa ⊢
-    rw [hb] at hbb ⊢
-    rw [abs_mul, haa, hbb]
-    simp
+  (hS.toCanonicalSigning_Bᵣ_isSigning ◪◩· ◩·)
 
 private lemma MatrixSum3.HasCanonicalSigning.summands_submatrix3x3 {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2}
     (hS : S.HasCanonicalSigning) :
-    (|hS.left.left.choose.submatrix ![◪0, ◪1, ◩◪0] ![◩◪0, ◩◪1, ◪0]| = matrix3x3unsigned₀ ℚ
-     ∧ |hS.left.right.choose.submatrix ![◪◩0, ◪◩1, ◩0] ![◩0, ◩1, ◪◩0]| = matrix3x3unsigned₀ ℚ)
-    ∨ (|hS.left.left.choose.submatrix ![◪0, ◪1, ◩◪0] ![◩◪0, ◩◪1, ◪0]| = matrix3x3unsigned₁ ℚ
-      ∧ |hS.left.right.choose.submatrix ![◪◩0, ◪◩1, ◩0] ![◩0, ◩1, ◪◩0]| = matrix3x3unsigned₁ ℚ) := by
+    |hS.left.left.choose.submatrix ![◪0, ◪1, ◩◪0] ![◩◪0, ◩◪1, ◪0]| = matrix3x3unsigned₀ ℚ ∧
+    |hS.left.right.choose.submatrix ![◪◩0, ◪◩1, ◩0] ![◩0, ◩1, ◪◩0]| = matrix3x3unsigned₀ ℚ ∨
+    |hS.left.left.choose.submatrix ![◪0, ◪1, ◩◪0] ![◩◪0, ◩◪1, ◪0]| = matrix3x3unsigned₁ ℚ ∧
+    |hS.left.right.choose.submatrix ![◪◩0, ◪◩1, ◩0] ![◩0, ◩1, ◪◩0]| = matrix3x3unsigned₁ ℚ := by
   rcases hS.right with hSr | hSr
   <;> [left; right]
   all_goals constructor
@@ -1147,7 +1084,7 @@ private lemma pn_pow_5 {a : ℚ} (ha : a = 1 ∨ a = -1) : a ^ 5 = a :=
 private lemma pn_pow_6 {a : ℚ} (ha : a = 1 ∨ a = -1) : a ^ 6 = 1 :=
   ha.casesOn (by rw [·]; exact rfl) (· ▸ rfl)
 
-private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSIgning_c₀_in_SignTypeCastRange {Xₗ Yₗ Xᵣ Yᵣ : Type}
+private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_c₀_in_signTypeCastRange {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) (iᵣ : Fin 2 ⊕ Xᵣ) :
     hS.toCanonicalSigning.c₀ iᵣ ∈ SignType.cast.range := by
@@ -1160,7 +1097,7 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSIgning_c₀_in_SignType
     rw [Matrix.fromRows_apply_inr, hS.toCanonicalSigning_Dᵣ_isSigning iᵣ 0]
     exact (S.Dᵣ iᵣ 0).valCast_in_signTypeCastRange
 
-private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSIgning_c₁_in_SignTypeCastRange {Xₗ Yₗ Xᵣ Yᵣ : Type}
+private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_c₁_in_signTypeCastRange {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) (iᵣ : Fin 2 ⊕ Xᵣ) :
     hS.toCanonicalSigning.c₁ iᵣ ∈ SignType.cast.range := by
@@ -1173,55 +1110,42 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSIgning_c₁_in_SignType
     rw [Matrix.fromRows_apply_inr, hS.toCanonicalSigning_Dᵣ_isSigning iᵣ 1]
     exact (S.Dᵣ iᵣ 1).valCast_in_signTypeCastRange
 
-private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSIgning_c₂_in_SignTypeCastRange {Xₗ Yₗ Xᵣ Yᵣ : Type}
+private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_c₂_in_signTypeCastRange {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) (iᵣ : Fin 2 ⊕ Xᵣ) :
     (hS.toCanonicalSigning.c₀ - hS.toCanonicalSigning.c₁) iᵣ ∈ SignType.cast.range := by
   rw [Pi.sub_apply]
   have hSBᵣ : hS.toCanonicalSigning.HasTuBᵣ := hS.toCanonicalSigning_isCanonicalSigning.left.right
-  have hcc := hSBᵣ.special_form_cols hS.toCanonicalSigning_isCanonicalSigning.hSAₗ iᵣ
-  obtain ⟨s₀, hs₀⟩ := hS.toCanonicalSIgning_c₀_in_SignTypeCastRange iᵣ
-  obtain ⟨s₁, hs₁⟩ :=  hS.toCanonicalSIgning_c₁_in_SignTypeCastRange iᵣ
+  have hcc := hSBᵣ.special_form_cols hS.toCanonicalSigning_isCanonicalSigning.Aₗ_elem iᵣ
+  obtain ⟨s₀, hs₀⟩ := hS.toCanonicalSigning_c₀_in_signTypeCastRange iᵣ
+  obtain ⟨s₁, hs₁⟩ :=  hS.toCanonicalSigning_c₁_in_signTypeCastRange iᵣ
   cases s₀ <;> cases s₁ <;> simp [←hs₀, ←hs₁] at hcc ⊢
 
 private lemma neg_in_signTypeCastRange_iff {x : ℚ} : -x ∈ SignType.cast.range ↔ x ∈ SignType.cast.range :=
   ⟨fun hx => in_signTypeCastRange_of_neg hx, fun hx => neg_in_signTypeCastRange hx⟩
 
-private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSIgning_Dₗᵣ_in_SignTypeCastRange {Xₗ Yₗ Xᵣ Yᵣ : Type}
+private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_Dₗᵣ_in_signTypeCastRange {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) (iᵣ : Xᵣ) (jₗ : Yₗ) :
     hS.toCanonicalSigning.D ◪iᵣ ◩jₗ ∈ SignType.cast.range := by
   rcases hS.toCanonicalSigning_isCanonicalSigning.D_eq_cols ◩jₗ with hc | hc | hc | hc | hc | hc | hc
   <;> rw [congr_fun hc ◪iᵣ]
   · exact zero_in_signTypeCastRange
-  · exact hS.toCanonicalSIgning_c₀_in_SignTypeCastRange ◪iᵣ
+  · exact hS.toCanonicalSigning_c₀_in_signTypeCastRange ◪iᵣ
   · rw [Pi.neg_apply, neg_in_signTypeCastRange_iff]
-    exact hS.toCanonicalSIgning_c₀_in_SignTypeCastRange ◪iᵣ
-  · exact hS.toCanonicalSIgning_c₁_in_SignTypeCastRange ◪iᵣ
+    exact hS.toCanonicalSigning_c₀_in_signTypeCastRange ◪iᵣ
+  · exact hS.toCanonicalSigning_c₁_in_signTypeCastRange ◪iᵣ
   · rw [Pi.neg_apply, neg_in_signTypeCastRange_iff]
-    exact hS.toCanonicalSIgning_c₁_in_SignTypeCastRange ◪iᵣ
-  · exact hS.toCanonicalSIgning_c₂_in_SignTypeCastRange ◪iᵣ
+    exact hS.toCanonicalSigning_c₁_in_signTypeCastRange ◪iᵣ
+  · exact hS.toCanonicalSigning_c₂_in_signTypeCastRange ◪iᵣ
   · rw [Pi.neg_apply, neg_in_signTypeCastRange_iff]
-    exact hS.toCanonicalSIgning_c₂_in_SignTypeCastRange ◪iᵣ
+    exact hS.toCanonicalSigning_c₂_in_signTypeCastRange ◪iᵣ
 
-private lemma Z2_cast_mul (a b : Z2) : (ZMod.cast (a * b) : ℚ) = (ZMod.cast a : ℚ) * (ZMod.cast b : ℚ) := by
-  cases a.eq_0_or_1 <;> cases b.eq_0_or_1 <;> simp [*]
-
-private lemma MatrixSum3.HasCanonicalSigning.choose_Dₗ_elem_mul_Dᵣ_isSigning {Xₗ Yₗ Xᵣ Yᵣ : Type}
-    [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
-    {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) (iᵣ : Xᵣ) (jₗ : Yₗ) (i₀ j₀ : Fin 2) :
-    |hS.left.left.choose ◪i₀ ◩◩jₗ * hS.left.right.choose ◪◪iᵣ ◩j₀| = ZMod.cast (S.Dᵣ iᵣ j₀ * S.Dₗ i₀ jₗ) := by
-  rw [abs_mul]
-  have hDₗ' := hS.left.left.choose_spec.right ◪i₀ ◩◩jₗ
-  have hDᵣ' := hS.left.right.choose_spec.right ◪◪iᵣ ◩j₀
-  rw [Z2_cast_mul, hDₗ', hDᵣ']
-  exact Rat.mul_comm ↑(ZMod.val (S.Dₗ i₀ jₗ)) ↑(ZMod.val (S.Dᵣ iᵣ j₀))
-
-private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSIgning_Dₗ_elem_mul_Dᵣ_isSigning {Xₗ Yₗ Xᵣ Yᵣ : Type}
+private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_Dₗ_elem_mul_Dᵣ_elem {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) (iᵣ : Xᵣ) (jₗ : Yₗ) (i₀ j₀ : Fin 2) :
     |hS.toCanonicalSigning.Dₗ i₀ jₗ * hS.toCanonicalSigning.Dᵣ iᵣ j₀| = ZMod.cast (S.Dᵣ iᵣ j₀ * S.Dₗ i₀ jₗ) := by
-  rw [abs_mul, Z2_cast_mul, hS.toCanonicalSigning_Dₗ_isSigning i₀ jₗ, hS.toCanonicalSigning_Dᵣ_isSigning iᵣ j₀]
+  rw [abs_mul, Z2_mul_cast_toRat, hS.toCanonicalSigning_Dₗ_isSigning i₀ jₗ, hS.toCanonicalSigning_Dᵣ_isSigning iᵣ j₀]
   exact Rat.mul_comm ↑(ZMod.val (S.Dₗ i₀ jₗ)) ↑(ZMod.val (S.Dᵣ iᵣ j₀))
 
 set_option maxHeartbeats 666666 in
@@ -1238,7 +1162,7 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_D_isSigning {X�
   | inr iᵣ =>
     cases j with
     | inl jₗ =>
-      obtain ⟨s, hs⟩ := hS.toCanonicalSIgning_Dₗᵣ_in_SignTypeCastRange iᵣ jₗ
+      obtain ⟨s, hs⟩ := hS.toCanonicalSigning_Dₗᵣ_in_signTypeCastRange iᵣ jₗ
       rw [←hs]
       simp [Matrix.mul_apply] at hs ⊢
       cases hS.toCanonicalSigning_isCanonicalSigning.right with
@@ -1267,9 +1191,9 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_D_isSigning {X�
         rw [hs]
         apply abs_add_eq_zmod_cast
         · rw [mul_comm]
-          exact hS.toCanonicalSIgning_Dₗ_elem_mul_Dᵣ_isSigning iᵣ jₗ 0 0
+          exact hS.toCanonicalSigning_Dₗ_elem_mul_Dᵣ_elem iᵣ jₗ 0 0
         · rw [abs_neg, mul_comm]
-          exact hS.toCanonicalSIgning_Dₗ_elem_mul_Dᵣ_isSigning iᵣ jₗ 1 1
+          exact hS.toCanonicalSigning_Dₗ_elem_mul_Dᵣ_elem iᵣ jₗ 1 1
         · exact hs ▸ Set.mem_range_self s
       | inr hSS =>
         obtain ⟨hSₗ', hSᵣ'⟩ := hSS
@@ -1296,11 +1220,11 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_D_isSigning {X�
         rw [hs]
         have habc : (s.cast : ℚ) ∈ SignType.cast.range := Set.mem_range_self s
         rw [hs] at habc
-        have hD00 := hS.toCanonicalSIgning_Dₗ_elem_mul_Dᵣ_isSigning iᵣ jₗ 0 0
+        have hD00 := hS.toCanonicalSigning_Dₗ_elem_mul_Dᵣ_elem iᵣ jₗ 0 0
         rw [mul_comm] at hD00
-        have hD01 := hS.toCanonicalSIgning_Dₗ_elem_mul_Dᵣ_isSigning iᵣ jₗ 1 0
+        have hD01 := hS.toCanonicalSigning_Dₗ_elem_mul_Dᵣ_elem iᵣ jₗ 1 0
         rw [mul_comm, ←abs_neg] at hD01
-        have hD11 := hS.toCanonicalSIgning_Dₗ_elem_mul_Dᵣ_isSigning iᵣ jₗ 1 1
+        have hD11 := hS.toCanonicalSigning_Dₗ_elem_mul_Dᵣ_elem iᵣ jₗ 1 1
         rw [mul_comm] at hD11
         exact abs_add_add_eq_zmod_cast hD00 hD01 hD11 habc
     | inr => apply hS.toCanonicalSigning_Dᵣ_isSigning
@@ -1430,7 +1354,7 @@ private lemma MatrixLikeSum3.mulColsD_eq {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁
     (q : Yₗ → ℚ) :
     M.mulColsD q = ((M.Aₗ ⊟ M.D).mulCols q).toRows₂ := by
   ext
-  simp only [Matrix.of_apply, Matrix.toRows₂_apply, Matrix.fromRows_apply_inr]
+  simp
 
 private lemma MatrixLikeSum3.mulCols_leftTU {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Yₗ] {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ}
     (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) {q : Yₗ → ℚ} (hq : ∀ j : Yₗ, q j ∈ SignType.cast.range) :
@@ -1463,28 +1387,6 @@ private abbrev MatrixLikeSum3.mulCols {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq 
 private def MatrixLikeSum3.mulCols_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $M) => `($(M).$(Lean.mkIdent `mulCols))
   | _ => throw ()
-
-private abbrev MatrixLikeSum3.Bₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) :
-    Matrix (Xₗ ⊕ Fin 2) (Yₗ ⊕ Fin 1) ℚ :=
-  ⊞ M.Aₗ 0 M.D.toRows₁ !![1; 1]
-
-@[app_unexpander MatrixLikeSum3.Bₗ]
-private def MatrixLikeSum3.Bₗ_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $M) => `($(M).$(Lean.mkIdent `Bₗ))
-  | _ => throw ()
-
-private lemma SignType.ne_neg_one_add_neg_one (s : SignType) : s.cast ≠ (-1 : ℚ) + (-1 : ℚ) := by
-  intro hs
-  cases s with
-  | zero =>
-    simp only [SignType.zero_eq_zero, SignType.coe_zero] at hs
-    norm_num at hs
-  | pos =>
-    simp only [SignType.pos_eq_one, SignType.coe_one] at hs
-    norm_num at hs
-  | neg =>
-    simp only [SignType.neg_eq_neg_one, SignType.coe_neg_one] at hs
-    norm_num at hs
 
 set_option maxHeartbeats 666666 in
 private lemma MatrixLikeSum3.isParellelTo {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
@@ -1523,9 +1425,9 @@ private lemma MatrixLikeSum3.isParellelTo {Xₗ Yₗ Xᵣ Yᵣ : Type} [Decidabl
         ring_nf
         simp only [true_or, or_true]
       all_goals rcases M.Col₁ with hc₁ | hc₁
-      all_goals try simp [huc, hvc, hc₁, M.Col₀, SignType.ne_neg_one_add_neg_one] at huv0
-      all_goals try simp [huc, hvc, hc₁, M.Col₀, SignType.ne_neg_one_add_neg_one] at huv1
-      all_goals try simp [huc, hvc, hc₁, M.Col₀, SignType.ne_neg_one_add_neg_one] at huv01
+      all_goals try simp [huc, hvc, hc₁, M.Col₀] at huv0
+      all_goals try simp [huc, hvc, hc₁, M.Col₀] at huv1
+      all_goals try simp [huc, hvc, hc₁, M.Col₀] at huv01
 
 /-- After pivoting on an element in `Aₗ`, columns of resulting `D` are still generated by `c₀` and `c₁`. -/
 private lemma MatrixLikeSum3.shortTableauPivot_isParellelTo {Xₗ Yₗ Xᵣ Yᵣ : Type}
@@ -1624,7 +1526,7 @@ private def MatrixLikeSum3.shortTableauPivot_unexpand : Lean.PrettyPrinter.Unexp
 
 /-! ## Total unimodularity -/
 
-private lemma MatrixLikeSum3.c₀_c₁_c₂_Aᵣ_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ}
+private lemma MatrixLikeSum3.c₀_c₀_c₁_c₁_c₂_c₂_Aᵣ_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ}
     (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) :
     (▮c₀ ◫ ▮c₀ ◫ ▮c₁ ◫ ▮c₁ ◫ ▮(c₀ - c₁) ◫ ▮(c₀ - c₁) ◫ M.Aᵣ).IsTotallyUnimodular := by
   convert M.BottomTU.comp_cols
@@ -1635,7 +1537,7 @@ private lemma MatrixLikeSum3.c₀_c₁_c₂_Aᵣ_isTotallyUnimodular {Xₗ Yₗ 
 private lemma MatrixLikeSum3.pmz_c₀_c₁_c₂_Aᵣ_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Yᵣ] {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ}
     (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) :
     (▮0 ◫ (▮c₀ ◫ ▮(-c₀) ◫ ▮c₁ ◫ ▮(-c₁) ◫ ▮(c₀ - c₁) ◫ ▮(c₁ - c₀) ◫ M.Aᵣ)).IsTotallyUnimodular := by
-  convert (M.c₀_c₁_c₂_Aᵣ_isTotallyUnimodular.mul_cols
+  convert (M.c₀_c₀_c₁_c₁_c₂_c₂_Aᵣ_isTotallyUnimodular.mul_cols
     (show ∀ j, (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn 1 (-1)) 1) (-1)) 1) (-1)) 1) j ∈
         SignType.cast.range by rintro ((((((_|_)|_)|_)|_)|_)|_) <;> simp)).zero_fromCols Unit
   aesop
@@ -1764,7 +1666,7 @@ private lemma MatrixSum3.IsCanonicalSigning.col₁ {Xₗ Yₗ Xᵣ Yᵣ : Type}
   <;> exact ⟨congr_fun₂ hSᵣ.right 0 1, congr_fun₂ hSᵣ.right 1 1⟩
 
 /-- Convert a canonical signing of 3-sum of matrices to a 3-sum-like matrix. -/
-noncomputable def MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3 {Xₗ Yₗ Xᵣ Yᵣ : Type}
+private noncomputable def MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3 {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ} (hS : S.IsCanonicalSigning) :
     MatrixLikeSum3 (Xₗ ⊕ Fin 1) (Yₗ ⊕ Fin 2) Xᵣ (Fin 1 ⊕ Yᵣ) S.c₀ S.c₁ where
@@ -1776,8 +1678,8 @@ noncomputable def MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3 {Xₗ Yₗ Xᵣ
   BottomTU := hS.c₀_c₁_c₂_Aᵣ_isTotallyUnimodular
   AuxTU := by
     convert hS.left.left
-    exact hS.hSAᵣ.left.symm
-    exact hS.hSAᵣ.right.symm
+    exact hS.Aᵣ_elem.left.symm
+    exact hS.Aᵣ_elem.right.symm
   Col₀ := hS.col₀
   Col₁ := hS.col₁
 
@@ -1949,17 +1851,17 @@ def Matrix.toDropUnionDrop {Xₗ Yₗ Xᵣ Yᵣ : Set α} {F : Type}
   A.submatrix
     (fun i : (Xₗ.drop2 x₀ₗ x₁ₗ ∪ Xᵣ.drop1 x₂ᵣ).Elem =>
       if hi₂ₗ : i.val = x₂ₗ then ◩◪0 else
-      if hiₗ : i.val ∈ Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ then ◩◩⟨i, hiₗ⟩ else
+      if hiXₗ : i.val ∈ Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ then ◩◩⟨i, hiXₗ⟩ else
       if hi₀ᵣ : i.val = x₀ᵣ then ◪◩0 else
       if hi₁ᵣ : i.val = x₁ᵣ then ◪◩1 else
-      if hiᵣ : i.val ∈ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ then ◪◪⟨i, hiᵣ⟩ else
+      if hiXᵣ : i.val ∈ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ then ◪◪⟨i, hiXᵣ⟩ else
       False.elim (i.property.elim ↓(by simp_all) ↓(by simp_all)))
     (fun j : (Yₗ.drop1 y₂ₗ ∪ Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem =>
       if hj₀ₗ : j.val = y₀ₗ then ◩◪0 else
       if hj₁ₗ : j.val = y₁ₗ then ◩◪1 else
-      if hjₗ : j.val ∈ Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ then ◩◩⟨j, hjₗ⟩ else
+      if hjYₗ : j.val ∈ Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ then ◩◩⟨j, hjYₗ⟩ else
       if hj₂ᵣ : j.val = y₂ᵣ then ◪◩0 else
-      if hjᵣ : j.val ∈ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then ◪◪⟨j, hjᵣ⟩ else
+      if hjYᵣ : j.val ∈ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then ◪◪⟨j, hjYᵣ⟩ else
       False.elim (j.property.elim ↓(by simp_all) ↓(by simp_all)))
 
 
@@ -2013,7 +1915,7 @@ noncomputable def standardRepr3sumComposition {Sₗ Sᵣ : StandardRepr α Z2} {
     ∧ (∀ y : α, ∀ hy : y ∈ Sᵣ.Y, y ≠ y₀ ∧ y ≠ y₁ → Sᵣ.B x₂ᵣ ⟨y, hy⟩ = 0)
   ⟩
 
-private lemma standardRepr3sumComposition_X {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α} (hx₀ : x₁ ≠ x₂) (hx₁ : x₀ ≠ x₂)
+lemma standardRepr3sumComposition_X {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α} (hx₀ : x₁ ≠ x₂) (hx₁ : x₀ ≠ x₂)
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X} :
     (standardRepr3sumComposition hXX hYY hXY hYX).fst.X = Sₗ.X ∪ Sᵣ.X := by
   ext a
@@ -2026,7 +1928,7 @@ private lemma standardRepr3sumComposition_X {Sₗ Sᵣ : StandardRepr α Z2} {x�
   else
     simp [standardRepr3sumComposition, *]
 
-private lemma standardRepr3sumComposition_Y {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α} (hy₀ : y₁ ≠ y₂) (hy₁ : y₀ ≠ y₂)
+lemma standardRepr3sumComposition_Y {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α} (hy₀ : y₁ ≠ y₂) (hy₁ : y₀ ≠ y₂)
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X} :
     (standardRepr3sumComposition hXX hYY hXY hYX).fst.Y = Sₗ.Y ∪ Sᵣ.Y := by
   ext a
@@ -2039,37 +1941,37 @@ private lemma standardRepr3sumComposition_Y {Sₗ Sᵣ : StandardRepr α Z2} {x�
   else
     simp [standardRepr3sumComposition, *]
 
-private lemma standardRepr3sumComposition_Bₗ₀₀ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+lemma standardRepr3sumComposition_Bₗ₀₀ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSS : (standardRepr3sumComposition hXX hYY hXY hYX).snd) :
     Sₗ.B ⟨x₀, hXX.mem3₀ₗ⟩ ⟨y₀, hYY.mem3₀ₗ⟩ = 1 :=
   hSS.right.right.left.casesOn (congr_fun₂ · 0 0) (congr_fun₂ · 0 0)
 
-private lemma standardRepr3sumComposition_Bᵣ₀₀ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+lemma standardRepr3sumComposition_Bᵣ₀₀ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSS : (standardRepr3sumComposition hXX hYY hXY hYX).snd) :
     Sᵣ.B ⟨x₀, hXX.mem3₀ᵣ⟩ ⟨y₀, hYY.mem3₀ᵣ⟩ = 1 :=
   standardRepr3sumComposition_Bₗ₀₀ hSS ▸ congr_fun₂ hSS.right.left.symm 0 0
 
-private lemma standardRepr3sumComposition_Bₗ₁₀ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+lemma standardRepr3sumComposition_Bₗ₁₀ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSS : (standardRepr3sumComposition hXX hYY hXY hYX).snd) :
     Sₗ.B ⟨x₁, hXX.mem3₁ₗ⟩ ⟨y₀, hYY.mem3₀ₗ⟩ = 0 :=
   hSS.right.right.left.casesOn (congr_fun₂ · 1 0) (congr_fun₂ · 1 0)
 
-private lemma standardRepr3sumComposition_Bᵣ₁₀ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+lemma standardRepr3sumComposition_Bᵣ₁₀ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSS : (standardRepr3sumComposition hXX hYY hXY hYX).snd) :
     Sᵣ.B ⟨x₁, hXX.mem3₁ᵣ⟩ ⟨y₀, hYY.mem3₀ᵣ⟩ = 0 :=
   standardRepr3sumComposition_Bₗ₁₀ hSS ▸ congr_fun₂ hSS.right.left.symm 1 0
 
-private lemma standardRepr3sumComposition_Bₗ₁₁ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+lemma standardRepr3sumComposition_Bₗ₁₁ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSS : (standardRepr3sumComposition hXX hYY hXY hYX).snd) :
     Sₗ.B ⟨x₁, hXX.mem3₁ₗ⟩ ⟨y₁, hYY.mem3₁ₗ⟩ = 1 :=
   hSS.right.right.left.casesOn (congr_fun₂ · 1 1) (congr_fun₂ · 1 1)
 
-private lemma standardRepr3sumComposition_Bᵣ₁₁ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+lemma standardRepr3sumComposition_Bᵣ₁₁ {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSS : (standardRepr3sumComposition hXX hYY hXY hYX).snd) :
     Sᵣ.B ⟨x₁, hXX.mem3₁ᵣ⟩ ⟨y₁, hYY.mem3₁ᵣ⟩ = 1 :=
