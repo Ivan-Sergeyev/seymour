@@ -21,9 +21,8 @@ lemma Matrix.empty_X_isTotallyUnimodular {X Y : Type} [IsEmpty X] {R : Type} [Co
 
 @[simp]
 lemma Matrix.empty_Y_isTotallyUnimodular {X Y : Type} [IsEmpty Y] {R : Type} [CommRing R] (A : Matrix X Y R) :
-    A.IsTotallyUnimodular := by
-  apply Matrix.IsTotallyUnimodular.transpose
-  exact A.transpose.empty_X_isTotallyUnimodular
+    A.IsTotallyUnimodular :=
+  A.transpose.empty_X_isTotallyUnimodular.transpose
 
 /-- Every matrix over `Z2` is TU. -/
 @[simp]

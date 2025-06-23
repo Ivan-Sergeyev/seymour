@@ -520,31 +520,9 @@ private lemma shortTableauPivot_submatrix_succAbove_succAbove_det_abs_eq_div [Li
   nth_rw 5 [A.succAboveAt_block x y]
   exact (Matrix.abs_det_submatrix_equiv_equiv ..).symm
 
-/-- Lemma 1. -/
 lemma shortTableauPivot_submatrix_det_abs_eq_div [LinearOrderedField F] {k : ℕ}
     {A : Matrix (Fin k.succ) (Fin k.succ) F} {x y : Fin k.succ} (hAxy : A x y ≠ 0) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
       |((A.shortTableauPivot x y).submatrix f g).det| = |A.det| / |A x y| :=
   ⟨x.succAbove, y.succAbove, Fin.succAbove_right_injective, Fin.succAbove_right_injective,
     shortTableauPivot_submatrix_succAbove_succAbove_det_abs_eq_div hAxy⟩
-
-/-- Corollary 1. -/
-lemma shortTableauPivot_submatrix_det_ni_signTypeCastRange [LinearOrderedField F] {k : ℕ}
-    {A : Matrix (Fin k.succ) (Fin k.succ) F}
-    (hA : A.det ∉ SignType.cast.range) (x y : Fin k.succ) (hAxy : A x y = 1 ∨ A x y = -1) :
-    ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
-      ((A.shortTableauPivot x y).submatrix f g).det ∉ SignType.cast.range := by
-  have hAxy0 : A x y ≠ 0
-  · cases hAxy with
-    | inl h1 =>
-      rw [h1]
-      norm_num
-    | inr h9 =>
-      rw [h9]
-      norm_num
-  obtain ⟨f, g, hf, hg, hAfg⟩ := shortTableauPivot_submatrix_det_abs_eq_div hAxy0
-  use f, g, hf, hg
-  rw [in_signTypeCastRange_iff_abs, hAfg]
-  cases hAxy with
-  | inl h1 => rwa [h1, abs_one, div_one, ←in_signTypeCastRange_iff_abs]
-  | inr h9 => rwa [h9, abs_neg, abs_one, div_one, ←in_signTypeCastRange_iff_abs]
