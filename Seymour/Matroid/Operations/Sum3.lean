@@ -1080,9 +1080,6 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_c₂_in_signType
   obtain ⟨s₁, hs₁⟩ := hS.toCanonicalSigning_c₁_in_signTypeCastRange iᵣ
   cases s₀ <;> cases s₁ <;> simp [←hs₀, ←hs₁] at hcc ⊢
 
-private lemma neg_in_signTypeCastRange_iff {x : ℚ} : -x ∈ SignType.cast.range ↔ x ∈ SignType.cast.range :=
-  ⟨in_signTypeCastRange_of_neg, neg_in_signTypeCastRange⟩
-
 private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_Dₗᵣ_in_signTypeCastRange {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) (iᵣ : Xᵣ) (jₗ : Yₗ) :
@@ -1091,21 +1088,18 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_Dₗᵣ_in_signT
   <;> rw [congr_fun hc ◪iᵣ]
   · exact zero_in_signTypeCastRange
   · exact hS.toCanonicalSigning_c₀_in_signTypeCastRange ◪iᵣ
-  · rw [Pi.neg_apply, neg_in_signTypeCastRange_iff]
-    exact hS.toCanonicalSigning_c₀_in_signTypeCastRange ◪iᵣ
+  · exact neg_in_signTypeCastRange (hS.toCanonicalSigning_c₀_in_signTypeCastRange ◪iᵣ)
   · exact hS.toCanonicalSigning_c₁_in_signTypeCastRange ◪iᵣ
-  · rw [Pi.neg_apply, neg_in_signTypeCastRange_iff]
-    exact hS.toCanonicalSigning_c₁_in_signTypeCastRange ◪iᵣ
+  · exact neg_in_signTypeCastRange (hS.toCanonicalSigning_c₁_in_signTypeCastRange ◪iᵣ)
   · exact hS.toCanonicalSigning_c₂_in_signTypeCastRange ◪iᵣ
-  · rw [Pi.neg_apply, neg_in_signTypeCastRange_iff]
-    exact hS.toCanonicalSigning_c₂_in_signTypeCastRange ◪iᵣ
+  · exact neg_in_signTypeCastRange (hS.toCanonicalSigning_c₂_in_signTypeCastRange ◪iᵣ)
 
 private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_Dₗ_elem_mul_Dᵣ_elem {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) (iᵣ : Xᵣ) (jₗ : Yₗ) (i₀ j₀ : Fin 2) :
     |hS.toCanonicalSigning.Dₗ i₀ jₗ * hS.toCanonicalSigning.Dᵣ iᵣ j₀| = ZMod.cast (S.Dᵣ iᵣ j₀ * S.Dₗ i₀ jₗ) := by
   rw [abs_mul, Z2_mul_cast_toRat, hS.toCanonicalSigning_Dₗ_isSigning i₀ jₗ, hS.toCanonicalSigning_Dᵣ_isSigning iᵣ j₀]
-  exact Rat.mul_comm ↑(ZMod.val (S.Dₗ i₀ jₗ)) ↑(ZMod.val (S.Dᵣ iᵣ j₀))
+  exact Rat.mul_comm (S.Dₗ i₀ jₗ).val (S.Dᵣ iᵣ j₀).val
 
 set_option maxHeartbeats 666666 in
 private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_D_isSigning {Xₗ Yₗ Xᵣ Yᵣ : Type}
@@ -1135,7 +1129,7 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_D_isSigning {X�
           <;> simp at hijD₀ₗ hijSₗ' ⊢
           <;> simp [hijSₗ'] at hijD₀ₗ
           <;> clear * - hijD₀ₗ
-          · cases (S.D₀ₗ 0 0).eq_0_or_1 <;> simp_all -- @Matrin: please fix this monstrosity
+          · cases (S.D₀ₗ 0 0).eq_0_or_1 <;> simp_all
           · cases (S.D₀ₗ 0 1).eq_0_or_1 <;> simp_all
           · cases (S.D₀ₗ 1 0).eq_0_or_1 <;> simp_all
           · cases (S.D₀ₗ 1 1).eq_0_or_1 <;> simp_all

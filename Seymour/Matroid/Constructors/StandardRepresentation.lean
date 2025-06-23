@@ -3,7 +3,6 @@ import Seymour.Matrix.LinearIndependence
 import Seymour.Matrix.Pivoting
 import Seymour.Matrix.Support
 import Seymour.Matroid.Constructors.BinaryMatroid
-import Seymour.Matroid.Elementary.Basic
 
 /-!
 # Standard Representation
@@ -33,6 +32,9 @@ attribute [instance] StandardRepr.decmemY
 
 
 variable {α : Type}
+
+lemma Matroid.IsBase.not_ssubset_indep {M : Matroid α} {G I : Set α} (hMG : M.IsBase G) (hMH : M.Indep I) : ¬(G ⊂ I) :=
+  (M.isBase_iff_maximal_indep.→ hMG).not_ssuperset hMH
 
 private noncomputable abbrev Set.equivFin (S : Set α) [Fintype S] : Fin #S ≃ S :=
   (Fintype.equivFin S.Elem).symm
