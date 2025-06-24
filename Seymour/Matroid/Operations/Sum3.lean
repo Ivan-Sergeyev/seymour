@@ -1863,7 +1863,7 @@ noncomputable def standardRepr3sumComposition {Sₗ Sᵣ : StandardRepr α Z2} {
   ⟩
 
 lemma standardRepr3sumComposition_X {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α} (hx₀ : x₁ ≠ x₂) (hx₁ : x₀ ≠ x₂)
-    {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X} :
+    (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
     (standardRepr3sumComposition hXX hYY hXY hYX).fst.X = Sₗ.X ∪ Sᵣ.X := by
   ext a
   if hax₂ : a = x₂ then
@@ -1876,7 +1876,7 @@ lemma standardRepr3sumComposition_X {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ 
     simp [standardRepr3sumComposition, *]
 
 lemma standardRepr3sumComposition_Y {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α} (hy₀ : y₁ ≠ y₂) (hy₁ : y₀ ≠ y₂)
-    {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X} :
+    (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
     (standardRepr3sumComposition hXX hYY hXY hYX).fst.Y = Sₗ.Y ∪ Sᵣ.Y := by
   ext a
   if hay₂ : a = y₂ then
@@ -2050,6 +2050,138 @@ lemma standardRepr3sumComposition_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} 
   constructor
   · apply hB.submatrix
   · apply hBM.submatrix
+
+noncomputable def standardRepr3sumCompositionGeneral {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+    (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
+    StandardRepr α Z2 × Prop :=
+  -- Elements of the intersection as elements of respective sets
+  let ⟨⟨x₀ₗ, x₁ₗ, x₂ₗ⟩, ⟨x₀ᵣ, x₁ᵣ, x₂ᵣ⟩⟩ := hXX.interAll3
+  let ⟨⟨y₀ₗ, y₁ₗ, y₂ₗ⟩, ⟨y₀ᵣ, y₁ᵣ, y₂ᵣ⟩⟩ := hYY.interAll3
+  ⟨
+    -- Construction
+    ⟨
+      -- row indices
+      (Sₗ.X.drop2 x₀ₗ x₁ₗ) ∪ (Sᵣ.X.drop1 x₂ᵣ),
+      -- col indices
+      (Sₗ.Y.drop1 y₂ₗ) ∪ (Sᵣ.Y.drop2 y₀ᵣ y₁ᵣ),
+      -- row and col indices are disjoint
+      by
+        rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
+        exact
+          ⟨⟨Sₗ.hXY.disjoint_sdiff_left.disjoint_sdiff_right, hYX.symm.disjoint_sdiff_left.disjoint_sdiff_right⟩,
+          ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right, Sᵣ.hXY.disjoint_sdiff_left.disjoint_sdiff_right⟩⟩,
+      -- the standard representation matrix
+      (standardReprMatrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).matrix.toDropUnionDrop,
+      -- decidability of row indices
+      inferInstance,
+      -- decidability of col indices
+      inferInstance,
+    ⟩,
+    -- Correctness
+    -- the special elements are all distinct
+    ((x₀ ≠ x₁ ∧ x₀ ≠ x₂ ∧ x₁ ≠ x₂) ∧ (y₀ ≠ y₁ ∧ y₀ ≠ y₂ ∧ y₁ ≠ y₂))
+    -- `D₀` is the same in `Bₗ` and `Bᵣ`
+    ∧ !![Sₗ.B x₀ₗ y₀ₗ, Sₗ.B x₀ₗ y₁ₗ; Sₗ.B x₁ₗ y₀ₗ, Sₗ.B x₁ₗ y₁ₗ] = !![Sᵣ.B x₀ᵣ y₀ᵣ, Sᵣ.B x₀ᵣ y₁ᵣ; Sᵣ.B x₁ᵣ y₀ᵣ, Sᵣ.B x₁ᵣ y₁ᵣ]
+    -- `D₀` has the correct form
+    ∧ IsUnit !![Sₗ.B x₀ₗ y₀ₗ, Sₗ.B x₀ₗ y₁ₗ; Sₗ.B x₁ₗ y₀ₗ, Sₗ.B x₁ₗ y₁ₗ]
+    -- `Bₗ` has the correct structure outside of `Aₗ`, `Dₗ`, and `D₀`
+    ∧ Sₗ.B x₀ₗ y₂ₗ = 1
+    ∧ Sₗ.B x₁ₗ y₂ₗ = 1
+    ∧ Sₗ.B x₂ₗ y₀ₗ = 1
+    ∧ Sₗ.B x₂ₗ y₁ₗ = 1
+    ∧ (∀ x : α, ∀ hx : x ∈ Sₗ.X, x ≠ x₀ ∧ x ≠ x₁ → Sₗ.B ⟨x, hx⟩ y₂ₗ = 0)
+    -- `Bᵣ` has the correct structure outside of `Aᵣ`, `Dᵣ`, and `D₀`
+    ∧ Sᵣ.B x₀ᵣ y₂ᵣ = 1
+    ∧ Sᵣ.B x₁ᵣ y₂ᵣ = 1
+    ∧ Sᵣ.B x₂ᵣ y₀ᵣ = 1
+    ∧ Sᵣ.B x₂ᵣ y₁ᵣ = 1
+    ∧ (∀ y : α, ∀ hy : y ∈ Sᵣ.Y, y ≠ y₀ ∧ y ≠ y₁ → Sᵣ.B x₂ᵣ ⟨y, hy⟩ = 0)
+  ⟩
+
+local macro "valid3sumG" : tactic => `(tactic| unfold standardRepr3sumCompositionGeneral at * <;> tauto)
+
+set_option maxHeartbeats 333333 in
+lemma standardRepr3sumCompositionGeneral_hasTuSigning {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+    (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X)
+    (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning)
+    (hSS : (standardRepr3sumCompositionGeneral hXX hYY hXY hYX).snd) :
+    (standardRepr3sumCompositionGeneral hXX hYY hXY hYX).fst.B.HasTuSigning := by
+  -- row membership
+  let x₀ₗ : Sₗ.X := ⟨x₀, hXX.mem3₀ₗ⟩
+  let x₀ᵣ : Sᵣ.X := ⟨x₀, hXX.mem3₀ᵣ⟩
+  let x₁ₗ : Sₗ.X := ⟨x₁, hXX.mem3₁ₗ⟩
+  let x₁ᵣ : Sᵣ.X := ⟨x₁, hXX.mem3₁ᵣ⟩
+  let x₂ₗ : Sₗ.X := ⟨x₂, hXX.mem3₂ₗ⟩
+  let x₂ᵣ : Sᵣ.X := ⟨x₂, hXX.mem3₂ᵣ⟩
+  -- col membership
+  let y₀ₗ : Sₗ.Y := ⟨y₀, hYY.mem3₀ₗ⟩
+  let y₀ᵣ : Sᵣ.Y := ⟨y₀, hYY.mem3₀ᵣ⟩
+  let y₁ₗ : Sₗ.Y := ⟨y₁, hYY.mem3₁ₗ⟩
+  let y₁ᵣ : Sᵣ.Y := ⟨y₁, hYY.mem3₁ᵣ⟩
+  let y₂ₗ : Sₗ.Y := ⟨y₂, hYY.mem3₂ₗ⟩
+  let y₂ᵣ : Sᵣ.Y := ⟨y₂, hYY.mem3₂ᵣ⟩
+  -- inequalites from validity
+  have hx₀ : x₁ ≠ x₂
+  · valid3sumG
+  have hx₁ : x₀ ≠ x₂
+  · valid3sumG
+  have hx₂ : x₀ ≠ x₁
+  · valid3sumG
+  have hy₀ : y₁ ≠ y₂
+  · valid3sumG
+  have hy₁ : y₀ ≠ y₂
+  · valid3sumG
+  have hy₂ : y₀ ≠ y₁
+  · valid3sumG
+  -- identity
+  let eᵢ : Fin 2 ≃ Fin 2 := Equiv.refl (Fin 2)
+  -- swap 0<->1
+  let eₛ : Fin 2 ≃ Fin 2 := Equiv.ofBijective ![1, 0] (by decide)
+  -- two options what `D₀` is (up to reindexing)
+  obtain ⟨f, g, hfg⟩ := !![Sₗ.B x₀ₗ y₀ₗ, Sₗ.B x₀ₗ y₁ₗ; Sₗ.B x₁ₗ y₀ₗ, Sₗ.B x₁ₗ y₁ₗ].isUnit_2x2 hSS.right.right.left
+  -- cases analysis over those reindexings
+  if hf : f = eᵢ then
+    if hg : g = eᵢ then
+      simp [hf, hg, eᵢ] at hfg
+      apply standardRepr3sumComposition_hasTuSigning hXX hYY hXY hYX hSₗ hSᵣ
+      unfold standardRepr3sumComposition
+      unfold standardRepr3sumCompositionGeneral at hSS
+      tauto
+    else
+      have hg' : g = eₛ
+      · sorry
+      have hD₀ : !![Sₗ.B x₀ₗ y₀ₗ, Sₗ.B x₀ₗ y₁ₗ; Sₗ.B x₁ₗ y₀ₗ, Sₗ.B x₁ₗ y₁ₗ].submatrix f g =
+                 !![Sₗ.B x₀ₗ y₁ₗ, Sₗ.B x₀ₗ y₀ₗ; Sₗ.B x₁ₗ y₁ₗ, Sₗ.B x₁ₗ y₀ₗ]
+      · ext i j
+        fin_cases i <;> fin_cases j <;> simp [hf, hg', eᵢ, eₛ]
+      rw [hD₀] at hfg
+      have hYY' : Sₗ.Y ∩ Sᵣ.Y = {y₁, y₀, y₂} := Set.insert_comm y₀ y₁ {y₂} ▸ hYY
+      obtain ⟨B, hB, hBSS⟩ := standardRepr3sumComposition_hasTuSigning hXX hYY' hXY hYX hSₗ hSᵣ (by sorry)
+      -- simp only [standardRepr3sumComposition_X hx₀ hx₁ hXX hYY' hXY hYX, standardRepr3sumComposition_Y hy₁ hy₀ hXX hYY' hXY hYX] at B hB hBSS
+      use B.submatrix id
+        (fun j => if j.val = y₀ then ⟨y₁, by sorry⟩ else if j.val = y₁ then ⟨y₀, by sorry⟩ else
+          standardRepr3sumComposition_Y hy₁ hy₀ hXX hYY' hXY hYX ▸ standardRepr3sumComposition_Y hy₀ hy₁ hXX hYY hXY hYX ▸ j)
+      constructor
+      exact hB.submatrix id
+        (fun j => if j.val = y₀ then ⟨y₁, by sorry⟩ else if j.val = y₁ then ⟨y₀, by sorry⟩ else
+          standardRepr3sumComposition_Y hy₁ hy₀ hXX hYY' hXY hYX ▸ standardRepr3sumComposition_Y hy₀ hy₁ hXX hYY hXY hYX ▸ j)
+      intro i j
+      if hjy₀ : j.val = y₀ then
+        convert hBSS i ⟨y₁, by sorry⟩ using 1
+        · simp [hjy₀]
+        · simp [hjy₀, standardRepr3sumCompositionGeneral, standardRepr3sumComposition, Matrix.toDropUnionDrop]
+          congr 1
+          sorry
+      else if hjy₁ : j.val = y₁ then
+        convert hBSS i ⟨y₀, by sorry⟩ using 1
+        · simp [hjy₀, hjy₁, hy₂.symm]
+        · simp [hjy₀, hjy₁, hy₂.symm, standardRepr3sumCompositionGeneral, standardRepr3sumComposition, Matrix.toDropUnionDrop]
+          congr 1
+          sorry
+      else
+        sorry -- convert hBSS i j
+  else
+    sorry
 
 
 /-! ## The 3-sum of matroids -/
