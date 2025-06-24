@@ -54,12 +54,6 @@ variable [DecidableEq α] {R : Type}
 def StandardRepr.toFull [Zero R] [One R] (S : StandardRepr α R) : Matrix S.X (S.X ∪ S.Y).Elem R :=
   ((1 ◫ S.B) · ∘ Subtype.toSum)
 
-/-- Ground set of a vector matroid is union of row and column index sets of its standard matrix representation. -/
-@[simp]
-lemma StandardRepr.toFull_E [DivisionRing R] (S : StandardRepr α R) :
-    S.toFull.toMatroid.E = S.X ∪ S.Y :=
-  rfl
-
 lemma StandardRepr.toFull_indep_iff [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toFull.toMatroid.Indep I ↔
     I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R ((1 ◫ S.B) · ∘ Subtype.toSum)ᵀ ((S.X ∪ S.Y) ↓∩ I) := by
@@ -113,7 +107,7 @@ def StandardRepr.toMatroid [DivisionRing R] (S : StandardRepr α R) : Matroid α
   S.toFull.toMatroid
 
 /-- Ground set of a vector matroid is the union of row and column index sets of its standard matrix representation. -/
-@[simp high]
+@[simp]
 lemma StandardRepr.toMatroid_E [DivisionRing R] (S : StandardRepr α R) :
     S.toMatroid.E = S.X ∪ S.Y :=
   rfl
@@ -138,24 +132,6 @@ lemma StandardRepr.toMatroid_indep [DivisionRing R] (S : StandardRepr α R) :
     S.toMatroid.Indep = (∃ hI : · ⊆ S.X ∪ S.Y, LinearIndepOn R ((1 ◫ S.B)ᵀ ∘ Subtype.toSum) hI.elem.range) := by
   ext I
   exact S.toFull_indep_iff_elem I
-
-lemma Matrix.toMatroid_isFinitary [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) : A.toMatroid.Finitary := by
-  constructor
-  intro I hI
-  simp
-  wlog hIY : I ⊆ A.toMatroid.E
-  · exfalso
-    rw [Set.not_subset_iff_exists_mem_not_mem] at hIY
-    obtain ⟨x, hx, hxE⟩ := hIY
-    exact hxE ((hI _ (Set.singleton_subset_iff.← hx) (Set.finite_singleton x)).subset_ground rfl)
-  use hIY
-  rw [linearIndepOn_iff]
-  intro s hs hAs
-  rw [Finsupp.mem_supported] at hs
-  specialize hI s.support.toSet (by rw [Set.image_subset_iff]; convert hs; aesop) (Subtype.val '' s.support).toFinite
-  simp [Matrix.toMatroid_indep_iff_elem] at hI
-  rw [linearIndepOn_iff] at hI
-  exact hI s (⟨⟨·.val, Set.mem_image_of_mem Subtype.val ·⟩, by simp⟩) hAs
 
 lemma Matrix.longTableauPivot_toMatroid [Field R] {X Y : Set α} (A : Matrix X Y R) {x : X} {y : Y} (hAxy : A x y ≠ 0) :
     (A.longTableauPivot x y).toMatroid = A.toMatroid := by

@@ -202,7 +202,7 @@ theorem Matrix.indepCols_maximal [Semiring R] {X Y : Set α} (A : Matrix X Y R) 
         ↓Set.subset_sUnion_of_mem⟩)
       J ⟨hAJ, hJI⟩
 
-/-- `Matrix` expressed as `IndepMatroid`. -/
+/-- `Matrix` (interpreted as a full representation) converted to `IndepMatroid`. -/
 def Matrix.toIndepMatroid [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) : IndepMatroid α where
   E := Y
   Indep := A.IndepCols
@@ -212,7 +212,7 @@ def Matrix.toIndepMatroid [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) : I
   indep_maximal S _ := A.indepCols_maximal S
   subset_ground _ := And.left
 
-/-- `Matrix` converted to `Matroid`. -/
+/-- `Matrix` (interpreted as a full representation) converted to `Matroid`. -/
 def Matrix.toMatroid [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) : Matroid α :=
   A.toIndepMatroid.matroid
 
@@ -220,7 +220,6 @@ def Matrix.toMatroid [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) : Matroi
 lemma Matrix.toMatroid_E [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) : A.toMatroid.E = Y :=
   rfl
 
-@[simp low]
 lemma Matrix.toMatroid_indep [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) : A.toMatroid.Indep = A.IndepCols :=
   rfl
 
@@ -279,3 +278,22 @@ lemma Matrix.fromRows_zero_reindex_toMatroid [DivisionRing R] {G X Y : Set α} [
     else
       have hiY : i.val ∈ Y \ G := Set.mem_diff_of_mem (hIY i.property) hi
       cases hj : e.symm j <;> simp [hi, hiY, hj, f, HasSubset.Subset.equiv]
+
+/-- Every vector matroid is finitary. -/
+lemma Matrix.toMatroid_isFinitary [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) : A.toMatroid.Finitary := by
+  constructor
+  intro I hI
+  simp
+  wlog hIY : I ⊆ A.toMatroid.E
+  · exfalso
+    rw [Set.not_subset_iff_exists_mem_not_mem] at hIY
+    obtain ⟨x, hx, hxE⟩ := hIY
+    exact hxE ((hI _ (Set.singleton_subset_iff.← hx) (Set.finite_singleton x)).subset_ground rfl)
+  use hIY
+  rw [linearIndepOn_iff]
+  intro s hs hAs
+  rw [Finsupp.mem_supported] at hs
+  specialize hI s.support.toSet (by rw [Set.image_subset_iff]; convert hs; aesop) (Subtype.val '' s.support).toFinite
+  simp [Matrix.toMatroid_indep_iff_elem] at hI
+  rw [linearIndepOn_iff] at hI
+  exact hI s (⟨⟨·.val, Set.mem_image_of_mem Subtype.val ·⟩, by simp⟩) hAs
