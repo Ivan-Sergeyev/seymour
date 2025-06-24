@@ -1867,7 +1867,7 @@ lemma standardRepr3sumComposition_X {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ 
     (standardRepr3sumComposition hXX hYY hXY hYX).fst.X = Sₗ.X ∪ Sᵣ.X := by
   ext a
   if hax₂ : a = x₂ then
-    simp [standardRepr3sumComposition, *, hXX.mem3₂ₗ, Ne.symm hx₀, Ne.symm hx₁]
+    simp [standardRepr3sumComposition, *, hXX.mem3₂ₗ, hx₀.symm, hx₁.symm]
   else if hax₀ : a = x₀ then
     simp [standardRepr3sumComposition, *, hXX.mem3₀ᵣ]
   else if hax₁ : a = x₁ then
@@ -1880,7 +1880,7 @@ lemma standardRepr3sumComposition_Y {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ 
     (standardRepr3sumComposition hXX hYY hXY hYX).fst.Y = Sₗ.Y ∪ Sᵣ.Y := by
   ext a
   if hay₂ : a = y₂ then
-    simp [standardRepr3sumComposition, *, hYY.mem3₂ᵣ, Ne.symm hy₀, Ne.symm hy₁]
+    simp [standardRepr3sumComposition, *, hYY.mem3₂ᵣ, hy₀.symm, hy₁.symm]
   else if hay₀ : a = y₀ then
     simp [standardRepr3sumComposition, *, hYY.mem3₀ₗ]
   else if hay₁ : a = y₁ then
