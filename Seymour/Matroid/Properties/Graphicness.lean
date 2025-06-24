@@ -126,7 +126,7 @@ variable {α : Type} [DecidableEq α]
 
 /-- Matroid is graphic iff it can be represented by a graphic matrix. -/
 def Matroid.IsGraphic (M : Matroid α) : Prop :=
-  ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsGraphic ∧ (VectorMatroid.mk X Y A).toMatroid = M
+  ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsGraphic ∧ A.toMatroid = M
 
 /-- Matroid is cographic iff its dual is graphic. -/
 def Matroid.IsCographic (M : Matroid α) : Prop :=

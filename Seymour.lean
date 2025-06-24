@@ -7,17 +7,8 @@ open scoped Matrix Set.Notation
 
 recall Z2 := Fin 2
 
-recall VectorMatroid.X {α R : Type} : VectorMatroid α R → Set α
-recall VectorMatroid.Y {α R : Type} : VectorMatroid α R → Set α
-recall VectorMatroid.A {α R : Type} (M : VectorMatroid α R) : Matrix M.X M.Y R
-/--
-info: VectorMatroid.mk {α R : Type} (X Y : Set α) (A : Matrix (↑X) (↑Y) R) : VectorMatroid α R
--/
-#guard_msgs in
-#check VectorMatroid.mk
-
-recall VectorMatroid.toMatroid_indep_iff {α R : Type} [DivisionRing R] (M : VectorMatroid α R) (I : Set α) :
-  M.toMatroid.Indep I ↔ I ⊆ M.Y ∧ LinearIndepOn R M.Aᵀ (M.Y ↓∩ I)
+recall Matrix.toMatroid_indep_iff {α R : Type} [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) (I : Set α) :
+  A.toMatroid.Indep I ↔ I ⊆ Y ∧ LinearIndepOn R Aᵀ (Y ↓∩ I)
 
 example {X X' Y Y' R : Type*} (A : Matrix X Y R) (f : X' → X) (g : Y' → Y) (i : X') (j : Y') :
     (A.submatrix f g) i j = A (f i) (g j) :=
@@ -27,7 +18,7 @@ recall Matrix.IsTotallyUnimodular {X Y R : Type*} [CommRing R] (A : Matrix X Y R
   ∀ k : ℕ, ∀ f : Fin k → X, ∀ g : Fin k → Y, f.Injective → g.Injective → (A.submatrix f g).det ∈ Set.range SignType.cast
 
 recall Matroid.IsRegular {α : Type} (M : Matroid α) : Prop :=
-  ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsTotallyUnimodular ∧ (VectorMatroid.mk X Y A).toMatroid = M
+  ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsTotallyUnimodular ∧ A.toMatroid = M
 
 recall StandardRepr.X {α R : Type} [DecidableEq α] : StandardRepr α R → Set α
 recall StandardRepr.Y {α R : Type} [DecidableEq α] : StandardRepr α R → Set α

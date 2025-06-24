@@ -53,7 +53,7 @@ instance Matroid.Is1sumOf.finS {M Mₗ Mᵣ : Matroid α} (hM : M.Is1sumOf Mₗ 
 lemma standardRepr1sumComposition_eq_disjointSum {Sₗ Sᵣ : StandardRepr α Z2} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (valid : (standardRepr1sumComposition hXY hYX).snd) :
     (standardRepr1sumComposition hXY hYX).fst.toMatroid = Matroid.disjointSum Sₗ.toMatroid Sᵣ.toMatroid (by
-      simp [StandardRepr.toMatroid, StandardRepr.toVectorMatroid, Set.disjoint_union_left, Set.disjoint_union_right]
+      simp [StandardRepr.toMatroid, StandardRepr.toFull, Set.disjoint_union_left, Set.disjoint_union_right]
       exact ⟨⟨valid.left, hYX⟩, ⟨hXY, valid.right⟩⟩) := by
   ext I hI
   · simp only [StandardRepr.toMatroid_E, Set.mem_union, Matroid.disjointSum_ground_eq, standardRepr1sumComposition]
