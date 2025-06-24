@@ -7,7 +7,7 @@ open scoped Matrix Set.Notation
 
 recall Z2 := Fin 2
 
-recall Matrix.toMatroid_indep_iff {α R : Type} [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) (I : Set α) :
+recall Matrix.toMatroid_indep_iff {α R : Type} {X Y : Set α} [DivisionRing R] (A : Matrix X Y R) (I : Set α) :
   A.toMatroid.Indep I ↔ I ⊆ Y ∧ LinearIndepOn R Aᵀ (Y ↓∩ I)
 
 example {X X' Y Y' R : Type*} (A : Matrix X Y R) (f : X' → X) (g : Y' → Y) (i : X') (j : Y') :

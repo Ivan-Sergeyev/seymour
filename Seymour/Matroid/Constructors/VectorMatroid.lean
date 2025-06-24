@@ -14,17 +14,17 @@ Here we study vector matroids with emphasis on binary matroids.
 open scoped Matrix Set.Notation
 
 
-variable {α R : Type}
+variable {α R : Type} {X Y : Set α}
 
 /-- A set is independent in a vector matroid iff it corresponds to a linearly independent submultiset of columns. -/
-def Matrix.IndepCols [Semiring R] {X Y : Set α} (A : Matrix X Y R) (I : Set α) : Prop :=
+def Matrix.IndepCols [Semiring R] (A : Matrix X Y R) (I : Set α) : Prop :=
   I ⊆ Y ∧ LinearIndepOn R Aᵀ (Y ↓∩ I)
 
 /-- Our old (equivalent) definition. -/
-private def Matrix.IndepColsOld [Semiring R] {X Y : Set α} (A : Matrix X Y R) (I : Set α) : Prop :=
+private def Matrix.IndepColsOld [Semiring R] (A : Matrix X Y R) (I : Set α) : Prop :=
   ∃ hI : I ⊆ Y, LinearIndependent R (fun i : I => (A · (hI.elem i)))
 
-private lemma Matrix.indepCols_eq_indepColsOld [Semiring R] {X Y : Set α} (A : Matrix X Y R) :
+private lemma Matrix.indepCols_eq_indepColsOld [Semiring R] (A : Matrix X Y R) :
     A.IndepCols = A.IndepColsOld := by
   ext I
   constructor <;> intro ⟨hI, hAI⟩ <;> use hI <;> let e : I ≃ Y ↓∩ I :=
@@ -32,39 +32,39 @@ private lemma Matrix.indepCols_eq_indepColsOld [Semiring R] {X Y : Set α} (A : 
   · exact (linearIndependent_equiv' e (by aesop)).← hAI
   · exact (linearIndependent_equiv' e (by aesop)).→ hAI
 
-lemma Matrix.indepCols_iff_elem [Semiring R] {X Y : Set α} (A : Matrix X Y R) (I : Set α) :
+lemma Matrix.indepCols_iff_elem [Semiring R] (A : Matrix X Y R) (I : Set α) :
     A.IndepCols I ↔ ∃ hI : I ⊆ Y, LinearIndepOn R Aᵀ hI.elem.range := by
   unfold Matrix.IndepCols HasSubset.Subset.elem
   aesop
 
-lemma Matrix.indepCols_iff_submatrix [Semiring R] {X Y : Set α} (A : Matrix X Y R) (I : Set α) :
+lemma Matrix.indepCols_iff_submatrix [Semiring R] (A : Matrix X Y R) (I : Set α) :
     A.IndepCols I ↔ ∃ hI : I ⊆ Y, LinearIndependent R (A.submatrix id hI.elem)ᵀ :=
   A.indepCols_eq_indepColsOld ▸ Iff.rfl
 
-lemma Matrix.indepCols_iff_submatrix' [Semiring R] {X Y : Set α} (A : Matrix X Y R) (I : Set α) :
+lemma Matrix.indepCols_iff_submatrix' [Semiring R] (A : Matrix X Y R) (I : Set α) :
     A.IndepCols I ↔ ∃ hI : I ⊆ Y, LinearIndependent R (Aᵀ.submatrix hI.elem id) :=
   A.indepCols_eq_indepColsOld ▸ Iff.rfl
 
 
 /-- Empty set is independent (old version). -/
-private theorem Matrix.indepColsOld_empty [Semiring R] {X Y : Set α} (A : Matrix X Y R) :
+private theorem Matrix.indepColsOld_empty [Semiring R] (A : Matrix X Y R) :
     A.IndepColsOld ∅ :=
   ⟨Y.empty_subset, linearIndependent_empty_type⟩
 
 /-- Empty set is independent. -/
-theorem Matrix.indepCols_empty [Semiring R] {X Y : Set α} (A : Matrix X Y R) :
+theorem Matrix.indepCols_empty [Semiring R] (A : Matrix X Y R) :
     A.IndepCols ∅ :=
   A.indepCols_eq_indepColsOld ▸ A.indepColsOld_empty
 
 /-- A subset of a independent set of columns is independent (old version). -/
-private theorem Matrix.indepColsOld_subset [Semiring R] {X Y : Set α} (A : Matrix X Y R) (I J : Set α)
+private theorem Matrix.indepColsOld_subset [Semiring R] (A : Matrix X Y R) (I J : Set α)
     (hAJ : A.IndepColsOld J) (hIJ : I ⊆ J) :
     A.IndepColsOld I :=
   have ⟨hJ, hA⟩ := hAJ
   ⟨hIJ.trans hJ, hA.comp hIJ.elem hIJ.elem_injective⟩
 
 /-- A subset of an independent set of columns is independent. -/
-theorem Matrix.indepCols_subset [Semiring R] {X Y : Set α} (A : Matrix X Y R) (I J : Set α) (hAJ : A.IndepCols J) (hIJ : I ⊆ J) :
+theorem Matrix.indepCols_subset [Semiring R] (A : Matrix X Y R) (I J : Set α) (hAJ : A.IndepCols J) (hIJ : I ⊆ J) :
     A.IndepCols I :=
   A.indepCols_eq_indepColsOld ▸ A.indepColsOld_subset I J (A.indepCols_eq_indepColsOld ▸ hAJ) hIJ
 
@@ -73,7 +73,7 @@ theorem Matrix.indepCols_subset [Semiring R] {X Y : Set α} (A : Matrix X Y R) (
     The set `{0}` is nonmaximal independent.
     The set `{2, 3}` is maximal independent.
     However, neither of the sets `{0, 2}` or `{0, 3}` is independent. -/
-theorem Matrix.indepCols_aug [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) (I J : Set α)
+theorem Matrix.indepCols_aug [DivisionRing R] (A : Matrix X Y R) (I J : Set α)
     (hAI : A.IndepCols I) (hAI' : ¬Maximal A.IndepCols I) (hAJ : Maximal A.IndepCols J) :
     ∃ x ∈ J \ I, A.IndepCols (x ᕃ I) := by
   by_contra! non_aug
@@ -172,7 +172,7 @@ theorem Matrix.indepCols_aug [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) 
     have kJ_ss_J : k ᕃ J ⊆ J := by simp_all
     exact hkJ' (kJ_ss_J (J.mem_insert k))
 
-lemma linearIndepOn_sUnion_of_directedOn [Semiring R] {X Y : Set α} {A : Matrix Y X R} {s : Set (Set α)}
+lemma linearIndepOn_sUnion_of_directedOn [Semiring R] {A : Matrix Y X R} {s : Set (Set α)}
     (hs : DirectedOn (· ⊆ ·) s)
     (hA : ∀ a ∈ s, LinearIndepOn R A (Y ↓∩ a)) :
     LinearIndepOn R A (Y ↓∩ (⋃₀ s)) := by
@@ -189,7 +189,7 @@ lemma linearIndepOn_sUnion_of_directedOn [Semiring R] {X Y : Set α} {A : Matrix
   · aesop
 
 /-- Every set of columns contains a maximal independent subset of columns. -/
-theorem Matrix.indepCols_maximal [Semiring R] {X Y : Set α} (A : Matrix X Y R) (I : Set α) :
+theorem Matrix.indepCols_maximal [Semiring R] (A : Matrix X Y R) (I : Set α) :
     Matroid.ExistsMaximalSubsetProperty A.IndepCols I :=
   fun J hAJ hJI =>
     zorn_subset_nonempty
@@ -203,7 +203,7 @@ theorem Matrix.indepCols_maximal [Semiring R] {X Y : Set α} (A : Matrix X Y R) 
       J ⟨hAJ, hJI⟩
 
 /-- `Matrix` (interpreted as a full representation) converted to `IndepMatroid`. -/
-def Matrix.toIndepMatroid [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) : IndepMatroid α where
+def Matrix.toIndepMatroid [DivisionRing R] (A : Matrix X Y R) : IndepMatroid α where
   E := Y
   Indep := A.IndepCols
   indep_empty := A.indepCols_empty
@@ -213,30 +213,30 @@ def Matrix.toIndepMatroid [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) : I
   subset_ground _ := And.left
 
 /-- `Matrix` (interpreted as a full representation) converted to `Matroid`. -/
-def Matrix.toMatroid [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) : Matroid α :=
+def Matrix.toMatroid [DivisionRing R] (A : Matrix X Y R) : Matroid α :=
   A.toIndepMatroid.matroid
 
 @[simp]
-lemma Matrix.toMatroid_E [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) : A.toMatroid.E = Y :=
+lemma Matrix.toMatroid_E [DivisionRing R] (A : Matrix X Y R) : A.toMatroid.E = Y :=
   rfl
 
-lemma Matrix.toMatroid_indep [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) : A.toMatroid.Indep = A.IndepCols :=
+lemma Matrix.toMatroid_indep [DivisionRing R] (A : Matrix X Y R) : A.toMatroid.Indep = A.IndepCols :=
   rfl
 
-lemma Matrix.toMatroid_indep_iff [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) (I : Set α) :
+lemma Matrix.toMatroid_indep_iff [DivisionRing R] (A : Matrix X Y R) (I : Set α) :
     A.toMatroid.Indep I ↔ I ⊆ Y ∧ LinearIndepOn R Aᵀ (Y ↓∩ I) := by
   rfl
 
 @[simp]
-lemma Matrix.toMatroid_indep_iff_elem [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) (I : Set α) :
+lemma Matrix.toMatroid_indep_iff_elem [DivisionRing R] (A : Matrix X Y R) (I : Set α) :
     A.toMatroid.Indep I ↔ ∃ hI : I ⊆ Y, LinearIndepOn R Aᵀ hI.elem.range :=
   A.indepCols_iff_elem I
 
-lemma Matrix.toMatroid_indep_iff_submatrix [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) (I : Set α) :
+lemma Matrix.toMatroid_indep_iff_submatrix [DivisionRing R] (A : Matrix X Y R) (I : Set α) :
     A.toMatroid.Indep I ↔ ∃ hI : I ⊆ Y, LinearIndependent R (Aᵀ.submatrix hI.elem id) :=
   A.indepCols_iff_submatrix' I
 
-lemma Matrix.fromRows_zero_reindex_toMatroid [DivisionRing R] {G X Y : Set α} [Fintype G]
+lemma Matrix.fromRows_zero_reindex_toMatroid [DivisionRing R] {G : Set α} [Fintype G]
     [∀ a, Decidable (a ∈ G)] [∀ a, Decidable (a ∈ Y)]
     (A : Matrix G (G ⊕ (Y \ G).Elem) R) (hGY : G ⊆ Y) {Z : Type} (e : G ⊕ Z ≃ X) :
     (Matrix.of (fun i : G => A i ∘ Subtype.toSum)).toMatroid =
@@ -280,7 +280,7 @@ lemma Matrix.fromRows_zero_reindex_toMatroid [DivisionRing R] {G X Y : Set α} [
       cases hj : e.symm j <;> simp [hi, hiY, hj, f, HasSubset.Subset.equiv]
 
 /-- Every vector matroid is finitary. -/
-lemma Matrix.toMatroid_isFinitary [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) : A.toMatroid.Finitary := by
+lemma Matrix.toMatroid_isFinitary [DivisionRing R] (A : Matrix X Y R) : A.toMatroid.Finitary := by
   constructor
   intro I hI
   simp
