@@ -1587,7 +1587,7 @@ private lemma MatrixLikeSum3.IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {c
       rw [Matrix.submatrix_apply, hfiₗ, hgj₀]
       exact hAxy1
     rw [in_signTypeCastRange_iff_abs]
-    obtain ⟨f', g', -, -, hMffgg⟩ := (M.matrix.submatrix f g).abs_det_eq_shortTableauPivot_submatrix_abs_det hMfg19
+    obtain ⟨f', g', hMffgg⟩ := (M.matrix.submatrix f g).abs_det_eq_shortTableauPivot_submatrix_abs_det hMfg19
     rw [hMffgg, M.matrix.submatrix_shortTableauPivot hf hg iₗ j₀, hfiₗ, hgj₀,
       Matrix.submatrix_submatrix, ←in_signTypeCastRange_iff_abs]
     convert ih (M.shortTableauPivot hAxy0) (f ∘ f') (g ∘ g')

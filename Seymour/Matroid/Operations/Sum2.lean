@@ -265,8 +265,7 @@ private lemma matrixSum2_isTotallyUnimodular {α : Type} [DecidableEq α] {Xₗ 
                     ((matrixSum2 Aₗ r Aᵣ c).submatrix f g) iₗ j₀ = -1
       · rw [Matrix.submatrix_apply, hfiₗ, hgj₀]
         exact hAxy1
-      obtain ⟨f', g', -, -, hArAc⟩ :=
-        ((matrixSum2 Aₗ r Aᵣ c).submatrix f g).abs_det_eq_shortTableauPivot_submatrix_abs_det hArAc1
+      obtain ⟨f', g', hArAc⟩ := ((matrixSum2 Aₗ r Aᵣ c).submatrix f g).abs_det_eq_shortTableauPivot_submatrix_abs_det hArAc1
       rw [in_signTypeCastRange_iff_abs, hArAc, (matrixSum2 Aₗ r Aᵣ c).submatrix_shortTableauPivot hf hg iₗ j₀,
         hfiₗ, hgj₀, Matrix.submatrix_submatrix, matrixSum2_shortTableauPivot Aₗ r Aᵣ c,
         ←in_signTypeCastRange_iff_abs]

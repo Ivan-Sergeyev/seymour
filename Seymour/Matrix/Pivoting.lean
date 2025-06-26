@@ -522,23 +522,22 @@ private lemma shortTableauPivot_submatrix_succAbove_succAbove_det_abs_eq_div [Li
 
 lemma shortTableauPivot_submatrix_det_abs_eq_div [LinearOrderedField F] {k : ℕ}
     {A : Matrix (Fin k.succ) (Fin k.succ) F} {x y : Fin k.succ} (hAxy : A x y ≠ 0) :
-    ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
+    ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ,
       |((A.shortTableauPivot x y).submatrix f g).det| = |A.det| / |A x y| :=
-  ⟨x.succAbove, y.succAbove, Fin.succAbove_right_injective, Fin.succAbove_right_injective,
-    shortTableauPivot_submatrix_succAbove_succAbove_det_abs_eq_div hAxy⟩
+  ⟨x.succAbove, y.succAbove, shortTableauPivot_submatrix_succAbove_succAbove_det_abs_eq_div hAxy⟩
 
 lemma Matrix.abs_det_eq_shortTableauPivot_submatrix_abs_det [LinearOrderedField F] {k : ℕ}
     (A : Matrix (Fin k.succ) (Fin k.succ) F) {i j : Fin k.succ} (hAij : A i j = 1 ∨ A i j = -1) :
-    ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ, f.Injective ∧ g.Injective ∧
+    ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ,
       |A.det| = |((A.shortTableauPivot i j).submatrix f g).det| := by
   have hAij0 : A i j ≠ 0
   · cases hAij with
     | inl h1 => exact ne_zero_of_eq_one h1
     | inr h9 => simp [h9]
-  obtain ⟨f, g, hf, hg, hAfg⟩ := shortTableauPivot_submatrix_det_abs_eq_div hAij0
+  obtain ⟨f, g, hAfg⟩ := shortTableauPivot_submatrix_det_abs_eq_div hAij0
   have hAij_abs : |A i j| = 1
   · cases hAij with
     | inl h1 => rw [h1, abs_one]
     | inr h9 => rw [h9, abs_neg, abs_one]
   rw [hAij_abs, div_one] at hAfg
-  exact ⟨f, g, hf, hg, hAfg.symm⟩
+  exact ⟨f, g, hAfg.symm⟩
