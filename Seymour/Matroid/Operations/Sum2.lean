@@ -330,7 +330,7 @@ lemma standardReprSum2_hasTuSigning {α : Type} [DecidableEq α] {Sₗ Sᵣ S : 
     | inl jₗ => exact abs_mul_eq_zmod_cast (hBBᵣ iᵣ hy._ᵣ) (hBBₗ hx._ₗ jₗ)
     | inr jᵣ => exact hBBᵣ iᵣ ⟨jᵣ.val, Set.mem_of_mem_diff jᵣ.property⟩
 
-instance Matroid.Is2sumOf.finS {α : Type} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} (hM : M.Is2sumOf Mₗ Mᵣ) : Finite hM.S.X := by
+lemma Matroid.Is2sumOf.finX {α : Type} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} (hM : M.Is2sumOf Mₗ Mᵣ) : Finite hM.S.X := by
   obtain ⟨S, Sₗ, Sᵣ, _, _, _, _, _, _, _, _, _, hS⟩ := hM
   simp_rw [standardReprSum2, Option.dite_none_right_eq_some, Option.some.injEq] at hS
   obtain ⟨_, rfl⟩ := hS
@@ -343,7 +343,7 @@ instance Matroid.Is2sumOf.finS {α : Type} [DecidableEq α] {M Mₗ Mᵣ : Matro
 theorem Matroid.Is2sumOf.isRegular {α : Type} [DecidableEq α] {M Mₗ Mᵣ : Matroid α}
     (hM : M.Is2sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
-  have := hM.finS
+  have := hM.finX
   obtain ⟨_, _, _, _, _, rfl, rfl, rfl, _, _, _, _, hS⟩ := hM
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
   exact standardReprSum2_hasTuSigning hMₗ hMᵣ hS
