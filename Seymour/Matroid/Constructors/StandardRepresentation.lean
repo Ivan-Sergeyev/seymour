@@ -54,10 +54,6 @@ variable [DecidableEq α] {R : Type}
 def StandardRepr.toFull [Zero R] [One R] (S : StandardRepr α R) : Matrix S.X (S.X ∪ S.Y).Elem R :=
   ((1 ◫ S.B) · ∘ Subtype.toSum)
 
-def StandardRepr.toFull_def [Zero R] [One R] (S : StandardRepr α R) :
-    S.toFull = (1 ◫ S.B).submatrix id Subtype.toSum :=
-  rfl
-
 lemma StandardRepr.toFull_indep_iff [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toFull.toMatroid.Indep I ↔
     I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R ((1 ◫ S.B) · ∘ Subtype.toSum)ᵀ ((S.X ∪ S.Y) ↓∩ I) := by
