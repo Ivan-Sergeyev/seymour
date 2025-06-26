@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2024.10.7)  28 MAY 2025 13:42
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2024.10.7)  26 JUN 2025 16:45
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -644,6 +644,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 
 ] (./content.tex (./preliminaries.tex
 Chapter 1.
+Package hyperref Info: bookmark level for unknown todo defaults to 0 on input line 18.
 [1
 
 ] [2] [3]) (./sum_1.tex [4]
@@ -659,33 +660,35 @@ Chapter 4.
 [8
 
 ]
-Overfull \hbox (11.86023pt too wide) in paragraph at lines 179--183
-[][]\TU/lmr/bx/n/10 Lemma 41. [][][]\TU/lmr/m/n/10 Let $\OML/cmm/m/it/10 Q$ \TU/lmr/m/n/10 be a TU signing of $\OML/cmm/m/it/10 S$ \TU/lmr/m/n/10 (from Definition [][]39[][]). Let $\OML/cmm/m/it/10 u \OMS/cmsy/m/n/10 2 f\OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OMS/cmsy/m/n/10 ^^F\OT1/cmr/m/n/10 1\OMS/cmsy/m/n/10 g[]$\TU/lmr/m/n/10 , $\OML/cmm/m/it/10 v \OMS/cmsy/m/n/10 2 f\OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OMS/cmsy/m/n/10 ^^F\OT1/cmr/m/n/10 1\OMS/cmsy/m/n/10 g[]$\TU/lmr/m/n/10 ,
+Overfull \hbox (11.86023pt too wide) in paragraph at lines 166--170
+[][]\TU/lmr/bx/n/10 Lemma 49. [][][]\TU/lmr/m/n/10 Let $\OML/cmm/m/it/10 Q$ \TU/lmr/m/n/10 be a TU signing of $\OML/cmm/m/it/10 S$ \TU/lmr/m/n/10 (from Definition [][]48[][]). Let $\OML/cmm/m/it/10 u \OMS/cmsy/m/n/10 2 f\OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OMS/cmsy/m/n/10 ^^F\OT1/cmr/m/n/10 1\OMS/cmsy/m/n/10 g[]$\TU/lmr/m/n/10 , $\OML/cmm/m/it/10 v \OMS/cmsy/m/n/10 2 f\OT1/cmr/m/n/10 0\OML/cmm/m/it/10 ; \OMS/cmsy/m/n/10 ^^F\OT1/cmr/m/n/10 1\OMS/cmsy/m/n/10 g[]$\TU/lmr/m/n/10 ,
  []
 
 
-Overfull \hbox (5.57913pt too wide) detected at line 213
+Overfull \hbox (5.57913pt too wide) detected at line 200
 []
  []
 
-[9]
-Package hyperref Info: bookmark level for unknown todo defaults to 0 on input line 332.
- [10] [11]
-Overfull \hbox (2.60121pt too wide) detected at line 456
+[9] [10] [11]
+Overfull \hbox (2.60121pt too wide) detected at line 443
 [] \OT1/cmr/m/n/10 = [] \OMS/cmsy/m/n/10 ^^A \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 D[]\OT1/cmr/m/n/10 )[] \OMS/cmsy/m/n/10 ^^A \OML/cmm/m/it/10 D[];  [] \OT1/cmr/m/n/10 = [] \OMS/cmsy/m/n/10 ^^A \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 D[]\OT1/cmr/m/n/10 )[] \OMS/cmsy/m/n/10 ^^A \OML/cmm/m/it/10 D[];  [] \OT1/cmr/m/n/10 = [] \OML/cmm/m/it/10 ;  [] \OT1/cmr/m/n/10 = [] \OML/cmm/m/it/10 :
  []
 
-[12] [13])) [14] (./print.aux)
+[12] [13]) (./conclusion.tex [14]
+Chapter 5.
+)) [15
+
+] (./print.aux)
 Package rerunfilecheck Info: File `print.out' has not changed.
-(rerunfilecheck)             Checksum: 5645D8F7ACB32A5F616297459D385029;1677.
+(rerunfilecheck)             Checksum: 27067DFDD283B9FED160BDDF6018C84B;1771.
  ) 
 Here is how much of TeX's memory you used:
- 23082 strings out of 476191
- 463068 string characters out of 5812072
- 755282 words of memory out of 5000000
- 43413 multiletter control sequences out of 15000+600000
+ 23115 strings out of 476191
+ 464580 string characters out of 5812072
+ 759904 words of memory out of 5000000
+ 43443 multiletter control sequences out of 15000+600000
  476059 words of font info for 67 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 105i,14n,107p,1089b,1044s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 105i,14n,107p,1175b,1066s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on print.pdf (15 pages).
+Output written on print.pdf (16 pages).
