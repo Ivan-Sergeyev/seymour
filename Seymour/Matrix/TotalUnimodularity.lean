@@ -146,7 +146,7 @@ lemma Matrix.IsTotallyUnimodular.fromCols_comm {X Y₁ Y₂ R : Type} [CommRing 
   ext (_|_) <;> simp
 
 lemma Matrix.replicateRow0_fromRows_isTotallyUnimodular_iff {X Y X' R : Type} [CommRing R] (A : Matrix X Y R) :
-    (Matrix.fromRows (Matrix.replicateRow X' 0) A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
+    ((Matrix.replicateRow X' 0) ⊟ A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   constructor <;> intro hA
   · have hA' : (A ⊟ (Matrix.replicateRow X' 0)).IsTotallyUnimodular
     · convert hA.comp_rows Sum.swap
@@ -157,7 +157,7 @@ lemma Matrix.replicateRow0_fromRows_isTotallyUnimodular_iff {X Y X' R : Type} [C
     ext (_|_) <;> simp
 
 lemma Matrix.replicateCol0_fromCols_isTotallyUnimodular_iff {X Y Y' R : Type} [CommRing R] (A : Matrix X Y R) :
-    (Matrix.fromCols (Matrix.replicateCol Y' 0) A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
+    ((Matrix.replicateCol Y' 0) ◫ A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   rw [←Matrix.transpose_isTotallyUnimodular_iff, Matrix.transpose_fromCols, Matrix.transpose_replicateCol,
     Matrix.replicateRow0_fromRows_isTotallyUnimodular_iff, Matrix.transpose_isTotallyUnimodular_iff]
 

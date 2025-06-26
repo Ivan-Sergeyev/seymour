@@ -81,6 +81,21 @@ lemma Z2val_toRat_mul_Z2val_toRat (a b : Z2) : (a.val : ℚ) * (b.val : ℚ) = (
 lemma Z2_mul_cast_toRat (a b : Z2) : ((a * b).cast : ℚ) = (a.cast : ℚ) * (b.cast : ℚ) := by
   cases a.eq_0_or_1 <;> cases b.eq_0_or_1 <;> simp [*]
 
+lemma abs_mul_eq_zmod_cast {a b : Z2} {a' b' : ℚ} (haa : |a'| = a.cast) (hbb : |b'| = b.cast) :
+    |a' * b'| = (a * b).cast := by
+  cases a.eq_0_or_1 with
+  | inl ha0 =>
+    simp [ha0] at haa
+    simp [ha0, haa]
+  | inr ha1 =>
+    cases b.eq_0_or_1 with
+    | inl hb0 =>
+      simp [hb0] at hbb
+      simp [hb0, hbb]
+    | inr hb1 =>
+      rw [abs_mul, haa, hbb]
+      exact (Z2_mul_cast_toRat a b).symm
+
 lemma abs_add_eq_zmod_cast {a b : Z2} {a' b' : ℚ} (haa : |a'| = a.cast) (hbb : |b'| = b.cast)
     (hab : a' + b' ∈ SignType.cast.range) :
     |a' + b'| = (a + b).cast := by

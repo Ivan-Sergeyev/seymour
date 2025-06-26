@@ -1,7 +1,7 @@
 \chapter{Regularity of 2-Sum}
 
 \begin{definition}
-    \label{matrix2sumComposition}
+    \label{matrixSum2}
     \uses{StandardRepr,Matrix.fromBlocks}
     % \lean{}
     \leanok
@@ -17,40 +17,40 @@
         D = c \otimes r.
     \]
     Here $A_{\ell} \in R^{X_{\ell} \times Y_{\ell}}$, $A_{r} \in R^{X_{r} \times Y_{r}}$, $r \in R^{Y_{\ell}}$, $c \in R^{X_{r}}$, $D \in R^{X_{r} \times Y_{\ell}}$, and the indexing is consistent everywhere.
-\end{definition} % TODO add the conditions on intersections and maybe nonzeros, then rename to standardRepr2sumComposition
+\end{definition} % TODO add the conditions on intersections and maybe nonzeros, then rename to standardReprSum2
 
 \begin{definition}
     \label{Matroid.Is2sumOf}
-    \uses{Matroid,StandardRepr,matrix2sumComposition}
+    \uses{Matroid,StandardRepr,matrixSum2}
     % \lean{}
     \leanok
-    A matroid $M$ is a $2$-sum of matroids $M_{\ell}$ and $M_{r}$ if there exist standard $\mathbb{Z}_{2}$ representation matrices $B_{\ell}$, $B_{r}$, and $B$ (for $M_{\ell}$, $M_{r}$, and $M$, respectively) of the form given in Definition~\ref{matrix2sumComposition}.
+    A matroid $M$ is a $2$-sum of matroids $M_{\ell}$ and $M_{r}$ if there exist standard $\mathbb{Z}_{2}$ representation matrices $B_{\ell}$, $B_{r}$, and $B$ (for $M_{\ell}$, $M_{r}$, and $M$, respectively) of the form given in Definition~\ref{matrixSum2}.
 \end{definition}
 
 \begin{lemma}
     \label{Matrix.IsTotallyUnimodular.fromCols_outer}
-    \uses{matrix2sumComposition,Matrix.IsTotallyUnimodular}
+    \uses{matrixSum2,Matrix.IsTotallyUnimodular}
     % \lean{}
     \leanok
-    Let $B_{\ell}$ and $B_{r}$ from Definition~\ref{matrix2sumComposition} be TU matrices (over $\mathbb{Q}$). Then $C = \begin{bmatrix} D & A_{r} \end{bmatrix}$ is TU.
+    Let $B_{\ell}$ and $B_{r}$ from Definition~\ref{matrixSum2} be TU matrices (over $\mathbb{Q}$). Then $C = \begin{bmatrix} D & A_{r} \end{bmatrix}$ is TU.
 \end{lemma}
 
 \begin{proof}
-    \uses{matrix2sumComposition,Matrix.IsTotallyUnimodular,Matrix.IsTotallyUnimodular.mul_cols}
+    \uses{matrixSum2,Matrix.IsTotallyUnimodular,Matrix.IsTotallyUnimodular.mul_cols}
     \leanok
     Since $B_{\ell}$ is TU, all its entries are in $\{0, \pm 1\}$. In particular, $r$ is a $\{0, \pm 1\}$ vector. Therefore, every column of $D$ is a copy of $y$, $-y$, or the zero column. Thus, $C$ can be obtained from $B_{r}$ by adjoining zero columns, duplicating the $y$ column, and multiplying some columns by $-1$. Since all these operations preserve TUess and since $B_{r}$ is TU, $C$ is also TU.
 \end{proof}
 
 \begin{lemma}
-    \label{matrix2sumComposition_shortTableauPivot}
-    \uses{matrix2sumComposition,Matrix.shortTableauPivot}
+    \label{matrixSum2_shortTableauPivot}
+    \uses{matrixSum2,Matrix.shortTableauPivot}
     % \lean{}
     \leanok
-    Let $B_{\ell}$ and $B_{r}$ be matrices from Definition~\ref{matrix2sumComposition}. Let $B_{\ell}'$ and $B'$ be the matrices obtained by performing a short tableau pivot on $(x_{\ell}, y_{\ell}) \in X_{\ell} \times Y_{\ell}$ in $B_{\ell}$ and $B$, respectively. Then $B' = B_{\ell}' \oplus_{2, x, y} B_{r}$.
+    Let $B_{\ell}$ and $B_{r}$ be matrices from Definition~\ref{matrixSum2}. Let $B_{\ell}'$ and $B'$ be the matrices obtained by performing a short tableau pivot on $(x_{\ell}, y_{\ell}) \in X_{\ell} \times Y_{\ell}$ in $B_{\ell}$ and $B$, respectively. Then $B' = B_{\ell}' \oplus_{2, x, y} B_{r}$.
 \end{lemma}
 
 \begin{proof}
-    \uses{matrix2sumComposition,Matrix.shortTableauPivot,Matrix.shortTableauPivot_zero,Matrix.shortTableauPivot_eq}
+    \uses{matrixSum2,Matrix.shortTableauPivot,Matrix.shortTableauPivot_zero,Matrix.shortTableauPivot_eq}
     \leanok
     Let
     \[
@@ -61,25 +61,25 @@
 \end{proof}
 
 \begin{lemma}
-    \label{matrix2sumComposition_isTotallyUnimodular}
-    \uses{matrix2sumComposition,Matrix.IsTotallyUnimodular}
+    \label{matrixSum2_isTotallyUnimodular}
+    \uses{matrixSum2,Matrix.IsTotallyUnimodular}
     % \lean{}
     \leanok
-    Let $B_{\ell}$ and $B_{r}$ from Definition~\ref{matrix2sumComposition} be TU matrices (over $\mathbb{Q}$). Then $B_{\ell} \oplus_{2, x, y} B_{r}$ is TU.
+    Let $B_{\ell}$ and $B_{r}$ from Definition~\ref{matrixSum2} be TU matrices (over $\mathbb{Q}$). Then $B_{\ell} \oplus_{2, x, y} B_{r}$ is TU.
 \end{lemma}
 
 \begin{proof}
-    \uses{Matrix.isTotallyUnimodular_iff_forall_isPartiallyUnimodular,matrix2sumComposition,Matrix.IsTotallyUnimodular.fromCols_outer,shortTableauPivot_submatrix_det_abs_eq_div,matrix2sumComposition_shortTableauPivot,Matrix.IsTotallyUnimodular.shortTableauPivot}
+    \uses{Matrix.isTotallyUnimodular_iff_forall_isPartiallyUnimodular,matrixSum2,Matrix.IsTotallyUnimodular.fromCols_outer,shortTableauPivot_submatrix_det_abs_eq_div,matrixSum2_shortTableauPivot,Matrix.IsTotallyUnimodular.shortTableauPivot}
     \leanok
     By Lemma~\ref{Matrix.isTotallyUnimodular_iff_forall_isPartiallyUnimodular}, it suffices to show that $B_{\ell} \oplus_{2, x, y} B_{r}$ is $k$-PU for every $k \in \mathbb{N}$. We prove this claim by induction on $k$. The base case with $k = 1$ holds, since all entries of $B_{\ell} \oplus_{2, x, y} B_{r}$ are in $\{0, \pm 1\}$ by construction.
 
-    Suppose that for some $k \in \mathbb{N}$ we know that for any TU matrices $B_{\ell}'$ and $B_{r}'$ (from Definition~\ref{matrix2sumComposition}) their $2$-sum $B_{\ell}' \oplus_{2, x, y} B_{r}'$ is $k$-PU. Now, given TU matrices $B_{\ell}$ and $B_{r}$ (from Definition~\ref{matrix2sumComposition}), our goal is to show that $B = B_{\ell} \oplus_{2, x, y} B_{r}$ is $(k + 1)$-PU, i.e., that every $(k + 1) \times (k + 1)$ submatrix $T$ of $B$ has $\det T \in \{0, \pm 1\}$.
+    Suppose that for some $k \in \mathbb{N}$ we know that for any TU matrices $B_{\ell}'$ and $B_{r}'$ (from Definition~\ref{matrixSum2}) their $2$-sum $B_{\ell}' \oplus_{2, x, y} B_{r}'$ is $k$-PU. Now, given TU matrices $B_{\ell}$ and $B_{r}$ (from Definition~\ref{matrixSum2}), our goal is to show that $B = B_{\ell} \oplus_{2, x, y} B_{r}$ is $(k + 1)$-PU, i.e., that every $(k + 1) \times (k + 1)$ submatrix $T$ of $B$ has $\det T \in \{0, \pm 1\}$.
 
     First, suppose that $T$ has no rows in $X_{\ell}$. Then $T$ is a submatrix of $\begin{bmatrix} D & A_{r} \end{bmatrix}$, which is TU by Lemma~\ref{Matrix.IsTotallyUnimodular.fromCols_outer}, so $\det T \in \{0, \pm 1\}$. Thus, we may assume that $T$ contains a row $x_{\ell} \in X_{\ell}$.
 
     Next, note that without loss of generality we may assume that there exists $y_{\ell} \in Y_{\ell}$ such that $T (x_{\ell}, y_{\ell}) \neq 0$. Indeed, if $T (x_{\ell}, y) = 0$ for all $y$, then $\det T = 0$ and we are done, and $T (x_{\ell}, y) = 0$ holds whenever $y \in Y_{r}$.
 
-    Since $B$ is $1$-PU, all entries of $T$ are in $\{0, \pm 1\}$, and hence $T (x_{\ell}, y_{\ell}) \in \{\pm 1\}$. Thus, by Lemma~\ref{shortTableauPivot_submatrix_det_abs_eq_div}, performing a short tableau pivot in $T$ on $(x_{\ell}, y_{\ell})$ yields a matrix that contains a $k \times k$ submatrix $T''$ such that $|\det T| = |\det T''|$. Since $T$ is a submatrix of $B$, matrix $T''$ is a submatrix of the matrix $B'$ resulting from performing a short tableau pivot in $B$ on the same entry $(x_{\ell}, y_{\ell})$. By Lemma~\ref{matrix2sumComposition_shortTableauPivot}, we have $B' = B_{\ell}' \oplus_{2, x, y} B_{r}$ where $B_{\ell}'$ is the result of performing a short tableau pivot in $B_{\ell}$ on $(x_{\ell}, y_{\ell})$. Since $B_{\ell}$ is TU, by Lemma \ref{Matrix.IsTotallyUnimodular.shortTableauPivot}, $B_{\ell}'$ is also TU. Thus, by the inductive hypothesis applied to $T''$ and $B_{\ell}' \oplus_{2, x, y} B_{r}$, we have $\det T'' \in \{0, \pm 1\}$. Since $|\det T| = |\det T''|$, we conclude that $\det T \in \{0, \pm 1\}$.
+    Since $B$ is $1$-PU, all entries of $T$ are in $\{0, \pm 1\}$, and hence $T (x_{\ell}, y_{\ell}) \in \{\pm 1\}$. Thus, by Lemma~\ref{shortTableauPivot_submatrix_det_abs_eq_div}, performing a short tableau pivot in $T$ on $(x_{\ell}, y_{\ell})$ yields a matrix that contains a $k \times k$ submatrix $T''$ such that $|\det T| = |\det T''|$. Since $T$ is a submatrix of $B$, matrix $T''$ is a submatrix of the matrix $B'$ resulting from performing a short tableau pivot in $B$ on the same entry $(x_{\ell}, y_{\ell})$. By Lemma~\ref{matrixSum2_shortTableauPivot}, we have $B' = B_{\ell}' \oplus_{2, x, y} B_{r}$ where $B_{\ell}'$ is the result of performing a short tableau pivot in $B_{\ell}$ on $(x_{\ell}, y_{\ell})$. Since $B_{\ell}$ is TU, by Lemma \ref{Matrix.IsTotallyUnimodular.shortTableauPivot}, $B_{\ell}'$ is also TU. Thus, by the inductive hypothesis applied to $T''$ and $B_{\ell}' \oplus_{2, x, y} B_{r}$, we have $\det T'' \in \{0, \pm 1\}$. Since $|\det T| = |\det T''|$, we conclude that $\det T \in \{0, \pm 1\}$.
 \end{proof}
 
 \begin{theorem}
@@ -91,7 +91,7 @@
 \end{theorem}
 
 \begin{proof}
-    \uses{StandardRepr,Matroid.Is2sumOf,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,matrix2sumComposition_isTotallyUnimodular,Matrix.IsTuSigningOf}
+    \uses{StandardRepr,Matroid.Is2sumOf,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,matrixSum2_isTotallyUnimodular,Matrix.IsTuSigningOf}
     \leanok
-    Let $B_{\ell}$, $B_{r}$, and $B$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{Matroid.Is2sumOf}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Then $B' = B_{\ell}' \oplus_{2, x, y} B_{r}'$ is a TU signing of $B$. Indeed, $B'$ is TU by Lemma~\ref{matrix2sumComposition_isTotallyUnimodular}, and a direct calculation verifies that $B'$ is a signing of $B$. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
+    Let $B_{\ell}$, $B_{r}$, and $B$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{Matroid.Is2sumOf}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Then $B' = B_{\ell}' \oplus_{2, x, y} B_{r}'$ is a TU signing of $B$. Indeed, $B'$ is TU by Lemma~\ref{matrixSum2_isTotallyUnimodular}, and a direct calculation verifies that $B'$ is a signing of $B$. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
 \end{proof}

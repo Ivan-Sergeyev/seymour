@@ -2227,3 +2227,4 @@ info: 'Matroid.Is3sumOf.isRegular' depends on axioms: [propext, Classical.choice
 -/
 #guard_msgs in
 #print axioms Matroid.Is3sumOf.isRegular
+-- TODO document in `Seymour.lean` and remove here

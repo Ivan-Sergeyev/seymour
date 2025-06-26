@@ -8,6 +8,12 @@ This file provides lemmas about sets that are not present in Mathlib.
 
 variable {α : Type}
 
+lemma singleton_inter_in_left {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : a ∈ X :=
+  Set.mem_of_mem_inter_left (ha.symm.subset rfl)
+
+lemma singleton_inter_in_right {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : a ∈ Y :=
+  Set.mem_of_mem_inter_right (ha.symm.subset rfl)
+
 lemma disjoint_of_sdiff_inter (X Y : Set α) : X \ (X ∩ Y) ⫗ Y \ (X ∩ Y) := by
   rw [Set.diff_self_inter, Set.diff_inter_self_eq_diff]
   exact disjoint_sdiff_sdiff

@@ -1,7 +1,7 @@
 \chapter{Regularity of 1-Sum}
 
 \begin{definition}
-    \label{standardRepr1sumComposition}
+    \label{standardReprSum1}
     \uses{StandardRepr,Matrix.fromBlocks}
     % \lean{}
     \leanok
@@ -13,10 +13,10 @@
 
 \begin{definition}
     \label{Matroid.Is1sumOf}
-    \uses{Matroid,StandardRepr,standardRepr1sumComposition}
+    \uses{Matroid,StandardRepr,standardReprSum1}
     % \lean{}
     \leanok
-    A matroid $M$ is a $1$-sum of matroids $M_{\ell}$ and $M_{r}$ if there exist standard $\mathbb{Z}_{2}$ representation matrices $B_{\ell}$, $B_{r}$, and $B$ (for $M_{\ell}$, $M_{r}$, and $M$, respectively) of the form given in Definition~\ref{standardRepr1sumComposition}.
+    A matroid $M$ is a $1$-sum of matroids $M_{\ell}$ and $M_{r}$ if there exist standard $\mathbb{Z}_{2}$ representation matrices $B_{\ell}$, $B_{r}$, and $B$ (for $M_{\ell}$, $M_{r}$, and $M$, respectively) of the form given in Definition~\ref{standardReprSum1}.
 \end{definition}
 
 \begin{lemma}
@@ -34,14 +34,14 @@
 
 \begin{lemma}
     \label{Matrix.fromBlocks_isTotallyUnimodular}
-    \uses{standardRepr1sumComposition,Matrix.IsTotallyUnimodular}
+    \uses{standardReprSum1,Matrix.IsTotallyUnimodular}
     % \lean{}
     \leanok
-    Let $B_{\ell}$ and $B_{r}$ from Definition~\ref{standardRepr1sumComposition} be TU matrices (over $\mathbb{Q}$). Then $B = B_{\ell} \oplus_{1} B_{r}$ is TU.
+    Let $B_{\ell}$ and $B_{r}$ from Definition~\ref{standardReprSum1} be TU matrices (over $\mathbb{Q}$). Then $B = B_{\ell} \oplus_{1} B_{r}$ is TU.
 \end{lemma}
 
 \begin{proof}
-    \uses{standardRepr1sumComposition,Matrix.IsTotallyUnimodular,Matrix.det_fromBlocks_zero}
+    \uses{standardReprSum1,Matrix.IsTotallyUnimodular,Matrix.det_fromBlocks_zero}
     \leanok
     We prove that $B$ is TU by Definition~\ref{Matrix.IsTotallyUnimodular}. To this end, let $T$ be a square submatrix of $B$. Our goal is to show that $\det T \in \{0, \pm 1\}$.
 

@@ -148,3 +148,23 @@ lemma Matrix.IsTotallyUnimodular.toMatrixUnionUnion [CommRing β] {A : Matrix (T
   rw [Matrix.isTotallyUnimodular_iff] at hA ⊢
   intros
   apply hA
+
+variable {T S : Set α}
+
+/-- Convert a block matrix to a matrix over set unions named as single indexing sets. -/
+def Matrix.toMatrixElemElem (A : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) β) (hT : T = T₁ ∪ T₂) (hS : S = S₁ ∪ S₂) :
+    Matrix T S β :=
+  hT ▸ hS ▸ A.toMatrixUnionUnion
+
+/-- Direct characterization of `Matrix.toMatrixElemElem` entries. -/
+lemma Matrix.toMatrixElemElem_apply (A : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) β) (hT : T = T₁ ∪ T₂) (hS : S = S₁ ∪ S₂) (i : T) (j : S) :
+    A.toMatrixElemElem hT hS i j = A (hT ▸ i).toSum (hS ▸ j).toSum := by
+  subst hT hS
+  rfl
+
+/-- A totally unimodular block matrix stays totally unimodular after converting to a matrix over set unions named as
+    single indexing sets. -/
+lemma Matrix.IsTotallyUnimodular.toMatrixElemElem {A : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) ℚ}
+    (hA : A.IsTotallyUnimodular) (hT : T = T₁ ∪ T₂) (hS : S = S₁ ∪ S₂) :
+    (A.toMatrixElemElem hT hS).IsTotallyUnimodular :=
+  hT ▸ hS ▸ hA.toMatrixUnionUnion

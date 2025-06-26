@@ -52,79 +52,79 @@ recall Matrix.toMatrixUnionUnion {α : Type} {T₁ T₂ S₁ S₂ : Set α} {β 
 
 /-! ## Summary of 1-sum -/
 
-recall matrix1sumComposition {R : Type} [Zero R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
+recall matrixSum1 {R : Type} [Zero R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
     (Aₗ : Matrix Xₗ Yₗ R) (Aᵣ : Matrix Xᵣ Yᵣ R) :
     Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) R :=
   Matrix.fromBlocks Aₗ 0 0 Aᵣ
 
-recall standardRepr1sumComposition {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2}
-    (hXY : Disjoint Sₗ.X Sᵣ.Y) (hYX : Disjoint Sₗ.Y Sᵣ.X) :
-    StandardRepr α Z2 × Prop :=
-  ⟨
-    ⟨
-      Sₗ.X ∪ Sᵣ.X,
-      Sₗ.Y ∪ Sᵣ.Y,
-      by simp only [Set.disjoint_union_left, Set.disjoint_union_right]; exact ⟨⟨Sₗ.hXY, hYX.symm⟩, ⟨hXY, Sᵣ.hXY⟩⟩,
-      (matrix1sumComposition Sₗ.B Sᵣ.B).toMatrixUnionUnion,
-      inferInstance,
-      inferInstance,
-    ⟩,
-    Disjoint Sₗ.X Sᵣ.X ∧ Disjoint Sₗ.Y Sᵣ.Y
-  ⟩
+-- recall standardReprSum1 {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2}
+--     (hXY : Disjoint Sₗ.X Sᵣ.Y) (hYX : Disjoint Sₗ.Y Sᵣ.X) :
+--     StandardRepr α Z2 × Prop :=
+--   ⟨
+--     ⟨
+--       Sₗ.X ∪ Sᵣ.X,
+--       Sₗ.Y ∪ Sᵣ.Y,
+--       by simp only [Set.disjoint_union_left, Set.disjoint_union_right]; exact ⟨⟨Sₗ.hXY, hYX.symm⟩, ⟨hXY, Sᵣ.hXY⟩⟩,
+--       (matrixSum1 Sₗ.B Sᵣ.B).toMatrixUnionUnion,
+--       inferInstance,
+--       inferInstance,
+--     ⟩,
+--     Disjoint Sₗ.X Sᵣ.X ∧ Disjoint Sₗ.Y Sᵣ.Y
+--   ⟩
 
-private theorem Matroid_Is1sumOf_isRegular {α : Type} [DecidableEq α] (Sₗ Sᵣ S : StandardRepr α Z2)
-    [Finite Sₗ.X] [Finite Sᵣ.X] (hXY : Disjoint Sₗ.X Sᵣ.Y) (hYX : Disjoint Sₗ.Y Sᵣ.X)
-    (hS : S = (standardRepr1sumComposition hXY hYX).fst) (hSₗ : Sₗ.toMatroid.IsRegular) (hSᵣ : Sᵣ.toMatroid.IsRegular) :
-    S.toMatroid.IsRegular := by
-  have : Finite S.X := hS ▸ Finite.Set.finite_union Sₗ.X Sᵣ.X
-  rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hSₗ hSᵣ ⊢
-  exact hS ▸ standardRepr1sumComposition_hasTuSigning hXY hYX hSₗ hSᵣ
+-- private theorem Matroid_Is1sumOf_isRegular {α : Type} [DecidableEq α] (Sₗ Sᵣ S : StandardRepr α Z2)
+--     [Finite Sₗ.X] [Finite Sᵣ.X] (hXY : Disjoint Sₗ.X Sᵣ.Y) (hYX : Disjoint Sₗ.Y Sᵣ.X)
+--     (hS : S = (standardReprSum1 hXY hYX).fst) (hSₗ : Sₗ.toMatroid.IsRegular) (hSᵣ : Sᵣ.toMatroid.IsRegular) :
+--     S.toMatroid.IsRegular := by
+--   have : Finite S.X := hS ▸ Finite.Set.finite_union Sₗ.X Sᵣ.X
+--   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hSₗ hSᵣ ⊢
+--   exact hS ▸ standardReprSum1_hasTuSigning hXY hYX hSₗ hSᵣ
 
-/--
-info: '_private.Seymour.0.Matroid_Is1sumOf_isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
--/
-#guard_msgs in
-#print axioms Matroid_Is1sumOf_isRegular
+-- /--
+-- info: '_private.Seymour.0.Matroid_Is1sumOf_isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
+-- -/
+-- #guard_msgs in
+-- #print axioms Matroid_Is1sumOf_isRegular
 
 
 /-! ## Summary of 2-sum -/
 
-recall matrix2sumComposition {R : Type} [Semiring R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
+recall matrixSum2 {R : Type} [Semiring R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
     (Aₗ : Matrix Xₗ Yₗ R) (x : Yₗ → R) (Aᵣ : Matrix Xᵣ Yᵣ R) (y : Xᵣ → R) :
     Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) R :=
   Matrix.fromBlocks Aₗ 0 (fun i j => y i * x j) Aᵣ
 
-recall standardRepr2sumComposition {α : Type} [DecidableEq α] {a : α} {Sₗ Sᵣ : StandardRepr α Z2}
-    (ha : Sₗ.X ∩ Sᵣ.Y = {a}) (hXY : Disjoint Sᵣ.X Sₗ.Y) :
-    StandardRepr α Z2 × Prop :=
-  let Aₗ : Matrix (Sₗ.X \ {a}).Elem Sₗ.Y.Elem Z2 := Sₗ.B.submatrix Set.diff_subset.elem id -- the top submatrix of `Bₗ`
-  let Aᵣ : Matrix Sᵣ.X.Elem (Sᵣ.Y \ {a}).Elem Z2 := Sᵣ.B.submatrix id Set.diff_subset.elem -- the right submatrix of `Bᵣ`
-  let x : Sₗ.Y.Elem → Z2 := Sₗ.B ⟨a, Set.mem_of_mem_inter_left (by rw [ha]; rfl)⟩ -- the bottom row of `Bₗ`
-  let y : Sᵣ.X.Elem → Z2 := (Sᵣ.B · ⟨a, Set.mem_of_mem_inter_right (by rw [ha]; rfl)⟩) -- the left column of `Bᵣ`
-  ⟨
-    ⟨
-      (Sₗ.X \ {a}) ∪ Sᵣ.X,
-      Sₗ.Y ∪ (Sᵣ.Y \ {a}),
-      by
-        rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
-        exact ⟨⟨Sₗ.hXY.disjoint_sdiff_left, hXY⟩, ⟨disjoint_of_sdiff_singleton ha, Sᵣ.hXY.disjoint_sdiff_right⟩⟩,
-      (matrix2sumComposition Aₗ x Aᵣ y).toMatrixUnionUnion,
-      inferInstance,
-      inferInstance,
-    ⟩,
-    (Disjoint Sₗ.X Sᵣ.X ∧ Disjoint Sₗ.Y Sᵣ.Y) ∧ (x ≠ 0 ∧ y ≠ 0)
-  ⟩
+-- recall standardReprSum2 {α : Type} [DecidableEq α] {a : α} {Sₗ Sᵣ : StandardRepr α Z2}
+--     (ha : Sₗ.X ∩ Sᵣ.Y = {a}) (hXY : Disjoint Sᵣ.X Sₗ.Y) :
+--     StandardRepr α Z2 × Prop :=
+--   let Aₗ : Matrix (Sₗ.X \ {a}).Elem Sₗ.Y.Elem Z2 := Sₗ.B.submatrix Set.diff_subset.elem id -- the top submatrix of `Bₗ`
+--   let Aᵣ : Matrix Sᵣ.X.Elem (Sᵣ.Y \ {a}).Elem Z2 := Sᵣ.B.submatrix id Set.diff_subset.elem -- the right submatrix of `Bᵣ`
+--   let x : Sₗ.Y.Elem → Z2 := Sₗ.B ⟨a, Set.mem_of_mem_inter_left (by rw [ha]; rfl)⟩ -- the bottom row of `Bₗ`
+--   let y : Sᵣ.X.Elem → Z2 := (Sᵣ.B · ⟨a, Set.mem_of_mem_inter_right (by rw [ha]; rfl)⟩) -- the left column of `Bᵣ`
+--   ⟨
+--     ⟨
+--       (Sₗ.X \ {a}) ∪ Sᵣ.X,
+--       Sₗ.Y ∪ (Sᵣ.Y \ {a}),
+--       by
+--         rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
+--         exact ⟨⟨Sₗ.hXY.disjoint_sdiff_left, hXY⟩, ⟨disjoint_of_sdiff_singleton ha, Sᵣ.hXY.disjoint_sdiff_right⟩⟩,
+--       (matrixSum2 Aₗ x Aᵣ y).toMatrixUnionUnion,
+--       inferInstance,
+--       inferInstance,
+--     ⟩,
+--     (Disjoint Sₗ.X Sᵣ.X ∧ Disjoint Sₗ.Y Sᵣ.Y) ∧ (x ≠ 0 ∧ y ≠ 0)
+--   ⟩
 
-private theorem Matroid_Is2sumOf_isRegular {α : Type} [DecidableEq α] (Sₗ Sᵣ S : StandardRepr α Z2) (a : α)
-    [Finite Sₗ.X] [Finite Sᵣ.X] (ha : Sₗ.X ∩ Sᵣ.Y = {a}) (hXY : Disjoint Sᵣ.X Sₗ.Y)
-    (hS : S = (standardRepr2sumComposition ha hXY).fst) (hSₗ : Sₗ.toMatroid.IsRegular) (hSᵣ : Sᵣ.toMatroid.IsRegular) :
-    S.toMatroid.IsRegular := by
-  have : Finite S.X := hS ▸ Finite.Set.finite_union (Sₗ.X \ {a}) Sᵣ.X
-  rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hSₗ hSᵣ ⊢
-  exact hS ▸ standardRepr2sumComposition_hasTuSigning ha hXY hSₗ hSᵣ
+-- private theorem Matroid_Is2sumOf_isRegular {α : Type} [DecidableEq α] (Sₗ Sᵣ S : StandardRepr α Z2) (a : α)
+--     [Finite Sₗ.X] [Finite Sᵣ.X] (ha : Sₗ.X ∩ Sᵣ.Y = {a}) (hXY : Disjoint Sᵣ.X Sₗ.Y)
+--     (hS : S = (standardReprSum2 ha hXY).fst) (hSₗ : Sₗ.toMatroid.IsRegular) (hSᵣ : Sᵣ.toMatroid.IsRegular) :
+--     S.toMatroid.IsRegular := by
+--   have : Finite S.X := hS ▸ Finite.Set.finite_union (Sₗ.X \ {a}) Sᵣ.X
+--   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hSₗ hSᵣ ⊢
+--   exact hS ▸ standardReprSum2_hasTuSigning ha hXY hSₗ hSᵣ
 
-/--
-info: '_private.Seymour.0.Matroid_Is2sumOf_isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
--/
-#guard_msgs in
-#print axioms Matroid_Is2sumOf_isRegular
+-- /--
+-- info: '_private.Seymour.0.Matroid_Is2sumOf_isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
+-- -/
+-- #guard_msgs in
+-- #print axioms Matroid_Is2sumOf_isRegular
