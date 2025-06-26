@@ -3,6 +3,7 @@ import Seymour.Matrix.Determinants
 import Seymour.Matrix.PartialUnimodularity
 import Seymour.Matrix.Pivoting
 import Seymour.Matroid.Properties.Regularity
+import Seymour.Matroid.Operations.Presum
 
 /-!
 # Matroid 2-sum
@@ -97,19 +98,8 @@ noncomputable def standardReprSum2 {α : Type} [DecidableEq α] {Sₗ Sᵣ : Sta
     none
 
 /-- Binary matroid `M` is a result of 2-summing `Mₗ` and `Mᵣ` in some way. Not a `Prop` but treat it as a predicate. -/
-structure Matroid.Is2sumOf {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) where
-  S : StandardRepr α Z2
-  Sₗ : StandardRepr α Z2
-  Sᵣ : StandardRepr α Z2
-  hXₗ : Finite Sₗ.X
-  hXᵣ : Finite Sᵣ.X
-  hXY : Sₗ.X ⫗ Sᵣ.Y
-  hYX : Sₗ.Y ⫗ Sᵣ.X
-  hM : S.toMatroid = M
-  hMₗ : Sₗ.toMatroid = Mₗ
-  hMᵣ : Sᵣ.toMatroid = Mᵣ
-  x : α
-  y : α
+structure Matroid.Is2sumOf {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) extends M.IsPresumOf Mₗ Mᵣ where
+  {x y : α}
   hx : Sₗ.X ∩ Sᵣ.X = {x}
   hy : Sₗ.Y ∩ Sᵣ.Y = {y}
   hS : standardReprSum2 hx hy hXY hYX = some S
@@ -343,7 +333,7 @@ lemma standardReprSum2_hasTuSigning {α : Type} [DecidableEq α] {Sₗ Sᵣ S : 
     | inr jᵣ => exact hBBᵣ iᵣ ⟨jᵣ.val, Set.mem_of_mem_diff jᵣ.property⟩
 
 lemma Matroid.Is2sumOf.finite_X {α : Type} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} (hM : M.Is2sumOf Mₗ Mᵣ) : Finite hM.S.X := by
-  obtain ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, hS⟩ := hM
+  obtain ⟨⟨_⟩, _, _, hS⟩ := hM
   exact standardReprSum2_X hS ▸ Finite.Set.finite_union ..
 
 /-- Any 2-sum of regular matroids is a regular matroid.
@@ -352,7 +342,7 @@ theorem Matroid.Is2sumOf.isRegular {α : Type} [DecidableEq α] {M Mₗ Mᵣ : M
     (hM : M.Is2sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
   have := hM.finite_X
-  obtain ⟨_, _, _, _, _, _, _, rfl, rfl, rfl, _, _, _, _, hS⟩ := hM
+  obtain ⟨⟨_, _, _, _, _, _, _, rfl, rfl, rfl⟩, _, _, hS⟩ := hM
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
   exact standardReprSum2_hasTuSigning hMₗ hMᵣ hS
 
