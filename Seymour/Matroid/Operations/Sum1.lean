@@ -189,10 +189,8 @@ lemma standardReprSum1_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : S�
     | inr jᵣ => exact hBBᵣ iᵣ jᵣ
 
 lemma Matroid.Is1sumOf.finite_X {M Mₗ Mᵣ : Matroid α} (hM : M.Is1sumOf Mₗ Mᵣ) : Finite hM.S.X := by
-  obtain ⟨S, Sₗ, Sᵣ, _, _, _, _, _, _, _, hS⟩ := hM
-  simp_rw [standardReprSum1, Option.ite_none_right_eq_some, Option.some.injEq] at hS
-  obtain ⟨_, rfl⟩ := hS
-  exact Finite.Set.finite_union Sₗ.X Sᵣ.X
+  obtain ⟨_, _, _, _, _, _, _, _, _, _, hS⟩ := hM
+  exact standardReprSum1_X hS ▸ Finite.Set.finite_union ..
 
 /-- Any 1-sum of regular matroids is a regular matroid.
     This is part one (of three) of the easy direction of the Seymour's theorem. -/

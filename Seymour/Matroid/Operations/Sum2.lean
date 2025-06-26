@@ -343,14 +343,8 @@ lemma standardReprSum2_hasTuSigning {α : Type} [DecidableEq α] {Sₗ Sᵣ S : 
     | inr jᵣ => exact hBBᵣ iᵣ ⟨jᵣ.val, Set.mem_of_mem_diff jᵣ.property⟩
 
 lemma Matroid.Is2sumOf.finite_X {α : Type} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} (hM : M.Is2sumOf Mₗ Mᵣ) : Finite hM.S.X := by
-  -- TODO refactor
-  obtain ⟨S, Sₗ, Sᵣ, _, _, hq, hw, he, hr, ht, x, y, hx, hy, hS⟩ := hM
-  simp_rw [standardReprSum2, Option.ite_none_right_eq_some] at hS
-  obtain ⟨-, hSSS⟩ := hS
-  have : S.X = Sₗ.X ∪ Sᵣ.X
-  · apply standardReprSum2_X (x := x) (y := y) (hx := hx) (hy := hy) (hXY := hq) (hYX := hw)
-    exact hS
-  convert Finite.Set.finite_union Sₗ.X Sᵣ.X
+  obtain ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, hS⟩ := hM
+  exact standardReprSum2_X hS ▸ Finite.Set.finite_union ..
 
 /-- Any 2-sum of regular matroids is a regular matroid.
     This is part two (of three) of the easy direction of the Seymour's theorem. -/
