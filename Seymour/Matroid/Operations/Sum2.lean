@@ -73,18 +73,25 @@ abbrev matrixSum2 {R : Type} [Semiring R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
 
 /-- `StandardRepr`-level 2-sum of two matroids. Returns the result only if valid. -/
 noncomputable def standardReprSum2 {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {x y : α}
-    (hx : Sₗ.X ∩ Sᵣ.X = {x}) (hy : Sₗ.Y ∩ Sᵣ.Y = {y}) :
+    (hXX : Sₗ.X ∩ Sᵣ.X = {x}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
     Option (StandardRepr α Z2) :=
-  open scoped Classical in
-  if hSS :
-    (Sₗ.X ⫗ Sᵣ.X ∧ Sₗ.Y ⫗ Sᵣ.Y) ∧ (Sₗ.B.interRow hx ≠ 0 ∧ Sᵣ.B.interCol hy ≠ 0)
+  open scoped Classical in if
+    Sₗ.B.interRow hXX ≠ 0 ∧ Sᵣ.B.interCol hYY ≠ 0
   then
     some ⟨
+      -- row indices
       (Sₗ.X \ {x}) ∪ Sᵣ.X,
+      -- col indices
       Sₗ.Y ∪ (Sᵣ.Y \ {y}),
-      by tauto_set,
-      (matrixSum2 (Sₗ.B.dropRow x) (Sₗ.B.interRow hx) (Sᵣ.B.dropCol y) (Sᵣ.B.interCol hy)).toMatrixUnionUnion,
+      -- row and col indices are disjoint
+      by rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
+         exact ⟨⟨Sₗ.hXY.disjoint_sdiff_left, hYX.symm⟩, ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right,
+            Sᵣ.hXY.disjoint_sdiff_right⟩⟩,
+      -- standard representation matrix
+      (matrixSum2 (Sₗ.B.dropRow x) (Sₗ.B.interRow hXX) (Sᵣ.B.dropCol y) (Sᵣ.B.interCol hYY)).toMatrixUnionUnion,
+      -- decidability of row indices
       inferInstance,
+      -- decidability of col indices
       inferInstance⟩
   else
     none
@@ -94,8 +101,10 @@ structure Matroid.Is2sumOf {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ M
   S : StandardRepr α Z2
   Sₗ : StandardRepr α Z2
   Sᵣ : StandardRepr α Z2
-  hSₗ : Finite Sₗ.X
-  hSᵣ : Finite Sᵣ.X
+  hXₗ : Finite Sₗ.X
+  hXᵣ : Finite Sᵣ.X
+  hXY : Sₗ.X ⫗ Sᵣ.Y
+  hYX : Sₗ.Y ⫗ Sᵣ.X
   hM : S.toMatroid = M
   hMₗ : Sₗ.toMatroid = Mₗ
   hMᵣ : Sᵣ.toMatroid = Mᵣ
@@ -103,7 +112,7 @@ structure Matroid.Is2sumOf {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ M
   y : α
   hx : Sₗ.X ∩ Sᵣ.X = {x}
   hy : Sₗ.Y ∩ Sᵣ.Y = {y}
-  IsSum : standardReprSum2 hx hy = some S
+  hS : standardReprSum2 hx hy hXY hYX = some S
 
 
 /-! ## Specifics about pivoting for the proof of 2-sum regularity -/
@@ -272,16 +281,18 @@ private lemma matrixSum2_isTotallyUnimodular {α : Type} [DecidableEq α] {Xₗ 
       exact ih (hAr.fromRows_pivot hAxy0) hAc (f ∘ f') (g ∘ g')
 
 private lemma standardReprSum2_X_x {α : Type} [DecidableEq α] {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
-    {hx : Sₗ.X ∩ Sᵣ.X = {x}} {hy : Sₗ.Y ∩ Sᵣ.Y = {y}} (hSSS : standardReprSum2 hx hy = some S) :
+    {hx : Sₗ.X ∩ Sᵣ.X = {x}} {hy : Sₗ.Y ∩ Sᵣ.Y = {y}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
+    (hS : standardReprSum2 hx hy hXY hYX = some S) :
     S.X = (Sₗ.X \ {x}) ∪ Sᵣ.X := by
-  simp_rw [standardReprSum2, Option.dite_none_right_eq_some, Option.some.injEq] at hSSS
-  obtain ⟨_, hS⟩ := hSSS
-  exact congr_arg StandardRepr.X hS.symm
+  simp_rw [standardReprSum2, Option.ite_none_right_eq_some, Option.some.injEq] at hS
+  obtain ⟨_, hSSS⟩ := hS
+  exact congr_arg StandardRepr.X hSSS.symm
 
 lemma standardReprSum2_X {α : Type} [DecidableEq α] {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
-    {hx : Sₗ.X ∩ Sᵣ.X = {x}} {hy : Sₗ.Y ∩ Sᵣ.Y = {y}} (hSSS : standardReprSum2 hx hy = some S) :
+    {hx : Sₗ.X ∩ Sᵣ.X = {x}} {hy : Sₗ.Y ∩ Sᵣ.Y = {y}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
+    (hS : standardReprSum2 hx hy hXY hYX = some S) :
     S.X = Sₗ.X ∪ Sᵣ.X := by
-  rw [standardReprSum2_X_x hSSS]
+  rw [standardReprSum2_X_x hS]
   ext a
   if a = x then
     simp [*, singleton_inter_in_right hx]
@@ -289,16 +300,18 @@ lemma standardReprSum2_X {α : Type} [DecidableEq α] {Sₗ Sᵣ S : StandardRep
     simp [*]
 
 private lemma standardReprSum2_Y_y {α : Type} [DecidableEq α] {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
-    {hx : Sₗ.X ∩ Sᵣ.X = {x}} {hy : Sₗ.Y ∩ Sᵣ.Y = {y}} (hSSS : standardReprSum2 hx hy = some S) :
+    {hx : Sₗ.X ∩ Sᵣ.X = {x}} {hy : Sₗ.Y ∩ Sᵣ.Y = {y}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
+    (hS : standardReprSum2 hx hy hXY hYX = some S) :
     S.Y = Sₗ.Y ∪ (Sᵣ.Y \ {y}) := by
-  simp_rw [standardReprSum2, Option.dite_none_right_eq_some, Option.some.injEq] at hSSS
-  obtain ⟨_, hS⟩ := hSSS
-  exact congr_arg StandardRepr.Y hS.symm
+  simp_rw [standardReprSum2, Option.ite_none_right_eq_some, Option.some.injEq] at hS
+  obtain ⟨_, hSSS⟩ := hS
+  exact congr_arg StandardRepr.Y hSSS.symm
 
 lemma standardReprSum2_Y {α : Type} [DecidableEq α] {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
-    {hx : Sₗ.X ∩ Sᵣ.X = {x}} {hy : Sₗ.Y ∩ Sᵣ.Y = {y}} (hSSS : standardReprSum2 hx hy = some S) :
+    {hx : Sₗ.X ∩ Sᵣ.X = {x}} {hy : Sₗ.Y ∩ Sᵣ.Y = {y}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
+    (hS : standardReprSum2 hx hy hXY hYX = some S) :
     S.Y = Sₗ.Y ∪ Sᵣ.Y := by
-  rw [standardReprSum2_Y_y hSSS]
+  rw [standardReprSum2_Y_y hS]
   ext a
   if a = y then
     simp [*, singleton_inter_in_left hy]
@@ -306,36 +319,38 @@ lemma standardReprSum2_Y {α : Type} [DecidableEq α] {Sₗ Sᵣ S : StandardRep
     simp [*]
 
 lemma standardReprSum2_hasTuSigning {α : Type} [DecidableEq α] {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
-    (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) {hx : Sₗ.X ∩ Sᵣ.X = {x}} {hy : Sₗ.Y ∩ Sᵣ.Y = {y}}
-    (hSSS : standardReprSum2 hx hy = some S) :
+    {hx : Sₗ.X ∩ Sᵣ.X = {x}} {hy : Sₗ.Y ∩ Sᵣ.Y = {y}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
+    (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) (hS : standardReprSum2 hx hy hXY hYX = some S) :
     S.B.HasTuSigning := by
   have ⟨Bₗ, hBₗ, hBBₗ⟩ := hSₗ
   have ⟨Bᵣ, hBᵣ, hBBᵣ⟩ := hSᵣ
-  have hSX : S.X = Sₗ.X \ {x} ∪ Sᵣ.X := standardReprSum2_X_x hSSS
-  have hSY : S.Y = Sₗ.Y ∪ Sᵣ.Y \ {y} := standardReprSum2_Y_y hSSS
+  have hSX : S.X = Sₗ.X \ {x} ∪ Sᵣ.X := standardReprSum2_X_x hS
+  have hSY : S.Y = Sₗ.Y ∪ Sᵣ.Y \ {y} := standardReprSum2_Y_y hS
   have hSB : S.B = (matrixSum2 (Sₗ.B.dropRow x) (Sₗ.B.interRow hx) (Sᵣ.B.dropCol y) (Sᵣ.B.interCol hy)).toMatrixElemElem hSX hSY
-  · simp_rw [standardReprSum2, Option.dite_none_right_eq_some] at hSSS
+  · simp_rw [standardReprSum2, Option.ite_none_right_eq_some] at hS
     aesop
   use (matrixSum2 (Bₗ.dropRow x) (Bₗ.interRow hx) (Bᵣ.dropCol y) (Bᵣ.interCol hy)).toMatrixElemElem hSX hSY
   use (matrixSum2_isTotallyUnimodular (hBₗ.reglueRow hx) (hBᵣ.reglueCol hy)).toMatrixElemElem hSX hSY
   rw [hSB]
   intro i j
   simp only [Matrix.toMatrixElemElem_apply]
-  cases hi : (hSX ▸ i).toSum with
-  | inl iₗ => cases hj : (hSY ▸ j).toSum with
+  cases (hSX ▸ i).toSum with
+  | inl iₗ => cases (hSY ▸ j).toSum with
     | inl jₗ => exact hBBₗ ⟨iₗ.val, Set.mem_of_mem_diff iₗ.property⟩ jₗ
     | inr jᵣ => exact abs_zero
-  | inr iᵣ => cases hj : (hSY ▸ j).toSum with
+  | inr iᵣ => cases (hSY ▸ j).toSum with
     | inl jₗ => exact abs_mul_eq_zmod_cast (hBBᵣ iᵣ hy._ᵣ) (hBBₗ hx._ₗ jₗ)
     | inr jᵣ => exact hBBᵣ iᵣ ⟨jᵣ.val, Set.mem_of_mem_diff jᵣ.property⟩
 
 lemma Matroid.Is2sumOf.finite_X {α : Type} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} (hM : M.Is2sumOf Mₗ Mᵣ) : Finite hM.S.X := by
-  obtain ⟨S, Sₗ, Sᵣ, _, _, _, _, _, _, _, _, _, hS⟩ := hM
-  simp_rw [standardReprSum2, Option.dite_none_right_eq_some, Option.some.injEq] at hS
-  obtain ⟨_, rfl⟩ := hS
-  have := standardReprSum2_X hS
-  have := Finite.Set.finite_union Sₗ.X Sᵣ.X
-  simp_all
+  -- TODO refactor
+  obtain ⟨S, Sₗ, Sᵣ, _, _, hq, hw, he, hr, ht, x, y, hx, hy, hS⟩ := hM
+  simp_rw [standardReprSum2, Option.ite_none_right_eq_some] at hS
+  obtain ⟨-, hSSS⟩ := hS
+  have : S.X = Sₗ.X ∪ Sᵣ.X
+  · apply standardReprSum2_X (x := x) (y := y) (hx := hx) (hy := hy) (hXY := hq) (hYX := hw)
+    exact hS
+  convert Finite.Set.finite_union Sₗ.X Sᵣ.X
 
 /-- Any 2-sum of regular matroids is a regular matroid.
     This is part two (of three) of the easy direction of the Seymour's theorem. -/
@@ -343,7 +358,7 @@ theorem Matroid.Is2sumOf.isRegular {α : Type} [DecidableEq α] {M Mₗ Mᵣ : M
     (hM : M.Is2sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
   have := hM.finite_X
-  obtain ⟨_, _, _, _, _, rfl, rfl, rfl, _, _, _, _, hS⟩ := hM
+  obtain ⟨_, _, _, _, _, _, _, rfl, rfl, rfl, _, _, _, _, hS⟩ := hM
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
   exact standardReprSum2_hasTuSigning hMₗ hMᵣ hS
 

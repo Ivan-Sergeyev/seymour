@@ -15,34 +15,41 @@ abbrev matrixSum1 {R : Type} [Zero R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
 variable {α : Type} [DecidableEq α]
 
 /-- `StandardRepr`-level 1-sum of two matroids. Returns the result only if valid. -/
-noncomputable def standardReprSum1 (Sₗ Sᵣ : StandardRepr α Z2) :
+noncomputable def standardReprSum1 {Sₗ Sᵣ : StandardRepr α Z2} (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
     Option (StandardRepr α Z2) :=
-  open scoped Classical in
-  if hSS :
-    (Sₗ.X ⫗ Sᵣ.Y ∧ Sₗ.Y ⫗ Sᵣ.X) ∧ (Sₗ.X ⫗ Sᵣ.X ∧ Sₗ.Y ⫗ Sᵣ.Y)
+  open scoped Classical in if
+    Sₗ.X ⫗ Sᵣ.X ∧ Sₗ.Y ⫗ Sᵣ.Y
   then
     some ⟨
+      -- row indices
       Sₗ.X ∪ Sᵣ.X,
+      -- col indices
       Sₗ.Y ∪ Sᵣ.Y,
+      -- row and col indices are disjoint
       by rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
-         exact ⟨⟨Sₗ.hXY, hSS.left.right.symm⟩, ⟨hSS.left.left, Sᵣ.hXY⟩⟩,
+         exact ⟨⟨Sₗ.hXY, hYX.symm⟩, ⟨hXY, Sᵣ.hXY⟩⟩,
+      -- standard representation matrix
       (matrixSum1 Sₗ.B Sᵣ.B).toMatrixUnionUnion,
+      -- decidability of row indices
       inferInstance,
+      -- decidability of col indices
       inferInstance⟩
-  else
-    none
+    else
+      none
 
 /-- Binary matroid `M` is a result of 1-summing `Mₗ` and `Mᵣ` in some way. Not a `Prop` but treat it as a predicate. -/
 structure Matroid.Is1sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) where
   S : StandardRepr α Z2
   Sₗ : StandardRepr α Z2
   Sᵣ : StandardRepr α Z2
-  hSₗ : Finite Sₗ.X
-  hSᵣ : Finite Sᵣ.X
+  hXₗ : Finite Sₗ.X
+  hXᵣ : Finite Sᵣ.X
+  hXY : Sₗ.X ⫗ Sᵣ.Y
+  hYX : Sₗ.Y ⫗ Sᵣ.X
   hM : S.toMatroid = M
   hMₗ : Sₗ.toMatroid = Mₗ
   hMᵣ : Sᵣ.toMatroid = Mᵣ
-  hSSS : standardReprSum1 Sₗ Sᵣ = some S
+  hS : standardReprSum1 hXY hYX = some S
 
 -- private lemma standardReprSum1_eq_disjointSum_aux_full {Xₗ Yₗ Xᵣ Yᵣ : Set α}
 --     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Yᵣ)]
@@ -143,44 +150,47 @@ structure Matroid.Is1sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) where
 --     standardReprSum1_eq_disjointSum ⟨valid.left.symm, valid.right.symm⟩,
 --     Matroid.disjointSum_comm]
 
-lemma standardReprSum1_X {Sₗ Sᵣ S : StandardRepr α Z2} (hSSS : standardReprSum1 Sₗ Sᵣ = some S) :
+lemma standardReprSum1_X {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
+    (hS : standardReprSum1 hXY hYX = some S) :
     S.X = Sₗ.X ∪ Sᵣ.X := by
-  simp_rw [standardReprSum1, Option.dite_none_right_eq_some, Option.some.injEq] at hSSS
-  obtain ⟨_, hS⟩ := hSSS
-  exact congr_arg StandardRepr.X hS.symm
+  simp_rw [standardReprSum1, Option.ite_none_right_eq_some, Option.some.injEq] at hS
+  obtain ⟨_, hSSS⟩ := hS
+  exact congr_arg StandardRepr.X hSSS.symm
 
-lemma standardReprSum1_Y {Sₗ Sᵣ S : StandardRepr α Z2} (hSSS : standardReprSum1 Sₗ Sᵣ = some S) :
+lemma standardReprSum1_Y {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
+    (hS : standardReprSum1 hXY hYX = some S) :
     S.Y = Sₗ.Y ∪ Sᵣ.Y := by
-  simp_rw [standardReprSum1, Option.dite_none_right_eq_some, Option.some.injEq] at hSSS
-  obtain ⟨_, hS⟩ := hSSS
-  exact congr_arg StandardRepr.Y hS.symm
+  simp_rw [standardReprSum1, Option.ite_none_right_eq_some, Option.some.injEq] at hS
+  obtain ⟨_, hSSS⟩ := hS
+  exact congr_arg StandardRepr.Y hSSS.symm
 
-lemma standardReprSum1_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2}
-    (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) (hSSS : standardReprSum1 Sₗ Sᵣ = some S) :
+lemma standardReprSum1_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
+    (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning)
+    (hS : standardReprSum1 hXY hYX = some S) :
     S.B.HasTuSigning := by
   have ⟨Bₗ, hBₗ, hBBₗ⟩ := hSₗ
   have ⟨Bᵣ, hBᵣ, hBBᵣ⟩ := hSᵣ
-  have hSX : S.X = Sₗ.X ∪ Sᵣ.X := standardReprSum1_X hSSS
-  have hSY : S.Y = Sₗ.Y ∪ Sᵣ.Y := standardReprSum1_Y hSSS
+  have hSX : S.X = Sₗ.X ∪ Sᵣ.X := standardReprSum1_X hS
+  have hSY : S.Y = Sₗ.Y ∪ Sᵣ.Y := standardReprSum1_Y hS
   have hSB : S.B = (matrixSum1 Sₗ.B Sᵣ.B).toMatrixElemElem hSX hSY
-  · simp_rw [standardReprSum1, Option.dite_none_right_eq_some] at hSSS
+  · simp_rw [standardReprSum1, Option.ite_none_right_eq_some] at hS
     aesop
   use (matrixSum1 Bₗ Bᵣ).toMatrixElemElem hSX hSY
   use (Matrix.fromBlocks_isTotallyUnimodular hBₗ hBᵣ).toMatrixElemElem hSX hSY
   rw [hSB]
   intro i j
   simp only [Matrix.toMatrixElemElem_apply]
-  cases hi : (hSX ▸ i).toSum with
-  | inl iₗ => cases hj : (hSY ▸ j).toSum with
+  cases (hSX ▸ i).toSum with
+  | inl iₗ => cases (hSY ▸ j).toSum with
     | inl jₗ => exact hBBₗ iₗ jₗ
     | inr jᵣ => exact abs_zero
-  | inr iᵣ => cases hj : (hSY ▸ j).toSum with
+  | inr iᵣ => cases (hSY ▸ j).toSum with
     | inl jₗ => exact abs_zero
     | inr jᵣ => exact hBBᵣ iᵣ jᵣ
 
 lemma Matroid.Is1sumOf.finite_X {M Mₗ Mᵣ : Matroid α} (hM : M.Is1sumOf Mₗ Mᵣ) : Finite hM.S.X := by
-  obtain ⟨S, Sₗ, Sᵣ, _, _, _, _, _, hS⟩ := hM
-  simp_rw [standardReprSum1, Option.dite_none_right_eq_some, Option.some.injEq] at hS
+  obtain ⟨S, Sₗ, Sᵣ, _, _, _, _, _, _, _, hS⟩ := hM
+  simp_rw [standardReprSum1, Option.ite_none_right_eq_some, Option.some.injEq] at hS
   obtain ⟨_, rfl⟩ := hS
   exact Finite.Set.finite_union Sₗ.X Sᵣ.X
 
@@ -190,7 +200,7 @@ theorem Matroid.Is1sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
     (hM : M.Is1sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
   have := hM.finite_X
-  obtain ⟨_, _, _, _, _, rfl, rfl, rfl, hS⟩ := hM
+  obtain ⟨_, _, _, _, _, _, _, rfl, rfl, rfl, hS⟩ := hM
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
   exact standardReprSum1_hasTuSigning hMₗ hMᵣ hS
 
