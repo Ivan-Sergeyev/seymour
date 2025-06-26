@@ -1,15 +1,15 @@
 ## macOS
 .DS_Store
+
 ## Lake
+.cache/*
 .lake/*
 docbuild/.lake/*
-.cache/*
+
 ## Blueprint
-/blueprint/print/print.log
 /blueprint/web/
-/blueprint/src/web.paux
-/blueprint/src/web.bbl
 /blueprint/print/
+
 ## TeX
 *.aux
 *.lof
@@ -22,7 +22,7 @@ docbuild/.lake/*
 *.fot
 *.cb
 *.cb2
-.*.lb
+*.lb
 *.bbl
 *.bcf
 *.blg
@@ -35,3 +35,5 @@ docbuild/.lake/*
 *.synctex.gz
 *.synctex.gz(busy)
 *.pdfsync
+*.pdf
+*.paux
