@@ -2204,7 +2204,7 @@ structure Matroid.Is3sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) where
   IsSum : (standardRepr3sumComposition hXX hYY hXY hYX).fst = S
   IsValid : (standardRepr3sumComposition hXX hYY hXY hYX).snd
 
-lemma Matroid.Is3sumOf.finX {M Mₗ Mᵣ : Matroid α} (hM : M.Is3sumOf Mₗ Mᵣ) : Finite hM.S.X := by
+lemma Matroid.Is3sumOf.finite_X {M Mₗ Mᵣ : Matroid α} (hM : M.Is3sumOf Mₗ Mᵣ) : Finite hM.S.X := by
   obtain ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, rfl, _⟩ := hM
   apply Finite.Set.finite_union
 
@@ -2213,7 +2213,7 @@ lemma Matroid.Is3sumOf.finX {M Mₗ Mᵣ : Matroid α} (hM : M.Is3sumOf Mₗ M�
 theorem Matroid.Is3sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
     (hM : M.Is3sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
-  have := hM.finX
+  have := hM.finite_X
   obtain ⟨_, _, _, _, _, rfl, rfl, rfl, _, _, _, _, _, _, _, _,_, _, rfl, hMMM⟩ := hM
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
   apply standardRepr3sumComposition_hasTuSigning

@@ -178,7 +178,7 @@ lemma standardReprSum1_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2}
     | inl jₗ => exact abs_zero
     | inr jᵣ => exact hBBᵣ iᵣ jᵣ
 
-lemma Matroid.Is1sumOf.finX {M Mₗ Mᵣ : Matroid α} (hM : M.Is1sumOf Mₗ Mᵣ) : Finite hM.S.X := by
+lemma Matroid.Is1sumOf.finite_X {M Mₗ Mᵣ : Matroid α} (hM : M.Is1sumOf Mₗ Mᵣ) : Finite hM.S.X := by
   obtain ⟨S, Sₗ, Sᵣ, _, _, _, _, _, hS⟩ := hM
   simp_rw [standardReprSum1, Option.dite_none_right_eq_some, Option.some.injEq] at hS
   obtain ⟨_, rfl⟩ := hS
@@ -189,7 +189,7 @@ lemma Matroid.Is1sumOf.finX {M Mₗ Mᵣ : Matroid α} (hM : M.Is1sumOf Mₗ M�
 theorem Matroid.Is1sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
     (hM : M.Is1sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
-  have := hM.finX
+  have := hM.finite_X
   obtain ⟨_, _, _, _, _, rfl, rfl, rfl, hS⟩ := hM
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
   exact standardReprSum1_hasTuSigning hMₗ hMᵣ hS
