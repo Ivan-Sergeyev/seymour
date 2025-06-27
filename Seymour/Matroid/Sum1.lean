@@ -190,10 +190,3 @@ theorem Matroid.Is1sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
   have : Finite S.X := standardReprSum1_X hS ▸ Finite.Set.finite_union ..
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
   exact standardReprSum1_hasTuSigning hMₗ hMᵣ hS
-
-/--
-info: 'Matroid.Is1sumOf.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
--/
-#guard_msgs in
-#print axioms Matroid.Is1sumOf.isRegular
--- TODO document in `Seymour.lean` and remove here

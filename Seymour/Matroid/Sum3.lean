@@ -1964,4 +1964,7 @@ def Matroid.Is3sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) : Prop :=
 theorem Matroid.Is3sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
     (hM : M.Is3sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
-  sorry
+  obtain ⟨S, _, _, _, _, _, _, _, _, _, _, _, _, hS, _, _, rfl, rfl, rfl⟩ := hM
+  have : Finite S.X := standardReprSum3_X_xxx hS ▸ Finite.Set.finite_union ..
+  rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
+  exact standardReprSum3_hasTuSigning hMₗ hMᵣ hS

@@ -215,7 +215,9 @@ private lemma matrixSum2_bottom_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type}
 
 /-! ## Proof of regularity of the 2-sum -/
 
-private lemma matrixSum2_isPartiallyUnimodular_1 {α : Type} {Xₗ Yₗ Xᵣ Yᵣ : Set α}
+variable {α : Type}
+
+private lemma matrixSum2_isPartiallyUnimodular_1 {Xₗ Yₗ Xᵣ Yᵣ : Set α}
     {Aₗ : Matrix Xₗ Yₗ ℚ} {r : Yₗ → ℚ} {Aᵣ : Matrix Xᵣ Yᵣ ℚ} {c : Xᵣ → ℚ}
     (hAr : (Aₗ ⊟ ▬r).IsTotallyUnimodular) (hAc : (▮c ◫ Aᵣ).IsTotallyUnimodular) :
     (matrixSum2 Aₗ r Aᵣ c).IsPartiallyUnimodular 1 := by
@@ -229,7 +231,9 @@ private lemma matrixSum2_isPartiallyUnimodular_1 {α : Type} {Xₗ Yₗ Xᵣ Y�
     | inl jₗ => exact in_signTypeCastRange_mul_in_signTypeCastRange (hAc.apply iᵣ ◩()) (hAr.apply ◪() jₗ)
     | inr jᵣ => exact (hAc.comp_cols Sum.inr).apply iᵣ jᵣ
 
-private lemma matrixSum2_isTotallyUnimodular {α : Type} [DecidableEq α] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
+variable [DecidableEq α]
+
+private lemma matrixSum2_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Set α}
     {Aₗ : Matrix Xₗ Yₗ ℚ} {r : Yₗ → ℚ} {Aᵣ : Matrix Xᵣ Yᵣ ℚ} {c : Xᵣ → ℚ}
     (hAr : (Aₗ ⊟ ▬r).IsTotallyUnimodular) (hAc : (▮c ◫ Aᵣ).IsTotallyUnimodular) :
     (matrixSum2 Aₗ r Aᵣ c).IsTotallyUnimodular := by
@@ -277,7 +281,7 @@ private lemma matrixSum2_isTotallyUnimodular {α : Type} [DecidableEq α] {Xₗ 
         ←in_signTypeCastRange_iff_abs]
       exact ih (hAr.fromRows_pivot hAxy0) hAc (f ∘ f') (g ∘ g')
 
-private lemma standardReprSum2_X_x {α : Type} [DecidableEq α] {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
+private lemma standardReprSum2_X_x {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
     {hx : Sₗ.X ∩ Sᵣ.X = {x}} {hy : Sₗ.Y ∩ Sᵣ.Y = {y}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hS : standardReprSum2 hx hy hXY hYX = some S) :
     S.X = (Sₗ.X \ {x}) ∪ Sᵣ.X := by
@@ -285,7 +289,7 @@ private lemma standardReprSum2_X_x {α : Type} [DecidableEq α] {Sₗ Sᵣ S : S
   obtain ⟨_, hSSS⟩ := hS
   exact congr_arg StandardRepr.X hSSS.symm
 
-lemma standardReprSum2_X {α : Type} [DecidableEq α] {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
+lemma standardReprSum2_X {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
     {hx : Sₗ.X ∩ Sᵣ.X = {x}} {hy : Sₗ.Y ∩ Sᵣ.Y = {y}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hS : standardReprSum2 hx hy hXY hYX = some S) :
     S.X = Sₗ.X ∪ Sᵣ.X := by
@@ -296,7 +300,7 @@ lemma standardReprSum2_X {α : Type} [DecidableEq α] {Sₗ Sᵣ S : StandardRep
   else
     simp [*]
 
-private lemma standardReprSum2_Y_y {α : Type} [DecidableEq α] {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
+private lemma standardReprSum2_Y_y {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
     {hx : Sₗ.X ∩ Sᵣ.X = {x}} {hy : Sₗ.Y ∩ Sᵣ.Y = {y}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hS : standardReprSum2 hx hy hXY hYX = some S) :
     S.Y = Sₗ.Y ∪ (Sᵣ.Y \ {y}) := by
@@ -304,7 +308,7 @@ private lemma standardReprSum2_Y_y {α : Type} [DecidableEq α] {Sₗ Sᵣ S : S
   obtain ⟨_, hSSS⟩ := hS
   exact congr_arg StandardRepr.Y hSSS.symm
 
-lemma standardReprSum2_Y {α : Type} [DecidableEq α] {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
+lemma standardReprSum2_Y {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
     {hx : Sₗ.X ∩ Sᵣ.X = {x}} {hy : Sₗ.Y ∩ Sᵣ.Y = {y}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hS : standardReprSum2 hx hy hXY hYX = some S) :
     S.Y = Sₗ.Y ∪ Sᵣ.Y := by
@@ -315,7 +319,7 @@ lemma standardReprSum2_Y {α : Type} [DecidableEq α] {Sₗ Sᵣ S : StandardRep
   else
     simp [*]
 
-lemma standardReprSum2_hasTuSigning {α : Type} [DecidableEq α] {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
+lemma standardReprSum2_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
     {hx : Sₗ.X ∩ Sᵣ.X = {x}} {hy : Sₗ.Y ∩ Sᵣ.Y = {y}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) (hS : standardReprSum2 hx hy hXY hYX = some S) :
     S.B.HasTuSigning := by
@@ -338,17 +342,10 @@ lemma standardReprSum2_hasTuSigning {α : Type} [DecidableEq α] {Sₗ Sᵣ S : 
 
 /-- Any 2-sum of regular matroids is a regular matroid.
     This is part two (of three) of the easy direction of the Seymour's theorem. -/
-theorem Matroid.Is2sumOf.isRegular {α : Type} [DecidableEq α] {M Mₗ Mᵣ : Matroid α}
+theorem Matroid.Is2sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
     (hM : M.Is2sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
   obtain ⟨S, _, _, _, _, _, _, _, _, hS, _, _, rfl, rfl, rfl⟩ := hM
   have : Finite S.X := standardReprSum2_X hS ▸ Finite.Set.finite_union ..
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
   exact standardReprSum2_hasTuSigning hMₗ hMᵣ hS
-
-/--
-info: 'Matroid.Is2sumOf.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
--/
-#guard_msgs in
-#print axioms Matroid.Is2sumOf.isRegular
--- TODO document in `Seymour.lean` and remove here
