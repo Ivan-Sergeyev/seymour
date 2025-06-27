@@ -173,18 +173,13 @@ lemma standardReprSum1_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : S�
   have hSB : S.B = (matrixSum1 Sₗ.B Sᵣ.B).toMatrixElemElem hSX hSY
   · simp_rw [standardReprSum1, Option.ite_none_right_eq_some] at hS
     aesop
-  use (matrixSum1 Bₗ Bᵣ).toMatrixElemElem hSX hSY
-  use (Matrix.fromBlocks_isTotallyUnimodular hBₗ hBᵣ).toMatrixElemElem hSX hSY
+  use (matrixSum1 Bₗ Bᵣ).toMatrixElemElem hSX hSY, (Matrix.fromBlocks_isTotallyUnimodular hBₗ hBᵣ).toMatrixElemElem hSX hSY
   rw [hSB]
   intro i j
   simp only [Matrix.toMatrixElemElem_apply]
-  cases (hSX ▸ i).toSum with
-  | inl iₗ => cases (hSY ▸ j).toSum with
-    | inl jₗ => exact hBBₗ iₗ jₗ
-    | inr jᵣ => exact abs_zero
-  | inr iᵣ => cases (hSY ▸ j).toSum with
-    | inl jₗ => exact abs_zero
-    | inr jᵣ => exact hBBᵣ iᵣ jᵣ
+  exact (hSX ▸ i).toSum.casesOn
+    (fun iₗ => (hSY ▸ j).toSum.casesOn (hBBₗ iₗ) ↓abs_zero)
+    (fun iᵣ => (hSY ▸ j).toSum.casesOn ↓abs_zero (hBBᵣ iᵣ))
 
 /-- Any 1-sum of regular matroids is a regular matroid.
     This is part one (of three) of the easy direction of the Seymour's theorem. -/

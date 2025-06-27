@@ -326,18 +326,15 @@ lemma standardReprSum2_hasTuSigning {α : Type} [DecidableEq α] {Sₗ Sᵣ S : 
   have hSB : S.B = (matrixSum2 (Sₗ.B.dropRow x) (Sₗ.B.interRow hx) (Sᵣ.B.dropCol y) (Sᵣ.B.interCol hy)).toMatrixElemElem hSX hSY
   · simp_rw [standardReprSum2, Option.ite_none_right_eq_some] at hS
     aesop
-  use (matrixSum2 (Bₗ.dropRow x) (Bₗ.interRow hx) (Bᵣ.dropCol y) (Bᵣ.interCol hy)).toMatrixElemElem hSX hSY
-  use (matrixSum2_isTotallyUnimodular (hBₗ.reglueRow hx) (hBᵣ.reglueCol hy)).toMatrixElemElem hSX hSY
+  use
+    (matrixSum2 (Bₗ.dropRow x) (Bₗ.interRow hx) (Bᵣ.dropCol y) (Bᵣ.interCol hy)).toMatrixElemElem hSX hSY,
+    (matrixSum2_isTotallyUnimodular (hBₗ.reglueRow hx) (hBᵣ.reglueCol hy)).toMatrixElemElem hSX hSY
   rw [hSB]
   intro i j
   simp only [Matrix.toMatrixElemElem_apply]
-  cases (hSX ▸ i).toSum with
-  | inl iₗ => cases (hSY ▸ j).toSum with
-    | inl jₗ => exact hBBₗ ⟨iₗ.val, Set.mem_of_mem_diff iₗ.property⟩ jₗ
-    | inr jᵣ => exact abs_zero
-  | inr iᵣ => cases (hSY ▸ j).toSum with
-    | inl jₗ => exact abs_mul_eq_zmod_cast (hBBᵣ iᵣ hy._ᵣ) (hBBₗ hx._ₗ jₗ)
-    | inr jᵣ => exact hBBᵣ iᵣ ⟨jᵣ.val, Set.mem_of_mem_diff jᵣ.property⟩
+  exact (hSX ▸ i).toSum.casesOn
+    (fun iₗ => (hSY ▸ j).toSum.casesOn (hBBₗ (Set.diff_subset.elem iₗ)) ↓abs_zero)
+    (fun iᵣ => (hSY ▸ j).toSum.casesOn (abs_mul_eq_zmod_cast (hBBᵣ iᵣ hy._ᵣ) <| hBBₗ hx._ₗ ·) (hBBᵣ iᵣ <| Set.diff_subset.elem ·))
 
 /-- Any 2-sum of regular matroids is a regular matroid.
     This is part two (of three) of the easy direction of the Seymour's theorem. -/
