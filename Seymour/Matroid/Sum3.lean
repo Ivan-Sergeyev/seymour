@@ -1950,15 +1950,11 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
   · tauto
   have hy₂ : y₀ ≠ y₁
   · tauto
-  -- identity
-  let eᵢ : Fin 2 ≃ Fin 2 := Equiv.refl (Fin 2)
-  -- swap 0<->1
-  let eₛ : Fin 2 ≃ Fin 2 := Equiv.ofBijective ![1, 0] (by decide)
   -- two options what `D₀` is (up to reindexing)
   obtain ⟨f, g, hfg⟩ := !![Sₗ.B x₀ₗ y₀ₗ, Sₗ.B x₀ₗ y₁ₗ; Sₗ.B x₁ₗ y₀ₗ, Sₗ.B x₁ₗ y₁ₗ].isUnit_2x2 hS'.left.right.right.left
   -- cases analysis over those reindexings
-  if hf : f = eᵢ then
-    if hg : g = eᵢ then
+  if hf : f = fin2refl then
+    if hg : g = fin2refl then
       let M := standardReprMatrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
       have hM : M.HasCanonicalSigning
       · sorry
@@ -1970,16 +1966,16 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
       · apply hB.submatrix
       · apply hBM.submatrix
     else
-      have hg' : g = eₛ
+      have hg' : g = fin2swap
       · exact eq_fin2swap_of_ne_fin2refl hg
       sorry
   else
-    have hf' : f = eₛ
+    have hf' : f = fin2swap
     · exact eq_fin2swap_of_ne_fin2refl hf
-    if hg : g = eᵢ then
+    if hg : g = fin2refl then
       sorry
     else
-      have hg' : g = eₛ
+      have hg' : g = fin2swap
       · exact eq_fin2swap_of_ne_fin2refl hg
       sorry
 

@@ -10,10 +10,6 @@ This file provides lemmas about determinants that are not present in Mathlib.
 /-- Lemma 10 (motivates the difference between the definition of 3-sum in our implementation and in Truemper's book). -/
 lemma Matrix.isUnit_2x2 (A : Matrix (Fin 2) (Fin 2) Z2) (hA : IsUnit A) :
     ∃ f : Fin 2 ≃ Fin 2, ∃ g : Fin 2 ≃ Fin 2, A.submatrix f g = 1 ∨ A.submatrix f g = !![1, 1; 0, 1] := by
-  -- identity
-  let eᵢ : Fin 2 ≃ Fin 2 := Equiv.refl (Fin 2)
-  -- swap 0<->1
-  let eₛ : Fin 2 ≃ Fin 2 := Equiv.ofBijective ![1, 0] (by decide)
   -- `hA` via explicit determinant
   rw [Matrix.isUnit_iff_isUnit_det, Matrix.det_fin_two, isUnit_iff_eq_one] at hA
   -- case exhaustion
@@ -37,44 +33,44 @@ lemma Matrix.isUnit_2x2 (A : Matrix (Fin 2) (Fin 2) Z2) (hA : IsUnit A) :
     exfalso
     simp_all
   · -- `!![0, 1; 1, 0]`
-    use eₛ, eᵢ
+    use fin2swap, fin2refl
     left
     ext i j
-    fin_cases i <;> fin_cases j <;> simp [hA₀₀, hA₀₁, hA₁₀, hA₁₁, eᵢ, eₛ, fin2_eq_1_of_ne_0]
+    fin_cases i <;> fin_cases j <;> simp [hA₀₀, hA₀₁, hA₁₀, hA₁₁, fin2refl, fin2swap, fin2_eq_1_of_ne_0]
   · -- `!![0, 1; 1, 1]`
-    use eₛ, eᵢ
+    use fin2swap, fin2refl
     right
     ext i j
-    fin_cases i <;> fin_cases j <;> simp [hA₀₀, hA₀₁, hA₁₀, hA₁₁, eᵢ, eₛ, fin2_eq_1_of_ne_0]
+    fin_cases i <;> fin_cases j <;> simp [hA₀₀, hA₀₁, hA₁₀, hA₁₁, fin2refl, fin2swap, fin2_eq_1_of_ne_0]
   · -- `!![1, 0; 0, 0]`
     exfalso
     simp_all
   · -- `!![1, 0; 0, 1]`
-    use eᵢ, eᵢ
+    use fin2refl, fin2refl
     left
     ext i j
-    fin_cases i <;> fin_cases j <;> simp [hA₀₀, hA₀₁, hA₁₀, hA₁₁, eᵢ, eₛ, fin2_eq_1_of_ne_0]
+    fin_cases i <;> fin_cases j <;> simp [hA₀₀, hA₀₁, hA₁₀, hA₁₁, fin2refl, fin2swap, fin2_eq_1_of_ne_0]
   · -- `!![1, 0; 1, 0]`
     exfalso
     simp_all
   · -- `!![1, 0; 1, 1]`
-    use eₛ, eₛ
+    use fin2swap, fin2swap
     right
     ext i j
-    fin_cases i <;> fin_cases j <;> simp [hA₀₀, hA₀₁, hA₁₀, hA₁₁, eᵢ, eₛ, fin2_eq_1_of_ne_0]
+    fin_cases i <;> fin_cases j <;> simp [hA₀₀, hA₀₁, hA₁₀, hA₁₁, fin2refl, fin2swap, fin2_eq_1_of_ne_0]
   · -- `!![1, 1; 0, 0]`
     exfalso
     simp_all
   · -- `!![1, 1; 0, 1]`
-    use eᵢ, eᵢ
+    use fin2refl, fin2refl
     right
     ext i j
-    fin_cases i <;> fin_cases j <;> simp [hA₀₀, hA₀₁, hA₁₀, hA₁₁, eᵢ, eₛ, fin2_eq_1_of_ne_0]
+    fin_cases i <;> fin_cases j <;> simp [hA₀₀, hA₀₁, hA₁₀, hA₁₁, fin2refl, fin2swap, fin2_eq_1_of_ne_0]
   · -- `!![1, 1; 1, 0]`
-    use eᵢ, eₛ
+    use fin2refl, fin2swap
     right
     ext i j
-    fin_cases i <;> fin_cases j <;> simp [hA₀₀, hA₀₁, hA₁₀, hA₁₁, eᵢ, eₛ, fin2_eq_1_of_ne_0]
+    fin_cases i <;> fin_cases j <;> simp [hA₀₀, hA₀₁, hA₁₀, hA₁₁, fin2refl, fin2swap, fin2_eq_1_of_ne_0]
   · -- `!![1, 1; 1, 1]`
     exfalso
     simp_all [fin2_eq_1_of_ne_0]

@@ -15,32 +15,72 @@ Here we study the 2-sum of matroids (starting with the 2-sum of matrices).
 private abbrev Eq._ₗ {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : X :=
   ⟨a, Set.mem_of_mem_inter_left (ha.symm.subset rfl)⟩
 
+@[app_unexpander Eq._ₗ]
+private def Eq._ₗ_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $e) => `($(e).$(Lean.mkIdent `_ₗ))
+  | _ => throw ()
+
 private abbrev Eq._ᵣ {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : Y :=
   ⟨a, Set.mem_of_mem_inter_right (ha.symm.subset rfl)⟩
+
+@[app_unexpander Eq._ᵣ]
+private def Eq._ᵣ_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $e) => `($(e).$(Lean.mkIdent `_ᵣ))
+  | _ => throw ()
 
 private abbrev Matrix.dropRow {α R : Type} {X Y : Set α} (A : Matrix X Y R) (a : α) :
     Matrix (X \ {a}).Elem Y.Elem R :=
   A ∘ Set.diff_subset.elem
 
+@[app_unexpander Matrix.dropRow]
+private def Matrix.dropRow_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $A) => `($(A).$(Lean.mkIdent `dropRow))
+  | _ => throw ()
+
 private abbrev Matrix.dropCol {α R : Type} {X Y : Set α} (A : Matrix X Y R) (a : α) :
     Matrix X.Elem (Y \ {a}).Elem R :=
   (A · ∘ Set.diff_subset.elem)
+
+@[app_unexpander Matrix.dropCol]
+private def Matrix.dropCol_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $A) => `($(A).$(Lean.mkIdent `dropCol))
+  | _ => throw ()
 
 private abbrev Matrix.interRow {α R : Type} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : X ∩ Z = {a}) :
     Y.Elem → R :=
   A ha._ₗ
 
+@[app_unexpander Matrix.interRow]
+private def Matrix.interRow_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $A) => `($(A).$(Lean.mkIdent `interRow))
+  | _ => throw ()
+
 private abbrev Matrix.interCol {α R : Type} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : Z ∩ Y = {a}) :
     X.Elem → R :=
   (A · ha._ᵣ)
+
+@[app_unexpander Matrix.interCol]
+private def Matrix.interCol_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $A) => `($(A).$(Lean.mkIdent `interCol))
+  | _ => throw ()
 
 private abbrev Matrix.reglueRow {α R : Type} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : X ∩ Z = {a}) :
     Matrix ((X \ {a}).Elem ⊕ Unit) Y.Elem R :=
   A.dropRow a ⊟ ▬(A.interRow ha)
 
+@[app_unexpander Matrix.reglueRow]
+private def Matrix.reglueRow_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $A) => `($(A).$(Lean.mkIdent `reglueRow))
+  | _ => throw ()
+
 private abbrev Matrix.reglueCol {α R : Type} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : Z ∩ Y = {a}) :
     Matrix X.Elem (Unit ⊕ (Y \ {a}).Elem) R :=
   ▮(A.interCol ha) ◫ A.dropCol a
+
+@[app_unexpander Matrix.reglueCol]
+private def Matrix.reglueCol_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $A) => `($(A).$(Lean.mkIdent `reglueCol))
+  | _ => throw ()
 
 private lemma Matrix.reglueRow_eq {α R : Type} [CommRing R] {X Y Z : Set α} {A : Matrix X Y R} {a : α} (ha : X ∩ Z = {a}) :
     A.reglueRow ha = A.submatrix (·.casesOn Set.diff_subset.elem ↓ha._ₗ) id := by
