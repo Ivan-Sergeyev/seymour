@@ -1,4 +1,4 @@
-import Seymour.Matroid.Operations.Duality
+import Seymour.Matroid.Duality
 
 /-!
 # Graphicness

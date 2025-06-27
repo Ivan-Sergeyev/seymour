@@ -1,7 +1,7 @@
 import Seymour.Matrix.LinearIndependence
 import Seymour.Matrix.Signing
 import Seymour.Matrix.TotalUnimodularity
-import Seymour.Matroid.Constructors.StandardRepresentation
+import Seymour.Matroid.StandardRepresentation
 
 /-!
 # Regularity

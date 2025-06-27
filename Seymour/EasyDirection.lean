@@ -1,8 +1,8 @@
-import Seymour.Matroid.Operations.Sum1
-import Seymour.Matroid.Operations.Sum2
-import Seymour.Matroid.Operations.Sum3
-import Seymour.Matroid.Properties.Graphicness
-import Seymour.Matroid.Examples.R10
+import Seymour.Matroid.Sum1
+import Seymour.Matroid.Sum2
+import Seymour.Matroid.Sum3
+import Seymour.Matroid.Graphicness
+import Seymour.Matroid.R10
 
 variable {α : Type} [DecidableEq α]
 

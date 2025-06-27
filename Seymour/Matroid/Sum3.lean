@@ -2,7 +2,7 @@ import Seymour.Basic.FunctionToHalfSum
 import Seymour.Matrix.Determinants
 import Seymour.Matrix.PartialUnimodularity
 import Seymour.Matrix.Pivoting
-import Seymour.Matroid.Properties.Regularity
+import Seymour.Matroid.Regularity
 
 
 /-! # Matrix-level 3-sum -/

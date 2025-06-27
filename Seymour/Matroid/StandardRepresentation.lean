@@ -2,7 +2,7 @@ import Seymour.Basic.Fin
 import Seymour.Matrix.LinearIndependence
 import Seymour.Matrix.Pivoting
 import Seymour.Matrix.Support
-import Seymour.Matroid.Constructors.VectorMatroid
+import Seymour.Matroid.FromMatrix
 
 /-!
 # Standard Representation

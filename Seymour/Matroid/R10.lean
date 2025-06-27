@@ -1,5 +1,5 @@
-import Seymour.Matroid.Properties.Graphicness
 import Seymour.Matrix.TotalUnimodularityTest
+import Seymour.Matroid.Graphicness
 
 /-!
 # Matroid R10
