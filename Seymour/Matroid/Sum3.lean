@@ -4,10 +4,15 @@ import Seymour.Matrix.PartialUnimodularity
 import Seymour.Matrix.Pivoting
 import Seymour.Matroid.Regularity
 
+/-!
+# Matroid 3-sum
 
-/-! # Matrix-level 3-sum -/
+Here we study the 3-sum of matroids (starting with the 3-sum of matrices).
+-/
 
-/-! ## Additional notation for convenience -/
+/-! ## Matrix-level 3-sum -/
+
+/-! ### Additional notation for convenience -/
 
 /-!
   We define the unsigned and the signed version of the special cases of the 3×3 submatrix in the intersection of the summands.
@@ -34,7 +39,7 @@ private abbrev matrix3x3signed₁ : Matrix (Fin 3) (Fin 3) ℚ :=
   matrix3x3unsigned₁ ℚ
 
 
-/-! ## Definition -/
+/-! ### Definition -/
 
 /-- Structural data of 3-sum of matrices. -/
 structure MatrixSum3 (Xₗ Yₗ Xᵣ Yᵣ : Type) (R : Type) where
@@ -56,7 +61,7 @@ noncomputable def MatrixSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ R : Type} [CommRing R] 
   ⊞ S.Aₗ 0 S.D S.Aᵣ
 
 
-/-! ## Conversion of summands -/
+/-! ### Conversion of summands -/
 
 /-- Constructs 3-sum from summands in block form. -/
 def MatrixSum3.fromBlockSummands {Xₗ Yₗ Xᵣ Yᵣ R : Type}
@@ -141,9 +146,9 @@ private def MatrixSum3.Sᵣ_unexpand : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 
-/-! # Canonical signing of matrices -/
+/-! ## Canonical signing of matrices -/
 
-/-! ## Definition -/
+/-! ### Definition -/
 
 /-- Canonical re-signing of a matrix. -/
 private def Matrix.toCanonicalSigning {X Y : Type} [DecidableEq X] [DecidableEq Y]
@@ -167,7 +172,7 @@ private def Matrix.toCanonicalSigning_unexpand : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 
-/-! ## General results -/
+/-! ### General results -/
 
 /-- Canonical re-signing of a TU matrix is TU. -/
 private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Type} [DecidableEq X] [DecidableEq Y] {Q : Matrix X Y ℚ}
@@ -218,7 +223,7 @@ private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Type} [Decida
   exact Q.entryProd_outerProd_eq_mul_col_mul_row _ _ ▸ (hQ.mul_rows hu).mul_cols hv
 
 
-/-! ## Definition of re-signing in two special cases -/
+/-! ### Definition of re-signing in two special cases -/
 
 /-- Sufficient condition for existence of a TU canonical signing in the first special case. -/
 private def Matrix.HasTuCanonicalSigning₀ {X Y : Type} (Q : Matrix X Y ℚ) (x₀ x₁ x₂ : X) (y₀ y₁ y₂ : Y) : Prop :=
@@ -239,7 +244,7 @@ private def Matrix.HasTuCanonicalSigning₁_unexpand : Lean.PrettyPrinter.Unexpa
   | _ => throw ()
 
 
-/-! ## Lemmas about distinctness of row and column indices -/
+/-! ### Lemmas about distinctness of row and column indices -/
 
 private lemma Matrix.HasTuCanonicalSigning₀.distinct_x₀_x₁_x₂ {X Y : Type} {Q : Matrix X Y ℚ} {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y}
     (hQ : Q.HasTuCanonicalSigning₀ x₀ x₁ x₂ y₀ y₁ y₂) :
@@ -361,9 +366,9 @@ private lemma Matrix.HasTuCanonicalSigning₁.toCanonicalSigning_submatrix3x3 {X
     <;> simp [*] at hd₁ hd₂
 
 
-/-! # Canonical signing of 3-sum of matrices -/
+/-! ## Canonical signing of 3-sum of matrices -/
 
-/-! ## Additional notation for special rows and columns and their properties -/
+/-! ### Additional notation for special rows and columns and their properties -/
 
 /-- First special column of `S.Bᵣ` used to generate `S.D`. -/
 @[simp]
@@ -444,7 +449,7 @@ private lemma Function.IsParallelTo₃.mul_sign {X R : Type} [CommRing R] {v : X
     exact hv.neg
 
 
-/-! ## Auxiliary definitions -/
+/-! ### Auxiliary definitions -/
 
 /-- Sufficient condition for existence of a canonical signing of a 3-sum of matrices over `Z2`. -/
 private def MatrixSum3.HasCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2) : Prop :=
@@ -478,7 +483,7 @@ private noncomputable def MatrixSum3.HasCanonicalSigning.toCanonicalSigning {X�
   MatrixSum3.fromBlockSummands hS.left.left.toCanonicalSummandₗ hS.left.right.toCanonicalSummandᵣ
 
 
-/-! ## Soundness of definitions -/
+/-! ### Soundness of definitions -/
 
 /-!
   In this section we prove that `MatrixSum3.HasCanonicalSigning.toCanonicalSigning` satisfies `IsCanonicalSigning`.
@@ -570,7 +575,7 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_isCanonicalSigni
       exact ⟨hS'.left.toCanonicalSigning_submatrix3x3, hS'.right.toCanonicalSigning_submatrix3x3⟩
 
 
-/-! ## Lemmas about extending bottom-right block with special columns and top-left block with special rows -/
+/-! ### Lemmas about extending bottom-right block with special columns and top-left block with special rows -/
 
 private lemma MatrixSum3.aux_d₀ {Xₗ Yₗ Xᵣ Yᵣ : Type}
     (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) (hS : S.Bₗ.IsTotallyUnimodular) (hSAᵣ : S.Aᵣ ◩0 ◩0 = 1 ∧ S.Aᵣ ◩1 ◩0 = 1) (i : Yₗ ⊕ Fin 2) :
@@ -737,7 +742,7 @@ private lemma MatrixSum3.pmz_d₀_d₁_d₂_Aₗ_isTotallyUnimodular_of_Bₗ {X�
   aesop
 
 
-/-! ## Properties of canonical signings of 3-sums -/
+/-! ### Properties of canonical signings of 3-sums -/
 
 private lemma MatrixSum3.IsCanonicalSigning.Aₗ_elem {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.IsCanonicalSigning) :
@@ -928,7 +933,7 @@ private lemma MatrixSum3.IsCanonicalSigning.c₀_c₁_c₂_Aᵣ_isTotallyUnimodu
   S.c₀_c₁_c₂_Aᵣ_isTotallyUnimodular_of_Bᵣ hS.left.right hS.Aₗ_elem
 
 
-/-! ## Correctness -/
+/-! ### Correctness -/
 
 /-!
   In this section we prove that `MatrixSum3.HasCanonicalSigning.toCanonicalSigning` is indeed a signing of the original 3-sum.
@@ -1193,9 +1198,9 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_isSigning {Xₗ 
   · apply hS.toCanonicalSigning_Aᵣ_isSigning
 
 
-/-! # Family of 3-sum-like matrices -/
+/-! ## Family of 3-sum-like matrices -/
 
-/-! ## Definition -/
+/-! ### Definition -/
 
 /-- Structural data of 3-sum-like matrices. -/
 structure MatrixLikeSum3 (Xₗ Yₗ Xᵣ Yᵣ : Type) (c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ) where
@@ -1220,7 +1225,7 @@ private def MatrixLikeSum3.matrix_unexpand : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 
-/-! ## Pivoting -/
+/-! ### Pivoting -/
 
 /-- Effect on `Aₗ` after pivoting on an element in `Aₗ`. -/
 private abbrev MatrixLikeSum3.shortTableauPivotAₗ {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ]
@@ -1474,7 +1479,7 @@ private def MatrixLikeSum3.shortTableauPivot_unexpand : Lean.PrettyPrinter.Unexp
   | `($_ $S) => `($(S).$(Lean.mkIdent `shortTableauPivot))
   | _ => throw ()
 
-/-! ## Total unimodularity -/
+/-! ### Total unimodularity -/
 
 private lemma MatrixLikeSum3.c₀_c₀_c₁_c₁_c₂_c₂_Aᵣ_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ}
     (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) :
@@ -1594,7 +1599,7 @@ private lemma MatrixLikeSum3.IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {c
     ext (_|_) (_|_) <;> simp [MatrixLikeSum3.shortTableauPivot]
 
 
-/-! ## Implications for canonical signing of 3-sum of matrices -/
+/-! ### Implications for canonical signing of 3-sum of matrices -/
 
 /-!
   In this section we prove that 3-sums of matrices belong to the family of 3-sum-like matrices.
@@ -1645,11 +1650,11 @@ private lemma MatrixSum3.HasCanonicalSigning.HasTuSigning {Xₗ Yₗ Xᵣ Yᵣ :
   ⟨hS.toCanonicalSigning.matrix, hS.toCanonicalSigning_isCanonicalSigning.IsTotallyUnimodular, hS.toCanonicalSigning_isSigning⟩
 
 
-/-! # Matroid-level 3-sum -/
+/-! ## Matroid-level 3-sum -/
 
-/-! ## Additional notation for convenience -/
+/-! ### Additional notation for convenience -/
 
-/-! ### Removing bundled elements from sets -/
+/-! #### Removing bundled elements from sets -/
 
 variable {α : Type}
 
@@ -1691,7 +1696,7 @@ private lemma drop3_ne_snd {Z : Set α} {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z
   exact hi.right.left
 
 
-/-! ### Re-typing elements of the triplet intersection -/
+/-! #### Re-typing elements of the triplet intersection -/
 
 section triplets
 variable {Zₗ Zᵣ : Set α} {a₀ a₁ a₂ : α}
@@ -1756,7 +1761,7 @@ private def Eq.interAll3_unexpand : Lean.PrettyPrinter.Unexpander
 end triplets
 
 
-/-! ## New approach to conversion from union form to block form and vice versa -/
+/-! ### New approach to conversion from union form to block form and vice versa -/
 
 def Matrix.toBlockSummandₗ {Xₗ Yₗ : Set α} {R : Type} (Bₗ : Matrix Xₗ Yₗ R) (x₀ x₁ x₂ : Xₗ) (y₀ y₁ y₂ : Yₗ) :
     Matrix ((Xₗ.drop3 x₀ x₁ x₂ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ.drop3 y₀ y₁ y₂ ⊕ Fin 2) ⊕ Fin 1) R :=
@@ -1812,7 +1817,7 @@ def Matrix.toDropUnionDrop {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
       False.elim (j.property.elim ↓(by simp_all) ↓(by simp_all)))
 
 
-/-! ## The 3-sum of standard representations -/
+/-! ### The 3-sum of standard representations -/
 
 noncomputable def standardReprSum3 {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
@@ -1903,7 +1908,7 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
   sorry
 
 
-/-! ## The 3-sum of matroids -/
+/-! ### The 3-sum of matroids -/
 
 /-- Matroid `M` is a result of 3-summing `Mₗ` and `Mᵣ` in some way. -/
 def Matroid.Is3sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) : Prop :=
