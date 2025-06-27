@@ -1907,7 +1907,7 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
 /-! ## The 3-sum of matroids -/
 
 /-- Matroid `M` is a result of 3-summing `Mₗ` and `Mᵣ` in some way. Not a `Prop`, but treat it as a predicate. -/
-structure Matroid.Is3sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) extends M.IsPresumOf Mₗ Mᵣ where
+structure Matroid.Is3sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) extends pre : M.IsPresumOf Mₗ Mᵣ where
   {x₀ x₁ x₂ y₀ y₁ y₂ : α}
   hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}
   hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}

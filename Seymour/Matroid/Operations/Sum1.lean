@@ -35,11 +35,11 @@ noncomputable def standardReprSum1 {Sₗ Sᵣ : StandardRepr α Z2} (hXY : Sₗ.
       inferInstance,
       -- decidability of col indices
       inferInstance⟩
-    else
-      none
+  else
+    none
 
 /-- Binary matroid `M` is a result of 1-summing `Mₗ` and `Mᵣ` in some way. Not a `Prop` but treat it as a predicate. -/
-structure Matroid.Is1sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) extends M.IsPresumOf Mₗ Mᵣ where
+structure Matroid.Is1sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) extends pre : M.IsPresumOf Mₗ Mᵣ where
   hS : standardReprSum1 hXY hYX = some S
 
 -- private lemma standardReprSum1_eq_disjointSum_aux_full {Xₗ Yₗ Xᵣ Yᵣ : Set α}
@@ -192,10 +192,3 @@ theorem Matroid.Is1sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
   obtain ⟨⟨_, _, _, _, _, _, _, rfl, rfl, rfl⟩, hS⟩ := hM
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
   exact standardReprSum1_hasTuSigning hMₗ hMᵣ hS
-
-/--
-info: 'Matroid.Is1sumOf.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
--/
-#guard_msgs in
-#print axioms Matroid.Is1sumOf.isRegular
--- TODO document in `Seymour.lean` and remove here

@@ -98,7 +98,7 @@ noncomputable def standardReprSum2 {α : Type} [DecidableEq α] {Sₗ Sᵣ : Sta
     none
 
 /-- Binary matroid `M` is a result of 2-summing `Mₗ` and `Mᵣ` in some way. Not a `Prop` but treat it as a predicate. -/
-structure Matroid.Is2sumOf {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) extends M.IsPresumOf Mₗ Mᵣ where
+structure Matroid.Is2sumOf {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) extends pre : M.IsPresumOf Mₗ Mᵣ where
   {x y : α}
   hx : Sₗ.X ∩ Sᵣ.X = {x}
   hy : Sₗ.Y ∩ Sᵣ.Y = {y}
@@ -345,10 +345,3 @@ theorem Matroid.Is2sumOf.isRegular {α : Type} [DecidableEq α] {M Mₗ Mᵣ : M
   obtain ⟨⟨_, _, _, _, _, _, _, rfl, rfl, rfl⟩, _, _, hS⟩ := hM
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
   exact standardReprSum2_hasTuSigning hMₗ hMᵣ hS
-
-/--
-info: 'Matroid.Is2sumOf.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
--/
-#guard_msgs in
-#print axioms Matroid.Is2sumOf.isRegular
--- TODO document in `Seymour.lean` and remove here
