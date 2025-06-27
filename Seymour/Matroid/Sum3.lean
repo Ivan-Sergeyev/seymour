@@ -1912,6 +1912,9 @@ lemma standardReprSum3_Y {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀
   else
     simp [*]
 
+local macro "valid3sum" : tactic =>
+  `(tactic| simp only [standardReprSum3, Option.ite_none_right_eq_some] at * <;> tauto)
+
 lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) (hS : standardReprSum3 hXX hYY hXY hYX = some S) :
@@ -1935,11 +1938,46 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
   obtain ⟨Bᵣ, hBᵣ, hSBᵣ⟩ := hSᵣ
   -- signing of the result
   let M := standardReprMatrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
-  have hM : M.HasCanonicalSigning
-  · sorry
-  -- direct application of existing lemmas
-  obtain ⟨B, hB, hBM⟩ := hM.HasTuSigning
-  sorry
+  -- elements are distinct
+  have hx₀ : x₁ ≠ x₂
+  · valid3sum
+  have hx₁ : x₀ ≠ x₂
+  · valid3sum
+  have hx₂ : x₀ ≠ x₁
+  · valid3sum
+  have hy₀ : y₁ ≠ y₂
+  · valid3sum
+  have hy₁ : y₀ ≠ y₂
+  · valid3sum
+  have hy₂ : y₀ ≠ y₁
+  · valid3sum
+  -- identity
+  let eᵢ : Fin 2 ≃ Fin 2 := Equiv.refl (Fin 2)
+  -- swap 0<->1
+  let eₛ : Fin 2 ≃ Fin 2 := Equiv.ofBijective ![1, 0] (by decide)
+  -- two options what `D₀` is (up to reindexing)
+  have hS' := hS
+  simp only [standardReprSum3, Option.ite_none_right_eq_some] at hS'
+  obtain ⟨f, g, hfg⟩ := !![Sₗ.B x₀ₗ y₀ₗ, Sₗ.B x₀ₗ y₁ₗ; Sₗ.B x₁ₗ y₀ₗ, Sₗ.B x₁ₗ y₁ₗ].isUnit_2x2 hS'.left.right.right.left
+  -- cases analysis over those reindexings
+  if hf : f = eᵢ then
+    if hg : g = eᵢ then
+      let M := standardReprMatrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
+      have hM : M.HasCanonicalSigning
+      · sorry
+      obtain ⟨B, hB, hBM⟩ := hM.HasTuSigning
+      rw [Option.some.injEq] at hS'
+      rw [←hS'.right]
+      use B.toDropUnionDrop
+      constructor
+      · apply hB.submatrix
+      · apply hBM.submatrix
+    else
+      have hg' : g = eₛ
+      · sorry
+      sorry
+  else
+    sorry
 
 
 /-! ### The 3-sum of matroids -/
