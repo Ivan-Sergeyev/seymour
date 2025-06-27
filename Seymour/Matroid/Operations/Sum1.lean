@@ -1,5 +1,4 @@
 import Seymour.Matroid.Properties.Regularity
-import Seymour.Matroid.Operations.Presum
 
 /-!
 # Matroid 1-sum
@@ -35,12 +34,20 @@ noncomputable def standardReprSum1 {Sₗ Sᵣ : StandardRepr α Z2} (hXY : Sₗ.
       inferInstance,
       -- decidability of col indices
       inferInstance⟩
-    else
-      none
+  else
+    none
 
-/-- Binary matroid `M` is a result of 1-summing `Mₗ` and `Mᵣ` in some way. Not a `Prop` but treat it as a predicate. -/
-structure Matroid.Is1sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) extends M.IsPresumOf Mₗ Mᵣ where
-  hS : standardReprSum1 hXY hYX = some S
+/-- Binary matroid `M` is a result of 1-summing `Mₗ` and `Mᵣ` in some way. -/
+def Matroid.Is1sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) : Prop :=
+  ∃ S Sₗ Sᵣ : StandardRepr α Z2,
+  ∃ hXY : Sₗ.X ⫗ Sᵣ.Y,
+  ∃ hYX : Sₗ.Y ⫗ Sᵣ.X,
+  standardReprSum1 hXY hYX = some S
+  ∧ Finite Sₗ.X
+  ∧ Finite Sᵣ.X
+  ∧ S.toMatroid = M
+  ∧ Sₗ.toMatroid = Mₗ
+  ∧ Sᵣ.toMatroid = Mᵣ
 
 -- private lemma standardReprSum1_eq_disjointSum_aux_full {Xₗ Yₗ Xᵣ Yᵣ : Set α}
 --     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Yᵣ)]
@@ -179,17 +186,13 @@ lemma standardReprSum1_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : S�
     | inl jₗ => exact abs_zero
     | inr jᵣ => exact hBBᵣ iᵣ jᵣ
 
-lemma Matroid.Is1sumOf.finite_X {M Mₗ Mᵣ : Matroid α} (hM : M.Is1sumOf Mₗ Mᵣ) : Finite hM.S.X := by
-  obtain ⟨⟨_⟩, hS⟩ := hM
-  exact standardReprSum1_X hS ▸ Finite.Set.finite_union ..
-
 /-- Any 1-sum of regular matroids is a regular matroid.
     This is part one (of three) of the easy direction of the Seymour's theorem. -/
 theorem Matroid.Is1sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
     (hM : M.Is1sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
-  have := hM.finite_X
-  obtain ⟨⟨_, _, _, _, _, _, _, rfl, rfl, rfl⟩, hS⟩ := hM
+  obtain ⟨S, _, _, _, _, hS, _, _, rfl, rfl, rfl⟩ := hM
+  have : Finite S.X := standardReprSum1_X hS ▸ Finite.Set.finite_union ..
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
   exact standardReprSum1_hasTuSigning hMₗ hMᵣ hS
 

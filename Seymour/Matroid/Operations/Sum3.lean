@@ -3,7 +3,6 @@ import Seymour.Matrix.Determinants
 import Seymour.Matrix.PartialUnimodularity
 import Seymour.Matrix.Pivoting
 import Seymour.Matroid.Properties.Regularity
-import Seymour.Matroid.Operations.Presum
 
 
 /-! # Matrix-level 3-sum -/
@@ -1906,15 +1905,20 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
 
 /-! ## The 3-sum of matroids -/
 
-/-- Matroid `M` is a result of 3-summing `Mₗ` and `Mᵣ` in some way. Not a `Prop`, but treat it as a predicate. -/
-structure Matroid.Is3sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) extends M.IsPresumOf Mₗ Mᵣ where
-  {x₀ x₁ x₂ y₀ y₁ y₂ : α}
-  hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}
-  hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}
-  hS : standardReprSum3 hXX hYY hXY hYX = some S
-
-lemma Matroid.Is3sumOf.finite_X {M Mₗ Mᵣ : Matroid α} (hM : M.Is3sumOf Mₗ Mᵣ) : Finite hM.S.X := by
-  sorry
+/-- Matroid `M` is a result of 3-summing `Mₗ` and `Mᵣ` in some way. -/
+def Matroid.Is3sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) : Prop :=
+  ∃ S Sₗ Sᵣ : StandardRepr α Z2,
+  ∃ x₀ x₁ x₂ y₀ y₁ y₂ : α,
+  ∃ hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂},
+  ∃ hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂},
+  ∃ hXY : Sₗ.X ⫗ Sᵣ.Y,
+  ∃ hYX : Sₗ.Y ⫗ Sᵣ.X,
+  standardReprSum3 hXX hYY hXY hYX = some S
+  ∧ Finite Sₗ.X
+  ∧ Finite Sᵣ.X
+  ∧ S.toMatroid = M
+  ∧ Sₗ.toMatroid = Mₗ
+  ∧ Sᵣ.toMatroid = Mᵣ
 
 /-- Any 3-sum of two regular matroids is a regular matroid.
     This is the final part of the easy direction of the Seymour's theorem. -/
