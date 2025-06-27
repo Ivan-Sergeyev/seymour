@@ -155,3 +155,29 @@ lemma abs_add_add_eq_zmod_cast {a b c : Z2} {a' b' c' : ℚ} (haa : |a'| = a.cas
 @[simp]
 def equivUnitSumUnit : Unit ⊕ Unit ≃ Fin 2 :=
   ⟨(·.casesOn ↓0 ↓1), ![◩(), ◪()], (·.casesOn (by simp) (by simp)), (by fin_cases · <;> simp)⟩
+
+@[simp] noncomputable abbrev fin2refl : Fin 2 ≃ Fin 2 := Equiv.refl (Fin 2)
+
+@[simp] noncomputable abbrev fin2swap : Fin 2 ≃ Fin 2 := Equiv.ofBijective ![1, 0] (by decide)
+
+lemma eq_fin2swap_of_ne_fin2refl {e : Fin 2 ≃ Fin 2} (he : e ≠ fin2refl) : e = fin2swap := by
+  if he0 : e 0 = 0 then
+    if he1 : e 1 = 1 then
+      absurd he
+      ext i
+      fin_cases i <;> tauto
+    else
+      have he10 := fin2_eq_0_of_ne_1 he1
+      have hee := he0.trans he10.symm
+      have he01 := e.injective hee
+      norm_num at he01
+  else
+    have he01 := fin2_eq_1_of_ne_0 he0
+    if he1 : e 1 = 1 then
+      have hee := he1.trans he01.symm
+      have he10 := e.injective hee
+      norm_num at he10
+    else
+      have he10 := fin2_eq_0_of_ne_1 he1
+      ext i
+      fin_cases i <;> tauto
