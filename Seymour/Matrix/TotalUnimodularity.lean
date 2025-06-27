@@ -1,5 +1,3 @@
-import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
-import Seymour.Basic.Fin
 import Seymour.Basic.FunctionDecompose
 import Seymour.Basic.Sets
 import Seymour.Basic.SignTypeCast

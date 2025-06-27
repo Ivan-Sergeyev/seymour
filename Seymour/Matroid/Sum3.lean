@@ -1866,17 +1866,51 @@ noncomputable def standardReprSum3 {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x
   else
     none
 
+private lemma standardReprSum3_X_xxx {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+    {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
+    (hS : standardReprSum3 hXX hYY hXY hYX = some S) :
+    S.X = (Sₗ.X \ {x₀, x₁}) ∪ (Sᵣ.X \ {x₂}) := by
+  simp_rw [standardReprSum3, Option.ite_none_right_eq_some, Option.some.injEq] at hS
+  obtain ⟨_, hSSS⟩ := hS
+  exact congr_arg StandardRepr.X hSSS.symm
+
 lemma standardReprSum3_X {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α} (hx₀ : x₁ ≠ x₂) (hx₁ : x₀ ≠ x₂)
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hS : standardReprSum3 hXX hYY hXY hYX = some S) :
     S.X = Sₗ.X ∪ Sᵣ.X := by
-  sorry
+  rw [standardReprSum3_X_xxx hS]
+  ext a
+  if hax₂ : a = x₂ then
+    simp [*, hXX.mem3₂ₗ, hx₀.symm, hx₁.symm]
+  else if hax₀ : a = x₀ then
+    simp [*, hXX.mem3₀ᵣ]
+  else if hax₁ : a = x₁ then
+    simp [*, hXX.mem3₁ᵣ]
+  else
+    simp [*]
+
+private lemma standardReprSum3_Y_yyy {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+    {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
+    (hS : standardReprSum3 hXX hYY hXY hYX = some S) :
+    S.Y = (Sₗ.Y \ {y₂}) ∪ (Sᵣ.Y \ {y₀, y₁}) := by
+  simp_rw [standardReprSum3, Option.ite_none_right_eq_some, Option.some.injEq] at hS
+  obtain ⟨_, hSSS⟩ := hS
+  exact congr_arg StandardRepr.Y hSSS.symm
 
 lemma standardReprSum3_Y {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α} (hy₀ : y₁ ≠ y₂) (hy₁ : y₀ ≠ y₂)
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hS : standardReprSum3 hXX hYY hXY hYX = some S) :
     S.Y = Sₗ.Y ∪ Sᵣ.Y := by
-  sorry
+  rw [standardReprSum3_Y_yyy hS]
+  ext a
+  if hay₂ : a = y₂ then
+    simp [*, hYY.mem3₂ᵣ, hy₀.symm, hy₁.symm]
+  else if hax₀ : a = y₀ then
+    simp [*, hYY.mem3₀ₗ]
+  else if hax₁ : a = y₁ then
+    simp [*, hYY.mem3₁ₗ]
+  else
+    simp [*]
 
 lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
