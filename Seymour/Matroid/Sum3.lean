@@ -1674,6 +1674,10 @@ private def Set.drop2_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $S) => `($(S).$(Lean.mkIdent `drop2))
   | _ => throw ()
 
+private lemma drop2_comm {Z : Set α} (z₀ z₁ : Z) : Z.drop2 z₀ z₁ = Z.drop2 z₁ z₀ := by
+  unfold Set.drop2
+  aesop
+
 /-- Remove three bundled elements from a set. -/
 private abbrev Set.drop3 (Z : Set α) (z₀ z₁ z₂ : Z) : Set α := Z \ {z₀.val, z₁.val, z₂.val}
 
@@ -1694,6 +1698,14 @@ private lemma drop3_ne_snd {Z : Set α} {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z
   have hi := i.property.right
   simp at hi
   exact hi.right.left
+
+private lemma todo_name {X Y : Set α} {z₀ z₁ z₂ : α} (hXY : X ∩ Y = {z₀, z₁, z₂}) {a : α}
+    {hz₀ : z₀ ∈ Y} {hz₁ : z₁ ∈ Y} {hz₂ : z₂ ∈ Y} (haY : a ∈ Y.drop3 ⟨z₀, hz₀⟩ ⟨z₁, hz₁⟩ ⟨z₂, hz₂⟩) :
+    a ∉ X := by
+  have haXY := congr_arg (a ∈ ·) hXY
+  simp at haXY
+  simp [Set.drop3] at haY
+  tauto
 
 
 /-! #### Re-typing elements of the triplet intersection -/
@@ -1785,11 +1797,12 @@ private lemma Matrix.IsSigningOf.toBlockSummandᵣ {Xᵣ Yᵣ : Set α} {R : Typ
 
 variable [DecidableEq α]
 
-def standardReprMatrixSum3 (Sₗ Sᵣ : StandardRepr α Z2)
+def matrixSum3 (Sₗ Sᵣ : StandardRepr α Z2)
     (x₀ₗ x₁ₗ x₂ₗ : Sₗ.X) (y₀ₗ y₁ₗ y₂ₗ : Sₗ.Y) (x₀ᵣ x₁ᵣ x₂ᵣ : Sᵣ.X) (y₀ᵣ y₁ᵣ y₂ᵣ : Sᵣ.Y) :
     MatrixSum3 (Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ) (Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ) (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ) (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ) Z2 :=
   MatrixSum3.fromBlockSummands (Sₗ.B.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ) (Sᵣ.B.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ)
 
+@[simp]
 def Matrix.toDropUnionDrop {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
@@ -1858,7 +1871,7 @@ noncomputable def standardReprSum3 {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x
           ⟨⟨Sₗ.hXY.disjoint_sdiff_left.disjoint_sdiff_right, hYX.symm.disjoint_sdiff_left.disjoint_sdiff_right⟩,
           ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right, Sᵣ.hXY.disjoint_sdiff_left.disjoint_sdiff_right⟩⟩,
       -- standard representation matrix
-      (standardReprMatrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).matrix.toDropUnionDrop,
+      (matrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).matrix.toDropUnionDrop,
       -- decidability of row indices
       inferInstance,
       -- decidability of col indices
@@ -1912,6 +1925,7 @@ lemma standardReprSum3_Y {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀
   else
     simp [*]
 
+set_option maxHeartbeats 3000000 in
 lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) (hS : standardReprSum3 hXX hYY hXY hYX = some S) :
@@ -1933,8 +1947,7 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
   -- signings of summands
   obtain ⟨Bₗ, hBₗ, hSBₗ⟩ := hSₗ
   obtain ⟨Bᵣ, hBᵣ, hSBᵣ⟩ := hSᵣ
-  -- signing of the result
-  let M := standardReprMatrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
+  -- massaging the assumption
   have hS' := hS
   simp only [standardReprSum3, Option.ite_none_right_eq_some] at hS'
   -- elements are distinct
@@ -1955,7 +1968,9 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
   -- cases analysis over those reindexings
   if hf : f = fin2refl then
     if hg : g = fin2refl then
-      let M := standardReprMatrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
+      simp [hf, hg] at hfg
+      clear hg hf g f
+      let M := matrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
       have hM : M.HasCanonicalSigning
       · sorry
       obtain ⟨B, hB, hBM⟩ := hM.HasTuSigning
@@ -1966,18 +1981,173 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
       · apply hB.submatrix
       · apply hBM.submatrix
     else
-      have hg' : g = fin2swap
-      · exact eq_fin2swap_of_ne_fin2refl hg
+      have hg' : g = fin2swap := eq_fin2swap_of_ne_fin2refl hg
+      simp [hf, hg'] at hfg
+      clear hg' hg hf g f
       sorry
   else
-    have hf' : f = fin2swap
-    · exact eq_fin2swap_of_ne_fin2refl hf
+    have hf' : f = fin2swap := eq_fin2swap_of_ne_fin2refl hf
     if hg : g = fin2refl then
+      simp [hf', hg] at hfg
+      clear hg hf' hf g f
       sorry
     else
-      have hg' : g = fin2swap
-      · exact eq_fin2swap_of_ne_fin2refl hg
-      sorry
+      have hg' : g = fin2swap := eq_fin2swap_of_ne_fin2refl hg
+      simp [hf', hg'] at hfg
+      clear hg' hg hf' hf g f
+      let M := matrixSum3 Sₗ Sᵣ x₁ₗ x₀ₗ x₂ₗ y₁ₗ y₀ₗ y₂ₗ x₁ᵣ x₀ᵣ x₂ᵣ y₁ᵣ y₀ᵣ y₂ᵣ
+      have hM : M.HasCanonicalSigning
+      · sorry
+      obtain ⟨B, hB, hBM⟩ := hM.HasTuSigning
+      rw [Option.some.injEq] at hS'
+      rw [←hS'.right]
+      have hX₀₁ : Sₗ.X.drop2 x₀ₗ x₁ₗ ∪ Sᵣ.X.drop1 x₂ᵣ = Sₗ.X.drop2 x₁ₗ x₀ₗ ∪ Sᵣ.X.drop1 x₂ᵣ
+      · rw [drop2_comm x₀ₗ x₁ₗ]
+      have hY₀₁ : Sₗ.Y.drop1 y₂ₗ ∪ Sᵣ.Y.drop2 y₀ᵣ y₁ᵣ = Sₗ.Y.drop1 y₂ₗ ∪ Sᵣ.Y.drop2 y₁ᵣ y₀ᵣ
+      · rw [drop2_comm y₀ᵣ y₁ᵣ]
+      use B.toDropUnionDrop.submatrix hX₀₁.≃ hY₀₁.≃
+      constructor
+      · apply Matrix.IsTotallyUnimodular.submatrix hX₀₁.≃ hY₀₁.≃
+        apply hB.submatrix
+      · simp only [Eq.interAll3]
+        intro i j
+        if hi₂ₗ : i.val = x₂ₗ then
+          simp [hi₂ₗ, x₂ₗ]
+          if hj₀ₗ : j.val = y₀ₗ then
+            simpa [hj₀ₗ, y₀ₗ, y₁ₗ, hy₂] using hBM ◩◪0 ◩◪1
+          else if hj₁ₗ : j.val = y₁ₗ then
+            simpa [hj₁ₗ, y₀ₗ, y₁ₗ, hy₂.symm] using hBM ◩◪0 ◩◪0
+          else if hjYₗ : j.val ∈ Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ then
+            have hjY : j.val ∈ Sₗ.Y
+            · exact Set.mem_of_mem_diff hjYₗ
+            have hjy₂ₗ : j.val ≠ y₂ₗ.val
+            · simp_all
+            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hjY, hjy₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ, hy₂.symm] using hBM ◩◪0 ◩◩⟨j, _⟩
+          else if hj₂ᵣ : j.val = y₂ᵣ then
+            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, y₀ₗ, y₁ₗ, y₂ᵣ, y₂ₗ, hy₀.symm, hy₁.symm] using hBM ◩◪0 ◪◩0
+          else if hjYᵣ : j.val ∈ Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
+            have hjYᵣ' : j.val ∈ Sᵣ.Y
+            · exact Set.mem_of_mem_diff hjYᵣ
+            have hjYₗ : j.val ∉ Sₗ.Y
+            · exact todo_name hYY hjYᵣ
+            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hjYᵣ', hjYₗ, y₀ₗ, y₁ₗ, y₀ᵣ, y₁ᵣ, y₂ᵣ] using hBM ◩◪0 ◪◪⟨j, _⟩
+          else
+            exfalso
+            have hj := j.property
+            simp_all [y₀ₗ, y₁ₗ, y₂ₗ, y₀ᵣ, y₁ᵣ]
+        else if hiXₗ : i.val ∈ Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ then
+          have hiX : i.val ∈ Sₗ.X
+          · exact Set.mem_of_mem_diff hiXₗ
+          have hix₀ₗ : i.val ≠ x₀ₗ.val
+          · simp_all
+          have hix₁ₗ : i.val ≠ x₁ₗ.val
+          · simp_all
+          simp [hi₂ₗ, hiXₗ, hiX, hix₀ₗ, hix₁ₗ, x₀ₗ, x₁ₗ, x₂ₗ]
+          if hj₀ₗ : j.val = y₀ₗ then
+            simpa [hj₀ₗ, y₀ₗ, y₁ₗ, hy₂] using hBM ◩◩⟨i, _⟩ ◩◪1
+          else if hj₁ₗ : j.val = y₁ₗ then
+            simpa [hj₁ₗ, y₀ₗ, y₁ₗ, hy₂.symm] using hBM ◩◩⟨i, _⟩ ◩◪0
+          else if hjYₗ : j.val ∈ Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ then
+            have hjY : j.val ∈ Sₗ.Y
+            · exact Set.mem_of_mem_diff hjYₗ
+            have hjy₂ₗ : j.val ≠ y₂ₗ.val
+            · simp_all
+            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hjY, hjy₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ, hy₂.symm] using hBM ◩◩⟨i, _⟩ ◩◩⟨j, _⟩
+          else if hj₂ᵣ : j.val = y₂ᵣ then
+            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, y₀ₗ, y₁ₗ, y₂ᵣ, y₂ₗ, hy₀.symm, hy₁.symm] using hBM ◩◩⟨i, _⟩ ◪◩0
+          else if hjYᵣ : j.val ∈ Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
+            have hjYᵣ' : j.val ∈ Sᵣ.Y
+            · exact Set.mem_of_mem_diff hjYᵣ
+            have hjYₗ : j.val ∉ Sₗ.Y
+            · exact todo_name hYY hjYᵣ
+            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hjYᵣ', hjYₗ, y₀ₗ, y₁ₗ, y₀ᵣ, y₁ᵣ, y₂ᵣ] using hBM ◩◩⟨i, _⟩ ◪◪⟨j, _⟩
+          else
+            exfalso
+            have hj := j.property
+            simp_all [y₀ₗ, y₁ₗ, y₂ₗ, y₀ᵣ, y₁ᵣ]
+        else if hi₀ᵣ : i.val = x₀ᵣ then
+          simp [hi₂ₗ, hiXₗ, hi₀ᵣ, x₀ₗ, x₁ₗ, x₂ₗ, x₀ᵣ, x₁ᵣ, hx₁, hx₂]
+          if hj₀ₗ : j.val = y₀ₗ then
+            simpa [hj₀ₗ, y₀ₗ, y₁ₗ, hy₂] using hBM ◪◩1 ◩◪1
+          else if hj₁ₗ : j.val = y₁ₗ then
+            simpa [hj₁ₗ, y₀ₗ, y₁ₗ, hy₂.symm] using hBM ◪◩1 ◩◪0
+          else if hjYₗ : j.val ∈ Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ then
+            have hjY : j.val ∈ Sₗ.Y
+            · exact Set.mem_of_mem_diff hjYₗ
+            have hjy₂ₗ : j.val ≠ y₂ₗ.val
+            · simp_all
+            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hjY, hjy₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ, hy₂.symm] using hBM ◪◩1 ◩◩⟨j, _⟩
+          else if hj₂ᵣ : j.val = y₂ᵣ then
+            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, y₀ₗ, y₁ₗ, y₂ᵣ, y₂ₗ, hy₀.symm, hy₁.symm] using hBM ◪◩1 ◪◩0
+          else if hjYᵣ : j.val ∈ Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
+            have hjYᵣ' : j.val ∈ Sᵣ.Y
+            · exact Set.mem_of_mem_diff hjYᵣ
+            have hjYₗ : j.val ∉ Sₗ.Y
+            · exact todo_name hYY hjYᵣ
+            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hjYᵣ', hjYₗ, y₀ₗ, y₁ₗ, y₀ᵣ, y₁ᵣ, y₂ᵣ] using hBM ◪◩1 ◪◪⟨j, _⟩
+          else
+            exfalso
+            have hj := j.property
+            simp_all [y₀ₗ, y₁ₗ, y₂ₗ, y₀ᵣ, y₁ᵣ]
+        else if hi₁ᵣ : i.val = x₁ᵣ then
+          simp [hi₂ₗ, hiXₗ, hi₀ᵣ, hi₁ᵣ, x₀ₗ, x₁ₗ, x₂ₗ, x₀ᵣ, x₁ᵣ, hx₀, hx₁.symm, hx₂.symm]
+          if hj₀ₗ : j.val = y₀ₗ then
+            simpa [hj₀ₗ, y₀ₗ, y₁ₗ, hy₂] using hBM ◪◩0 ◩◪1
+          else if hj₁ₗ : j.val = y₁ₗ then
+            simpa [hj₁ₗ, y₀ₗ, y₁ₗ, hy₂.symm] using hBM ◪◩0 ◩◪0
+          else if hjYₗ : j.val ∈ Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ then
+            have hjY : j.val ∈ Sₗ.Y
+            · exact Set.mem_of_mem_diff hjYₗ
+            have hjy₂ₗ : j.val ≠ y₂ₗ.val
+            · simp_all
+            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hjY, hjy₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ, hy₂.symm] using hBM ◪◩0 ◩◩⟨j, _⟩
+          else if hj₂ᵣ : j.val = y₂ᵣ then
+            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, y₀ₗ, y₁ₗ, y₂ᵣ, y₂ₗ, hy₀.symm, hy₁.symm] using hBM ◪◩0 ◪◩0
+          else if hjYᵣ : j.val ∈ Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
+            have hjYᵣ' : j.val ∈ Sᵣ.Y
+            · exact Set.mem_of_mem_diff hjYᵣ
+            have hjYₗ : j.val ∉ Sₗ.Y
+            · exact todo_name hYY hjYᵣ
+            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hjYᵣ', hjYₗ, y₀ₗ, y₁ₗ, y₀ᵣ, y₁ᵣ, y₂ᵣ] using hBM ◪◩0 ◪◪⟨j, _⟩
+          else
+            exfalso
+            have hj := j.property
+            simp_all [y₀ₗ, y₁ₗ, y₂ₗ, y₀ᵣ, y₁ᵣ]
+        else if hiXᵣ : i.val ∈ Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ then
+          have hiXᵣ' : i.val ∈ Sᵣ.X
+          · exact Set.mem_of_mem_diff hiXᵣ
+          have hiXₗ : i.val ∉ Sₗ.X
+          · exact todo_name hXX hiXᵣ
+          simp [hi₂ₗ, hiXₗ, hi₀ᵣ, hi₁ᵣ, hiXᵣ, hiXᵣ', hiXₗ, x₀ₗ, x₁ₗ, x₂ₗ, x₀ᵣ, x₁ᵣ, x₂ᵣ, hx₀, hx₁.symm, hx₂.symm]
+          if hj₀ₗ : j.val = y₀ₗ then
+            simpa [hj₀ₗ, y₀ₗ, y₁ₗ, hy₂] using hBM ◪◪⟨i, _⟩ ◩◪1
+          else if hj₁ₗ : j.val = y₁ₗ then
+            simpa [hj₁ₗ, y₀ₗ, y₁ₗ, hy₂.symm] using hBM ◪◪⟨i, _⟩ ◩◪0
+          else if hjYₗ : j.val ∈ Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ then
+            have hjY : j.val ∈ Sₗ.Y
+            · exact Set.mem_of_mem_diff hjYₗ
+            have hjy₂ₗ : j.val ≠ y₂ₗ.val
+            · simp_all
+            simp [hj₀ₗ, hj₁ₗ, hjYₗ, hjY, hjy₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ, hy₂.symm]
+            generalize_proofs _ _ _ _ _ _ hhi _ _ _ hhj
+            --simpa using hBM ◪◪⟨i.val, hhi⟩ ◩◩⟨j.val, hhj⟩
+            sorry
+          else if hj₂ᵣ : j.val = y₂ᵣ then
+            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, y₀ₗ, y₁ₗ, y₂ᵣ, y₂ₗ, hy₀.symm, hy₁.symm] using hBM ◪◪⟨i, _⟩ ◪◩0
+          else if hjYᵣ : j.val ∈ Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
+            have hjYᵣ' : j.val ∈ Sᵣ.Y
+            · exact Set.mem_of_mem_diff hjYᵣ
+            have hjYₗ : j.val ∉ Sₗ.Y
+            · exact todo_name hYY hjYᵣ
+            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hjYᵣ', hjYₗ, y₀ₗ, y₁ₗ, y₀ᵣ, y₁ᵣ, y₂ᵣ] using hBM ◪◪⟨i, _⟩ ◪◪⟨j, _⟩
+          else
+            exfalso
+            have hj := j.property
+            simp_all [y₀ₗ, y₁ₗ, y₂ₗ, y₀ᵣ, y₁ᵣ]
+        else
+          exfalso
+          have hi := i.property
+          simp_all [x₀ₗ, x₁ₗ, x₀ᵣ, x₁ᵣ, x₂ᵣ]
 
 
 /-! ### The 3-sum of matroids -/
