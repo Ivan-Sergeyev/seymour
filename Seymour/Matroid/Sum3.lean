@@ -1686,6 +1686,10 @@ private def Set.drop3_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $S) => `($(S).$(Lean.mkIdent `drop3))
   | _ => throw ()
 
+private lemma drop3_comm {Z : Set α} (z₀ z₁ z₂ : Z) : Z.drop3 z₀ z₁ z₂ = Z.drop3 z₁ z₀ z₂ := by
+  unfold Set.drop3
+  aesop
+
 private def undrop3 {Z : Set α} {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z₁ z₂) : Z :=
   ⟨i.val, i.property.left⟩
 
@@ -1699,7 +1703,7 @@ private lemma drop3_ne_snd {Z : Set α} {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z
   simp at hi
   exact hi.right.left
 
-private lemma todo_name {X Y : Set α} {z₀ z₁ z₂ : α} (hXY : X ∩ Y = {z₀, z₁, z₂}) {a : α}
+private lemma ni_of_in_drop3_of_inter {X Y : Set α} {z₀ z₁ z₂ : α} (hXY : X ∩ Y = {z₀, z₁, z₂}) {a : α}
     {hz₀ : z₀ ∈ Y} {hz₁ : z₁ ∈ Y} {hz₂ : z₂ ∈ Y} (haY : a ∈ Y.drop3 ⟨z₀, hz₀⟩ ⟨z₁, hz₁⟩ ⟨z₂, hz₂⟩) :
     a ∉ X := by
   have haXY := congr_arg (a ∈ ·) hXY
@@ -1925,7 +1929,7 @@ lemma standardReprSum3_Y {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀
   else
     simp [*]
 
-set_option maxHeartbeats 3000000 in
+set_option maxHeartbeats 4000000 in
 lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) (hS : standardReprSum3 hXX hYY hXY hYX = some S) :
@@ -2029,7 +2033,7 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
             have hjYᵣ' : j.val ∈ Sᵣ.Y
             · exact Set.mem_of_mem_diff hjYᵣ
             have hjYₗ : j.val ∉ Sₗ.Y
-            · exact todo_name hYY hjYᵣ
+            · exact ni_of_in_drop3_of_inter hYY hjYᵣ
             simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hjYᵣ', hjYₗ, y₀ₗ, y₁ₗ, y₀ᵣ, y₁ᵣ, y₂ᵣ] using hBM ◩◪0 ◪◪⟨j, _⟩
           else
             exfalso
@@ -2059,7 +2063,7 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
             have hjYᵣ' : j.val ∈ Sᵣ.Y
             · exact Set.mem_of_mem_diff hjYᵣ
             have hjYₗ : j.val ∉ Sₗ.Y
-            · exact todo_name hYY hjYᵣ
+            · exact ni_of_in_drop3_of_inter hYY hjYᵣ
             simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hjYᵣ', hjYₗ, y₀ₗ, y₁ₗ, y₀ᵣ, y₁ᵣ, y₂ᵣ] using hBM ◩◩⟨i, _⟩ ◪◪⟨j, _⟩
           else
             exfalso
@@ -2083,7 +2087,7 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
             have hjYᵣ' : j.val ∈ Sᵣ.Y
             · exact Set.mem_of_mem_diff hjYᵣ
             have hjYₗ : j.val ∉ Sₗ.Y
-            · exact todo_name hYY hjYᵣ
+            · exact ni_of_in_drop3_of_inter hYY hjYᵣ
             simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hjYᵣ', hjYₗ, y₀ₗ, y₁ₗ, y₀ᵣ, y₁ᵣ, y₂ᵣ] using hBM ◪◩1 ◪◪⟨j, _⟩
           else
             exfalso
@@ -2107,7 +2111,7 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
             have hjYᵣ' : j.val ∈ Sᵣ.Y
             · exact Set.mem_of_mem_diff hjYᵣ
             have hjYₗ : j.val ∉ Sₗ.Y
-            · exact todo_name hYY hjYᵣ
+            · exact ni_of_in_drop3_of_inter hYY hjYᵣ
             simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hjYᵣ', hjYₗ, y₀ₗ, y₁ₗ, y₀ᵣ, y₁ᵣ, y₂ᵣ] using hBM ◪◩0 ◪◪⟨j, _⟩
           else
             exfalso
@@ -2117,7 +2121,7 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
           have hiXᵣ' : i.val ∈ Sᵣ.X
           · exact Set.mem_of_mem_diff hiXᵣ
           have hiXₗ : i.val ∉ Sₗ.X
-          · exact todo_name hXX hiXᵣ
+          · exact ni_of_in_drop3_of_inter hXX hiXᵣ
           simp [hi₂ₗ, hiXₗ, hi₀ᵣ, hi₁ᵣ, hiXᵣ, hiXᵣ', hiXₗ, x₀ₗ, x₁ₗ, x₂ₗ, x₀ᵣ, x₁ᵣ, x₂ᵣ, hx₀, hx₁.symm, hx₂.symm]
           if hj₀ₗ : j.val = y₀ₗ then
             simpa [hj₀ₗ, y₀ₗ, y₁ₗ, hy₂] using hBM ◪◪⟨i, _⟩ ◩◪1
@@ -2126,11 +2130,27 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
           else if hjYₗ : j.val ∈ Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ then
             have hjY : j.val ∈ Sₗ.Y
             · exact Set.mem_of_mem_diff hjYₗ
+            have hjy₀ₗ : j.val ≠ y₀ₗ.val
+            · simp_all
+            have hjy₁ₗ : j.val ≠ y₁ₗ.val
+            · simp_all
             have hjy₂ₗ : j.val ≠ y₂ₗ.val
             · simp_all
-            simp [hj₀ₗ, hj₁ₗ, hjYₗ, hjY, hjy₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ, hy₂.symm]
-            generalize_proofs _ _ _ _ _ _ hhi _ _ _ hhj
-            --simpa using hBM ◪◪⟨i.val, hhi⟩ ◩◩⟨j.val, hhj⟩
+            have hjy₀ : j.val ≠ y₀
+            · exact hjy₀ₗ
+            have hjy₁ : j.val ≠ y₁
+            · exact hjy₁ₗ
+            have hjy₂ : j.val ≠ y₂
+            · exact hjy₂ₗ
+            simp [hj₀ₗ, hj₁ₗ, hjYₗ, hjY, hjy₀, hjy₁ₗ, hjy₂ₗ, hjy₀, hjy₁, hjy₂, hy₂.symm]
+            generalize_proofs _ _ _ _ _ _ hhi hhj
+            have hhXₗ := drop3_comm x₁ₗ x₀ₗ x₂ₗ
+            have hhYₗ := drop3_comm y₁ₗ y₀ₗ y₂ₗ
+            have hhXᵣ := drop3_comm x₁ᵣ x₀ᵣ x₂ᵣ
+            have hhYᵣ := drop3_comm y₁ᵣ y₀ᵣ y₂ᵣ
+            rw [hBM ◪◪⟨i.val, hhi⟩ ◩◩⟨j.val, hhj⟩]
+            simp
+            congr 1
             sorry
           else if hj₂ᵣ : j.val = y₂ᵣ then
             simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, y₀ₗ, y₁ₗ, y₂ᵣ, y₂ₗ, hy₀.symm, hy₁.symm] using hBM ◪◪⟨i, _⟩ ◪◩0
@@ -2138,7 +2158,7 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
             have hjYᵣ' : j.val ∈ Sᵣ.Y
             · exact Set.mem_of_mem_diff hjYᵣ
             have hjYₗ : j.val ∉ Sₗ.Y
-            · exact todo_name hYY hjYᵣ
+            · exact ni_of_in_drop3_of_inter hYY hjYᵣ
             simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hjYᵣ', hjYₗ, y₀ₗ, y₁ₗ, y₀ᵣ, y₁ᵣ, y₂ᵣ] using hBM ◪◪⟨i, _⟩ ◪◪⟨j, _⟩
           else
             exfalso
