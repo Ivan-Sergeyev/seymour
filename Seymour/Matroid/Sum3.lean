@@ -1806,32 +1806,46 @@ def matrixSum3 (Sₗ Sᵣ : StandardRepr α Z2)
     MatrixSum3 (Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ) (Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ) (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ) (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ) Z2 :=
   MatrixSum3.fromBlockSummands (Sₗ.B.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ) (Sᵣ.B.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ)
 
+def Subtype.toSum3X {Xₗ Xᵣ : Set α} [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Xᵣ)] {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ}
+    (i : (Xₗ.drop2 x₀ₗ x₁ₗ ∪ Xᵣ.drop1 x₂ᵣ).Elem) :
+    ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ).Elem ⊕ Fin 1) ⊕ (Fin 2 ⊕ (Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ).Elem) :=
+  if hi₂ₗ : i.val = x₂ₗ then ◩◪0 else
+  if hiXₗ : i.val ∈ Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ then ◩◩⟨i, hiXₗ⟩ else
+  if hi₀ᵣ : i.val = x₀ᵣ then ◪◩0 else
+  if hi₁ᵣ : i.val = x₁ᵣ then ◪◩1 else
+  if hiXᵣ : i.val ∈ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ then ◪◪⟨i, hiXᵣ⟩ else
+  False.elim (i.property.elim ↓(by simp_all) ↓(by simp_all))
+
+def Subtype.toSum3Y {Yₗ Yᵣ : Set α} [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Yᵣ)] {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
+    (j : (Yₗ.drop1 y₂ₗ ∪ Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem) :
+    ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ)) :=
+  if hj₀ₗ : j.val = y₀ₗ then ◩◪0 else
+  if hj₁ₗ : j.val = y₁ₗ then ◩◪1 else
+  if hjYₗ : j.val ∈ Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ then ◩◩⟨j, hjYₗ⟩ else
+  if hj₂ᵣ : j.val = y₂ᵣ then ◪◩0 else
+  if hjYᵣ : j.val ∈ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then ◪◪⟨j, hjYᵣ⟩ else
+  False.elim (j.property.elim ↓(by simp_all) ↓(by simp_all))
+
+@[app_unexpander Subtype.toSum3X]
+def Subtype.toSum3X_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $i) => `($(i).$(Lean.mkIdent `toSum3X))
+  | _ => throw ()
+
+@[app_unexpander Subtype.toSum3Y]
+def Subtype.toSum3Y_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $i) => `($(i).$(Lean.mkIdent `toSum3Y))
+  | _ => throw ()
+
 @[simp]
 def Matrix.toDropUnionDrop {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
-    (A :
-      Matrix
-        ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
-        ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
-        R
-    ) :
+    (A : Matrix
+      ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
+      ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
+      R) :
     Matrix (Xₗ.drop2 x₀ₗ x₁ₗ ∪ Xᵣ.drop1 x₂ᵣ).Elem (Yₗ.drop1 y₂ₗ ∪ Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem R :=
-  A.submatrix
-    (fun i : (Xₗ.drop2 x₀ₗ x₁ₗ ∪ Xᵣ.drop1 x₂ᵣ).Elem =>
-      if hi₂ₗ : i.val = x₂ₗ then ◩◪0 else
-      if hiXₗ : i.val ∈ Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ then ◩◩⟨i, hiXₗ⟩ else
-      if hi₀ᵣ : i.val = x₀ᵣ then ◪◩0 else
-      if hi₁ᵣ : i.val = x₁ᵣ then ◪◩1 else
-      if hiXᵣ : i.val ∈ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ then ◪◪⟨i, hiXᵣ⟩ else
-      False.elim (i.property.elim ↓(by simp_all) ↓(by simp_all)))
-    (fun j : (Yₗ.drop1 y₂ₗ ∪ Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem =>
-      if hj₀ₗ : j.val = y₀ₗ then ◩◪0 else
-      if hj₁ₗ : j.val = y₁ₗ then ◩◪1 else
-      if hjYₗ : j.val ∈ Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ then ◩◩⟨j, hjYₗ⟩ else
-      if hj₂ᵣ : j.val = y₂ᵣ then ◪◩0 else
-      if hjYᵣ : j.val ∈ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then ◪◪⟨j, hjYᵣ⟩ else
-      False.elim (j.property.elim ↓(by simp_all) ↓(by simp_all)))
+  A.submatrix Subtype.toSum3X Subtype.toSum3Y
 
 
 /-! ### The 3-sum of standard representations -/
@@ -1980,10 +1994,7 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
       obtain ⟨B, hB, hBM⟩ := hM.HasTuSigning
       rw [Option.some.injEq] at hS'
       rw [←hS'.right]
-      use B.toDropUnionDrop
-      constructor
-      · apply hB.submatrix
-      · apply hBM.submatrix
+      exact ⟨B.toDropUnionDrop, hB.submatrix Subtype.toSum3X Subtype.toSum3Y, hBM.submatrix Subtype.toSum3X Subtype.toSum3Y⟩
     else
       have hg' : g = fin2swap := eq_fin2swap_of_ne_fin2refl hg
       simp [hf, hg'] at hfg
@@ -2006,168 +2017,47 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
       rw [Option.some.injEq] at hS'
       rw [←hS'.right]
       have hX₀₁ : Sₗ.X.drop2 x₀ₗ x₁ₗ ∪ Sᵣ.X.drop1 x₂ᵣ = Sₗ.X.drop2 x₁ₗ x₀ₗ ∪ Sᵣ.X.drop1 x₂ᵣ
-      · rw [drop2_comm x₀ₗ x₁ₗ]
+      · rw [drop2_comm]
       have hY₀₁ : Sₗ.Y.drop1 y₂ₗ ∪ Sᵣ.Y.drop2 y₀ᵣ y₁ᵣ = Sₗ.Y.drop1 y₂ₗ ∪ Sᵣ.Y.drop2 y₁ᵣ y₀ᵣ
-      · rw [drop2_comm y₀ᵣ y₁ᵣ]
+      · rw [drop2_comm]
       use B.toDropUnionDrop.submatrix hX₀₁.≃ hY₀₁.≃
       constructor
-      · apply Matrix.IsTotallyUnimodular.submatrix hX₀₁.≃ hY₀₁.≃
-        apply hB.submatrix
-      · simp only [Eq.interAll3]
-        intro i j
-        if hi₂ₗ : i.val = x₂ₗ then
-          simp [hi₂ₗ, x₂ₗ]
-          if hj₀ₗ : j.val = y₀ₗ then
-            simpa [hj₀ₗ, y₀ₗ, y₁ₗ, hy₂] using hBM ◩◪0 ◩◪1
-          else if hj₁ₗ : j.val = y₁ₗ then
-            simpa [hj₁ₗ, y₀ₗ, y₁ₗ, hy₂.symm] using hBM ◩◪0 ◩◪0
-          else if hjYₗ : j.val ∈ Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ then
-            have hjY : j.val ∈ Sₗ.Y
-            · exact Set.mem_of_mem_diff hjYₗ
-            have hjy₂ₗ : j.val ≠ y₂ₗ.val
-            · simp_all
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hjY, hjy₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ, hy₂.symm] using hBM ◩◪0 ◩◩⟨j, _⟩
-          else if hj₂ᵣ : j.val = y₂ᵣ then
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, y₀ₗ, y₁ₗ, y₂ᵣ, y₂ₗ, hy₀.symm, hy₁.symm] using hBM ◩◪0 ◪◩0
-          else if hjYᵣ : j.val ∈ Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
-            have hjYᵣ' : j.val ∈ Sᵣ.Y
-            · exact Set.mem_of_mem_diff hjYᵣ
-            have hjYₗ : j.val ∉ Sₗ.Y
-            · exact ni_of_in_drop3_of_inter hYY hjYᵣ
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hjYᵣ', hjYₗ, y₀ₗ, y₁ₗ, y₀ᵣ, y₁ᵣ, y₂ᵣ] using hBM ◩◪0 ◪◪⟨j, _⟩
-          else
-            exfalso
-            have hj := j.property
-            simp_all [y₀ₗ, y₁ₗ, y₂ₗ, y₀ᵣ, y₁ᵣ]
-        else if hiXₗ : i.val ∈ Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ then
-          have hiX : i.val ∈ Sₗ.X
-          · exact Set.mem_of_mem_diff hiXₗ
-          have hix₀ₗ : i.val ≠ x₀ₗ.val
-          · simp_all
-          have hix₁ₗ : i.val ≠ x₁ₗ.val
-          · simp_all
-          simp [hi₂ₗ, hiXₗ, hiX, hix₀ₗ, hix₁ₗ, x₀ₗ, x₁ₗ, x₂ₗ]
-          if hj₀ₗ : j.val = y₀ₗ then
-            simpa [hj₀ₗ, y₀ₗ, y₁ₗ, hy₂] using hBM ◩◩⟨i, _⟩ ◩◪1
-          else if hj₁ₗ : j.val = y₁ₗ then
-            simpa [hj₁ₗ, y₀ₗ, y₁ₗ, hy₂.symm] using hBM ◩◩⟨i, _⟩ ◩◪0
-          else if hjYₗ : j.val ∈ Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ then
-            have hjY : j.val ∈ Sₗ.Y
-            · exact Set.mem_of_mem_diff hjYₗ
-            have hjy₂ₗ : j.val ≠ y₂ₗ.val
-            · simp_all
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hjY, hjy₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ, hy₂.symm] using hBM ◩◩⟨i, _⟩ ◩◩⟨j, _⟩
-          else if hj₂ᵣ : j.val = y₂ᵣ then
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, y₀ₗ, y₁ₗ, y₂ᵣ, y₂ₗ, hy₀.symm, hy₁.symm] using hBM ◩◩⟨i, _⟩ ◪◩0
-          else if hjYᵣ : j.val ∈ Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
-            have hjYᵣ' : j.val ∈ Sᵣ.Y
-            · exact Set.mem_of_mem_diff hjYᵣ
-            have hjYₗ : j.val ∉ Sₗ.Y
-            · exact ni_of_in_drop3_of_inter hYY hjYᵣ
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hjYᵣ', hjYₗ, y₀ₗ, y₁ₗ, y₀ᵣ, y₁ᵣ, y₂ᵣ] using hBM ◩◩⟨i, _⟩ ◪◪⟨j, _⟩
-          else
-            exfalso
-            have hj := j.property
-            simp_all [y₀ₗ, y₁ₗ, y₂ₗ, y₀ᵣ, y₁ᵣ]
-        else if hi₀ᵣ : i.val = x₀ᵣ then
-          simp [hi₂ₗ, hiXₗ, hi₀ᵣ, x₀ₗ, x₁ₗ, x₂ₗ, x₀ᵣ, x₁ᵣ, hx₁, hx₂]
-          if hj₀ₗ : j.val = y₀ₗ then
-            simpa [hj₀ₗ, y₀ₗ, y₁ₗ, hy₂] using hBM ◪◩1 ◩◪1
-          else if hj₁ₗ : j.val = y₁ₗ then
-            simpa [hj₁ₗ, y₀ₗ, y₁ₗ, hy₂.symm] using hBM ◪◩1 ◩◪0
-          else if hjYₗ : j.val ∈ Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ then
-            have hjY : j.val ∈ Sₗ.Y
-            · exact Set.mem_of_mem_diff hjYₗ
-            have hjy₂ₗ : j.val ≠ y₂ₗ.val
-            · simp_all
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hjY, hjy₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ, hy₂.symm] using hBM ◪◩1 ◩◩⟨j, _⟩
-          else if hj₂ᵣ : j.val = y₂ᵣ then
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, y₀ₗ, y₁ₗ, y₂ᵣ, y₂ₗ, hy₀.symm, hy₁.symm] using hBM ◪◩1 ◪◩0
-          else if hjYᵣ : j.val ∈ Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
-            have hjYᵣ' : j.val ∈ Sᵣ.Y
-            · exact Set.mem_of_mem_diff hjYᵣ
-            have hjYₗ : j.val ∉ Sₗ.Y
-            · exact ni_of_in_drop3_of_inter hYY hjYᵣ
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hjYᵣ', hjYₗ, y₀ₗ, y₁ₗ, y₀ᵣ, y₁ᵣ, y₂ᵣ] using hBM ◪◩1 ◪◪⟨j, _⟩
-          else
-            exfalso
-            have hj := j.property
-            simp_all [y₀ₗ, y₁ₗ, y₂ₗ, y₀ᵣ, y₁ᵣ]
-        else if hi₁ᵣ : i.val = x₁ᵣ then
-          simp [hi₂ₗ, hiXₗ, hi₀ᵣ, hi₁ᵣ, x₀ₗ, x₁ₗ, x₂ₗ, x₀ᵣ, x₁ᵣ, hx₀, hx₁.symm, hx₂.symm]
-          if hj₀ₗ : j.val = y₀ₗ then
-            simpa [hj₀ₗ, y₀ₗ, y₁ₗ, hy₂] using hBM ◪◩0 ◩◪1
-          else if hj₁ₗ : j.val = y₁ₗ then
-            simpa [hj₁ₗ, y₀ₗ, y₁ₗ, hy₂.symm] using hBM ◪◩0 ◩◪0
-          else if hjYₗ : j.val ∈ Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ then
-            have hjY : j.val ∈ Sₗ.Y
-            · exact Set.mem_of_mem_diff hjYₗ
-            have hjy₂ₗ : j.val ≠ y₂ₗ.val
-            · simp_all
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hjY, hjy₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ, hy₂.symm] using hBM ◪◩0 ◩◩⟨j, _⟩
-          else if hj₂ᵣ : j.val = y₂ᵣ then
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, y₀ₗ, y₁ₗ, y₂ᵣ, y₂ₗ, hy₀.symm, hy₁.symm] using hBM ◪◩0 ◪◩0
-          else if hjYᵣ : j.val ∈ Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
-            have hjYᵣ' : j.val ∈ Sᵣ.Y
-            · exact Set.mem_of_mem_diff hjYᵣ
-            have hjYₗ : j.val ∉ Sₗ.Y
-            · exact ni_of_in_drop3_of_inter hYY hjYᵣ
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hjYᵣ', hjYₗ, y₀ₗ, y₁ₗ, y₀ᵣ, y₁ᵣ, y₂ᵣ] using hBM ◪◩0 ◪◪⟨j, _⟩
-          else
-            exfalso
-            have hj := j.property
-            simp_all [y₀ₗ, y₁ₗ, y₂ₗ, y₀ᵣ, y₁ᵣ]
-        else if hiXᵣ : i.val ∈ Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ then
-          have hiXᵣ' : i.val ∈ Sᵣ.X
-          · exact Set.mem_of_mem_diff hiXᵣ
-          have hiXₗ : i.val ∉ Sₗ.X
-          · exact ni_of_in_drop3_of_inter hXX hiXᵣ
-          simp [hi₂ₗ, hiXₗ, hi₀ᵣ, hi₁ᵣ, hiXᵣ, hiXᵣ', hiXₗ, x₀ₗ, x₁ₗ, x₂ₗ, x₀ᵣ, x₁ᵣ, x₂ᵣ, hx₀, hx₁.symm, hx₂.symm]
-          if hj₀ₗ : j.val = y₀ₗ then
-            simpa [hj₀ₗ, y₀ₗ, y₁ₗ, hy₂] using hBM ◪◪⟨i, _⟩ ◩◪1
-          else if hj₁ₗ : j.val = y₁ₗ then
-            simpa [hj₁ₗ, y₀ₗ, y₁ₗ, hy₂.symm] using hBM ◪◪⟨i, _⟩ ◩◪0
-          else if hjYₗ : j.val ∈ Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ then
-            have hjY : j.val ∈ Sₗ.Y
-            · exact Set.mem_of_mem_diff hjYₗ
-            have hjy₀ₗ : j.val ≠ y₀ₗ.val
-            · simp_all
-            have hjy₁ₗ : j.val ≠ y₁ₗ.val
-            · simp_all
-            have hjy₂ₗ : j.val ≠ y₂ₗ.val
-            · simp_all
-            have hjy₀ : j.val ≠ y₀
-            · exact hjy₀ₗ
-            have hjy₁ : j.val ≠ y₁
-            · exact hjy₁ₗ
-            have hjy₂ : j.val ≠ y₂
-            · exact hjy₂ₗ
-            simp [hj₀ₗ, hj₁ₗ, hjYₗ, hjY, hjy₀, hjy₁ₗ, hjy₂ₗ, hjy₀, hjy₁, hjy₂, hy₂.symm]
-            generalize_proofs _ _ _ _ _ _ hhi hhj
-            have hhXₗ := drop3_comm x₁ₗ x₀ₗ x₂ₗ
-            have hhYₗ := drop3_comm y₁ₗ y₀ₗ y₂ₗ
-            have hhXᵣ := drop3_comm x₁ᵣ x₀ᵣ x₂ᵣ
-            have hhYᵣ := drop3_comm y₁ᵣ y₀ᵣ y₂ᵣ
-            rw [hBM ◪◪⟨i.val, hhi⟩ ◩◩⟨j.val, hhj⟩]
-            simp
-            congr 1
-            sorry
-          else if hj₂ᵣ : j.val = y₂ᵣ then
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, y₀ₗ, y₁ₗ, y₂ᵣ, y₂ₗ, hy₀.symm, hy₁.symm] using hBM ◪◪⟨i, _⟩ ◪◩0
-          else if hjYᵣ : j.val ∈ Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
-            have hjYᵣ' : j.val ∈ Sᵣ.Y
-            · exact Set.mem_of_mem_diff hjYᵣ
-            have hjYₗ : j.val ∉ Sₗ.Y
-            · exact ni_of_in_drop3_of_inter hYY hjYᵣ
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hjYᵣ', hjYₗ, y₀ₗ, y₁ₗ, y₀ᵣ, y₁ᵣ, y₂ᵣ] using hBM ◪◪⟨i, _⟩ ◪◪⟨j, _⟩
-          else
-            exfalso
-            have hj := j.property
-            simp_all [y₀ₗ, y₁ₗ, y₂ₗ, y₀ᵣ, y₁ᵣ]
-        else
-          exfalso
-          have hi := i.property
-          simp_all [x₀ₗ, x₁ₗ, x₀ᵣ, x₁ᵣ, x₂ᵣ]
+      · exact (hB.submatrix Subtype.toSum3X Subtype.toSum3Y).submatrix hX₀₁.≃ hY₀₁.≃
+      · convert (hBM.submatrix Subtype.toSum3X Subtype.toSum3Y).submatrix hX₀₁.≃ hY₀₁.≃
+        simp only [Eq.interAll3, M, MatrixSum3.matrix, Matrix.toDropUnionDrop]
+        ext i j
+        cases hi : (i.toSum3X (x₀ₗ := x₀ₗ) (x₁ₗ := x₁ₗ) (x₂ₗ := x₂ₗ) (x₀ᵣ := x₀ᵣ) (x₁ᵣ := x₁ᵣ) (x₂ᵣ := x₂ᵣ)) with
+        | inl iₗ =>
+          cases hj : (j.toSum3Y (y₀ₗ := y₀ₗ) (y₁ₗ := y₁ₗ) (y₂ₗ := y₂ₗ) (y₀ᵣ := y₀ᵣ) (y₁ᵣ := y₁ᵣ) (y₂ᵣ := y₂ᵣ)) with
+          | inl jₗ =>
+            have hX₀₁₂ : ((Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ).Elem ⊕ Fin 1) = ((Sₗ.X.drop3 x₁ₗ x₀ₗ x₂ₗ).Elem ⊕ Fin 1)
+            · rw [drop3_comm]
+            have hY₀₁₂ : ((Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ).Elem ⊕ Fin 2) = ((Sₗ.Y.drop3 y₁ₗ y₀ₗ y₂ₗ).Elem ⊕ Fin 2)
+            · rw [drop3_comm]
+            have hi' : (hX₀₁.≃ i).toSum3X (x₀ₗ := x₁ₗ) (x₁ₗ := x₀ₗ) (x₂ₗ := x₂ₗ) (x₀ᵣ := x₁ᵣ) (x₁ᵣ := x₀ᵣ) (x₂ᵣ := x₂ᵣ) = ◩(hX₀₁₂ ▸ iₗ)
+            · sorry
+            have hj' : (hY₀₁.≃ j).toSum3Y (y₀ₗ := y₁ₗ) (y₁ₗ := y₀ₗ) (y₂ₗ := y₂ₗ) (y₀ᵣ := y₁ᵣ) (y₁ᵣ := y₀ᵣ) (y₂ᵣ := y₂ᵣ) = ◩(hY₀₁₂ ▸ jₗ)
+            · sorry
+            rw [Matrix.submatrix_apply, hi, hj, Matrix.fromBlocks_apply₁₁]
+            rw [Matrix.submatrix_apply, Matrix.submatrix_apply, hi', hj', Matrix.fromBlocks_apply₁₁]
+            cases iₗ with
+            | inl iₗₗ => sorry
+            | inr iₗ₁ =>
+              cases jₗ with
+              | inl jₗₗ => sorry
+              | inr jₗ₂ => sorry
+          | inr jᵣ =>
+            have hX₀₁₂ : ((Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ).Elem ⊕ Fin 1) = ((Sₗ.X.drop3 x₁ₗ x₀ₗ x₂ₗ).Elem ⊕ Fin 1)
+            · rw [drop3_comm]
+            have hY₀₁₂ : (Fin 1 ⊕ (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ).Elem) = (Fin 1 ⊕ (Sᵣ.Y.drop3 y₁ᵣ y₀ᵣ y₂ᵣ).Elem)
+            · rw [drop3_comm]
+            have hi' : (hX₀₁.≃ i).toSum3X (x₀ₗ := x₁ₗ) (x₁ₗ := x₀ₗ) (x₂ₗ := x₂ₗ) (x₀ᵣ := x₁ᵣ) (x₁ᵣ := x₀ᵣ) (x₂ᵣ := x₂ᵣ) = ◩(hX₀₁₂ ▸ iₗ)
+            · sorry
+            have hj' : (hY₀₁.≃ j).toSum3Y (y₀ₗ := y₁ₗ) (y₁ₗ := y₀ₗ) (y₂ₗ := y₂ₗ) (y₀ᵣ := y₁ᵣ) (y₁ᵣ := y₀ᵣ) (y₂ᵣ := y₂ᵣ) = ◪(hY₀₁₂ ▸ jᵣ)
+            · sorry
+            rw [Matrix.submatrix_apply, hi, hj, Matrix.fromBlocks_apply₁₂, Matrix.zero_apply]
+            rw [Matrix.submatrix_apply, Matrix.submatrix_apply, hi', hj', Matrix.fromBlocks_apply₁₂, Matrix.zero_apply]
+        | inr iᵣ => sorry
 
 
 /-! ### The 3-sum of matroids -/
