@@ -477,16 +477,15 @@
     \uses{Matrix.IsTotallyUnimodular}
     % \lean{}
     \leanok
-    Let $X_{\ell}$, $Y_{\ell}$, $X_{r}$, $Y_{r}$ be sets and let $c_{0}, c_{1} \in \mathbb{Q}^{X_{r}}$ be column vectors. Define $\mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ to be the family of matrices of the form $\begin{bmatrix} A_{\ell} & 0 \\ D & A_{r} \end{bmatrix}$ such that:
+    Let $X_{\ell}$, $Y_{\ell}$, $X_{r}$, $Y_{r}$ be sets, let $x_{0}, x_{1} \in X_{r} \setminus X_{\ell}$, and let $c_{0}, c_{1} \in \mathbb{Q}^{X_{r} \cup \{x_{0}, x_{1}\}}$ be column vectors. We define $\mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ to be the family of matrices of the form $\begin{bmatrix} A_{\ell} & 0 \\ D & A_{r} \end{bmatrix}$ such that:
     \begin{enumerate}
         \item $A_{\ell} \in \mathbb{Q}^{X_{\ell} \times Y_{\ell}}$, $A_{r} \in \mathbb{Q}^{X_{r} \times Y_{r}}$, and $D \in \mathbb{Q}^{X_{r} \times Y_{\ell}}$;
         \item\label{item:mls3_LeftTU} $\begin{bmatrix} A_{\ell} \\ D \end{bmatrix}$ is TU;
         \item\label{item:mls3_Parallels} for every $j \in Y_{\ell}$, $D (X_{r}, j) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$;
         \item\label{item:mls3_BottomTU} $\begin{bmatrix} c_{0} & c_{1} & c_{0} - c_{1} & A_{r} \end{bmatrix}$ is TU;
-        \item\label{item:mls3_AuxTU} \todo[inline]{(⊞ Aₗ 0 D.toRows₁ !![1; 1]).IsTotallyUnimodular}
-        \item\label{item:mls3_Col0} c₀ ◩0 = 1 ∧ c₀ ◩1 = 0
-        \item\label{item:mls3_Col1} (c₁ ◩0 = 0 ∧ c₁ ◩1 = -1) ∨ (c₁ ◩0 = 1 ∧ c₁ ◩1 = 1)
-
+        \item\label{item:mls3_AuxTU} $\begin{bmatrix} A_{\ell} & 0 \\ D (x_{0}, Y_{\ell}) & 1 \\ D (x_{1}, Y_{r}) & 1 \end{bmatrix}$ is TU;
+        \item\label{item:mls3_Col0} $c_{0} (x_{0}) = 1$ and $c_{0} (x_{1}) = 0$;
+        \item\label{item:mls3_Col1} either $c_{1} (x_{0}) = 0$ and $c_{1} (x_{1}) = -1$, or $c_{1} (x_{0}) = 1$ and $c_{1} (x_{1}) = 1$.
     \end{enumerate}
 \end{definition}
 
