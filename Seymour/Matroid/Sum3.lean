@@ -1863,11 +1863,10 @@ private def equiv₃Y {Yₗ Yᵣ : Set α} [∀ a, Decidable (a ∈ Yₗ)] [∀ 
 private def Matrix.toIntermediate {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
-    (A :
-      Matrix
-        ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
-        ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
-        R)
+    (A : Matrix
+      ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
+      ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
+      R)
     (hx₀ₗ : x₁ₗ ≠ x₂ₗ) (hx₁ₗ : x₀ₗ ≠ x₂ₗ) (hx₀ᵣ : x₁ᵣ ≠ x₂ᵣ) (hx₁ᵣ : x₀ᵣ ≠ x₂ᵣ) (hx₂ᵣ : x₀ᵣ ≠ x₁ᵣ)
     (hy₀ₗ : y₁ₗ ≠ y₂ₗ) (hy₁ₗ : y₀ₗ ≠ y₂ₗ) (hy₂ₗ : y₀ₗ ≠ y₁ₗ) (hy₀ᵣ : y₁ᵣ ≠ y₂ᵣ) (hy₁ᵣ : y₀ᵣ ≠ y₂ᵣ) :
     Matrix ((Xₗ.drop2 x₀ₗ x₁ₗ).Elem ⊕ (Xᵣ.drop1 x₂ᵣ).Elem) ((Yₗ.drop1 y₂ₗ).Elem ⊕ (Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem) R :=
@@ -1883,11 +1882,10 @@ private def Matrix.toIntermediate_unexpand : Lean.PrettyPrinter.Unexpander
 private def Matrix.toDropUnionDropInternal {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
-    (A :
-      Matrix
-        ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
-        ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
-        R)
+    (A : Matrix
+      ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
+      ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
+      R)
     (hx₀ₗ : x₁ₗ ≠ x₂ₗ) (hx₁ₗ : x₀ₗ ≠ x₂ₗ) (hx₀ᵣ : x₁ᵣ ≠ x₂ᵣ) (hx₁ᵣ : x₀ᵣ ≠ x₂ᵣ) (hx₂ᵣ : x₀ᵣ ≠ x₁ᵣ)
     (hy₀ₗ : y₁ₗ ≠ y₂ₗ) (hy₁ₗ : y₀ₗ ≠ y₂ₗ) (hy₂ₗ : y₀ₗ ≠ y₁ₗ) (hy₀ᵣ : y₁ᵣ ≠ y₂ᵣ) (hy₁ᵣ : y₀ᵣ ≠ y₂ᵣ) :
     Matrix (Xₗ.drop2 x₀ₗ x₁ₗ ∪ Xᵣ.drop1 x₂ᵣ).Elem (Yₗ.drop1 y₂ₗ ∪ Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem R :=
@@ -1902,11 +1900,10 @@ private def Matrix.toDropUnionDropInternal_unexpand : Lean.PrettyPrinter.Unexpan
 def Matrix.toDropUnionDrop {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
-    (A :
-      Matrix
-        ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
-        ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
-        R) :
+    (A : Matrix
+      ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
+      ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
+      R) :
     Matrix (Xₗ.drop2 x₀ₗ x₁ₗ ∪ Xᵣ.drop1 x₂ᵣ).Elem (Yₗ.drop1 y₂ₗ ∪ Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem R :=
   A.submatrix
     (fun i : (Xₗ.drop2 x₀ₗ x₁ₗ ∪ Xᵣ.drop1 x₂ᵣ).Elem =>
@@ -1929,13 +1926,42 @@ private lemma Matrix.toDropUnionDrop_eq_toDropUnionDropInternal {Xₗ Yₗ Xᵣ 
     {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
     (hx₀ₗ : x₁ₗ ≠ x₂ₗ) (hx₁ₗ : x₀ₗ ≠ x₂ₗ) (hx₀ᵣ : x₁ᵣ ≠ x₂ᵣ) (hx₁ᵣ : x₀ᵣ ≠ x₂ᵣ) (hx₂ᵣ : x₀ᵣ ≠ x₁ᵣ)
     (hy₀ₗ : y₁ₗ ≠ y₂ₗ) (hy₁ₗ : y₀ₗ ≠ y₂ₗ) (hy₂ₗ : y₀ₗ ≠ y₁ₗ) (hy₀ᵣ : y₁ᵣ ≠ y₂ᵣ) (hy₁ᵣ : y₀ᵣ ≠ y₂ᵣ)
-    (A :
-      Matrix
-        ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
-        ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
-        R) :
+    (A : Matrix
+      ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
+      ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
+      R) :
     A.toDropUnionDrop = A.toDropUnionDropInternal hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ := by
-  sorry
+  apply congr_arg₂
+  · ext i
+    unfold equiv₃X
+    if hi₂ₗ : i.val = x₂ₗ then
+      sorry
+    else if hiXₗ : i.val ∈ Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ then
+      sorry
+    else if hi₀ᵣ : i.val = x₀ᵣ then
+      sorry
+    else if hi₁ᵣ : i.val = x₁ᵣ then
+      sorry
+    else if hiXᵣ : i.val ∈ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ then
+      sorry
+    else
+      exfalso
+      exact i.property.elim ↓(by simp_all) ↓(by simp_all)
+  · ext j
+    unfold equiv₃Y
+    if hi₂ₗ : j.val = y₀ₗ then
+      sorry
+    else if hj₁ₗ : j.val = y₁ₗ then
+      sorry
+    else if hjYₗ : j.val ∈ Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ then
+      sorry
+    else if hj₂ᵣ : j.val = y₂ᵣ then
+      sorry
+    else if hjYᵣ : j.val ∈ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
+      sorry
+    else
+      exfalso
+      exact j.property.elim ↓(by simp_all) ↓(by simp_all)
 
 def matrixSum3 (Sₗ Sᵣ : StandardRepr α Z2)
     (x₀ₗ x₁ₗ x₂ₗ : Sₗ.X) (y₀ₗ y₁ₗ y₂ₗ : Sₗ.Y) (x₀ᵣ x₁ᵣ x₂ᵣ : Sᵣ.X) (y₀ᵣ y₁ᵣ y₂ᵣ : Sᵣ.Y) :
