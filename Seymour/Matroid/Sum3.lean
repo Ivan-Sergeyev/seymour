@@ -1842,7 +1842,24 @@ private def equivFin2 {Z : Set α} {z₀ z₁ : Z} (hzz : z₀ ≠ z₁) : Fin 2
   ↓(by aesop)
 ⟩
 
--- TODO consider splitting into three definitions
+private def equiv₃X {Xₗ Xᵣ : Set α} [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Xᵣ)] {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ}
+    (hx₀ₗ : x₁ₗ ≠ x₂ₗ) (hx₁ₗ : x₀ₗ ≠ x₂ₗ) (hx₀ᵣ : x₁ᵣ ≠ x₂ᵣ) (hx₁ᵣ : x₀ᵣ ≠ x₂ᵣ) (hx₂ᵣ : x₀ᵣ ≠ x₁ᵣ) :
+    (Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ) ≃ (Xₗ.drop2 x₀ₗ x₁ₗ).Elem ⊕ (Xᵣ.drop1 x₂ᵣ).Elem :=
+  Equiv.sumCongr
+    (((equivFin1 x₂ₗ).rightCongr.trans (Xₗ.drop3_disjoint_thr x₀ₗ x₁ₗ x₂ₗ).equivSumUnion).trans
+      (drop3_union_mem hx₁ₗ hx₀ₗ).≃)
+    (((equivFin2 hx₂ᵣ).leftCongr.trans (Xᵣ.drop3_disjoint_fst_snd x₀ᵣ x₁ᵣ x₂ᵣ).symm.equivSumUnion).trans
+      (pair_union_drop3 hx₁ᵣ hx₀ᵣ).≃)
+
+private def equiv₃Y {Yₗ Yᵣ : Set α} [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Yᵣ)] {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
+    (hy₀ₗ : y₁ₗ ≠ y₂ₗ) (hy₁ₗ : y₀ₗ ≠ y₂ₗ) (hy₂ₗ : y₀ₗ ≠ y₁ₗ) (hy₀ᵣ : y₁ᵣ ≠ y₂ᵣ) (hy₁ᵣ : y₀ᵣ ≠ y₂ᵣ) :
+    (Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ) ≃ (Yₗ.drop1 y₂ₗ).Elem ⊕ (Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem :=
+  Equiv.sumCongr
+    (((equivFin2 hy₂ₗ).rightCongr.trans (Yₗ.drop3_disjoint_fst_snd y₀ₗ y₁ₗ y₂ₗ).equivSumUnion).trans
+      (drop3_union_pair hy₁ₗ hy₀ₗ).≃)
+    (((equivFin1 y₂ᵣ).leftCongr.trans ((Yᵣ.drop3_disjoint_thr y₀ᵣ y₁ᵣ y₂ᵣ).symm).equivSumUnion).trans
+      (mem_union_drop3 hy₁ᵣ hy₀ᵣ).≃)
+
 private def Matrix.toIntermediate {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
@@ -1855,16 +1872,15 @@ private def Matrix.toIntermediate {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
     (hy₀ₗ : y₁ₗ ≠ y₂ₗ) (hy₁ₗ : y₀ₗ ≠ y₂ₗ) (hy₂ₗ : y₀ₗ ≠ y₁ₗ) (hy₀ᵣ : y₁ᵣ ≠ y₂ᵣ) (hy₁ᵣ : y₀ᵣ ≠ y₂ᵣ) :
     Matrix ((Xₗ.drop2 x₀ₗ x₁ₗ).Elem ⊕ (Xᵣ.drop1 x₂ᵣ).Elem) ((Yₗ.drop1 y₂ₗ).Elem ⊕ (Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem) R :=
   A.reindex
-    ((((equivFin1 x₂ₗ).rightCongr.trans (Xₗ.drop3_disjoint_thr x₀ₗ x₁ₗ x₂ₗ).equivSumUnion).trans
-        (drop3_union_mem hx₁ₗ hx₀ₗ).≃).sumCongr
-      (((equivFin2 hx₂ᵣ).leftCongr.trans (Xᵣ.drop3_disjoint_fst_snd x₀ᵣ x₁ᵣ x₂ᵣ).symm.equivSumUnion).trans
-        (pair_union_drop3 hx₁ᵣ hx₀ᵣ).≃))
-    ((((equivFin2 hy₂ₗ).rightCongr.trans (Yₗ.drop3_disjoint_fst_snd y₀ₗ y₁ₗ y₂ₗ).equivSumUnion).trans
-        (drop3_union_pair hy₁ₗ hy₀ₗ).≃).sumCongr
-      (((equivFin1 y₂ᵣ).leftCongr.trans ((Yᵣ.drop3_disjoint_thr y₀ᵣ y₁ᵣ y₂ᵣ).symm).equivSumUnion).trans
-        (mem_union_drop3 hy₁ᵣ hy₀ᵣ).≃))
+    (equiv₃X hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ)
+    (equiv₃Y hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ)
 
-private def Matrix.toDropUnionDrop' {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
+@[app_unexpander Matrix.toIntermediate]
+private def Matrix.toIntermediate_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $A) => `($(A).$(Lean.mkIdent `toIntermediate))
+  | _ => throw ()
+
+private def Matrix.toDropUnionDropInternal {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
     (A :
@@ -1876,6 +1892,11 @@ private def Matrix.toDropUnionDrop' {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
     (hy₀ₗ : y₁ₗ ≠ y₂ₗ) (hy₁ₗ : y₀ₗ ≠ y₂ₗ) (hy₂ₗ : y₀ₗ ≠ y₁ₗ) (hy₀ᵣ : y₁ᵣ ≠ y₂ᵣ) (hy₁ᵣ : y₀ᵣ ≠ y₂ᵣ) :
     Matrix (Xₗ.drop2 x₀ₗ x₁ₗ ∪ Xᵣ.drop1 x₂ᵣ).Elem (Yₗ.drop1 y₂ₗ ∪ Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem R :=
   (A.toIntermediate hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ).toMatrixUnionUnion
+
+@[app_unexpander Matrix.toDropUnionDropInternal]
+private def Matrix.toDropUnionDropInternal_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $A) => `($(A).$(Lean.mkIdent `toDropUnionDropInternal))
+  | _ => throw ()
 
 @[simp]
 def Matrix.toDropUnionDrop {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
@@ -1903,7 +1924,7 @@ def Matrix.toDropUnionDrop {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
       if hjYᵣ : j.val ∈ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then ◪◪⟨j, hjYᵣ⟩ else
       False.elim (j.property.elim ↓(by simp_all) ↓(by simp_all)))
 
-private lemma Matrix.toDropUnionDrop_eq {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
+private lemma Matrix.toDropUnionDrop_eq_toDropUnionDropInternal {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
     (hx₀ₗ : x₁ₗ ≠ x₂ₗ) (hx₁ₗ : x₀ₗ ≠ x₂ₗ) (hx₀ᵣ : x₁ᵣ ≠ x₂ᵣ) (hx₁ᵣ : x₀ᵣ ≠ x₂ᵣ) (hx₂ᵣ : x₀ᵣ ≠ x₁ᵣ)
@@ -1913,7 +1934,7 @@ private lemma Matrix.toDropUnionDrop_eq {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type
         ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
         ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
         R) :
-    A.toDropUnionDrop = A.toDropUnionDrop' hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ := by
+    A.toDropUnionDrop = A.toDropUnionDropInternal hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ := by
   sorry
 
 def matrixSum3 (Sₗ Sᵣ : StandardRepr α Z2)
@@ -2201,21 +2222,16 @@ lemma standardReprSum3aux_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ 
         · sorry
     · sorry
   obtain ⟨B, hB, hBM⟩ := hM.HasTuSigning
-  use (B.toIntermediate hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ).toMatrixElemElem (standardReprSum3aux_X_xxx hS) (standardReprSum3aux_Y_yyy hS)
+  use (B.toIntermediate hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ).toMatrixElemElem
+    (standardReprSum3aux_X_xxx hS)
+    (standardReprSum3aux_Y_yyy hS)
   constructor
   · apply Matrix.IsTotallyUnimodular.toMatrixElemElem
     apply hB.submatrix
-  · rw [Matrix.toDropUnionDrop_eq hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ] at hS''
-    exact hS'' ▸ (hBM.reindex
-        ((((equivFin1 x₂ₗ).rightCongr.trans (Sₗ.X.drop3_disjoint_thr x₀ₗ x₁ₗ x₂ₗ).equivSumUnion).trans
-            (drop3_union_mem hx₁ₗ hx₀ₗ).≃).sumCongr
-          (((equivFin2 hx₂ᵣ).leftCongr.trans (Sᵣ.X.drop3_disjoint_fst_snd x₀ᵣ x₁ᵣ x₂ᵣ).symm.equivSumUnion).trans
-            (pair_union_drop3 hx₁ᵣ hx₀ᵣ).≃))
-        ((((equivFin2 hy₂ₗ).rightCongr.trans (Sₗ.Y.drop3_disjoint_fst_snd y₀ₗ y₁ₗ y₂ₗ).equivSumUnion).trans
-            (drop3_union_pair hy₁ₗ hy₀ₗ).≃).sumCongr
-          (((equivFin1 y₂ᵣ).leftCongr.trans ((Sᵣ.Y.drop3_disjoint_thr y₀ᵣ y₁ᵣ y₂ᵣ).symm).equivSumUnion).trans
-            (mem_union_drop3 hy₁ᵣ hy₀ᵣ).≃))
-      ).toMatrixElemElem (standardReprSum3aux_X_xxx hS) (standardReprSum3aux_Y_yyy hS)
+  · rw [Matrix.toDropUnionDrop_eq_toDropUnionDropInternal hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ] at hS''
+    exact hS'' ▸ (hBM.reindex (equiv₃X hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ) (equiv₃Y hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ)).toMatrixElemElem
+      (standardReprSum3aux_X_xxx hS)
+      (standardReprSum3aux_Y_yyy hS)
 
 set_option maxHeartbeats 4000000 in
 lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
