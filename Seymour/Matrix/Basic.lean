@@ -1,5 +1,5 @@
 import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
-import Seymour.Matrix.Signing
+import Seymour.Basic.Basic
 
 /-!
 # Basic stuff about matrices
@@ -10,8 +10,6 @@ This file provides a specific API about matrices for the purposes of our project
 open scoped Matrix
 
 variable {α : Type}
-
-/-! ## Basic lemmas -/
 
 @[simp]
 lemma Matrix.one_fromCols_transpose [Zero α] [One α] {m n : Type} [DecidableEq m] (A : Matrix m n α) :
@@ -106,70 +104,3 @@ def Matrix.abs [LinearOrderedAddCommGroup α] {m n : Type} (A : Matrix m n α) :
 
 -- We redeclare `|·|` instead of using the existing notation because the official `abs` requires a lattice.
 macro:max atomic("|" noWs) A:term noWs "|" : term => `(Matrix.abs $A)
-
-
-/-! ## Conversion between set-indexed block-like matrices and type-indexed block matrices -/
-
-variable {T₁ T₂ S₁ S₂ : Set α} {β : Type}
-  [∀ a, Decidable (a ∈ T₁)]
-  [∀ a, Decidable (a ∈ T₂)]
-  [∀ a, Decidable (a ∈ S₁)]
-  [∀ a, Decidable (a ∈ S₂)]
-
-/-- Convert a block matrix to a matrix over set unions. -/
-def Matrix.toMatrixUnionUnion (A : Matrix (T₁.Elem ⊕ T₂.Elem) (S₁.Elem ⊕ S₂.Elem) β) :
-    Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem β :=
-  ((A ∘ Subtype.toSum) · ∘ Subtype.toSum)
-
-/-- Convert a matrix over set unions to a block matrix. -/
-def Matrix.toMatrixSumSum (A : Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem β) :
-    Matrix (T₁.Elem ⊕ T₂.Elem) (S₁.Elem ⊕ S₂.Elem) β :=
-  ((A ∘ Sum.toUnion) · ∘ Sum.toUnion)
-
-/-- Converting a block matrix to a matrix over set unions and back to a block matrix gives the original matrix, assuming that
-    both said unions are disjoint. -/
-@[simp]
-lemma toMatrixUnionUnion_toMatrixSumSum (hT : T₁ ⫗ T₂) (hS : S₁ ⫗ S₂) (A : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) β) :
-    A.toMatrixUnionUnion.toMatrixSumSum = A := by
-  ext
-  simp [Matrix.toMatrixUnionUnion, Matrix.toMatrixSumSum, *]
-
-/-- Converting a matrix over set unions to a block matrix and back to a matrix over set unions gives the original matrix. -/
-@[simp]
-lemma toMatrixSumSum_toMatrixUnionUnion (A : Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem β) :
-    A.toMatrixSumSum.toMatrixUnionUnion = A := by
-  ext
-  simp [Matrix.toMatrixUnionUnion, Matrix.toMatrixSumSum]
-
-/-- A totally unimodular block matrix stays totally unimodular after converting to a matrix over set unions. -/
-lemma Matrix.IsTotallyUnimodular.toMatrixUnionUnion [CommRing β] {A : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) β}
-    (hA : A.IsTotallyUnimodular) :
-    A.toMatrixUnionUnion.IsTotallyUnimodular := by
-  rw [Matrix.isTotallyUnimodular_iff] at hA ⊢
-  intros
-  apply hA
-
-variable {T S : Set α}
-
-/-- Convert a block matrix to a matrix over set unions named as single indexing sets. -/
-def Matrix.toMatrixElemElem (A : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) β) (hT : T = T₁ ∪ T₂) (hS : S = S₁ ∪ S₂) :
-    Matrix T S β :=
-  hT ▸ hS ▸ A.toMatrixUnionUnion
-
-/-- Direct characterization of `Matrix.toMatrixElemElem` entries. -/
-lemma Matrix.toMatrixElemElem_apply (A : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) β) (hT : T = T₁ ∪ T₂) (hS : S = S₁ ∪ S₂) (i : T) (j : S) :
-    A.toMatrixElemElem hT hS i j = A (hT ▸ i).toSum (hS ▸ j).toSum := by
-  subst hT hS
-  rfl
-
-/-- A totally unimodular block matrix stays totally unimodular after converting to a matrix over set unions named as
-    single indexing sets. -/
-lemma Matrix.IsTotallyUnimodular.toMatrixElemElem {A : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) ℚ}
-    (hA : A.IsTotallyUnimodular) (hT : T = T₁ ∪ T₂) (hS : S = S₁ ∪ S₂) :
-    (A.toMatrixElemElem hT hS).IsTotallyUnimodular :=
-  hT ▸ hS ▸ hA.toMatrixUnionUnion
-
-lemma Matrix.IsSigningOf.toMatrixElemElem {A : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) ℚ} {U : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) Z2}
-    (hAU : A.IsSigningOf U) (hT : T = T₁ ∪ T₂) (hS : S = S₁ ∪ S₂) :
-    (A.toMatrixElemElem hT hS).IsSigningOf (U.toMatrixElemElem hT hS) := by
-  sorry

@@ -1,4 +1,5 @@
 import Seymour.Basic.FunctionToHalfSum
+import Seymour.Matrix.Conversions
 import Seymour.Matrix.Determinants
 import Seymour.Matrix.PartialUnimodularity
 import Seymour.Matrix.Pivoting

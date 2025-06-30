@@ -1,3 +1,4 @@
+import Seymour.Matrix.Conversions
 import Seymour.Matroid.Regularity
 
 /-!
