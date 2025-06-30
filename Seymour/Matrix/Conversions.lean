@@ -47,6 +47,13 @@ lemma Matrix.IsTotallyUnimodular.toMatrixUnionUnion [CommRing R] {A : Matrix (T�
   intros
   apply hA
 
+/-- A signing block matrix stays a signing of a matrix after converting both matrices to be indexed by set unions. -/
+lemma Matrix.IsSigningOf.toMatrixUnionUnion [LinearOrderedRing R]
+    {A : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) R} {U : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) Z2}
+    (hAU : A.IsSigningOf U) :
+    A.toMatrixUnionUnion.IsSigningOf U.toMatrixUnionUnion :=
+  (hAU ·.toSum ·.toSum)
+
 variable {T S : Set α}
 
 /-- Convert a block matrix to a matrix over set unions named as single indexing sets. -/
@@ -67,8 +74,10 @@ lemma Matrix.IsTotallyUnimodular.toMatrixElemElem [CommRing R] {A : Matrix (T₁
     (A.toMatrixElemElem hT hS).IsTotallyUnimodular :=
   hT ▸ hS ▸ hA.toMatrixUnionUnion
 
+/-- A signing block matrix stays a signing of a matrix after converting both matrices to be indexed by set unions named as
+    single indexing sets. -/
 lemma Matrix.IsSigningOf.toMatrixElemElem [LinearOrderedRing R]
     {A : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) R} {U : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) Z2}
     (hAU : A.IsSigningOf U) (hT : T = T₁ ∪ T₂) (hS : S = S₁ ∪ S₂) :
-    (A.toMatrixElemElem hT hS).IsSigningOf (U.toMatrixElemElem hT hS) := by
-  sorry
+    (A.toMatrixElemElem hT hS).IsSigningOf (U.toMatrixElemElem hT hS) :=
+  hT ▸ hS ▸ hAU.toMatrixUnionUnion
