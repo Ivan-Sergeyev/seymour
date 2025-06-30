@@ -1,5 +1,5 @@
 import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
-import Seymour.Basic.Basic
+import Seymour.Matrix.Signing
 
 /-!
 # Basic stuff about matrices
@@ -168,3 +168,8 @@ lemma Matrix.IsTotallyUnimodular.toMatrixElemElem {A : Matrix (T₁ ⊕ T₂) (S
     (hA : A.IsTotallyUnimodular) (hT : T = T₁ ∪ T₂) (hS : S = S₁ ∪ S₂) :
     (A.toMatrixElemElem hT hS).IsTotallyUnimodular :=
   hT ▸ hS ▸ hA.toMatrixUnionUnion
+
+lemma Matrix.IsSigningOf.toMatrixElemElem {A : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) ℚ} {U : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) Z2}
+    (hAU : A.IsSigningOf U) (hT : T = T₁ ∪ T₂) (hS : S = S₁ ∪ S₂) :
+    (A.toMatrixElemElem hT hS).IsSigningOf (U.toMatrixElemElem hT hS) := by
+  sorry

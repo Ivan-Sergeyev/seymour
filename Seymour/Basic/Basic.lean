@@ -233,6 +233,9 @@ lemma toUnion_toSum [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (h
   rw [Set.disjoint_right] at hXY
   cases i <;> simp [hXY]
 
+/-- Equivalence between `X.Elem ⊕ Y.Elem` and `(X ∪ Y).Elem` (i.e., a bundled bijection). -/
+def Disjoint.equivSumUnion [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (hXY : X ⫗ Y) : X.Elem ⊕ Y.Elem ≃ (X ∪ Y).Elem :=
+  ⟨Sum.toUnion, Subtype.toSum, toUnion_toSum hXY, toSum_toUnion⟩
 
 /-! ## Aesop modifiers -/
 

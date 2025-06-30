@@ -17,3 +17,8 @@ lemma Matrix.IsSigningOf.submatrix {X' Y' : Type} {A : Matrix X Y R} {U : Matrix
     (hAU : A.IsSigningOf U) (f : X' → X) (g : Y' → Y) :
     (A.submatrix f g).IsSigningOf (U.submatrix f g) :=
   fun i : X' => fun j : Y' => hAU (f i) (g j)
+
+lemma Matrix.IsSigningOf.reindex {X' Y' : Type} {A : Matrix X Y R} {U : Matrix X Y (ZMod n)}
+    (hAU : A.IsSigningOf U) (f : X ≃ X') (g : Y ≃ Y') :
+    (A.reindex f g).IsSigningOf (U.reindex f g) :=
+  hAU.submatrix f.symm g.symm

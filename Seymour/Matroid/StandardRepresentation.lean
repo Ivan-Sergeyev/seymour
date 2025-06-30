@@ -54,6 +54,9 @@ private def Set.equivFin_unexpand : Lean.PrettyPrinter.Unexpander
 abbrev Equiv.leftCongr {ι₁ ι₂ : Type} (e : ι₁ ≃ ι₂) : ι₁ ⊕ α ≃ ι₂ ⊕ α :=
   Equiv.sumCongr e (Equiv.refl α)
 
+abbrev Equiv.rightCongr {ι₁ ι₂ : Type} (e : ι₁ ≃ ι₂) : α ⊕ ι₁ ≃ α ⊕ ι₂ :=
+  Equiv.sumCongr (Equiv.refl α) e
+
 
 variable [DecidableEq α] {R : Type}
 
