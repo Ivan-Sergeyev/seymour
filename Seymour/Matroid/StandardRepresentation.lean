@@ -27,6 +27,13 @@ structure StandardRepr (α R : Type) [DecidableEq α] where
   /-- The computer can determine whether certain element is a col. -/
   decmemY : ∀ a, Decidable (a ∈ Y)
 
+abbrev mkStandardRepr {α R : Type} [DecidableEq α]
+    {X : Set α} [hX : ∀ a, Decidable (a ∈ X)]
+    {Y : Set α} [hY : ∀ a, Decidable (a ∈ Y)]
+    (hXY : X ⫗ Y) (B : Matrix X Y R) :
+    StandardRepr α R :=
+  ⟨X, Y, hXY, B, hX, hY⟩
+
 attribute [instance] StandardRepr.decmemX
 attribute [instance] StandardRepr.decmemY
 
@@ -560,7 +567,7 @@ lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype
 omit R
 
 private lemma sum_support_image_subtype_eq_zero {X Y : Set α} {F : Type} [Field F] {B : Matrix Y X F} {D : Set X} {y : Y}
-    {hX : ∀ a, Decidable (a ∈ X)} {hY : ∀ a, Decidable (a ∈ Y)} (hXXY : X ⊆ X ∪ Y) (hYXY : Y ⊆ X ∪ Y) -- redundant but keep
+    [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (hXXY : X ⊆ X ∪ Y) (hYXY : Y ⊆ X ∪ Y) -- redundant but keep
     {l : (X ∪ Y).Elem →₀ F} (hl : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' D) (hly : l (hYXY.elem y) = 0)
     {i : (X ∪ Y).Elem} (hiX : i.val ∈ X) (hlBi : ∑ a ∈ l.support, l a • (1 ⊟ B) a.toSum ⟨i, hiX⟩ = 0) :
     ∑ a ∈ (l.support.image Subtype.val).subtype (· ∈ X),
@@ -594,8 +601,8 @@ private lemma sum_support_image_subtype_eq_zero {X Y : Set α} {F : Type} [Field
 set_option maxHeartbeats 1000000 in
 private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type} [Field F₁] [Field F₂] [DecidableEq F₁] [DecidableEq F₂]
     {X Y : Set α} {hXY : X ⫗ Y} {B₁ : Matrix X Y F₁} {B₂ : Matrix X Y F₂}
-    {hX : ∀ a, Decidable (a ∈ X)} {hY : ∀ a, Decidable (a ∈ Y)} [Fintype X]
-    (hSS : (StandardRepr.mk X Y hXY B₁ hX hY).toMatroid = (StandardRepr.mk X Y hXY B₂ hX hY).toMatroid) :
+    [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] [Fintype X]
+    (hSS : (mkStandardRepr hXY B₁).toMatroid = (mkStandardRepr hXY B₂).toMatroid) :
     B₁.support = B₂.support := by
   rw [←Matrix.transpose_inj]
   apply Matrix.ext_col
@@ -626,7 +633,7 @@ private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type} [Field F
   · by_contra hD
     rw [Set.not_subset_iff_exists_mem_not_mem] at hD
     -- otherwise `y ᕃ Dₒ` is dependent in `Mₒ` but indep in `M`
-    have hMₒ : ¬ (StandardRepr.mk X Y hXY Bₒ hX hY).toMatroid.Indep (y.val ᕃ Dₒ)
+    have hMₒ : ¬ (mkStandardRepr hXY Bₒ).toMatroid.Indep (y.val ᕃ Dₒ)
     · rw [StandardRepr.toMatroid_indep_iff_elem, not_exists]
       intro hDₒ
       erw [not_linearIndependent_iff]
@@ -670,7 +677,7 @@ private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type} [Field F
         · simpa [Dₒ, D₁, D₂] using hx
         · exact sum_elem_smul_matrix_row_of_nmem (- Bₒᵀ y) hx
         simp
-    have hM : (StandardRepr.mk X Y hXY B hX hY).toMatroid.Indep (y.val ᕃ Dₒ)
+    have hM : (mkStandardRepr hXY B).toMatroid.Indep (y.val ᕃ Dₒ)
     · obtain ⟨d, hd, hd₀⟩ := hD
       simp
       have hDXY : Subtype.val '' Dₒ ⊆ X ∪ Y := (Subtype.coe_image_subset X Dₒ).trans hXXY
@@ -761,8 +768,8 @@ private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type} [Field F
     exact (hSS' ▸ hMₒ) hM
 
 private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁ B₂ : Matrix X Y Z2}
-    {hX : ∀ a, Decidable (a ∈ X)} {hY : ∀ a, Decidable (a ∈ Y)} [Fintype X]
-    (hSS : (StandardRepr.mk X Y hXY B₁ hX hY).toMatroid = (StandardRepr.mk X Y hXY B₂ hX hY).toMatroid) :
+    [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] [Fintype X]
+    (hSS : (mkStandardRepr hXY B₁).toMatroid = (mkStandardRepr hXY B₂).toMatroid) :
     B₁ = B₂ := by
   rw [←B₁.support_Z2, ←B₂.support_Z2]
   exact support_eq_support_of_same_matroid_aux hSS
@@ -793,6 +800,6 @@ lemma support_eq_support_of_same_matroid_same_X {F₁ F₂ : Type} [Field F₁] 
   · rfl
   convert_to B₀.support = B₂.support
   · cc
-  have hSS' : (StandardRepr.mk X₂ Y₂ _ B₀ _ _).toMatroid = (StandardRepr.mk X₂ Y₂ _ B₂ _ _).toMatroid
+  have hSS' : (mkStandardRepr _ B₀).toMatroid = (mkStandardRepr _ B₂).toMatroid
   · convert hSS <;> cc
   exact support_eq_support_of_same_matroid_aux hSS'
