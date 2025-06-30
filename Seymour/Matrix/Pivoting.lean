@@ -465,13 +465,13 @@ private abbrev Matrix.block₁₁ {k : ℕ} (A : Matrix (Fin k.succ) (Fin k.succ
   !![A x y]
 
 private abbrev Matrix.block₁₂ {k : ℕ} (A : Matrix (Fin k.succ) (Fin k.succ) F) (x y : Fin k.succ) : Matrix (Fin 1) (Fin k) F :=
-  Matrix.of (fun _ j => A x (y.succAbove j))
+  Matrix.of (fun _ : Fin 1 => fun j : Fin k => A x (y.succAbove j))
 
 private abbrev Matrix.block₂₁ {k : ℕ} (A : Matrix (Fin k.succ) (Fin k.succ) F) (x y : Fin k.succ) : Matrix (Fin k) (Fin 1) F :=
-  Matrix.of (fun i _ => A (x.succAbove i) y)
+  Matrix.of (fun i : Fin k => fun _ : Fin 1 => A (x.succAbove i) y)
 
 private abbrev Matrix.block₂₂ {k : ℕ} (A : Matrix (Fin k.succ) (Fin k.succ) F) (x y : Fin k.succ) : Matrix (Fin k) (Fin k) F :=
-  Matrix.of (fun i j => A (x.succAbove i) (y.succAbove j))
+  Matrix.of (fun i : Fin k => fun j : Fin k => A (x.succAbove i) (y.succAbove j))
 
 private lemma Matrix.succAboveAt_block [DivisionRing F] {k : ℕ} (A : Matrix (Fin k.succ) (Fin k.succ) F) (x y : Fin k.succ) :
     A = (⊞ (A.block₁₁ x y) (A.block₁₂ x y) (A.block₂₁ x y) (A.block₂₂ x y)

@@ -3,7 +3,7 @@ import Seymour.Basic.Basic
 /-!
 # Matrix is a signing of another matrix
 
-This file defines when a matrix is a signing of another matrix.
+This file describes when a matrix is a signing of another matrix.
 -/
 
 variable {X Y R : Type} [LinearOrderedRing R] {n : ℕ}
@@ -16,4 +16,4 @@ def Matrix.IsSigningOf (A : Matrix X Y R) (U : Matrix X Y (ZMod n)) : Prop :=
 lemma Matrix.IsSigningOf.submatrix {X' Y' : Type} {A : Matrix X Y R} {U : Matrix X Y (ZMod n)}
     (hAU : A.IsSigningOf U) (f : X' → X) (g : Y' → Y) :
     (A.submatrix f g).IsSigningOf (U.submatrix f g) :=
-  fun i j => hAU (f i) (g j)
+  fun i : X' => fun j : Y' => hAU (f i) (g j)

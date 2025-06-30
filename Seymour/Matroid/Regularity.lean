@@ -9,14 +9,14 @@ import Seymour.Matroid.StandardRepresentation
 Here we study regular matroids.
 -/
 
-/-! ## Primary definition of regularity (LI & TU over ℚ) -/
+/-! ## Definition of regularity (LI & TU over ℚ) -/
 
 /-- Matroid is regular iff it can be constructed from a rational TU matrix. -/
 def Matroid.IsRegular {α : Type} (M : Matroid α) : Prop :=
   ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsTotallyUnimodular ∧ A.toMatroid = M
 
 
-/-! ## Secondary definition of regularity (LI over Z2 while TU over ℚ) -/
+/-! ## Characterization of regularity (LI over Z2 while TU over ℚ) -/
 
 /-- Rational matrix `A` is a TU signing of `U` (matrix of the same size but different type) iff `A` is TU and its entries are
     the same as entries in `U` on respective positions up to signs.
