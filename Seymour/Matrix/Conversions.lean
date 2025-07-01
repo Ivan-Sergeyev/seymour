@@ -1,11 +1,12 @@
 import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
+import Seymour.Basic.Conversions
 import Seymour.Matrix.Signing
 
 
 /-!
 # Conversion between set-indexed block-like matrices and type-indexed block matrices
 
-These conversions are frequently used throughout the project.
+These conversions are used in 1-sum, 2-sum, and 3-sum.
 -/
 
 variable {α R : Type} {T₁ T₂ S₁ S₂ : Set α}

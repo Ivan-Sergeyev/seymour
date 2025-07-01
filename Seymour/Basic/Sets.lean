@@ -1,4 +1,4 @@
-import Seymour.Basic.Basic
+import Seymour.Basic.Conversions
 
 /-!
 # Sets
