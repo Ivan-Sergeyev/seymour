@@ -2043,11 +2043,9 @@ noncomputable def standardReprSum3 {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x
     -- the special elements are all distinct
     ((x₀ ≠ x₁ ∧ x₀ ≠ x₂ ∧ x₁ ≠ x₂) ∧ (y₀ ≠ y₁ ∧ y₀ ≠ y₂ ∧ y₁ ≠ y₂))
     -- `D₀` is the same in `Bₗ` and `Bᵣ`
-    --∧ Sₗ.B.submatrix ![x₀ₗ, x₁ₗ] ![y₀ₗ, y₁ₗ] = Sᵣ.B.submatrix ![x₀ᵣ, x₁ᵣ] ![y₀ᵣ, y₁ᵣ]
-    ∧ !![Sₗ.B x₀ₗ y₀ₗ, Sₗ.B x₀ₗ y₁ₗ; Sₗ.B x₁ₗ y₀ₗ, Sₗ.B x₁ₗ y₁ₗ] = !![Sᵣ.B x₀ᵣ y₀ᵣ, Sᵣ.B x₀ᵣ y₁ᵣ; Sᵣ.B x₁ᵣ y₀ᵣ, Sᵣ.B x₁ᵣ y₁ᵣ]
+    ∧ Sₗ.B.submatrix ![x₀ₗ, x₁ₗ] ![y₀ₗ, y₁ₗ] = Sᵣ.B.submatrix ![x₀ᵣ, x₁ᵣ] ![y₀ᵣ, y₁ᵣ] -- Was: `∧ !![Sₗ.B x₀ₗ y₀ₗ, Sₗ.B x₀ₗ y₁ₗ; Sₗ.B x₁ₗ y₀ₗ, Sₗ.B x₁ₗ y₁ₗ] = !![Sᵣ.B x₀ᵣ y₀ᵣ, Sᵣ.B x₀ᵣ y₁ᵣ; Sᵣ.B x₁ᵣ y₀ᵣ, Sᵣ.B x₁ᵣ y₁ᵣ]`
     -- `D₀` is invertible
-    --∧ IsUnit (Sₗ.B.submatrix ![x₀ₗ, x₁ₗ] ![y₀ₗ, y₁ₗ])
-    ∧ IsUnit !![Sₗ.B x₀ₗ y₀ₗ, Sₗ.B x₀ₗ y₁ₗ; Sₗ.B x₁ₗ y₀ₗ, Sₗ.B x₁ₗ y₁ₗ]
+    ∧ IsUnit (Sₗ.B.submatrix ![x₀ₗ, x₁ₗ] ![y₀ₗ, y₁ₗ]) -- Was: `∧ IsUnit !![Sₗ.B x₀ₗ y₀ₗ, Sₗ.B x₀ₗ y₁ₗ; Sₗ.B x₁ₗ y₀ₗ, Sₗ.B x₁ₗ y₁ₗ]`
     -- `Bₗ` has the correct structure outside of `Aₗ`, `Dₗ`, and `D₀`
     ∧ Sₗ.B x₀ₗ y₂ₗ = 1
     ∧ Sₗ.B x₁ₗ y₂ₗ = 1
@@ -2259,7 +2257,7 @@ lemma standardReprSum3aux_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ 
             · tauto
             rw [h1ₗ, h1ᵣ]
           have : Sₗ.B x₁ₗ y₂ₗ = Sᵣ.B x₁ᵣ y₂ᵣ
-          · have h1ₗ :Sₗ.B x₁ₗ y₂ₗ = 1
+          · have h1ₗ : Sₗ.B x₁ₗ y₂ₗ = 1
             · tauto
             have h1ᵣ : Sᵣ.B x₁ᵣ y₂ᵣ = 1
             · tauto
@@ -2352,7 +2350,7 @@ lemma standardReprSum3aux_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ 
   · rw [Matrix.toDropUnionDrop_eq_toDropUnionDropInternal hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ] at hS'
     exact hS' ▸ (hBM.reindex (equiv₃X hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ) (equiv₃Y hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ)).toMatrixElemElem hXxxx hYyyy
 
-set_option maxHeartbeats 4000000 in
+set_option maxHeartbeats 666666 in
 lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) (hS : standardReprSum3 hXX hYY hXY hYX = some S) :
@@ -2375,8 +2373,10 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
   obtain ⟨Bₗ, hBₗ, hSBₗ⟩ := hSₗ
   obtain ⟨Bᵣ, hBᵣ, hSBᵣ⟩ := hSᵣ
   -- massaging the assumption
-  have hS' := hS
+  have hS' := hS -- TODO remove if original `hS` stays unused
   simp only [standardReprSum3, Option.ite_none_right_eq_some] at hS'
+  obtain ⟨hSS, hS''⟩ := hS'
+  rw [Option.some.injEq, Eq.comm] at hS''
   -- elements are distinct
   have hx₀ : x₁ ≠ x₂
   · tauto
@@ -2391,7 +2391,9 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
   have hy₂ : y₀ ≠ y₁
   · tauto
   -- two options what `D₀` is (up to reindexing)
-  obtain ⟨f, g, hfg⟩ := !![Sₗ.B x₀ₗ y₀ₗ, Sₗ.B x₀ₗ y₁ₗ; Sₗ.B x₁ₗ y₀ₗ, Sₗ.B x₁ₗ y₁ₗ].isUnit_2x2 hS'.left.right.right.left
+  obtain ⟨f, g, hfg⟩ := !![Sₗ.B x₀ₗ y₀ₗ, Sₗ.B x₀ₗ y₁ₗ; Sₗ.B x₁ₗ y₀ₗ, Sₗ.B x₁ₗ y₁ₗ].isUnit_2x2 (by
+    convert hSS.right.right.left
+    exact (Matrix.eta_fin_two (Sₗ.B.submatrix ![x₀ₗ, x₁ₗ] ![y₀ₗ, y₁ₗ])).symm)
   -- cases analysis over those reindexings
   if hf : f = fin2refl then
     if hg : g = fin2refl then
@@ -2399,10 +2401,139 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
       clear hg hf g f
       let M := matrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
       have hM : M.HasCanonicalSigning
-      · sorry
+      · constructor
+        · constructor
+          · use Bₗ.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ, hBₗ.submatrix _ _
+            convert hSBₗ.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ
+            conv_rhs => rw [←(Sₗ.B.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ).fromBlocks_toBlocks]
+            simp_rw [M, matrixSum3, MatrixSum3.Bₗ, MatrixSum3.fromBlockSummands,
+              Matrix.fromCols_toCols, Matrix.fromBlocks_inj, true_and]
+            constructor
+            · ext i j
+              fin_cases j
+              simp [Matrix.toBlockSummandₗ, Matrix.toBlocks₁₂]
+              cases i with
+              | inl x => exact (hSS.right.right.right.right.right.right.right.left x.val x.property.left ⟨drop3_ne_fst x, drop3_ne_snd x⟩).symm
+              | inr => exact (hSS.right.right.right.right.right.right.right.left x₂ hXX.mem3₂ₗ (by tauto)).symm
+            · ext i j
+              have : Sₗ.B x₀ₗ y₂ₗ = Sᵣ.B x₀ᵣ y₂ᵣ
+              · have h1ₗ : Sₗ.B x₀ₗ y₂ₗ = 1
+                · tauto
+                have h1ᵣ : Sᵣ.B x₀ᵣ y₂ᵣ = 1
+                · tauto
+                rw [h1ₗ, h1ᵣ]
+              have : Sₗ.B x₁ₗ y₂ₗ = Sᵣ.B x₁ᵣ y₂ᵣ
+              · have h1ₗ : Sₗ.B x₁ₗ y₂ₗ = 1
+                · tauto
+                have h1ᵣ : Sᵣ.B x₁ᵣ y₂ᵣ = 1
+                · tauto
+                rw [h1ₗ, h1ᵣ]
+              fin_cases j
+              fin_cases i <;> tauto
+          · use Bᵣ.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ, hBᵣ.submatrix _ _
+            convert hSBᵣ.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
+            conv_rhs => rw [←(Sᵣ.B.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).fromBlocks_toBlocks]
+            simp_rw [M, matrixSum3, MatrixSum3.Bᵣ, MatrixSum3.fromBlockSummands,
+              Matrix.fromRows_toRows, Matrix.fromBlocks_inj, and_true]
+            constructor
+            · ext i j
+              have : Sₗ.B x₂ₗ y₀ₗ = Sᵣ.B x₂ᵣ y₀ᵣ
+              · have h1ₗ : Sₗ.B x₂ₗ y₀ₗ = 1
+                · tauto
+                have h1ᵣ : Sᵣ.B x₂ᵣ y₀ᵣ = 1
+                · tauto
+                rw [h1ₗ, h1ᵣ]
+              have : Sₗ.B x₂ₗ y₁ₗ = Sᵣ.B x₂ᵣ y₁ᵣ
+              · have h1ₗ : Sₗ.B x₂ₗ y₁ₗ = 1
+                · tauto
+                have h1ᵣ : Sᵣ.B x₂ᵣ y₁ᵣ = 1
+                · tauto
+                rw [h1ₗ, h1ᵣ]
+              fin_cases i
+              fin_cases j <;> tauto
+            · ext i j
+              fin_cases i
+              simp [Matrix.toBlockSummandᵣ, Matrix.toBlocks₁₂]
+              cases j with
+              | inl => exact (hSS.right.right.right.right.right.right.right.right.right.right.right.right y₂ hYY.mem3₂ᵣ (by tauto)).symm
+              | inr y => exact (hSS.right.right.right.right.right.right.right.right.right.right.right.right y.val y.property.left ⟨drop3_ne_fst y, drop3_ne_snd y⟩).symm
+        · cases hfg with
+          | inl h1001 =>
+            left
+            constructor
+            · ext i j
+              fin_cases i <;> fin_cases j
+              · exact congr_fun₂ h1001 0 0
+              · exact congr_fun₂ h1001 0 1
+              · exact hSS.right.right.right.right.right.right.right.right.left
+              · exact congr_fun₂ h1001 1 0
+              · exact congr_fun₂ h1001 1 1
+              · exact hSS.right.right.right.right.right.right.right.right.right.left
+              · tauto
+              · tauto
+              · rfl
+            · ext i j
+              fin_cases i <;> fin_cases j
+              · have h00 := congr_fun₂ h1001 0 0
+                have h00' := congr_fun₂ hSS.right.left.symm 0 0
+                simp at h00 h00'
+                rwa [←h00'] at h00
+              · have h01 := congr_fun₂ h1001 0 1
+                have h01' := congr_fun₂ hSS.right.left.symm 0 1
+                simp at h01 h01'
+                rwa [←h01'] at h01
+              · tauto
+              · have h10 := congr_fun₂ h1001 1 0
+                have h10' := congr_fun₂ hSS.right.left.symm 1 0
+                simp at h10 h10'
+                rwa [←h10'] at h10
+              · have h11 := congr_fun₂ h1001 1 1
+                have h11' := congr_fun₂ hSS.right.left.symm 1 1
+                simp at h11 h11'
+                rwa [←h11'] at h11
+              · tauto
+              · exact hSS.right.right.right.right.right.left
+              · exact hSS.right.right.right.right.right.right.left
+              · rfl
+          | inr h1101 =>
+            right
+            constructor
+            · ext i j
+              fin_cases i <;> fin_cases j
+              · exact congr_fun₂ h1101 0 0
+              · exact congr_fun₂ h1101 0 1
+              · exact hSS.right.right.right.right.right.right.right.right.left
+              · exact congr_fun₂ h1101 1 0
+              · exact congr_fun₂ h1101 1 1
+              · exact hSS.right.right.right.right.right.right.right.right.right.left
+              · tauto
+              · tauto
+              · rfl
+            · ext i j
+              fin_cases i <;> fin_cases j
+              · have h00 := congr_fun₂ h1101 0 0
+                have h00' := congr_fun₂ hSS.right.left.symm 0 0
+                simp at h00 h00'
+                rwa [←h00'] at h00
+              · have h01 := congr_fun₂ h1101 0 1
+                have h01' := congr_fun₂ hSS.right.left.symm 0 1
+                simp at h01 h01'
+                rwa [←h01'] at h01
+              · tauto
+              · have h10 := congr_fun₂ h1101 1 0
+                have h10' := congr_fun₂ hSS.right.left.symm 1 0
+                simp at h10 h10'
+                rwa [←h10'] at h10
+              · have h11 := congr_fun₂ h1101 1 1
+                have h11' := congr_fun₂ hSS.right.left.symm 1 1
+                simp at h11 h11'
+                rwa [←h11'] at h11
+              · tauto
+              · exact hSS.right.right.right.right.right.left
+              · exact hSS.right.right.right.right.right.right.left
+              · rfl
       obtain ⟨B, hB, hBM⟩ := hM.HasTuSigning
-      rw [Option.some.injEq] at hS'
-      rw [←hS'.right]
+      rw [hS'']
       use B.toDropUnionDrop
       constructor
       · apply hB.submatrix
@@ -2424,10 +2555,139 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
       clear hg' hg hf' hf g f
       let M := matrixSum3 Sₗ Sᵣ x₁ₗ x₀ₗ x₂ₗ y₁ₗ y₀ₗ y₂ₗ x₁ᵣ x₀ᵣ x₂ᵣ y₁ᵣ y₀ᵣ y₂ᵣ
       have hM : M.HasCanonicalSigning
-      · sorry
+      · constructor
+        · constructor
+          · use Bₗ.toBlockSummandₗ x₁ₗ x₀ₗ x₂ₗ y₁ₗ y₀ₗ y₂ₗ, hBₗ.submatrix _ _
+            convert hSBₗ.toBlockSummandₗ x₁ₗ x₀ₗ x₂ₗ y₁ₗ y₀ₗ y₂ₗ
+            conv_rhs => rw [←(Sₗ.B.toBlockSummandₗ x₁ₗ x₀ₗ x₂ₗ y₁ₗ y₀ₗ y₂ₗ).fromBlocks_toBlocks]
+            simp_rw [M, matrixSum3, MatrixSum3.Bₗ, MatrixSum3.fromBlockSummands,
+              Matrix.fromCols_toCols, Matrix.fromBlocks_inj, true_and]
+            constructor
+            · ext i j
+              fin_cases j
+              simp [Matrix.toBlockSummandₗ, Matrix.toBlocks₁₂]
+              cases i with
+              | inl x => exact (hSS.right.right.right.right.right.right.right.left x.val x.property.left ⟨drop3_ne_snd x, drop3_ne_fst x⟩).symm
+              | inr => exact (hSS.right.right.right.right.right.right.right.left x₂ hXX.mem3₂ₗ (by tauto)).symm
+            · ext i j
+              have : Sₗ.B x₀ₗ y₂ₗ = Sᵣ.B x₀ᵣ y₂ᵣ
+              · have h1ₗ : Sₗ.B x₀ₗ y₂ₗ = 1
+                · tauto
+                have h1ᵣ : Sᵣ.B x₀ᵣ y₂ᵣ = 1
+                · tauto
+                rw [h1ₗ, h1ᵣ]
+              have : Sₗ.B x₁ₗ y₂ₗ = Sᵣ.B x₁ᵣ y₂ᵣ
+              · have h1ₗ : Sₗ.B x₁ₗ y₂ₗ = 1
+                · tauto
+                have h1ᵣ : Sᵣ.B x₁ᵣ y₂ᵣ = 1
+                · tauto
+                rw [h1ₗ, h1ᵣ]
+              fin_cases j
+              fin_cases i <;> tauto
+          · use Bᵣ.toBlockSummandᵣ x₁ᵣ x₀ᵣ x₂ᵣ y₁ᵣ y₀ᵣ y₂ᵣ, hBᵣ.submatrix _ _
+            convert hSBᵣ.toBlockSummandᵣ x₁ᵣ x₀ᵣ x₂ᵣ y₁ᵣ y₀ᵣ y₂ᵣ
+            conv_rhs => rw [←(Sᵣ.B.toBlockSummandᵣ x₁ᵣ x₀ᵣ x₂ᵣ y₁ᵣ y₀ᵣ y₂ᵣ).fromBlocks_toBlocks]
+            simp_rw [M, matrixSum3, MatrixSum3.Bᵣ, MatrixSum3.fromBlockSummands,
+              Matrix.fromRows_toRows, Matrix.fromBlocks_inj, and_true]
+            constructor
+            · ext i j
+              have : Sₗ.B x₂ₗ y₀ₗ = Sᵣ.B x₂ᵣ y₀ᵣ
+              · have h1ₗ : Sₗ.B x₂ₗ y₀ₗ = 1
+                · tauto
+                have h1ᵣ : Sᵣ.B x₂ᵣ y₀ᵣ = 1
+                · tauto
+                rw [h1ₗ, h1ᵣ]
+              have : Sₗ.B x₂ₗ y₁ₗ = Sᵣ.B x₂ᵣ y₁ᵣ
+              · have h1ₗ : Sₗ.B x₂ₗ y₁ₗ = 1
+                · tauto
+                have h1ᵣ : Sᵣ.B x₂ᵣ y₁ᵣ = 1
+                · tauto
+                rw [h1ₗ, h1ᵣ]
+              fin_cases i
+              fin_cases j <;> tauto
+            · ext i j
+              fin_cases i
+              simp [Matrix.toBlockSummandᵣ, Matrix.toBlocks₁₂]
+              cases j with
+              | inl => exact (hSS.right.right.right.right.right.right.right.right.right.right.right.right y₂ hYY.mem3₂ᵣ (by tauto)).symm
+              | inr y => exact (hSS.right.right.right.right.right.right.right.right.right.right.right.right y.val y.property.left ⟨drop3_ne_snd y, drop3_ne_fst y⟩).symm
+        · cases hfg with
+          | inl h1001 =>
+            left
+            constructor
+            · ext i j
+              fin_cases i <;> fin_cases j
+              · exact congr_fun₂ h1001 0 0
+              · exact congr_fun₂ h1001 0 1
+              · exact hSS.right.right.right.right.right.right.right.right.right.left
+              · exact congr_fun₂ h1001 1 0
+              · exact congr_fun₂ h1001 1 1
+              · exact hSS.right.right.right.right.right.right.right.right.left
+              · tauto
+              · tauto
+              · rfl
+            · ext i j
+              fin_cases i <;> fin_cases j
+              · have h00 := congr_fun₂ h1001 0 0
+                have h11 := congr_fun₂ hSS.right.left.symm 1 1
+                simp at h00 h11
+                rwa [←h11] at h00
+              · have h01 := congr_fun₂ h1001 0 1
+                have h10 := congr_fun₂ hSS.right.left.symm 1 0
+                simp at h01 h10
+                rwa [←h10] at h01
+              · tauto
+              · have h10 := congr_fun₂ h1001 1 0
+                have h01 := congr_fun₂ hSS.right.left.symm 0 1
+                simp at h10 h01
+                rwa [←h01] at h10
+              · have h11 := congr_fun₂ h1001 1 1
+                have h00 := congr_fun₂ hSS.right.left.symm 0 0
+                simp at h11 h00
+                rwa [←h00] at h11
+              · tauto
+              · exact hSS.right.right.right.right.right.right.left
+              · exact hSS.right.right.right.right.right.left
+              · rfl
+          | inr h1101 =>
+            right
+            constructor
+            · ext i j
+              fin_cases i <;> fin_cases j
+              · exact congr_fun₂ h1101 0 0
+              · exact congr_fun₂ h1101 0 1
+              · exact hSS.right.right.right.right.right.right.right.right.right.left
+              · exact congr_fun₂ h1101 1 0
+              · exact congr_fun₂ h1101 1 1
+              · exact hSS.right.right.right.right.right.right.right.right.left
+              · tauto
+              · tauto
+              · rfl
+            · ext i j
+              fin_cases i <;> fin_cases j
+              · have h00 := congr_fun₂ h1101 0 0
+                have h11 := congr_fun₂ hSS.right.left.symm 1 1
+                simp at h00 h11
+                rwa [←h11] at h00
+              · have h01 := congr_fun₂ h1101 0 1
+                have h10 := congr_fun₂ hSS.right.left.symm 1 0
+                simp at h01 h10
+                rwa [←h10] at h01
+              · tauto
+              · have h10 := congr_fun₂ h1101 1 0
+                have h01 := congr_fun₂ hSS.right.left.symm 0 1
+                simp at h10 h01
+                rwa [←h01] at h10
+              · have h11 := congr_fun₂ h1101 1 1
+                have h00 := congr_fun₂ hSS.right.left.symm 0 0
+                simp at h11 h00
+                rwa [←h00] at h11
+              · tauto
+              · exact hSS.right.right.right.right.right.right.left
+              · exact hSS.right.right.right.right.right.left
+              · rfl
       obtain ⟨B, hB, hBM⟩ := hM.HasTuSigning
-      rw [Option.some.injEq] at hS'
-      rw [←hS'.right]
+      rw [hS'']
       have hX₀₁ : Sₗ.X.drop2 x₀ₗ x₁ₗ ∪ Sᵣ.X.drop1 x₂ᵣ = Sₗ.X.drop2 x₁ₗ x₀ₗ ∪ Sᵣ.X.drop1 x₂ᵣ
       · rw [drop2_comm x₀ₗ x₁ₗ]
       have hY₀₁ : Sₗ.Y.drop1 y₂ₗ ∪ Sᵣ.Y.drop2 y₀ᵣ y₁ᵣ = Sₗ.Y.drop1 y₂ₗ ∪ Sᵣ.Y.drop2 y₁ᵣ y₀ᵣ
@@ -2438,159 +2698,8 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
         apply hB.submatrix
       · simp only [Eq.interAll3]
         intro i j
-        if hi₂ₗ : i.val = x₂ₗ then
-          simp [hi₂ₗ, x₂ₗ]
-          if hj₀ₗ : j.val = y₀ₗ then
-            simpa [hj₀ₗ, y₀ₗ, y₁ₗ, hy₂] using hBM ◩◪0 ◩◪1
-          else if hj₁ₗ : j.val = y₁ₗ then
-            simpa [hj₁ₗ, y₀ₗ, y₁ₗ, hy₂.symm] using hBM ◩◪0 ◩◪0
-          else if hjYₗ : j.val ∈ Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ then
-            have hjY : j.val ∈ Sₗ.Y
-            · exact Set.mem_of_mem_diff hjYₗ
-            have hjy₂ₗ : j.val ≠ y₂ₗ.val
-            · simp_all
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hjY, hjy₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ, hy₂.symm] using hBM ◩◪0 ◩◩⟨j, _⟩
-          else if hj₂ᵣ : j.val = y₂ᵣ then
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, y₀ₗ, y₁ₗ, y₂ᵣ, y₂ₗ, hy₀.symm, hy₁.symm] using hBM ◩◪0 ◪◩0
-          else if hjYᵣ : j.val ∈ Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
-            have hjYᵣ' : j.val ∈ Sᵣ.Y
-            · exact Set.mem_of_mem_diff hjYᵣ
-            have hjYₗ : j.val ∉ Sₗ.Y
-            · exact ni_of_in_drop3_of_inter hYY hjYᵣ
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hjYᵣ', hjYₗ, y₀ₗ, y₁ₗ, y₀ᵣ, y₁ᵣ, y₂ᵣ] using hBM ◩◪0 ◪◪⟨j, _⟩
-          else
-            exfalso
-            have hj := j.property
-            simp_all [y₀ₗ, y₁ₗ, y₂ₗ, y₀ᵣ, y₁ᵣ]
-        else if hiXₗ : i.val ∈ Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ then
-          have hiX : i.val ∈ Sₗ.X
-          · exact Set.mem_of_mem_diff hiXₗ
-          have hix₀ₗ : i.val ≠ x₀ₗ.val
-          · simp_all
-          have hix₁ₗ : i.val ≠ x₁ₗ.val
-          · simp_all
-          simp [hi₂ₗ, hiXₗ, hiX, hix₀ₗ, hix₁ₗ, x₀ₗ, x₁ₗ, x₂ₗ]
-          if hj₀ₗ : j.val = y₀ₗ then
-            simpa [hj₀ₗ, y₀ₗ, y₁ₗ, hy₂] using hBM ◩◩⟨i, _⟩ ◩◪1
-          else if hj₁ₗ : j.val = y₁ₗ then
-            simpa [hj₁ₗ, y₀ₗ, y₁ₗ, hy₂.symm] using hBM ◩◩⟨i, _⟩ ◩◪0
-          else if hjYₗ : j.val ∈ Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ then
-            have hjY : j.val ∈ Sₗ.Y
-            · exact Set.mem_of_mem_diff hjYₗ
-            have hjy₂ₗ : j.val ≠ y₂ₗ.val
-            · simp_all
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hjY, hjy₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ, hy₂.symm] using hBM ◩◩⟨i, _⟩ ◩◩⟨j, _⟩
-          else if hj₂ᵣ : j.val = y₂ᵣ then
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, y₀ₗ, y₁ₗ, y₂ᵣ, y₂ₗ, hy₀.symm, hy₁.symm] using hBM ◩◩⟨i, _⟩ ◪◩0
-          else if hjYᵣ : j.val ∈ Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
-            have hjYᵣ' : j.val ∈ Sᵣ.Y
-            · exact Set.mem_of_mem_diff hjYᵣ
-            have hjYₗ : j.val ∉ Sₗ.Y
-            · exact ni_of_in_drop3_of_inter hYY hjYᵣ
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hjYᵣ', hjYₗ, y₀ₗ, y₁ₗ, y₀ᵣ, y₁ᵣ, y₂ᵣ] using hBM ◩◩⟨i, _⟩ ◪◪⟨j, _⟩
-          else
-            exfalso
-            have hj := j.property
-            simp_all [y₀ₗ, y₁ₗ, y₂ₗ, y₀ᵣ, y₁ᵣ]
-        else if hi₀ᵣ : i.val = x₀ᵣ then
-          simp [hi₂ₗ, hiXₗ, hi₀ᵣ, x₀ₗ, x₁ₗ, x₂ₗ, x₀ᵣ, x₁ᵣ, hx₁, hx₂]
-          if hj₀ₗ : j.val = y₀ₗ then
-            simpa [hj₀ₗ, y₀ₗ, y₁ₗ, hy₂] using hBM ◪◩1 ◩◪1
-          else if hj₁ₗ : j.val = y₁ₗ then
-            simpa [hj₁ₗ, y₀ₗ, y₁ₗ, hy₂.symm] using hBM ◪◩1 ◩◪0
-          else if hjYₗ : j.val ∈ Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ then
-            have hjY : j.val ∈ Sₗ.Y
-            · exact Set.mem_of_mem_diff hjYₗ
-            have hjy₂ₗ : j.val ≠ y₂ₗ.val
-            · simp_all
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hjY, hjy₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ, hy₂.symm] using hBM ◪◩1 ◩◩⟨j, _⟩
-          else if hj₂ᵣ : j.val = y₂ᵣ then
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, y₀ₗ, y₁ₗ, y₂ᵣ, y₂ₗ, hy₀.symm, hy₁.symm] using hBM ◪◩1 ◪◩0
-          else if hjYᵣ : j.val ∈ Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
-            have hjYᵣ' : j.val ∈ Sᵣ.Y
-            · exact Set.mem_of_mem_diff hjYᵣ
-            have hjYₗ : j.val ∉ Sₗ.Y
-            · exact ni_of_in_drop3_of_inter hYY hjYᵣ
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hjYᵣ', hjYₗ, y₀ₗ, y₁ₗ, y₀ᵣ, y₁ᵣ, y₂ᵣ] using hBM ◪◩1 ◪◪⟨j, _⟩
-          else
-            exfalso
-            have hj := j.property
-            simp_all [y₀ₗ, y₁ₗ, y₂ₗ, y₀ᵣ, y₁ᵣ]
-        else if hi₁ᵣ : i.val = x₁ᵣ then
-          simp [hi₂ₗ, hiXₗ, hi₀ᵣ, hi₁ᵣ, x₀ₗ, x₁ₗ, x₂ₗ, x₀ᵣ, x₁ᵣ, hx₀, hx₁.symm, hx₂.symm]
-          if hj₀ₗ : j.val = y₀ₗ then
-            simpa [hj₀ₗ, y₀ₗ, y₁ₗ, hy₂] using hBM ◪◩0 ◩◪1
-          else if hj₁ₗ : j.val = y₁ₗ then
-            simpa [hj₁ₗ, y₀ₗ, y₁ₗ, hy₂.symm] using hBM ◪◩0 ◩◪0
-          else if hjYₗ : j.val ∈ Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ then
-            have hjY : j.val ∈ Sₗ.Y
-            · exact Set.mem_of_mem_diff hjYₗ
-            have hjy₂ₗ : j.val ≠ y₂ₗ.val
-            · simp_all
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hjY, hjy₂ₗ, y₀ₗ, y₁ₗ, y₂ₗ, hy₂.symm] using hBM ◪◩0 ◩◩⟨j, _⟩
-          else if hj₂ᵣ : j.val = y₂ᵣ then
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, y₀ₗ, y₁ₗ, y₂ᵣ, y₂ₗ, hy₀.symm, hy₁.symm] using hBM ◪◩0 ◪◩0
-          else if hjYᵣ : j.val ∈ Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
-            have hjYᵣ' : j.val ∈ Sᵣ.Y
-            · exact Set.mem_of_mem_diff hjYᵣ
-            have hjYₗ : j.val ∉ Sₗ.Y
-            · exact ni_of_in_drop3_of_inter hYY hjYᵣ
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hjYᵣ', hjYₗ, y₀ₗ, y₁ₗ, y₀ᵣ, y₁ᵣ, y₂ᵣ] using hBM ◪◩0 ◪◪⟨j, _⟩
-          else
-            exfalso
-            have hj := j.property
-            simp_all [y₀ₗ, y₁ₗ, y₂ₗ, y₀ᵣ, y₁ᵣ]
-        else if hiXᵣ : i.val ∈ Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ then
-          have hiXᵣ' : i.val ∈ Sᵣ.X
-          · exact Set.mem_of_mem_diff hiXᵣ
-          have hiXₗ : i.val ∉ Sₗ.X
-          · exact ni_of_in_drop3_of_inter hXX hiXᵣ
-          simp [hi₂ₗ, hiXₗ, hi₀ᵣ, hi₁ᵣ, hiXᵣ, hiXᵣ', hiXₗ, x₀ₗ, x₁ₗ, x₂ₗ, x₀ᵣ, x₁ᵣ, x₂ᵣ, hx₀, hx₁.symm, hx₂.symm]
-          if hj₀ₗ : j.val = y₀ₗ then
-            simpa [hj₀ₗ, y₀ₗ, y₁ₗ, hy₂] using hBM ◪◪⟨i, _⟩ ◩◪1
-          else if hj₁ₗ : j.val = y₁ₗ then
-            simpa [hj₁ₗ, y₀ₗ, y₁ₗ, hy₂.symm] using hBM ◪◪⟨i, _⟩ ◩◪0
-          else if hjYₗ : j.val ∈ Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ then
-            have hjY : j.val ∈ Sₗ.Y
-            · exact Set.mem_of_mem_diff hjYₗ
-            have hjy₀ₗ : j.val ≠ y₀ₗ.val
-            · simp_all
-            have hjy₁ₗ : j.val ≠ y₁ₗ.val
-            · simp_all
-            have hjy₂ₗ : j.val ≠ y₂ₗ.val
-            · simp_all
-            have hjy₀ : j.val ≠ y₀
-            · exact hjy₀ₗ
-            have hjy₁ : j.val ≠ y₁
-            · exact hjy₁ₗ
-            have hjy₂ : j.val ≠ y₂
-            · exact hjy₂ₗ
-            simp [hj₀ₗ, hj₁ₗ, hjYₗ, hjY, hjy₀, hjy₁ₗ, hjy₂ₗ, hjy₀, hjy₁, hjy₂, hy₂.symm]
-            generalize_proofs _ _ _ _ _ _ hhi hhj
-            have hhXₗ := drop3_comm x₁ₗ x₀ₗ x₂ₗ
-            have hhYₗ := drop3_comm y₁ₗ y₀ₗ y₂ₗ
-            have hhXᵣ := drop3_comm x₁ᵣ x₀ᵣ x₂ᵣ
-            have hhYᵣ := drop3_comm y₁ᵣ y₀ᵣ y₂ᵣ
-            rw [hBM ◪◪⟨i.val, hhi⟩ ◩◩⟨j.val, hhj⟩]
-            simp
-            congr 1
-            sorry
-          else if hj₂ᵣ : j.val = y₂ᵣ then
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, y₀ₗ, y₁ₗ, y₂ᵣ, y₂ₗ, hy₀.symm, hy₁.symm] using hBM ◪◪⟨i, _⟩ ◪◩0
-          else if hjYᵣ : j.val ∈ Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
-            have hjYᵣ' : j.val ∈ Sᵣ.Y
-            · exact Set.mem_of_mem_diff hjYᵣ
-            have hjYₗ : j.val ∉ Sₗ.Y
-            · exact ni_of_in_drop3_of_inter hYY hjYᵣ
-            simpa [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hjYᵣ', hjYₗ, y₀ₗ, y₁ₗ, y₀ᵣ, y₁ᵣ, y₂ᵣ] using hBM ◪◪⟨i, _⟩ ◪◪⟨j, _⟩
-          else
-            exfalso
-            have hj := j.property
-            simp_all [y₀ₗ, y₁ₗ, y₂ₗ, y₀ᵣ, y₁ᵣ]
-        else
-          exfalso
-          have hi := i.property
-          simp_all [x₀ₗ, x₁ₗ, x₀ᵣ, x₁ᵣ, x₂ᵣ]
+        rw [Matrix.submatrix_apply]
+        sorry
 
 
 /-! ### The 3-sum of matroids -/
