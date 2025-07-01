@@ -1936,14 +1936,24 @@ private lemma Matrix.toDropUnionDrop_eq_toDropUnionDropInternal {Xₗ Yₗ Xᵣ 
   · ext i
     unfold equiv₃X
     if hi₂ₗ : i.val = x₂ₗ then
-      sorry
+      simp [hi₂ₗ]
+      have hi : i.toSum = ◩⟨x₂ₗ.val, by sorry⟩
+      · sorry
+      simp [hi, Disjoint.equivSumUnion]
+      rfl
     else if hiXₗ : i.val ∈ Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ then
-      sorry
+      simp [hi₂ₗ, hiXₗ]
+      have hi : i.toSum = ◩⟨i.val, by sorry⟩
+      · sorry
+      simp [*, Disjoint.equivSumUnion]
     else if hi₀ᵣ : i.val = x₀ᵣ then
+      simp [hi₂ₗ, hiXₗ, hi₀ᵣ]
       sorry
     else if hi₁ᵣ : i.val = x₁ᵣ then
+      simp [hi₂ₗ, hiXₗ, hi₀ᵣ, hi₁ᵣ]
       sorry
     else if hiXᵣ : i.val ∈ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ then
+      simp [hi₂ₗ, hiXₗ, hi₀ᵣ, hi₁ᵣ, hiXᵣ]
       sorry
     else
       exfalso
@@ -2232,22 +2242,108 @@ lemma standardReprSum3aux_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ 
       · use Bₗ.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ, hBₗ.submatrix _ _
         convert hSBₗ.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ
         conv_rhs => rw [←(Sₗ.B.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ).fromBlocks_toBlocks]
-        simp only [M, standardReprSum3aux, MatrixSum3.Bₗ, MatrixSum3.fromBlockSummands,
+        simp_rw [M, matrixSum3, MatrixSum3.Bₗ, MatrixSum3.fromBlockSummands,
           Matrix.fromCols_toCols, Matrix.fromBlocks_inj, true_and]
-        refine ⟨rfl, ?_, ?_, ?_⟩
-        · sorry
-        · sorry
-        · sorry
+        constructor
+        · ext i j
+          fin_cases j
+          simp [Matrix.toBlockSummandₗ, Matrix.toBlocks₁₂]
+          cases i with
+          | inl x => exact (hS'.left.right.right.right.right.right.right.right.left x.val x.property.left ⟨drop3_ne_fst x, drop3_ne_snd x⟩).symm
+          | inr => exact (hS'.left.right.right.right.right.right.right.right.left x₂ hXX.mem3₂ₗ (by tauto)).symm
+        · ext i j
+          have : Sₗ.B x₀ₗ y₂ₗ = Sᵣ.B x₀ᵣ y₂ᵣ
+          · have h1ₗ : Sₗ.B x₀ₗ y₂ₗ = 1
+            · tauto
+            have h1ᵣ : Sᵣ.B x₀ᵣ y₂ᵣ = 1
+            · tauto
+            rw [h1ₗ, h1ᵣ]
+          have : Sₗ.B x₁ₗ y₂ₗ = Sᵣ.B x₁ᵣ y₂ᵣ
+          · have h1ₗ :Sₗ.B x₁ₗ y₂ₗ = 1
+            · tauto
+            have h1ᵣ : Sᵣ.B x₁ᵣ y₂ᵣ = 1
+            · tauto
+            rw [h1ₗ, h1ᵣ]
+          fin_cases j
+          fin_cases i <;> tauto
       · use Bᵣ.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ, hBᵣ.submatrix _ _
         convert hSBᵣ.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
         conv_rhs => rw [←(Sᵣ.B.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).fromBlocks_toBlocks]
-        simp only [M, standardReprSum3aux, MatrixSum3.Bᵣ, MatrixSum3.fromBlockSummands,
+        simp_rw [M, matrixSum3, MatrixSum3.Bᵣ, MatrixSum3.fromBlockSummands,
           Matrix.fromRows_toRows, Matrix.fromBlocks_inj, and_true]
-        refine ⟨?_, ?_, ?_, rfl⟩
-        · sorry
-        · sorry
-        · sorry
-    · sorry
+        constructor
+        · ext i j
+          have : Sₗ.B x₂ₗ y₀ₗ = Sᵣ.B x₂ᵣ y₀ᵣ
+          · have h1ₗ : Sₗ.B x₂ₗ y₀ₗ = 1
+            · tauto
+            have h1ᵣ : Sᵣ.B x₂ᵣ y₀ᵣ = 1
+            · tauto
+            rw [h1ₗ, h1ᵣ]
+          have : Sₗ.B x₂ₗ y₁ₗ = Sᵣ.B x₂ᵣ y₁ᵣ
+          · have h1ₗ : Sₗ.B x₂ₗ y₁ₗ = 1
+            · tauto
+            have h1ᵣ : Sᵣ.B x₂ᵣ y₁ᵣ = 1
+            · tauto
+            rw [h1ₗ, h1ᵣ]
+          fin_cases i
+          fin_cases j <;> tauto
+        · ext i j
+          fin_cases i
+          simp [Matrix.toBlockSummandᵣ, Matrix.toBlocks₁₂]
+          cases j with
+          | inl => exact (hS'.left.right.right.right.right.right.right.right.right.right.right.right.right y₂ hYY.mem3₂ᵣ (by tauto)).symm
+          | inr y => exact (hS'.left.right.right.right.right.right.right.right.right.right.right.right.right y.val y.property.left ⟨drop3_ne_fst y, drop3_ne_snd y⟩).symm
+    · cases hS'.left.right.right.left with
+      | inl h1001 =>
+        left
+        constructor
+        · ext i j
+          fin_cases i <;> fin_cases j
+          · sorry
+          · sorry
+          · sorry
+          · sorry
+          · sorry
+          · sorry
+          · sorry
+          · sorry
+          · rfl
+        · ext i j
+          fin_cases i <;> fin_cases j
+          · sorry
+          · sorry
+          · sorry
+          · sorry
+          · sorry
+          · sorry
+          · sorry
+          · sorry
+          · rfl
+      | inr h1101 =>
+        right
+        constructor
+        · ext i j
+          fin_cases i <;> fin_cases j
+          · sorry
+          · sorry
+          · sorry
+          · sorry
+          · sorry
+          · sorry
+          · sorry
+          · sorry
+          · rfl
+        · ext i j
+          fin_cases i <;> fin_cases j
+          · sorry
+          · sorry
+          · sorry
+          · sorry
+          · sorry
+          · sorry
+          · sorry
+          · sorry
+          · rfl
   obtain ⟨B, hB, hBM⟩ := hM.HasTuSigning
   use (B.toIntermediate hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ).toMatrixElemElem
     (standardReprSum3aux_X_xxx hS)
