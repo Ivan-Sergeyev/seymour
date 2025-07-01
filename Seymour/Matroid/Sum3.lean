@@ -2350,7 +2350,7 @@ lemma standardReprSum3aux_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ 
   · rw [Matrix.toDropUnionDrop_eq_toDropUnionDropInternal hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ] at hS'
     exact hS' ▸ (hBM.reindex (equiv₃X hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ) (equiv₃Y hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ)).toMatrixElemElem hXxxx hYyyy
 
-set_option maxHeartbeats 666666 in
+set_option maxHeartbeats 1666666 in
 lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) (hS : standardReprSum3 hXX hYY hXY hYX = some S) :
@@ -2373,6 +2373,8 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
   obtain ⟨Bₗ, hBₗ, hSBₗ⟩ := hSₗ
   obtain ⟨Bᵣ, hBᵣ, hSBᵣ⟩ := hSᵣ
   -- massaging the assumption
+  have hXxxx := standardReprSum3_X_xxx hS
+  have hYyyy := standardReprSum3_Y_yyy hS
   have hS' := hS -- TODO remove if original `hS` stays unused
   simp only [standardReprSum3, Option.ite_none_right_eq_some] at hS'
   obtain ⟨hSS, hS''⟩ := hS'
@@ -2390,6 +2392,26 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
   · tauto
   have hy₂ : y₀ ≠ y₁
   · tauto
+  have hx₀ₗ : x₁ₗ ≠ x₂ₗ
+  · simpa [x₁ₗ, x₂ₗ] using hx₀
+  have hx₁ₗ : x₀ₗ ≠ x₂ₗ
+  · simpa [x₀ₗ, x₂ₗ] using hx₁
+  have hx₀ᵣ : x₁ᵣ ≠ x₂ᵣ
+  · simpa [x₁ᵣ, x₂ᵣ] using hx₀
+  have hx₁ᵣ : x₀ᵣ ≠ x₂ᵣ
+  · simpa [x₀ᵣ, x₂ᵣ] using hx₁
+  have hx₂ᵣ : x₀ᵣ ≠ x₁ᵣ
+  · simpa [x₀ᵣ, x₁ᵣ] using hx₂
+  have hy₀ₗ : y₁ₗ ≠ y₂ₗ
+  · simpa [y₁ₗ, y₂ₗ] using hy₀
+  have hy₁ₗ : y₀ₗ ≠ y₂ₗ
+  · simpa [y₀ₗ, y₂ₗ] using hy₁
+  have hy₂ₗ : y₀ₗ ≠ y₁ₗ
+  · simpa [y₀ₗ, y₁ₗ] using hy₂
+  have hy₀ᵣ : y₁ᵣ ≠ y₂ᵣ
+  · simpa [y₁ᵣ, y₂ᵣ] using hy₀
+  have hy₁ᵣ : y₀ᵣ ≠ y₂ᵣ
+  · simpa [y₀ᵣ, y₂ᵣ] using hy₁
   -- two options what `D₀` is (up to reindexing)
   obtain ⟨f, g, hfg⟩ := !![Sₗ.B x₀ₗ y₀ₗ, Sₗ.B x₀ₗ y₁ₗ; Sₗ.B x₁ₗ y₀ₗ, Sₗ.B x₁ₗ y₁ₗ].isUnit_2x2 (by
     convert hSS.right.right.left
@@ -2533,11 +2555,12 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
               · exact hSS.right.right.right.right.right.right.left
               · rfl
       obtain ⟨B, hB, hBM⟩ := hM.HasTuSigning
-      rw [hS'']
-      use B.toDropUnionDrop
+      use (B.toIntermediate hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ).toMatrixElemElem hXxxx hYyyy
       constructor
-      · apply hB.submatrix
-      · apply hBM.submatrix
+      · apply Matrix.IsTotallyUnimodular.toMatrixElemElem
+        apply hB.submatrix
+      · rw [Matrix.toDropUnionDrop_eq_toDropUnionDropInternal hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ] at hS''
+        exact hS'' ▸ (hBM.reindex (equiv₃X hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ) (equiv₃Y hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ)).toMatrixElemElem hXxxx hYyyy
     else
       have hg' : g = fin2swap := eq_fin2swap_of_ne_fin2refl hg
       simp [hf, hg'] at hfg
@@ -2687,18 +2710,20 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
               · exact hSS.right.right.right.right.right.left
               · rfl
       obtain ⟨B, hB, hBM⟩ := hM.HasTuSigning
-      rw [hS'']
       have hX₀₁ : Sₗ.X.drop2 x₀ₗ x₁ₗ ∪ Sᵣ.X.drop1 x₂ᵣ = Sₗ.X.drop2 x₁ₗ x₀ₗ ∪ Sᵣ.X.drop1 x₂ᵣ
       · rw [drop2_comm x₀ₗ x₁ₗ]
       have hY₀₁ : Sₗ.Y.drop1 y₂ₗ ∪ Sᵣ.Y.drop2 y₀ᵣ y₁ᵣ = Sₗ.Y.drop1 y₂ₗ ∪ Sᵣ.Y.drop2 y₁ᵣ y₀ᵣ
       · rw [drop2_comm y₀ᵣ y₁ᵣ]
-      use B.toDropUnionDrop.submatrix hX₀₁.≃ hY₀₁.≃
+      rw [hX₀₁] at hXxxx
+      rw [hY₀₁] at hYyyy
+      use (B.toIntermediate hx₁ₗ hx₀ₗ hx₁ᵣ hx₀ᵣ hx₂ᵣ.symm hy₁ₗ hy₀ₗ hy₂ₗ.symm hy₁ᵣ hy₀ᵣ).toMatrixElemElem hXxxx hYyyy
       constructor
-      · apply Matrix.IsTotallyUnimodular.submatrix hX₀₁.≃ hY₀₁.≃
+      · apply Matrix.IsTotallyUnimodular.toMatrixElemElem
         apply hB.submatrix
-      · simp only [Eq.interAll3]
-        intro i j
-        rw [Matrix.submatrix_apply]
+      · rw [Matrix.toDropUnionDrop_eq_toDropUnionDropInternal hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ] at hS''
+        convert (hBM.reindex (equiv₃X hx₁ₗ hx₀ₗ hx₁ᵣ hx₀ᵣ hx₂ᵣ.symm) (equiv₃Y hy₁ₗ hy₀ₗ hy₂ₗ.symm hy₁ᵣ hy₀ᵣ)).toMatrixElemElem hXxxx hYyyy
+        simp only [Eq.interAll3, Matrix.toDropUnionDropInternal, Matrix.toIntermediate] at hS''
+        simp only [M]
         sorry
 
 
