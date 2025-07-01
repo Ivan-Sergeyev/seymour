@@ -2173,7 +2173,7 @@ lemma standardReprSum3_Y {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀
   else
     simp [*]
 
-set_option maxHeartbeats 333333 in
+set_option maxHeartbeats 666666 in
 lemma standardReprSum3aux_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) (hS : standardReprSum3aux hXX hYY hXY hYX = some S) :
@@ -2196,10 +2196,11 @@ lemma standardReprSum3aux_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ 
   obtain ⟨Bₗ, hBₗ, hSBₗ⟩ := hSₗ
   obtain ⟨Bᵣ, hBᵣ, hSBᵣ⟩ := hSᵣ
   -- massaging the assumption
-  have hS' := hS
-  simp only [standardReprSum3aux, Option.ite_none_right_eq_some] at hS'
-  have hS'' := hS'.right
-  rw [Option.some.injEq, Eq.comm] at hS''
+  have hXxxx := standardReprSum3aux_X_xxx hS
+  have hYyyy := standardReprSum3aux_Y_yyy hS
+  simp only [standardReprSum3aux, Option.ite_none_right_eq_some] at hS
+  obtain ⟨hSS, hS'⟩ := hS
+  rw [Option.some.injEq, Eq.comm] at hS'
   -- elements are distinct
   have hx₀ : x₁ ≠ x₂
   · tauto
@@ -2237,8 +2238,7 @@ lemma standardReprSum3aux_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ 
   let M := matrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
   have hM : M.HasCanonicalSigning
   · constructor
-    · simp only [standardReprSum3aux, and_imp] at hS
-      constructor
+    · constructor
       · use Bₗ.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ, hBₗ.submatrix _ _
         convert hSBₗ.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ
         conv_rhs => rw [←(Sₗ.B.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ).fromBlocks_toBlocks]
@@ -2249,8 +2249,8 @@ lemma standardReprSum3aux_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ 
           fin_cases j
           simp [Matrix.toBlockSummandₗ, Matrix.toBlocks₁₂]
           cases i with
-          | inl x => exact (hS'.left.right.right.right.right.right.right.right.left x.val x.property.left ⟨drop3_ne_fst x, drop3_ne_snd x⟩).symm
-          | inr => exact (hS'.left.right.right.right.right.right.right.right.left x₂ hXX.mem3₂ₗ (by tauto)).symm
+          | inl x => exact (hSS.right.right.right.right.right.right.right.left x.val x.property.left ⟨drop3_ne_fst x, drop3_ne_snd x⟩).symm
+          | inr => exact (hSS.right.right.right.right.right.right.right.left x₂ hXX.mem3₂ₗ (by tauto)).symm
         · ext i j
           have : Sₗ.B x₀ₗ y₂ₗ = Sᵣ.B x₀ᵣ y₂ᵣ
           · have h1ₗ : Sₗ.B x₀ₗ y₂ₗ = 1
@@ -2291,70 +2291,66 @@ lemma standardReprSum3aux_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ 
           fin_cases i
           simp [Matrix.toBlockSummandᵣ, Matrix.toBlocks₁₂]
           cases j with
-          | inl => exact (hS'.left.right.right.right.right.right.right.right.right.right.right.right.right y₂ hYY.mem3₂ᵣ (by tauto)).symm
-          | inr y => exact (hS'.left.right.right.right.right.right.right.right.right.right.right.right.right y.val y.property.left ⟨drop3_ne_fst y, drop3_ne_snd y⟩).symm
-    · cases hS'.left.right.right.left with
+          | inl => exact (hSS.right.right.right.right.right.right.right.right.right.right.right.right y₂ hYY.mem3₂ᵣ (by tauto)).symm
+          | inr y => exact (hSS.right.right.right.right.right.right.right.right.right.right.right.right y.val y.property.left ⟨drop3_ne_fst y, drop3_ne_snd y⟩).symm
+    · cases hSS.right.right.left with
       | inl h1001 =>
         left
         constructor
         · ext i j
           fin_cases i <;> fin_cases j
-          · sorry
-          · sorry
-          · sorry
-          · sorry
-          · sorry
-          · sorry
-          · sorry
-          · sorry
+          · exact congr_fun₂ h1001 0 0
+          · exact congr_fun₂ h1001 0 1
+          · exact hSS.right.right.right.right.right.right.right.right.left
+          · exact congr_fun₂ h1001 1 0
+          · exact congr_fun₂ h1001 1 1
+          · exact hSS.right.right.right.right.right.right.right.right.right.left
+          · tauto
+          · tauto
           · rfl
         · ext i j
           fin_cases i <;> fin_cases j
-          · sorry
-          · sorry
-          · sorry
-          · sorry
-          · sorry
-          · sorry
-          · sorry
-          · sorry
+          · convert congr_fun₂ hSS.right.left.symm 0 0 ▸ congr_fun₂ h1001 0 0
+          · convert congr_fun₂ hSS.right.left.symm 0 1 ▸ congr_fun₂ h1001 0 1
+          · tauto
+          · convert congr_fun₂ hSS.right.left.symm 1 0 ▸ congr_fun₂ h1001 1 0
+          · convert congr_fun₂ hSS.right.left.symm 1 1 ▸ congr_fun₂ h1001 1 1
+          · tauto
+          · exact hSS.right.right.right.right.right.left
+          · exact hSS.right.right.right.right.right.right.left
           · rfl
       | inr h1101 =>
         right
         constructor
         · ext i j
           fin_cases i <;> fin_cases j
-          · sorry
-          · sorry
-          · sorry
-          · sorry
-          · sorry
-          · sorry
-          · sorry
-          · sorry
+          · exact congr_fun₂ h1101 0 0
+          · exact congr_fun₂ h1101 0 1
+          · exact hSS.right.right.right.right.right.right.right.right.left
+          · exact congr_fun₂ h1101 1 0
+          · exact congr_fun₂ h1101 1 1
+          · exact hSS.right.right.right.right.right.right.right.right.right.left
+          · tauto
+          · tauto
           · rfl
         · ext i j
           fin_cases i <;> fin_cases j
-          · sorry
-          · sorry
-          · sorry
-          · sorry
-          · sorry
-          · sorry
-          · sorry
-          · sorry
+          · convert congr_fun₂ hSS.right.left.symm 0 0 ▸ congr_fun₂ h1101 0 0
+          · convert congr_fun₂ hSS.right.left.symm 0 1 ▸ congr_fun₂ h1101 0 1
+          · tauto
+          · convert congr_fun₂ hSS.right.left.symm 1 0 ▸ congr_fun₂ h1101 1 0
+          · convert congr_fun₂ hSS.right.left.symm 1 1 ▸ congr_fun₂ h1101 1 1
+          · tauto
+          · exact hSS.right.right.right.right.right.left
+          · exact hSS.right.right.right.right.right.right.left
           · rfl
   obtain ⟨B, hB, hBM⟩ := hM.HasTuSigning
-  use (B.toIntermediate hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ).toMatrixElemElem
-    (standardReprSum3aux_X_xxx hS)
-    (standardReprSum3aux_Y_yyy hS)
+  use (B.toIntermediate hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ).toMatrixElemElem hXxxx hYyyy
   constructor
   · apply Matrix.IsTotallyUnimodular.toMatrixElemElem
     apply hB.submatrix
-  · rw [Matrix.toDropUnionDrop_eq_toDropUnionDropInternal hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ] at hS''
-    exact hS'' ▸ (hBM.reindex (equiv₃X hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ) (equiv₃Y hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ)).toMatrixElemElem
-      (standardReprSum3aux_X_xxx hS)
-      (standardReprSum3aux_Y_yyy hS)
+  · rw [Matrix.toDropUnionDrop_eq_toDropUnionDropInternal hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ] at hS'
+    exact hS' ▸ (hBM.reindex (equiv₃X hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ) (equiv₃Y hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ)).toMatrixElemElem hXxxx hYyyy
 
 set_option maxHeartbeats 4000000 in
 lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
