@@ -55,9 +55,11 @@ lemma toUnion_left (x : X.Elem) : @Sum.toUnion α X Y ◩x = ⟨x.val, Set.subse
 lemma toUnion_right (y : Y.Elem) : @Sum.toUnion α X Y ◪y = ⟨y.val, Set.subset_union_right y.property⟩ :=
   rfl
 
+variable [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)]
+
 /-- Converting `(X ∪ Y).Elem` to `X.Elem ⊕ Y.Elem` and back to `(X ∪ Y).Elem` gives the original element. -/
 @[simp]
-lemma toSum_toUnion [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) :
+lemma toSum_toUnion (i : (X ∪ Y).Elem) :
     i.toSum.toUnion = i := by
   if hiX : i.val ∈ X then
     simp [hiX]
@@ -70,11 +72,11 @@ lemma toSum_toUnion [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i
 /-- Converting `X.Elem ⊕ Y.Elem` to `(X ∪ Y).Elem` and back to `X.Elem ⊕ Y.Elem` gives the original element, assuming that
     `X` and `Y` are disjoint. -/
 @[simp]
-lemma toUnion_toSum [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (hXY : X ⫗ Y) (i : X.Elem ⊕ Y.Elem) :
+lemma toUnion_toSum (hXY : X ⫗ Y) (i : X.Elem ⊕ Y.Elem) :
     i.toUnion.toSum = i := by
   rw [Set.disjoint_right] at hXY
   cases i <;> simp [hXY]
 
 /-- Equivalence between `X.Elem ⊕ Y.Elem` and `(X ∪ Y).Elem` (i.e., a bundled bijection). -/
-def Disjoint.equivSumUnion [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (hXY : X ⫗ Y) : X.Elem ⊕ Y.Elem ≃ (X ∪ Y).Elem :=
+def Disjoint.equivSumUnion (hXY : X ⫗ Y) : X.Elem ⊕ Y.Elem ≃ (X ∪ Y).Elem :=
   ⟨Sum.toUnion, Subtype.toSum, toUnion_toSum hXY, toSum_toUnion⟩

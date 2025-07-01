@@ -209,6 +209,7 @@ The guideline below is written primarily to assist you in reading the code.
   ```lean
   def List.uppcaseLetters (l : List Char) : List Char := l.map Char.toUpper
   ```
+  The only exception is decidability assumptions such as `[∀ a, Decidable (a ∈ Z)]` where `Z : Set _` because it appears all the time (we do not annotate the type of `a`),
 
 ### Other
 
