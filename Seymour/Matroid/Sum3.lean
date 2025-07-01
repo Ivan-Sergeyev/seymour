@@ -2724,6 +2724,18 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
         convert (hBM.reindex (equiv₃X hx₁ₗ hx₀ₗ hx₁ᵣ hx₀ᵣ hx₂ᵣ.symm) (equiv₃Y hy₁ₗ hy₀ₗ hy₂ₗ.symm hy₁ᵣ hy₀ᵣ)).toMatrixElemElem hXxxx hYyyy
         simp only [Eq.interAll3, Matrix.toDropUnionDropInternal, Matrix.toIntermediate] at hS''
         simp only [M]
+        have hxxxxxx :
+          (equiv₃X hx₁ₗ hx₀ₗ hx₁ᵣ hx₀ᵣ hx₂ᵣ.symm) =
+          (by sorry :
+            ((((Sₗ.X.drop3 x₁ₗ x₀ₗ x₂ₗ).Elem ⊕ Fin 1) ⊕ (Fin 2 ⊕ (Sᵣ.X.drop3 x₁ᵣ x₀ᵣ x₂ᵣ).Elem)) ≃
+              ((Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ).Elem ⊕ Fin 1) ⊕ (Fin 2 ⊕ (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ).Elem))
+          ).trans
+            ((equiv₃X hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ).trans
+              (by sorry :
+                (Sₗ.X.drop2 x₀ₗ x₁ₗ).Elem ⊕ (Sᵣ.X.drop1 x₂ᵣ).Elem ≃
+                (Sₗ.X.drop2 x₁ₗ x₀ₗ).Elem ⊕ (Sᵣ.X.drop1 x₂ᵣ).Elem))
+        · sorry
+        rw [hxxxxxx]
         sorry
 
 
