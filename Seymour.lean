@@ -56,10 +56,10 @@ recall Subtype.toSum {α : Type} {X Y : Set α} [∀ a, Decidable (a ∈ X)] [�
   (i.property.elim hiX hiY).elim
 
 -- how matrix indexed by disjoint unions is converted to a matrix indexed by set unions
-recall Matrix.toMatrixUnionUnion {α β : Type} {T₁ T₂ S₁ S₂ : Set α}
+recall Matrix.toMatrixUnionUnion {α R : Type} {T₁ T₂ S₁ S₂ : Set α}
     [∀ a, Decidable (a ∈ T₁)] [∀ a, Decidable (a ∈ T₂)] [∀ a, Decidable (a ∈ S₁)] [∀ a, Decidable (a ∈ S₂)]
-    (A : Matrix (T₁.Elem ⊕ T₂.Elem) (S₁.Elem ⊕ S₂.Elem) β) :
-    Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem β :=
+    (A : Matrix (T₁.Elem ⊕ T₂.Elem) (S₁.Elem ⊕ S₂.Elem) R) :
+    Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem R :=
   A.submatrix Subtype.toSum Subtype.toSum
 
 -- syntactic sugar for the field on 2 elements
