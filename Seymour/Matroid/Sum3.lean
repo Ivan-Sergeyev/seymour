@@ -1691,15 +1691,27 @@ private lemma drop3_comm {Z : Set α} (z₀ z₁ z₂ : Z) : Z.drop3 z₀ z₁ z
   unfold Set.drop3
   aesop
 
+private lemma drop3_comm' {Z : Set α} (z₀ z₁ z₂ : Z) : Z.drop3 z₀ z₁ z₂ = Z.drop3 z₀ z₂ z₁ := by
+  unfold Set.drop3
+  aesop
+
+-- todo: rename to `drop3_ne₀` via find and replace `_fst` by `₀`
 private lemma drop3_ne_fst {Z : Set α} {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z₁ z₂) : i.val ≠ z₀.val := by
   have hi := i.property.right
   simp at hi
   exact hi.left
 
+-- todo: rename to `drop3_ne₁` similar to above
 private lemma drop3_ne_snd {Z : Set α} {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z₁ z₂) : i.val ≠ z₁.val := by
   have hi := i.property.right
   simp at hi
   exact hi.right.left
+
+-- todo: rename to `drop3_ne₂` similar to above
+private lemma drop3_ne_thr {Z : Set α} {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z₁ z₂) : i.val ≠ z₂.val := by
+  have hi := i.property.right
+  simp at hi
+  exact hi.right.right
 
 private lemma Set.drop3_disjoint_fst_snd (Z : Set α) (z₀ z₁ z₂ : Z) : Z.drop3 z₀ z₁ z₂ ⫗ {z₀.val, z₁.val} := by
   simp_all
@@ -1741,6 +1753,72 @@ private lemma mem_union_drop3 {Z : Set α} {z₀ z₁ z₂ : Z} (hz₀ : z₀ �
 
 private def undrop3 {Z : Set α} {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z₁ z₂) : Z :=
   ⟨i.val, i.property.left⟩
+
+
+/-! #### Membership in drop-sets -/
+
+-- todo: generalize to equivalences?
+
+private lemma Set.mem_drop1' {Z : Set α} {z₀ : Z} {v : α} (hv : v ∈ Z) (hz₀ : v ≠ z₀) :
+    v ∈ Z.drop1 z₀ := by
+  rw [Set.mem_diff, Set.mem_singleton_iff]
+  exact ⟨hv, hz₀⟩
+
+private lemma Set.mem_drop1 (Z : Set α) {z₀ z : Z} (hz₀ : z ≠ z₀) :
+    z.val ∈ Z.drop1 z₀ :=
+  Set.mem_drop1' z.property (Subtype.coe_ne_coe.← hz₀)
+
+private lemma mem_drop1_mem_ground {Z : Set α} {z₀ : Z} {v : α} (hv : v ∈ Z.drop1 z₀) :
+    v ∈ Z :=
+  Set.mem_of_mem_diff hv
+
+private lemma Set.mem_drop2 (Z : Set α) {z₀ z₁ z : Z} (hz₀ : z ≠ z₀) (hz₁ : z ≠ z₁) :
+    z.val ∈ Z.drop2 z₀ z₁ := by
+  rw [Set.mem_diff, Set.mem_insert_iff, not_or, Set.mem_singleton_iff]
+  exact ⟨Subtype.coe_prop z, ⟨Subtype.coe_ne_coe.← hz₀, Subtype.coe_ne_coe.← hz₁⟩⟩
+
+private lemma mem_drop2_ne₀ {Z : Set α} {z₀ z₁ : Z} {v : α} (hv : v ∈ Z.drop2 z₀ z₁) : v ≠ z₀.val := by
+  rw [Set.mem_diff, Set.mem_insert_iff, not_or] at hv
+  exact hv.right.left
+
+private lemma mem_drop2_ne₁ {Z : Set α} {z₀ z₁ : Z} {v : α} (hv : v ∈ Z.drop2 z₀ z₁) : v ≠ z₁.val := by
+  rw [Set.mem_diff, Set.mem_insert_iff, not_or, Set.mem_singleton_iff] at hv
+  exact hv.right.right
+
+private lemma mem_drop2_mem_drop1 {Z : Set α} {z₀ z₁ : Z} {v : α} (hv : v ∈ Z.drop2 z₀ z₁) :
+    v ∈ Z.drop1 z₀ := by
+  rw [Set.mem_diff, Set.mem_singleton_iff]
+  exact ⟨Set.mem_of_mem_diff hv, mem_drop2_ne₀ hv⟩
+
+
+private lemma mem_drop3_ne₀ {Z : Set α} {z₀ z₁ z₂ : Z} {v : α} (hv: v ∈ Z.drop3 z₀ z₁ z₂) : v ≠ z₀.val := by
+  rw [Set.mem_diff, Set.mem_insert_iff, not_or] at hv
+  exact hv.right.left
+
+private lemma mem_drop3_ne₁ {Z : Set α} {z₀ z₁ z₂ : Z} {v : α} (hv: v ∈ Z.drop3 z₀ z₁ z₂) : v ≠ z₁.val := by
+  rw [Set.mem_diff, Set.mem_insert_iff, not_or, Set.mem_insert_iff, not_or] at hv
+  exact hv.right.right.left
+
+private lemma mem_drop3_ne₂ {Z : Set α} {z₀ z₁ z₂ : Z} {v : α} (hv: v ∈ Z.drop3 z₀ z₁ z₂) : v ≠ z₂.val := by
+  rw [Set.mem_diff, Set.mem_insert_iff, not_or, Set.mem_insert_iff, not_or, Set.mem_singleton_iff] at hv
+  exact hv.right.right.right
+
+
+private lemma Set.mem_drop3 (Z : Set α) {z₀ z₁ z₂ z : Z} (hz₀ : z ≠ z₀) (hz₁ : z ≠ z₁) (hz₂ : z ≠ z₂) :
+    z.val ∈ Z.drop3 z₀ z₁ z₂ := by
+  rw [Set.mem_diff, Set.mem_insert_iff, not_or, Set.mem_insert_iff, not_or, Set.mem_singleton_iff]
+  exact ⟨Subtype.coe_prop z, ⟨Subtype.coe_ne_coe.← hz₀, ⟨Subtype.coe_ne_coe.← hz₁, Subtype.coe_ne_coe.← hz₂⟩⟩⟩
+
+private lemma mem_drop3_mem_drop2 {Z : Set α} {z₀ z₁ z₂ : Z} {v : α} (hv : v ∈ Z.drop3 z₀ z₁ z₂) :
+    v ∈ Z.drop2 z₀ z₁ := by
+  rw [Set.mem_diff, Set.mem_insert_iff, not_or, Set.mem_singleton_iff]
+  exact ⟨Set.mem_of_mem_diff hv, ⟨mem_drop3_ne₀ hv, mem_drop3_ne₁ hv⟩⟩
+
+private lemma mem_drop2_mem_drop3_or_eq₂ {Z : Set α} {z₀ z₁ z₂ : Z} {v : α}
+    (hv : v ∈ Z.drop2 z₀ z₁) (hz₀ : z₀ ≠ z₂) (hz₁ : z₁ ≠ z₂) :
+    v ∈ Z.drop3 z₀ z₁ z₂ ∨ v = z₂ := by
+  rw [←Set.mem_singleton_iff, ←Set.mem_union, drop3_union_mem hz₀ hz₁]
+  exact hv
 
 
 /-! #### Re-typing elements of the triplet intersection -/
@@ -1936,40 +2014,108 @@ private lemma Matrix.toDropUnionDrop_eq_toDropUnionDropInternal {Xₗ Yₗ Xᵣ 
   · ext i
     unfold equiv₃X
     if hi₂ₗ : i.val = x₂ₗ then
-      simp [hi₂ₗ]
-      have hi : i.toSum = ◩⟨x₂ₗ.val, by sorry⟩
-      · sorry
-      simp [hi, Disjoint.equivSumUnion]
+      -- todo: `simp_rw` can be done in the goal without creating a separate hypothesis to work with
+      have hx₂ₗXₗ := Xₗ.mem_drop2 hx₁ₗ.symm hx₀ₗ.symm
+      have hi : i.toSum = ◩⟨x₂ₗ.val, hx₂ₗXₗ⟩
+      · unfold Subtype.toSum
+        simp_rw [hi₂ₗ, hx₂ₗXₗ, reduceDIte]
+      simp_rw [hi₂ₗ, reduceDIte, hi]
+      simp [Disjoint.equivSumUnion]
       rfl
     else if hiXₗ : i.val ∈ Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ then
-      simp [hi₂ₗ, hiXₗ]
-      have hi : i.toSum = ◩⟨i.val, by sorry⟩
-      · sorry
-      simp [*, Disjoint.equivSumUnion]
+      -- todo: `simp_rw` can be done in the goal without creating a separate hypothesis to work with
+      have hiXₗ' := mem_drop3_mem_drop2 hiXₗ
+      have hi : i.toSum = ◩⟨i.val, hiXₗ'⟩
+      · unfold Subtype.toSum
+        simp_rw [hiXₗ', reduceDIte]
+      simp_rw [hi₂ₗ, hiXₗ, reduceDIte, hi]
+      simp [Disjoint.equivSumUnion, hiXₗ]
     else if hi₀ᵣ : i.val = x₀ᵣ then
-      simp [hi₂ₗ, hiXₗ, hi₀ᵣ]
-      sorry
+      have hx₀ᵣXₗ : x₀ᵣ.val ∉ Xₗ.drop2 x₀ₗ x₁ₗ
+      · by_contra contr
+        rw [←drop3_union_mem hx₁ₗ hx₀ₗ, Set.union_singleton, ←hi₀ᵣ] at contr
+        exact contr.elim (fun hc => hi₂ₗ hc) (fun hc => hiXₗ hc)
+      have hx₀ᵣXᵣ : x₀ᵣ.val ∈ Xᵣ.drop1 x₂ᵣ := Xᵣ.mem_drop1 hx₁ᵣ
+      have hi : i.toSum = ◪⟨x₀ᵣ.val, hx₀ᵣXᵣ⟩
+      · unfold Subtype.toSum
+        simp_rw [hi₀ᵣ, hx₀ᵣXₗ, hx₀ᵣXᵣ, reduceDIte]
+      simp_rw [hi₂ₗ, hiXₗ, hi₀ᵣ, reduceDIte, hi]
+      simp [Disjoint.equivSumUnion, equivFin2]
     else if hi₁ᵣ : i.val = x₁ᵣ then
-      simp [hi₂ₗ, hiXₗ, hi₀ᵣ, hi₁ᵣ]
-      sorry
+      have hx₁ᵣXₗ : x₁ᵣ.val ∉ Xₗ.drop2 x₀ₗ x₁ₗ
+      · by_contra contr
+        rw [←drop3_union_mem hx₁ₗ hx₀ₗ, Set.union_singleton, ←hi₁ᵣ] at contr
+        exact contr.elim (fun hc => hi₂ₗ hc) (fun hc => hiXₗ hc)
+      have hx₁ᵣXᵣ : x₁ᵣ.val ∈ Xᵣ.drop1 x₂ᵣ := Xᵣ.mem_drop1 hx₀ᵣ
+      have hi : i.toSum = ◪⟨x₁ᵣ.val, hx₁ᵣXᵣ⟩
+      · unfold Subtype.toSum
+        simp_rw [hi₁ᵣ, hx₁ᵣXₗ, hx₁ᵣXᵣ, reduceDIte]
+      simp_rw [hi₂ₗ, hiXₗ, hi₀ᵣ, hi₁ᵣ, reduceDIte, hi]
+      simp [Disjoint.equivSumUnion, equivFin2, Subtype.coe_ne_coe.← hx₂ᵣ.symm]
     else if hiXᵣ : i.val ∈ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ then
-      simp [hi₂ₗ, hiXₗ, hi₀ᵣ, hi₁ᵣ, hiXᵣ]
-      sorry
+      have hiXₗ' : i.val ∉ Xₗ.drop2 x₀ₗ x₁ₗ
+      · by_contra contr
+        -- todo: replacing `simp_rw` in next line with `rw` gives error: `application type mismatch`
+        simp_rw [←drop3_union_mem hx₁ₗ hx₀ₗ, Set.union_singleton] at contr
+        exact contr.elim (fun hc => hi₂ₗ hc) (fun hc => hiXₗ hc)
+      have hiXᵣ' := mem_drop3_mem_drop2 (drop3_comm' x₀ᵣ x₁ᵣ x₂ᵣ ▸ hiXᵣ)
+      have hiXᵣ'' := mem_drop2_mem_drop1 (drop2_comm x₀ᵣ x₂ᵣ ▸ hiXᵣ')
+      have hi : i.toSum = ◪⟨i.val, hiXᵣ''⟩
+      · unfold Subtype.toSum
+        simp_rw [hiXₗ', hiXᵣ'', reduceDIte]
+      simp_rw [hi₂ₗ, hiXₗ, hi₀ᵣ, hi₁ᵣ, hiXᵣ, reduceDIte, hi]
+      simp [Disjoint.equivSumUnion, hi₀ᵣ, hi₁ᵣ, hiXᵣ]
     else
       exfalso
       exact i.property.elim ↓(by simp_all) ↓(by simp_all)
   · ext j
     unfold equiv₃Y
-    if hi₂ₗ : j.val = y₀ₗ then
-      sorry
+    if hj₀ₗ : j.val = y₀ₗ then
+      -- todo: `simp_rw` can be done in the goal without creating a separate hypothesis to work with
+      have hy₀ₗYₗ : y₀ₗ.val ∈ Yₗ.drop1 y₂ₗ := Yₗ.mem_drop1 hy₁ₗ
+      have hj : j.toSum = ◩⟨y₀ₗ.val, hy₀ₗYₗ⟩
+      · unfold Subtype.toSum
+        simp_rw [hj₀ₗ, hy₀ₗYₗ, reduceDIte]
+      simp_rw [hj₀ₗ, reduceDIte, hj]
+      simp [Disjoint.equivSumUnion, equivFin2]
     else if hj₁ₗ : j.val = y₁ₗ then
-      sorry
+      have hy₁ₗYₗ : y₁ₗ.val ∈ Yₗ.drop1 y₂ₗ := Yₗ.mem_drop1 hy₀ₗ
+      have hj : j.toSum = ◩⟨y₁ₗ.val, hy₁ₗYₗ⟩
+      · unfold Subtype.toSum
+        simp_rw [hj₁ₗ, hy₁ₗYₗ, reduceDIte]
+      simp_rw [hj₀ₗ, hj₁ₗ, reduceDIte, hj]
+      simp [Disjoint.equivSumUnion, equivFin2, Subtype.coe_ne_coe.← hy₂ₗ.symm]
     else if hjYₗ : j.val ∈ Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ then
-      sorry
+      have hjYₗ' := mem_drop3_mem_drop2 (drop3_comm' y₀ₗ y₁ₗ y₂ₗ ▸ hjYₗ)
+      have hjYₗ'' := mem_drop2_mem_drop1 (drop2_comm y₀ₗ y₂ₗ ▸ hjYₗ')
+      have hj : j.toSum = ◩⟨j.val, hjYₗ''⟩
+      · unfold Subtype.toSum
+        simp_rw [hjYₗ'', reduceDIte]
+      simp_rw [hj₀ₗ, hj₁ₗ, hjYₗ, reduceDIte, hj]
+      simp [Disjoint.equivSumUnion, equivFin2, hjYₗ]
     else if hj₂ᵣ : j.val = y₂ᵣ then
-      sorry
+      have hy₂ᵣYₗ : y₂ᵣ.val ∉ Yₗ.drop1 y₂ₗ
+      · by_contra contr
+        rw [←drop3_union_pair hy₁ₗ hy₀ₗ, Set.mem_union, Set.mem_insert_iff, Set.mem_singleton_iff, ←hj₂ᵣ] at contr
+        exact contr.elim (fun hc => hjYₗ hc) (fun contr' => contr'.elim (fun hc => hj₀ₗ hc) (fun hc => hj₁ₗ hc))
+      have hy₂ᵣYᵣ : y₂ᵣ.val ∈ Yᵣ.drop2 y₀ᵣ y₁ᵣ := Yᵣ.mem_drop2 hy₁ᵣ.symm hy₀ᵣ.symm
+      have hj : j.toSum = ◪⟨y₂ᵣ.val, hy₂ᵣYᵣ⟩
+      · unfold Subtype.toSum
+        simp_rw [hj₂ᵣ, hy₂ᵣYₗ, hy₂ᵣYᵣ, reduceDIte]
+      simp_rw [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, reduceDIte, hj]
+      simp [Disjoint.equivSumUnion]
+      rfl
     else if hjYᵣ : j.val ∈ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
-      sorry
+      have hjYₗ' : j.val ∉ Yₗ.drop1 y₂ₗ
+      · by_contra contr
+        simp_rw [←drop3_union_pair hy₁ₗ hy₀ₗ, Set.mem_union, Set.mem_insert_iff, Set.mem_singleton_iff] at contr
+        exact contr.elim (fun hc => hjYₗ hc) (fun contr' => contr'.elim (fun hc => hj₀ₗ hc) (fun hc => hj₁ₗ hc))
+      have hjYᵣ' : j.val ∈ Yᵣ.drop2 y₀ᵣ y₁ᵣ := mem_drop3_mem_drop2 hjYᵣ
+      have hj : j.toSum = ◪⟨j.val, hjYᵣ'⟩
+      · unfold Subtype.toSum
+        simp_rw [hjYₗ', hjYᵣ', reduceDIte]
+      simp_rw [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, reduceDIte, hj]
+      simp [Disjoint.equivSumUnion, hj₂ᵣ, hjYᵣ]
     else
       exfalso
       exact j.property.elim ↓(by simp_all) ↓(by simp_all)
