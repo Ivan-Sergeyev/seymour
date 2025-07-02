@@ -1790,7 +1790,6 @@ private lemma mem_drop2_mem_drop1 {Z : Set α} {z₀ z₁ : Z} {v : α} (hv : v 
   rw [Set.mem_diff, Set.mem_singleton_iff]
   exact ⟨Set.mem_of_mem_diff hv, mem_drop2_ne₀ hv⟩
 
-
 private lemma mem_drop3_ne₀ {Z : Set α} {z₀ z₁ z₂ : Z} {v : α} (hv: v ∈ Z.drop3 z₀ z₁ z₂) : v ≠ z₀.val := by
   rw [Set.mem_diff, Set.mem_insert_iff, not_or] at hv
   exact hv.right.left
@@ -1802,7 +1801,6 @@ private lemma mem_drop3_ne₁ {Z : Set α} {z₀ z₁ z₂ : Z} {v : α} (hv: v 
 private lemma mem_drop3_ne₂ {Z : Set α} {z₀ z₁ z₂ : Z} {v : α} (hv: v ∈ Z.drop3 z₀ z₁ z₂) : v ≠ z₂.val := by
   rw [Set.mem_diff, Set.mem_insert_iff, not_or, Set.mem_insert_iff, not_or, Set.mem_singleton_iff] at hv
   exact hv.right.right.right
-
 
 private lemma Set.mem_drop3 (Z : Set α) {z₀ z₁ z₂ z : Z} (hz₀ : z ≠ z₀) (hz₁ : z ≠ z₁) (hz₂ : z ≠ z₂) :
     z.val ∈ Z.drop3 z₀ z₁ z₂ := by
@@ -2014,56 +2012,48 @@ private lemma Matrix.toDropUnionDrop_eq_toDropUnionDropInternal {Xₗ Yₗ Xᵣ 
   · ext i
     unfold equiv₃X
     if hi₂ₗ : i.val = x₂ₗ then
-      -- todo: `simp_rw` can be done in the goal without creating a separate hypothesis to work with
       have hx₂ₗXₗ := Xₗ.mem_drop2 hx₁ₗ.symm hx₀ₗ.symm
       have hi : i.toSum = ◩⟨x₂ₗ.val, hx₂ₗXₗ⟩
-      · unfold Subtype.toSum
-        simp_rw [hi₂ₗ, hx₂ₗXₗ, reduceDIte]
-      simp_rw [hi₂ₗ, reduceDIte, hi]
+      · simp [hi₂ₗ, hx₂ₗXₗ]
+      simp_rw [hi₂ₗ, hi]
       simp [Disjoint.equivSumUnion]
       rfl
     else if hiXₗ : i.val ∈ Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ then
-      -- todo: `simp_rw` can be done in the goal without creating a separate hypothesis to work with
       have hiXₗ' := mem_drop3_mem_drop2 hiXₗ
       have hi : i.toSum = ◩⟨i.val, hiXₗ'⟩
-      · unfold Subtype.toSum
-        simp_rw [hiXₗ', reduceDIte]
-      simp_rw [hi₂ₗ, hiXₗ, reduceDIte, hi]
+      · simp [hiXₗ']
+      simp_rw [hi₂ₗ, hiXₗ, hi]
       simp [Disjoint.equivSumUnion, hiXₗ]
     else if hi₀ᵣ : i.val = x₀ᵣ then
       have hx₀ᵣXₗ : x₀ᵣ.val ∉ Xₗ.drop2 x₀ₗ x₁ₗ
-      · by_contra contr
+      · intro contr
         rw [←drop3_union_mem hx₁ₗ hx₀ₗ, Set.union_singleton, ←hi₀ᵣ] at contr
-        exact contr.elim (fun hc => hi₂ₗ hc) (fun hc => hiXₗ hc)
+        exact contr.elim (hi₂ₗ ·) (hiXₗ ·)
       have hx₀ᵣXᵣ : x₀ᵣ.val ∈ Xᵣ.drop1 x₂ᵣ := Xᵣ.mem_drop1 hx₁ᵣ
       have hi : i.toSum = ◪⟨x₀ᵣ.val, hx₀ᵣXᵣ⟩
-      · unfold Subtype.toSum
-        simp_rw [hi₀ᵣ, hx₀ᵣXₗ, hx₀ᵣXᵣ, reduceDIte]
-      simp_rw [hi₂ₗ, hiXₗ, hi₀ᵣ, reduceDIte, hi]
+      · simp [hi₀ᵣ, hx₀ᵣXₗ, hx₀ᵣXᵣ]
+      simp_rw [hi₂ₗ, hiXₗ, hi₀ᵣ, hi]
       simp [Disjoint.equivSumUnion, equivFin2]
     else if hi₁ᵣ : i.val = x₁ᵣ then
       have hx₁ᵣXₗ : x₁ᵣ.val ∉ Xₗ.drop2 x₀ₗ x₁ₗ
-      · by_contra contr
+      · intro contr
         rw [←drop3_union_mem hx₁ₗ hx₀ₗ, Set.union_singleton, ←hi₁ᵣ] at contr
-        exact contr.elim (fun hc => hi₂ₗ hc) (fun hc => hiXₗ hc)
+        exact contr.elim (hi₂ₗ ·) (hiXₗ ·)
       have hx₁ᵣXᵣ : x₁ᵣ.val ∈ Xᵣ.drop1 x₂ᵣ := Xᵣ.mem_drop1 hx₀ᵣ
       have hi : i.toSum = ◪⟨x₁ᵣ.val, hx₁ᵣXᵣ⟩
-      · unfold Subtype.toSum
-        simp_rw [hi₁ᵣ, hx₁ᵣXₗ, hx₁ᵣXᵣ, reduceDIte]
-      simp_rw [hi₂ₗ, hiXₗ, hi₀ᵣ, hi₁ᵣ, reduceDIte, hi]
+      · simp [hi₁ᵣ, hx₁ᵣXₗ, hx₁ᵣXᵣ]
+      simp_rw [hi₂ₗ, hiXₗ, hi₀ᵣ, hi₁ᵣ, hi]
       simp [Disjoint.equivSumUnion, equivFin2, Subtype.coe_ne_coe.← hx₂ᵣ.symm]
     else if hiXᵣ : i.val ∈ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ then
       have hiXₗ' : i.val ∉ Xₗ.drop2 x₀ₗ x₁ₗ
-      · by_contra contr
-        -- todo: replacing `simp_rw` in next line with `rw` gives error: `application type mismatch`
+      · intro contr
         simp_rw [←drop3_union_mem hx₁ₗ hx₀ₗ, Set.union_singleton] at contr
-        exact contr.elim (fun hc => hi₂ₗ hc) (fun hc => hiXₗ hc)
+        exact contr.elim (hi₂ₗ ·) (hiXₗ ·)
       have hiXᵣ' := mem_drop3_mem_drop2 (drop3_comm' x₀ᵣ x₁ᵣ x₂ᵣ ▸ hiXᵣ)
       have hiXᵣ'' := mem_drop2_mem_drop1 (drop2_comm x₀ᵣ x₂ᵣ ▸ hiXᵣ')
       have hi : i.toSum = ◪⟨i.val, hiXᵣ''⟩
-      · unfold Subtype.toSum
-        simp_rw [hiXₗ', hiXᵣ'', reduceDIte]
-      simp_rw [hi₂ₗ, hiXₗ, hi₀ᵣ, hi₁ᵣ, hiXᵣ, reduceDIte, hi]
+      · simp [hiXₗ', hiXᵣ'']
+      simp_rw [hi₂ₗ, hiXₗ, hi₀ᵣ, hi₁ᵣ, hiXᵣ, hi]
       simp [Disjoint.equivSumUnion, hi₀ᵣ, hi₁ᵣ, hiXᵣ]
     else
       exfalso
@@ -2071,50 +2061,44 @@ private lemma Matrix.toDropUnionDrop_eq_toDropUnionDropInternal {Xₗ Yₗ Xᵣ 
   · ext j
     unfold equiv₃Y
     if hj₀ₗ : j.val = y₀ₗ then
-      -- todo: `simp_rw` can be done in the goal without creating a separate hypothesis to work with
       have hy₀ₗYₗ : y₀ₗ.val ∈ Yₗ.drop1 y₂ₗ := Yₗ.mem_drop1 hy₁ₗ
       have hj : j.toSum = ◩⟨y₀ₗ.val, hy₀ₗYₗ⟩
-      · unfold Subtype.toSum
-        simp_rw [hj₀ₗ, hy₀ₗYₗ, reduceDIte]
-      simp_rw [hj₀ₗ, reduceDIte, hj]
+      · simp [hj₀ₗ, hy₀ₗYₗ]
+      simp_rw [hj₀ₗ, hj]
       simp [Disjoint.equivSumUnion, equivFin2]
     else if hj₁ₗ : j.val = y₁ₗ then
       have hy₁ₗYₗ : y₁ₗ.val ∈ Yₗ.drop1 y₂ₗ := Yₗ.mem_drop1 hy₀ₗ
       have hj : j.toSum = ◩⟨y₁ₗ.val, hy₁ₗYₗ⟩
-      · unfold Subtype.toSum
-        simp_rw [hj₁ₗ, hy₁ₗYₗ, reduceDIte]
-      simp_rw [hj₀ₗ, hj₁ₗ, reduceDIte, hj]
+      · simp [hj₁ₗ, hy₁ₗYₗ]
+      simp_rw [hj₀ₗ, hj₁ₗ, hj]
       simp [Disjoint.equivSumUnion, equivFin2, Subtype.coe_ne_coe.← hy₂ₗ.symm]
     else if hjYₗ : j.val ∈ Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ then
       have hjYₗ' := mem_drop3_mem_drop2 (drop3_comm' y₀ₗ y₁ₗ y₂ₗ ▸ hjYₗ)
       have hjYₗ'' := mem_drop2_mem_drop1 (drop2_comm y₀ₗ y₂ₗ ▸ hjYₗ')
       have hj : j.toSum = ◩⟨j.val, hjYₗ''⟩
-      · unfold Subtype.toSum
-        simp_rw [hjYₗ'', reduceDIte]
-      simp_rw [hj₀ₗ, hj₁ₗ, hjYₗ, reduceDIte, hj]
+      · simp [hjYₗ'']
+      simp_rw [hj₀ₗ, hj₁ₗ, hjYₗ, hj]
       simp [Disjoint.equivSumUnion, equivFin2, hjYₗ]
     else if hj₂ᵣ : j.val = y₂ᵣ then
       have hy₂ᵣYₗ : y₂ᵣ.val ∉ Yₗ.drop1 y₂ₗ
-      · by_contra contr
+      · intro contr
         rw [←drop3_union_pair hy₁ₗ hy₀ₗ, Set.mem_union, Set.mem_insert_iff, Set.mem_singleton_iff, ←hj₂ᵣ] at contr
-        exact contr.elim (fun hc => hjYₗ hc) (fun contr' => contr'.elim (fun hc => hj₀ₗ hc) (fun hc => hj₁ₗ hc))
+        exact contr.elim (hjYₗ ·) (·.elim (hj₀ₗ ·) (hj₁ₗ ·))
       have hy₂ᵣYᵣ : y₂ᵣ.val ∈ Yᵣ.drop2 y₀ᵣ y₁ᵣ := Yᵣ.mem_drop2 hy₁ᵣ.symm hy₀ᵣ.symm
       have hj : j.toSum = ◪⟨y₂ᵣ.val, hy₂ᵣYᵣ⟩
-      · unfold Subtype.toSum
-        simp_rw [hj₂ᵣ, hy₂ᵣYₗ, hy₂ᵣYᵣ, reduceDIte]
-      simp_rw [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, reduceDIte, hj]
+      · simp [hj₂ᵣ, hy₂ᵣYₗ, hy₂ᵣYᵣ]
+      simp_rw [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hj]
       simp [Disjoint.equivSumUnion]
       rfl
     else if hjYᵣ : j.val ∈ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
       have hjYₗ' : j.val ∉ Yₗ.drop1 y₂ₗ
-      · by_contra contr
+      · intro contr
         simp_rw [←drop3_union_pair hy₁ₗ hy₀ₗ, Set.mem_union, Set.mem_insert_iff, Set.mem_singleton_iff] at contr
-        exact contr.elim (fun hc => hjYₗ hc) (fun contr' => contr'.elim (fun hc => hj₀ₗ hc) (fun hc => hj₁ₗ hc))
+        exact contr.elim (hjYₗ ·) (·.elim (hj₀ₗ ·) (hj₁ₗ ·))
       have hjYᵣ' : j.val ∈ Yᵣ.drop2 y₀ᵣ y₁ᵣ := mem_drop3_mem_drop2 hjYᵣ
       have hj : j.toSum = ◪⟨j.val, hjYᵣ'⟩
-      · unfold Subtype.toSum
-        simp_rw [hjYₗ', hjYᵣ', reduceDIte]
-      simp_rw [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, reduceDIte, hj]
+      · simp [hjYₗ', hjYᵣ']
+      simp_rw [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hjYᵣ, hj]
       simp [Disjoint.equivSumUnion, hj₂ᵣ, hjYᵣ]
     else
       exfalso
@@ -2925,7 +2909,10 @@ theorem Matroid.Is3sumOfaux.isRegular {M Mₗ Mᵣ : Matroid α}
   have : Finite S.X := standardReprSum3aux_X_xxx hS ▸ Finite.Set.finite_union ..
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
   exact standardReprSum3aux_hasTuSigning hMₗ hMᵣ hS
-
+/--
+info: 'Matroid.Is3sumOfaux.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
 #print axioms Matroid.Is3sumOfaux.isRegular
 
 /-- Any 3-sum of two regular matroids is a regular matroid.
