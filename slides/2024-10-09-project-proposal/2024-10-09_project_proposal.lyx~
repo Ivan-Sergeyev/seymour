@@ -1,0 +1,4235 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass beamer
+\begin_preamble
+\setbeamertemplate{navigation symbols}{}
+
+% \usecolortheme{cormorant}
+
+% \setbeamercolor{normal text}{fg=white,bg=black!90}
+% \setbeamercolor{structure}{fg=white}
+
+% \setbeamercolor{alerted text}{fg=red!85!black}
+
+% \setbeamercolor{item projected}{use=item,fg=black,bg=item.fg!35}
+
+% \setbeamercolor*{palette primary}{use=structure,fg=structure.fg}
+% \setbeamercolor*{palette secondary}{use=structure,fg=structure.fg!95!black}
+% \setbeamercolor*{palette tertiary}{use=structure,fg=structure.fg!90!black}
+% \setbeamercolor*{palette quaternary}{use=structure,fg=structure.fg!95!black,bg=black!80}
+
+% \setbeamercolor*{framesubtitle}{fg=white}
+
+% \setbeamercolor*{block title}{parent=structure,bg=black!60}
+% \setbeamercolor*{block body}{fg=black,bg=black!10}
+% \setbeamercolor*{block title alerted}{parent=alerted text,bg=black!15}
+% \setbeamercolor*{block title example}{parent=example text,bg=black!15}
+\end_preamble
+\options aspectratio=169
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Matroids in Lean: Project Proposal
+\end_layout
+
+\begin_layout Author
+Ivan Sergeev
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Itemize
+Give the names in the same order as the appear in the paper.
+\end_layout
+
+\begin_layout Itemize
+Use the 
+\begin_inset Quotes eld
+\end_inset
+
+Institute mark
+\begin_inset Quotes erd
+\end_inset
+
+ inset (
+\family sans
+Insert\SpecialChar menuseparator
+Custom Insets\SpecialChar menuseparator
+InstituteMark
+\family default
+) only if the authors have different affiliations.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+Ivan Sergeev
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+- optional, use only with lots of authors
+\end_layout
+
+\begin_layout Plain Layout
+- if there are really lots of authors, use 
+\begin_inset Quotes eld
+\end_inset
+
+Author et al.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Institute
+ISTA
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Itemize
+Use the 
+\begin_inset Quotes eld
+\end_inset
+
+Institute mark
+\begin_inset Quotes erd
+\end_inset
+
+ inset (
+\family sans
+Insert\SpecialChar menuseparator
+Custom Insets\SpecialChar menuseparator
+InstituteMark
+\family default
+) only if there are several affiliations.
+\end_layout
+
+\begin_layout Itemize
+Keep it simple, no one is interested in your street address.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+ISTA
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+optional, but mostly needed
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+10 October 2024
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Itemize
+Either use conference name or its abbreviation.
+\end_layout
+
+\begin_layout Itemize
+Not really informative to the audience, more for people (including yourself)
+ who are reading the slides online
+\end_layout
+
+\end_inset
+
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+10.10.2024
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+optional, should be abbreviation of conference name
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+If you have a file called "institution-logo-filename.xxx", where xxx is a
+ graphic format that can be processed by latex or pdflatex, resp., then you
+ can add a logo by uncommenting the following:
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%
+\backslash
+pgfdeclareimage[height=0.5cm]{ista-logo}{ista-logo}
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+logo{
+\backslash
+pgfuseimage{ista-logo}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The following causes the table of contents to be shown at the beginning
+ of every subsection.
+ Delete this, if you do not want it.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%
+\backslash
+setcounter{tocdepth}{1}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+AtBeginSection[]{%
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+frame<beamer>{
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+frametitle{Outline}
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+tableofcontents[currentsection,subsectionstyle=hide]
+\end_layout
+
+\begin_layout Plain Layout
+
+  }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+AtBeginSubsection[]{%
+\end_layout
+
+\begin_layout Plain Layout
+
+%  
+\backslash
+frame<beamer>{
+\end_layout
+
+\begin_layout Plain Layout
+
+%    
+\backslash
+frametitle{Outline}
+\end_layout
+
+\begin_layout Plain Layout
+
+%    
+\backslash
+tableofcontents[currentsection,currentsubsection]
+\end_layout
+
+\begin_layout Plain Layout
+
+%  }
+\end_layout
+
+\begin_layout Plain Layout
+
+%}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+If you wish to uncover everything in a step-wise fashion, uncomment the
+ following command:
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%
+\backslash
+beamerdefaultoverlayspecification{<+->}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Outline
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Motivation
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+What is Seymour's Decomposition Theorem?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Any 
+\begin_inset Formula $1$
+\end_inset
+
+-, 
+\begin_inset Formula $2$
+\end_inset
+
+-, and 
+\begin_inset Formula $3$
+\end_inset
+
+-sum of two regular matroids is regular
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Any regular matroid can be decomposed into matroids that are graphic, cographic,
+ or isomorphic to 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ by repeated 
+\begin_inset Formula $1$
+\end_inset
+
+-, 
+\begin_inset Formula $2$
+\end_inset
+
+-, and 
+\begin_inset Formula $3$
+\end_inset
+
+-sum decompositions
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Why Matroids?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Generalize vector spaces and linear independence (vector matroids)
+\end_layout
+
+\begin_layout Itemize
+Generalize graphs (graphic matroids)
+\end_layout
+
+\begin_layout Itemize
+Generalize extensions of fields (algebraic matroids)
+\end_layout
+
+\begin_layout Itemize
+Axiomatic definition 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ amenable to formalization
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Why Seymour's Decomposition Theorem?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Structural characterization of the class of regular matroids
+\end_layout
+
+\begin_layout Itemize
+Efficient algorithm for testing if a binary matroid is regular
+\end_layout
+
+\begin_layout Itemize
+Efficient algorithm for testing if a real matrix is totally unimodular
+\end_layout
+
+\begin_layout Itemize
+Construction of 
+\begin_inset Formula $\left\{ 0,\pm1\right\} $
+\end_inset
+
+ and 
+\begin_inset Formula $\left\{ 0,1\right\} $
+\end_inset
+
+ totally unimodular matrices
+\end_layout
+
+\begin_layout Itemize
+Structural approach to certain problems
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Concrete Application: Cycle Polytope
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\series bold
+Given:
+\series default
+ Connected binary matroid 
+\begin_inset Formula $M$
+\end_inset
+
+ with weighs 
+\begin_inset Formula $w_{e}$
+\end_inset
+
+ for all elements 
+\begin_inset Formula $e$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Goal:
+\series default
+ Find a disjoint union 
+\begin_inset Formula $C$
+\end_inset
+
+ of circuits of 
+\begin_inset Formula $M$
+\end_inset
+
+ such that 
+\begin_inset Formula $\sum_{e\in C}w_{e}$
+\end_inset
+
+ is maximized
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Note:
+\series default
+ This includes the max cut problem, so can be 
+\begin_inset Formula $NP$
+\end_inset
+
+-hard
+\end_layout
+
+\begin_layout Itemize
+Regular matroid decomposition theorem leads to:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Characterization of the cycle polytope
+\end_layout
+
+\begin_layout Itemize
+Polyhedral approach for a special subclass: efficient separation 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ optimization
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Section
+Definitions
+\end_layout
+
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Matroids: Main Definition
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Let 
+\begin_inset Formula $E$
+\end_inset
+
+ be a finite ground set
+\end_layout
+
+\begin_layout Itemize
+Let 
+\begin_inset Formula $\mathcal{I}\subseteq2^{E}$
+\end_inset
+
+ be a family of subsets satisfying:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $\emptyset\in\mathcal{I}$
+\end_inset
+
+ (non-empty)
+\end_layout
+
+\begin_layout Itemize
+if 
+\begin_inset Formula $A\subseteq B\in\mathcal{I}$
+\end_inset
+
+, then 
+\begin_inset Formula $A\in\mathcal{I}$
+\end_inset
+
+ (down-closed)
+\end_layout
+
+\begin_layout Itemize
+if 
+\begin_inset Formula $A,B\in\mathcal{I}$
+\end_inset
+
+ and 
+\begin_inset Formula $\left|A\right|<\left|B\right|$
+\end_inset
+
+, then 
+\begin_inset Formula $A+x\in\mathcal{I}$
+\end_inset
+
+ for some 
+\begin_inset Formula $x\in B\setminus A$
+\end_inset
+
+ (exchange property)
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Then the pair 
+\begin_inset Formula $M=\left(E,\mathcal{I}\right)$
+\end_inset
+
+ is called a 
+\series bold
+matroid
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Matroids: Key Notions
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+A 
+\series bold
+base
+\series default
+ of 
+\begin_inset Formula $M$
+\end_inset
+
+ is a maximal independent subset of 
+\begin_inset Formula $E$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+A 
+\series bold
+cobase
+\series default
+ is the set 
+\begin_inset Formula $E-X$
+\end_inset
+
+ for some base 
+\begin_inset Formula $X$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The 
+\series bold
+dual matroid
+\series default
+ of 
+\begin_inset Formula $M$
+\end_inset
+
+ is 
+\begin_inset Formula $M^{*}=\left(E,\mathcal{I}^{*}\right)$
+\end_inset
+
+ where 
+\begin_inset Formula $\mathcal{I}^{*}$
+\end_inset
+
+ is all cobases and their subsets
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+For 
+\begin_inset Formula $A\subseteq E$
+\end_inset
+
+, the 
+\series bold
+rank
+\series default
+ of 
+\begin_inset Formula $A$
+\end_inset
+
+ is the cardinality of a maximal independent subset of 
+\begin_inset Formula $A$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+A 
+\series bold
+circuit
+\series default
+ is a minimal dependent subset of 
+\begin_inset Formula $E$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+A 
+\series bold
+cocircuit
+\series default
+ of 
+\begin_inset Formula $M$
+\end_inset
+
+ is a 
+\series bold
+circuit
+\series default
+ of 
+\begin_inset Formula $M^{*}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Graphic Matroids
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Let 
+\begin_inset Formula $G$
+\end_inset
+
+ be a graph with edge set 
+\begin_inset Formula $E$
+\end_inset
+
+, let 
+\begin_inset Formula $\mathcal{I}$
+\end_inset
+
+ be all forests in 
+\begin_inset Formula $G$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Then the 
+\series bold
+graphic matroid
+\series default
+ of 
+\begin_inset Formula $G$
+\end_inset
+
+ is 
+\begin_inset Formula $M=M\left(G\right)=\left(E,\mathcal{I}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+A 
+\series bold
+cographic
+\series default
+ matroid is the dual of a graphic matroid
+\end_layout
+
+\begin_layout Itemize
+A 
+\series bold
+planar
+\series default
+ matroid is one that is graphic and cographic
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Binary Matroids
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Let 
+\begin_inset Formula $F$
+\end_inset
+
+ be a binary matrix over 
+\begin_inset Formula $\mathrm{GF}\left(2\right)$
+\end_inset
+
+ with a column index set 
+\begin_inset Formula $E$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Let 
+\begin_inset Formula $\mathcal{I}$
+\end_inset
+
+ be all 
+\begin_inset Formula $Z\subseteq E$
+\end_inset
+
+ such that the columns of 
+\begin_inset Formula $F$
+\end_inset
+
+ indexed by 
+\begin_inset Formula $Z$
+\end_inset
+
+ are independent
+\end_layout
+
+\begin_layout Itemize
+The 
+\series bold
+binary matroid
+\series default
+ generated by 
+\begin_inset Formula $F$
+\end_inset
+
+ is 
+\begin_inset Formula $M=\left(E,\mathcal{I}\right)$
+\end_inset
+
+
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Note:
+\series default
+ graphic matroids are binary (node-edge incidence matrix)
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Representation matrix:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Delete all 
+\begin_inset Formula $\mathrm{GF}\left(2\right)$
+\end_inset
+
+-dependent rows from 
+\begin_inset Formula $F$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Perform binary row operations to arrive at 
+\begin_inset Formula $\left[I\mid B\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $B$
+\end_inset
+
+ is a representation matrix (can be empty)
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Regular Matroids
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+A real matrix is 
+\series bold
+totally unimodular
+\series default
+ (TU) if all its subdeterminants are 
+\begin_inset Formula $0$
+\end_inset
+
+ or 
+\begin_inset Formula $\pm1$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+A binary matroid is 
+\series bold
+regular
+\series default
+ if it has a representation matrix with a TU signing
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Important properties:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+A binary matroid is regular iff every representation matrix has a TU signing
+\end_layout
+
+\begin_layout Itemize
+For a regular matroid, its dual and all its minors are regular
+\end_layout
+
+\begin_layout Itemize
+Every graphic and cographic matroid is regular
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Special Binary Matroids
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Nonregular 
+\begin_inset Formula $F_{7}$
+\end_inset
+
+ is represented by 
+\begin_inset Formula $\begin{bmatrix}1 & 0 & 1 & 1\\
+1 & 1 & 0 & 1\\
+0 & 1 & 1 & 1
+\end{bmatrix}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Regular, nongraphic, noncographic 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ is represented by 
+\begin_inset Formula $\begin{bmatrix}1 & 0 & 0 & 1 & 1\\
+1 & 1 & 0 & 0 & 1\\
+0 & 1 & 1 & 0 & 1\\
+0 & 0 & 1 & 1 & 1\\
+1 & 1 & 1 & 1 & 1
+\end{bmatrix}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Regular, nongraphic, noncographic 
+\begin_inset Formula $R_{12}$
+\end_inset
+
+ is represented by 
+\begin_inset Formula $\begin{bmatrix}1 & 0 & 1 & 1 & 0 & 0\\
+0 & 1 & 1 & 1 & 0 & 0\\
+1 & 0 & 1 & 0 & 1 & 1\\
+0 & 1 & 0 & 1 & 1 & 1\\
+1 & 0 & 1 & 0 & 1 & 0\\
+0 & 1 & 0 & 1 & 0 & 1
+\end{bmatrix}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $1$
+\end_inset
+
+-, 
+\begin_inset Formula $2$
+\end_inset
+
+-, and 
+\begin_inset Formula $3$
+\end_inset
+
+-Sums of Graphs
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $1$
+\end_inset
+
+-sums: identification of a node
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $2$
+\end_inset
+
+-sums:
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename 2_sum_graph.png
+	display false
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $3$
+\end_inset
+
+-sums:
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename 3_sum_graph.png
+	display false
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $1$
+\end_inset
+
+-sums of Binary Matroids
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+A 
+\begin_inset Formula $1$
+\end_inset
+
+-separable matroid can be represented by
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename 1_sum.png
+	display false
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+This also defines 
+\begin_inset Formula $M_{1}\oplus_{1}M_{2}$
+\end_inset
+
+ for 
+\begin_inset Formula $M_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $M_{2}$
+\end_inset
+
+ represented by 
+\begin_inset Formula $A^{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $A^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $2$
+\end_inset
+
+-sums of Binary Matroids
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+A 
+\begin_inset Formula $2$
+\end_inset
+
+-separable matroid can be represented by 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename 2_sum_sep.png
+	display false
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+This also defines 
+\begin_inset Formula $M_{1}\oplus_{2}M_{2}$
+\end_inset
+
+ for 
+\begin_inset Formula $M_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $M_{2}$
+\end_inset
+
+ represented by
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename 2_sum_1.png
+	display false
+	scale 50
+
+\end_inset
+
+
+\begin_inset space \hspace{}
+\length 2em
+\end_inset
+
+
+\begin_inset Graphics
+	filename 2_sum_2.png
+	display false
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The bottom-left submatrix is reconstructed via 
+\begin_inset Formula $\left(\text{column }y\text{ of }B^{2}\right)\cdot\left(\text{row }x\text{ of }B^{1}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $3$
+\end_inset
+
+-sums of Binary Matroids
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+A 
+\begin_inset Formula $3$
+\end_inset
+
+-separable matroid can be represented by 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename 3_sum_sep.png
+	display false
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+This also defines 
+\begin_inset Formula $M_{1}\oplus_{3}M_{2}$
+\end_inset
+
+ for 
+\begin_inset Formula $M_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $M_{2}$
+\end_inset
+
+ represented by
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename 3_sum_1.png
+	display false
+	scale 50
+
+\end_inset
+
+
+\begin_inset space \hspace{}
+\length 2em
+\end_inset
+
+
+\begin_inset Graphics
+	filename 3_sum_2.png
+	display false
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The bottom-left submatrix is computed via a formula from these submatrices
+\end_layout
+
+\end_deeper
+\begin_layout Section
+High-Level Proof of Seymour's Decomposition Theorem
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Seymour's Decomposition Theorem
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Any 
+\begin_inset Formula $1$
+\end_inset
+
+-, 
+\begin_inset Formula $2$
+\end_inset
+
+-, and 
+\begin_inset Formula $3$
+\end_inset
+
+-sum of two regular matroids is regular
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Any regular matroid can be decomposed into matroids that are graphic, cographic,
+ or isomorphic to 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ by repeated 
+\begin_inset Formula $1$
+\end_inset
+
+-, 
+\begin_inset Formula $2$
+\end_inset
+
+-, and 
+\begin_inset Formula $3$
+\end_inset
+
+-sum decompositions
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Dependency Graph
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+only<1>{
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename dep_graph_all.png
+	display false
+	width 90page%
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\backslash
+only<2>{
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename dep_graph_clusters.png
+	display false
+	width 90page%
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Easy Direction
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Any 
+\begin_inset Formula $1$
+\end_inset
+
+-, 
+\begin_inset Formula $2$
+\end_inset
+
+-, and 
+\begin_inset Formula $3$
+\end_inset
+
+-sum of two regular matroids is regular
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Theorem 11.3.14.seymour_easy
+\end_layout
+
+\end_inset
+
+
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Proof sketch:
+\end_layout
+
+\begin_layout Itemize
+Use the matrix representation of the 
+\begin_inset Formula $1$
+\end_inset
+
+-, 
+\begin_inset Formula $2$
+\end_inset
+
+-, or 
+\begin_inset Formula $3$
+\end_inset
+
+-sum
+\end_layout
+
+\begin_layout Itemize
+Use TU signings of representations of the summands
+\end_layout
+
+\begin_layout Itemize
+If necessary, sign the remaining elements via a specific formula
+\end_layout
+
+\begin_layout Itemize
+Prove TUness of the composite signed matrix
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Hard Direction
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Any regular matroid can be decomposed into matroids that are graphic, cographic,
+ or isomorphic to 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ by repeated 
+\begin_inset Formula $1$
+\end_inset
+
+-, 
+\begin_inset Formula $2$
+\end_inset
+
+-, and 
+\begin_inset Formula $3$
+\end_inset
+
+-sum decompositions
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Theorem 11.3.14.seymour_hard
+\end_layout
+
+\end_inset
+
+
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Ingredients:
+\end_layout
+
+\begin_layout Enumerate
+A 
+\begin_inset Formula $3$
+\end_inset
+
+-connected regular matroid has no 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ or 
+\begin_inset Formula $R_{12}$
+\end_inset
+
+ minor 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ graphic or cographic
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Theorem 10.4.1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+A 
+\begin_inset Formula $3$
+\end_inset
+
+-connected regular matroid with an 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ minor is isomorphic to 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Theorem 11.3.2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+A regular matroid with an 
+\begin_inset Formula $R_{12}$
+\end_inset
+
+ minor is a 
+\begin_inset Formula $3$
+\end_inset
+
+-sum of two proper minors
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Theorem 11.3.12 + Lemma 8.3.12
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Hard Direction: Proof
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Let 
+\begin_inset Formula $M$
+\end_inset
+
+ be a regular, nongraphic, noncographic matroid
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $M$
+\end_inset
+
+ is 
+\begin_inset Formula $1$
+\end_inset
+
+- or 
+\begin_inset Formula $2$
+\end_inset
+
+-separable, then 
+\begin_inset Formula $M$
+\end_inset
+
+ is a 
+\begin_inset Formula $1$
+\end_inset
+
+- or 
+\begin_inset Formula $2$
+\end_inset
+
+-sum (property of 
+\begin_inset Formula $k$
+\end_inset
+
+-sums)
+\end_layout
+
+\begin_layout Itemize
+Given 
+\begin_inset Formula $M$
+\end_inset
+
+ is 
+\begin_inset Formula $3$
+\end_inset
+
+-connected, 
+\begin_inset Formula $M$
+\end_inset
+
+ has an 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ or 
+\begin_inset Formula $R_{12}$
+\end_inset
+
+ minor (ingredient 1)
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $M$
+\end_inset
+
+ has an 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ minor, then it is isomorphic to 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ (ingredient 2)
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $M$
+\end_inset
+
+ has an 
+\begin_inset Formula $R_{12}$
+\end_inset
+
+ minor, then 
+\begin_inset Formula $M$
+\end_inset
+
+ is a 
+\begin_inset Formula $3$
+\end_inset
+
+-sum (ingredient 3)
+\end_layout
+
+\end_deeper
+\begin_layout Section
+First-degree Ingredients
+\end_layout
+
+\begin_layout Subsection
+Regular 
+\begin_inset Formula $3$
+\end_inset
+
+-connected matroids with no 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ or 
+\begin_inset Formula $R_{12}$
+\end_inset
+
+ minor
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Ingredient 1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+A 
+\begin_inset Formula $3$
+\end_inset
+
+-connected regular matroid has no 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ or 
+\begin_inset Formula $R_{12}$
+\end_inset
+
+ minor 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ graphic or cographic
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Theorem 10.4.1
+\end_layout
+
+\end_inset
+
+
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Sub-ingredients:
+\end_layout
+
+\begin_layout Enumerate
+Regular matroid has no 
+\begin_inset Formula $M\left(K_{5}\right)$
+\end_inset
+
+, 
+\begin_inset Formula $M\left(K_{5}\right)^{*}$
+\end_inset
+
+, 
+\begin_inset Formula $M\left(K_{3,3}\right)$
+\end_inset
+
+, or 
+\begin_inset Formula $M\left(K_{3,3}\right)^{*}$
+\end_inset
+
+ minors 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ planar
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Theorem 10.2.11
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Argument item:2
+status open
+
+\begin_layout Plain Layout
+
+2-
+\end_layout
+
+\end_inset
+
+Relies on many involved results: Menger's theorem, Kuratowski's theorem,
+ the wheel theorem, and the census of small 
+\begin_inset Formula $3$
+\end_inset
+
+-connected matroids
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+\begin_inset Formula $M\left(K_{5}\right)$
+\end_inset
+
+ is a 
+\bar under
+splitter
+\bar default
+ for regular matroids with no 
+\begin_inset Formula $M\left(K_{3,3}\right)$
+\end_inset
+
+ minors
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Lemma 10.3.1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Argument item:2
+status open
+
+\begin_layout Plain Layout
+
+2-
+\end_layout
+
+\end_inset
+
+Proof 
+\begin_inset Formula $=$
+\end_inset
+
+ 
+\bar under
+splitter theorem
+\bar default
+ 
+\begin_inset Formula $+$
+\end_inset
+
+ case analysis
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Regular matroid is 
+\begin_inset Formula $3$
+\end_inset
+
+-connected, nongraphic, noncographic, has an 
+\begin_inset Formula $M\left(K_{3,3}\right)$
+\end_inset
+
+ minor, and all its proper minors are graphic or cographic 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ isomorphic to 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ or 
+\begin_inset Formula $R_{12}$
+\end_inset
+
+
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Theorem 10.3.11
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Argument item:2
+status open
+
+\begin_layout Plain Layout
+
+2-
+\end_layout
+
+\end_inset
+
+Relies on results about 
+\begin_inset Formula $3$
+\end_inset
+
+-connected nested extensions, which require 
+\bar under
+splitter theorem
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Argument item:2
+status open
+
+\begin_layout Plain Layout
+
+2-
+\end_layout
+
+\end_inset
+
+Long and technical proof with many cases and graph constructions
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Ingredient 1: Proof
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Let 
+\begin_inset Formula $M$
+\end_inset
+
+ be a 
+\begin_inset Formula $3$
+\end_inset
+
+-connected, regular, nongraphic, noncographic matroid
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $M$
+\end_inset
+
+ is not planar + Ingredient 1.1 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ 
+\begin_inset Formula $M$
+\end_inset
+
+ or 
+\begin_inset Formula $M^{*}$
+\end_inset
+
+ has an 
+\begin_inset Formula $M\left(K_{5}\right)$
+\end_inset
+
+ or 
+\begin_inset Formula $M\left(K_{3,3}\right)$
+\end_inset
+
+ minor
+\end_layout
+
+\begin_layout Itemize
+Ingredient 1.2 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ 
+\begin_inset Formula $M$
+\end_inset
+
+ or 
+\begin_inset Formula $M^{*}$
+\end_inset
+
+ has an 
+\begin_inset Formula $M\left(K_{3,3}\right)$
+\end_inset
+
+ minor or is isomorphic to 
+\begin_inset Formula $M\left(K_{5}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Latter case is a contradiction
+\end_layout
+
+\begin_layout Itemize
+Former case + ingredient 1.3 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ 
+\begin_inset Formula $M$
+\end_inset
+
+ or 
+\begin_inset Formula $M^{*}$
+\end_inset
+
+ has 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ or 
+\begin_inset Formula $R_{12}$
+\end_inset
+
+ as a minor
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ and 
+\begin_inset Formula $R_{12}$
+\end_inset
+
+ are self-dual 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ 
+\begin_inset Formula $M$
+\end_inset
+
+ has 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ or 
+\begin_inset Formula $R_{12}$
+\end_inset
+
+ as a minor
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Argument item:2
+status open
+
+\begin_layout Plain Layout
+
+2-
+\end_layout
+
+\end_inset
+
+There is an alternative proof [Geelen, Gerards, '04]
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Argument item:2
+status open
+
+\begin_layout Plain Layout
+
+2-
+\end_layout
+
+\end_inset
+
+Seems shorter, but appears to heavily rely on graph-theoretic results
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Regular 
+\begin_inset Formula $3$
+\end_inset
+
+-connected Matroids with an 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ minor
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Ingredient 2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+A 
+\begin_inset Formula $3$
+\end_inset
+
+-connected regular matroid with an 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ minor is isomorphic to 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Theorem 11.3.2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Equivalent statement:
+\series default
+ 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ is a splitter of the class regular matroids
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Sub-ingredients:
+\end_layout
+
+\begin_layout Enumerate
+The 
+\bar under
+splitter theorem
+\bar default
+
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Theorem 7.2.1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ is self-dual
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $F_{7}$
+\end_inset
+
+ is not regular
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Quotes eld
+\end_inset
+
+Graph plus 
+\begin_inset Formula $T$
+\end_inset
+
+ set
+\begin_inset Quotes erd
+\end_inset
+
+ constructions for 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ and 
+\begin_inset Formula $F_{7}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Ingredient 2: Proof
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Represent 
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ as a graph plus 
+\begin_inset Formula $T$
+\end_inset
+
+ set
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ is self-dual, so suffices to consider 
+\begin_inset Formula $1$
+\end_inset
+
+-element additions in the splitter theorem
+\end_layout
+
+\begin_layout Itemize
+Up to isomorphism, there are only 
+\begin_inset Formula $3$
+\end_inset
+
+ distinct 
+\begin_inset Formula $3$
+\end_inset
+
+-connected 
+\begin_inset Formula $1$
+\end_inset
+
+-element additions
+\end_layout
+
+\begin_layout Itemize
+Case 1 (graphic): after contracting a specific edge, the resulting graph
+ contains a subdivision of the graph plus 
+\begin_inset Formula $T$
+\end_inset
+
+ set for 
+\begin_inset Formula $F_{7}$
+\end_inset
+
+ 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ this extension is nonregular
+\end_layout
+
+\begin_layout Itemize
+Cases 2, 3 (nongraphic): both reduce to the graph plus 
+\begin_inset Formula $T$
+\end_inset
+
+ set for 
+\begin_inset Formula $F_{7}$
+\end_inset
+
+ 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ nonregular
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Regular Matroids with an 
+\begin_inset Formula $R_{12}$
+\end_inset
+
+ minor
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Ingredient 3
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+A regular matroid with an 
+\begin_inset Formula $R_{12}$
+\end_inset
+
+ minor is a 
+\begin_inset Formula $3$
+\end_inset
+
+-sum of two proper minors
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Theorem 11.3.12 + Lemma 8.3.12
+\end_layout
+
+\end_inset
+
+
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Sub-ingredients:
+\end_layout
+
+\begin_layout Enumerate
+Let 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+ be a class of binary matroids closed under isomorphism and taking minors.
+ Let 
+\begin_inset Formula $N$
+\end_inset
+
+ be a minor that lies in 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+, but its 
+\begin_inset Formula $1$
+\end_inset
+
+- and 
+\begin_inset Formula $2$
+\end_inset
+
+-element extensions of a specific form are not in 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $N$
+\end_inset
+
+ have a 
+\begin_inset Formula $3$
+\end_inset
+
+-separation.
+ If 
+\begin_inset Formula $M\in\mathcal{M}$
+\end_inset
+
+ has an 
+\begin_inset Formula $N$
+\end_inset
+
+ minor, then any 
+\begin_inset Formula $3$
+\end_inset
+
+-separation of any such minor corresponding to the 
+\begin_inset Formula $3$
+\end_inset
+
+-separation of 
+\begin_inset Formula $N$
+\end_inset
+
+ under an isomorphism induces a 
+\begin_inset Formula $3$
+\end_inset
+
+-separation of 
+\begin_inset Formula $M$
+\end_inset
+
+.
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Theorem 11.3.10, aka restatement of Corollary 6.3.24 for R12
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Corollary from a 
+\bar under
+characterization theorem
+\bar default
+ for a separation algorithm
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+For a binary 
+\begin_inset Formula $3$
+\end_inset
+
+-connected matroid, any 
+\begin_inset Formula $3$
+\end_inset
+
+-separation 
+\begin_inset Formula $(E_{1},E_{2})$
+\end_inset
+
+ with 
+\begin_inset Formula $|E_{1}|,|E_{2}|\geq4$
+\end_inset
+
+ produces a 
+\begin_inset Formula $3$
+\end_inset
+
+-sum and vice versa.
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Lemma 8.3.12
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Ingredient 3: Proof
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Apply Ingredient 1 with regular matroids as 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+ and 
+\begin_inset Formula $R_{12}$
+\end_inset
+
+ as 
+\begin_inset Formula $N$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Calculate all 
+\begin_inset Formula $3$
+\end_inset
+
+-connected regular 
+\begin_inset Formula $1$
+\end_inset
+
+-element extensions of 
+\begin_inset Formula $R_{12}$
+\end_inset
+
+, check cases
+\end_layout
+
+\begin_layout Itemize
+Apply Ingredient 2 to get a 
+\begin_inset Formula $3$
+\end_inset
+
+-sum from a 
+\begin_inset Formula $3$
+\end_inset
+
+-separation
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Second-degree Ingredients
+\end_layout
+
+\begin_layout Subsection
+Splitter Theorem
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Splitter Theorem
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Let 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+ be a class of binary matroids closed under isomorphism and taking minors
+\end_layout
+
+\begin_layout Itemize
+Let 
+\begin_inset Formula $N$
+\end_inset
+
+ be a 
+\begin_inset Formula $3$
+\end_inset
+
+-connected minor of 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+ on at least 
+\begin_inset Formula $6$
+\end_inset
+
+ elements, and not a wheel
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Claim:
+\series default
+ The following are equivalent:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $N$
+\end_inset
+
+ is a 
+\series bold
+splitter 
+\series default
+of 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+, i.e., every 
+\begin_inset Formula $M\in\mathcal{M}$
+\end_inset
+
+ with a proper 
+\begin_inset Formula $N$
+\end_inset
+
+ minor has a 
+\begin_inset Formula $2$
+\end_inset
+
+-separation
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+ does not contain a 
+\begin_inset Formula $3$
+\end_inset
+
+-connected 
+\begin_inset Formula $1$
+\end_inset
+
+-element extension of 
+\begin_inset Formula $N$
+\end_inset
+
+
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Theorem 7.2.1.a
+\end_layout
+
+\end_inset
+
+
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+(There is also a wheel version, it is used in 
+\begin_inset Formula $3$
+\end_inset
+
+-connected nested extensions)
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Proof of Splitter Theorem
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+If 
+\begin_inset Formula $N$
+\end_inset
+
+ is a splitter, then trivial.
+ Assume 
+\begin_inset Formula $N$
+\end_inset
+
+ is not a splitter.
+\end_layout
+
+\begin_layout Itemize
+Suppose no 
+\begin_inset Formula $3$
+\end_inset
+
+-connected 
+\begin_inset Formula $1$
+\end_inset
+
+-element extension of 
+\begin_inset Formula $N$
+\end_inset
+
+ is in 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Then 
+\begin_inset Formula $\exists M\in\mathcal{M}$
+\end_inset
+
+: 
+\begin_inset Formula $3$
+\end_inset
+
+-connected, has no 
+\begin_inset Formula $2$
+\end_inset
+
+-separation, contains 
+\begin_inset Formula $N$
+\end_inset
+
+ as a proper minor
+\end_layout
+
+\begin_layout Itemize
+
+\bar under
+Technical lemma
+\bar default
+
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Theorem 6.4.1
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ 
+\begin_inset Formula $M$
+\end_inset
+
+ has a 
+\begin_inset Formula $3$
+\end_inset
+
+-connected minor 
+\begin_inset Formula $N'$
+\end_inset
+
+ that extends an 
+\begin_inset Formula $N$
+\end_inset
+
+ minor
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $1$
+\end_inset
+
+-extension case: contradicts the assumptions on 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $2$
+\end_inset
+
+-extension case: 
+\begin_inset Formula $N'$
+\end_inset
+
+ is derived from 
+\begin_inset Formula $N$
+\end_inset
+
+ by one addition and one expansion
+\end_layout
+
+\begin_layout Itemize
+Analyze the structure of a binary matrix representation of 
+\begin_inset Formula $N'$
+\end_inset
+
+ that displays 
+\begin_inset Formula $N$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Arrive at: 
+\begin_inset Formula $N'$
+\end_inset
+
+ contains a 
+\begin_inset Formula $3$
+\end_inset
+
+-connected 
+\begin_inset Formula $1$
+\end_inset
+
+-element extension of an 
+\begin_inset Formula $N$
+\end_inset
+
+ minor
+\end_layout
+
+\begin_layout Itemize
+This contradicts the assumptions on 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Technical Lemma for Splitter Theorem
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Let 
+\begin_inset Formula $M$
+\end_inset
+
+ be a 
+\begin_inset Formula $3$
+\end_inset
+
+-connected binary matroid
+\end_layout
+
+\begin_layout Itemize
+Let 
+\begin_inset Formula $N$
+\end_inset
+
+ be a 
+\begin_inset Formula $3$
+\end_inset
+
+-connected proper minor of 
+\begin_inset Formula $M$
+\end_inset
+
+ with 
+\begin_inset Formula $\ge6$
+\end_inset
+
+ elements
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Claim: 
+\series default
+
+\begin_inset Formula $M$
+\end_inset
+
+ has an 
+\begin_inset Formula $N$
+\end_inset
+
+ minor 
+\begin_inset Formula $\overline{N}$
+\end_inset
+
+ and a 
+\begin_inset Formula $3$
+\end_inset
+
+-connected minor 
+\begin_inset Formula $N'$
+\end_inset
+
+ such that
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Theorem 6.4.1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $N'$
+\end_inset
+
+ is a 
+\begin_inset Formula $1$
+\end_inset
+
+-element extension of 
+\begin_inset Formula $\overline{N}$
+\end_inset
+
+, or
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $N'$
+\end_inset
+
+ is a 
+\begin_inset Formula $2$
+\end_inset
+
+-element extension, by one addition and one expansion, of 
+\begin_inset Formula $\overline{N}$
+\end_inset
+
+
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+Proof sketch:
+\end_layout
+
+\begin_layout Itemize
+Construct a connected minor 
+\begin_inset Formula $N'$
+\end_inset
+
+ that is a 
+\begin_inset Formula $1$
+\end_inset
+
+-element extension of 
+\begin_inset Formula $N$
+\end_inset
+
+ by 
+\begin_inset Formula $z\in M\setminus N$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Reason about a matrix representation of 
+\begin_inset Formula $N$
+\end_inset
+
+ and 
+\begin_inset Formula $N'$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Apply a 
+\bar under
+characterization theorem
+\bar default
+ for a separation algorithm, do case analysis
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Theorem 6.3.20
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Corollaries of Splitter Theorem
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $M\left(K_{5}\right)$
+\end_inset
+
+ is a splitter of the regular matroids with no 
+\begin_inset Formula $M\left(K_{3,3}\right)$
+\end_inset
+
+ minors
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $R_{10}$
+\end_inset
+
+ is a splitter of the class of regular matroids
+\end_layout
+
+\begin_layout Itemize
+Theorems about nested connected minors, for example:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Let 
+\begin_inset Formula $M$
+\end_inset
+
+ be a 
+\begin_inset Formula $3$
+\end_inset
+
+-connected binary matroid
+\end_layout
+
+\begin_layout Itemize
+Let 
+\begin_inset Formula $N$
+\end_inset
+
+ be a 
+\begin_inset Formula $3$
+\end_inset
+
+-connected proper minor of 
+\begin_inset Formula $M$
+\end_inset
+
+ on 
+\begin_inset Formula $\geq6$
+\end_inset
+
+ elements, and not a wheel
+\end_layout
+
+\begin_layout Itemize
+Then there is a sequence 
+\begin_inset Formula $M_{0},\dots,M_{t}=M$
+\end_inset
+
+ of nested 
+\begin_inset Formula $3$
+\end_inset
+
+-connected minors
+\begin_inset Newline newline
+\end_inset
+
+where 
+\begin_inset Formula $M_{0}$
+\end_inset
+
+ is isomorphic to 
+\begin_inset Formula $N$
+\end_inset
+
+ and where the rank 
+\begin_inset Formula $+$
+\end_inset
+
+ corank gap 
+\begin_inset Formula $=$
+\end_inset
+
+ 
+\begin_inset Formula $1$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Subsection
+Separation Algorithm and Its Corollaries
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Separation Algorithm
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Suppose a minor 
+\begin_inset Formula $N$
+\end_inset
+
+ of 
+\begin_inset Formula $M$
+\end_inset
+
+ has an exact 
+\begin_inset Formula $k$
+\end_inset
+
+-separation 
+\begin_inset Formula $\left(F_{1},F_{2}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Does 
+\begin_inset Formula $M$
+\end_inset
+
+ have an induced 
+\begin_inset Formula $k$
+\end_inset
+
+-separation 
+\begin_inset Formula $\left(E_{1},E_{2}\right)$
+\end_inset
+
+ with 
+\begin_inset Formula $E_{1,2}\supseteq F_{1,2}$
+\end_inset
+
+?
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+6.3.3
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Separation algorithm:
+\series default
+
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+pp.
+ 137–138 (adapted), pp.
+ 132–133 (original)
+\end_layout
+
+\end_inset
+
+ explicit recursive procedure to answer this question
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Separation Algorithm: Characterization Theorem
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Suppose 
+\begin_inset Formula $M$
+\end_inset
+
+ has at least one minor isomorphic to 
+\begin_inset Formula $N$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+...that has a 
+\begin_inset Formula $k$
+\end_inset
+
+-separation corresponding to 
+\begin_inset Formula $(F_{1},F_{2})$
+\end_inset
+
+ under an isomorphism
+\end_layout
+
+\begin_layout Itemize
+...and which does not induce a 
+\begin_inset Formula $k$
+\end_inset
+
+-separation of 
+\begin_inset Formula $M$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Suppose 
+\begin_inset Formula $M$
+\end_inset
+
+ is minimal with respect to the above conditions
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+6.3.3, in this case 
+\begin_inset Formula $M$
+\end_inset
+
+ is called 
+\begin_inset Quotes eld
+\end_inset
+
+minimal under isomorphism
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Claim:
+\series default
+ 
+\begin_inset Formula $M$
+\end_inset
+
+ is represented by a matrix corresponding to a 
+\begin_inset Formula $1$
+\end_inset
+
+- or 
+\begin_inset Formula $2$
+\end_inset
+
+-extension of 
+\begin_inset Formula $N$
+\end_inset
+
+ and satisfying certain additional properties
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Theorem 6.3.20
+\end_layout
+
+\end_inset
+
+
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Proof
+\series default
+ 
+\begin_inset Formula $=$
+\end_inset
+
+ separation algorithm 
+\begin_inset Formula $+$
+\end_inset
+
+ case analysis
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Separation Algorithm: Corollary
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Let 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+ be a class of binary matroids closed under isomorphism and taking minors
+\end_layout
+
+\begin_layout Itemize
+Suppose 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+ contains 
+\begin_inset Formula $N$
+\end_inset
+
+ with a 
+\begin_inset Formula $k$
+\end_inset
+
+-separation, but not its 
+\begin_inset Formula $1$
+\end_inset
+
+- and 
+\begin_inset Formula $2$
+\end_inset
+
+-element extensions represented by the matrices from the characterization
+ theorem
+\end_layout
+
+\begin_layout Itemize
+Suppose 
+\begin_inset Formula $M\in\mathcal{M}$
+\end_inset
+
+ has a minor isomorphic to 
+\begin_inset Formula $N$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Claim:
+\series default
+ Any 
+\begin_inset Formula $k$
+\end_inset
+
+-separation of any such minor corresponding to the 
+\begin_inset Formula $k$
+\end_inset
+
+-separation of 
+\begin_inset Formula $N$
+\end_inset
+
+ under an isomorphism induces a 
+\begin_inset Formula $k$
+\end_inset
+
+-separation of 
+\begin_inset Formula $M$
+\end_inset
+
+
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Corollary 6.3.24
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Separation Algorithm: Proof of Corollary
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+ is closed under isomorphism 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ assume that 
+\begin_inset Formula $N$
+\end_inset
+
+ itself is a minor of 
+\begin_inset Formula $M$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Suppose the 
+\begin_inset Formula $k$
+\end_inset
+
+-separation of 
+\begin_inset Formula $N$
+\end_inset
+
+ does not induce one in 
+\begin_inset Formula $M$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+Then 
+\begin_inset Formula $M$
+\end_inset
+
+ or its minor containing 
+\begin_inset Formula $N$
+\end_inset
+
+ satisfies the characterization theorem
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+ is closed under taking minors 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+ contains a 
+\begin_inset Formula $1$
+\end_inset
+
+- or 
+\begin_inset Formula $2$
+\end_inset
+
+-element extension of 
+\begin_inset Formula $N$
+\end_inset
+
+ represented by one of the matrices from the characterization theorem
+\end_layout
+
+\begin_layout Itemize
+This contradicts the assumptions on 
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+\begin_inset Formula $3$
+\end_inset
+
+-separations and 
+\begin_inset Formula $3$
+\end_inset
+
+-sums
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $3$
+\end_inset
+
+-separations and 
+\begin_inset Formula $3$
+\end_inset
+
+-sums
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+For a binary 
+\begin_inset Formula $3$
+\end_inset
+
+-connected matroid, any 
+\begin_inset Formula $3$
+\end_inset
+
+-separation 
+\begin_inset Formula $(E_{1},E_{2})$
+\end_inset
+
+ with 
+\begin_inset Formula $|E_{1}|,|E_{2}|\geq4$
+\end_inset
+
+ produces a 
+\begin_inset Formula $3$
+\end_inset
+
+-sum and vice versa
+\begin_inset Flex Beamer Note
+status open
+
+\begin_layout Plain Layout
+Lemma 8.3.12
+\end_layout
+
+\end_inset
+
+
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Proof sketch:
+\end_layout
+
+\begin_layout Itemize
+A matrix representation of a 
+\begin_inset Formula $3$
+\end_inset
+
+-sum produces a 
+\begin_inset Formula $3$
+\end_inset
+
+-separation
+\end_layout
+
+\begin_layout Itemize
+Consider a 
+\begin_inset Formula $3$
+\end_inset
+
+-separation, which must be exact, as 
+\begin_inset Formula $M$
+\end_inset
+
+ is 
+\begin_inset Formula $3$
+\end_inset
+
+-connected
+\end_layout
+
+\begin_layout Itemize
+Analyse the structure of the corresponding representation matrix
+\end_layout
+
+\begin_layout Itemize
+Consider a shortest path in the corresponding bipartite graph, apply path
+ shortening technique to reduce it to a path of length 
+\begin_inset Formula $2$
+\end_inset
+
+ via pivots
+\end_layout
+
+\begin_layout Itemize
+Reason about the entries of the matrix and the effects of the pivots
+\end_layout
+
+\begin_layout Itemize
+Eventually arrive at a matrix representation of a 
+\begin_inset Formula $3$
+\end_inset
+
+-sum
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Conclusion
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Conclusion
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Laid out the dependency graph for Seymour's decomposition theorem:
+\end_layout
+
+\begin_layout Enumerate
+Gives a complete overview of the theorem's proof all the way down to definitions
+\end_layout
+
+\begin_layout Enumerate
+Can guide formalization efforts
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Identified good first candidates for formalization:
+\end_layout
+
+\begin_layout Enumerate
+Easy direction of Seymour's decomposition theorem
+\end_layout
+
+\begin_layout Enumerate
+The splitter theorem and its corollaries
+\end_layout
+
+\end_deeper
+\end_body
+\end_document
