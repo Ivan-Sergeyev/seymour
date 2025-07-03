@@ -2856,16 +2856,45 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
         simp only [M]
         have hxxxxxx :
           (equiv₃X hx₁ₗ hx₀ₗ hx₁ᵣ hx₀ᵣ hx₂ᵣ.symm) =
-          (by sorry :
+          (Equiv.sumCongr (drop3_comm x₁ₗ x₀ₗ x₂ₗ).≃.leftCongr (Equiv.sumCongr fin2swap (drop3_comm x₁ᵣ x₀ᵣ x₂ᵣ).≃) :
             ((((Sₗ.X.drop3 x₁ₗ x₀ₗ x₂ₗ).Elem ⊕ Fin 1) ⊕ (Fin 2 ⊕ (Sᵣ.X.drop3 x₁ᵣ x₀ᵣ x₂ᵣ).Elem)) ≃
               ((Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ).Elem ⊕ Fin 1) ⊕ (Fin 2 ⊕ (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ).Elem))
           ).trans
             ((equiv₃X hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ).trans
-              (by sorry :
+              ((drop2_comm x₀ₗ x₁ₗ).≃.leftCongr :
                 (Sₗ.X.drop2 x₀ₗ x₁ₗ).Elem ⊕ (Sᵣ.X.drop1 x₂ᵣ).Elem ≃
                 (Sₗ.X.drop2 x₁ₗ x₀ₗ).Elem ⊕ (Sᵣ.X.drop1 x₂ᵣ).Elem))
-        · sorry
-        rw [hxxxxxx]
+        · ext i
+          cases i with
+          | inl iₗ =>
+            cases iₗ with
+            | inl => rfl
+            | inr => rfl
+          | inr iᵣ =>
+            cases iᵣ with
+            | inl i₂ => fin_cases i₂ <;> rfl
+            | inr => rfl
+        have hyyyyyy :
+          (equiv₃Y hy₁ₗ hy₀ₗ hy₂ₗ.symm hy₁ᵣ hy₀ᵣ) =
+          (Equiv.sumCongr (Equiv.sumCongr (drop3_comm y₁ₗ y₀ₗ y₂ₗ).≃ fin2swap) (drop3_comm y₁ᵣ y₀ᵣ y₂ᵣ).≃.rightCongr :
+            ((((Sₗ.Y.drop3 y₁ₗ y₀ₗ y₂ₗ).Elem ⊕ Fin 2) ⊕ (Fin 1 ⊕ (Sᵣ.Y.drop3 y₁ᵣ y₀ᵣ y₂ᵣ).Elem)) ≃
+              ((Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ).Elem ⊕ Fin 2) ⊕ (Fin 1 ⊕ (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ).Elem))
+          ).trans
+            ((equiv₃Y hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ).trans
+              ((drop2_comm y₀ᵣ y₁ᵣ).≃.rightCongr  :
+                (Sₗ.Y.drop1 y₂ₗ).Elem ⊕ (Sᵣ.Y.drop2 y₀ᵣ y₁ᵣ).Elem ≃
+                (Sₗ.Y.drop1 y₂ₗ).Elem ⊕ (Sᵣ.Y.drop2 y₁ᵣ y₀ᵣ).Elem))
+        · ext j
+          cases j with
+          | inl jₗ =>
+            cases jₗ with
+            | inl => rfl
+            | inr j₂ => fin_cases j₂ <;> rfl
+          | inr jᵣ =>
+            cases jᵣ with
+            | inl => rfl
+            | inr => rfl
+        rw [hxxxxxx, hyyyyyy]
         sorry
 
 
