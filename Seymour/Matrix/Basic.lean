@@ -35,6 +35,11 @@ lemma Matrix.fromRows_one_transpose [Zero α] [One α] {m n : Type} [DecidableEq
 lemma Matrix.ext_col {m n : Type} {A B : Matrix m n α} (hAB : ∀ i : m, A i = B i) : A = B :=
   Matrix.ext (congr_fun <| hAB ·)
 
+lemma Matrix.subst_apply {X X' Y Y' : Set α} {R : Type} (A : Matrix X Y R) (hXX : X = X') (hYY : Y = Y') (x : X') (y : Y') :
+    (hXX ▸ hYY ▸ A) x y = A (hXX.symm ▸ x) (hYY.symm ▸ y) := by
+  subst hYY hXX
+  rfl
+
 /-- Computing the determinant of a square integer matrix and then converting it to a general field gives the same result as
     converting all elements to given field and computing the determinant afterwards. -/
 lemma Matrix.det_int_coe [DecidableEq α] [Fintype α] (A : Matrix α α ℤ) (F : Type) [Field F] :
