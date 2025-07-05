@@ -319,3 +319,8 @@ recall Matroid.Is3sumOf {α : Type} [DecidableEq α] (M Mₗ Mᵣ : Matroid α) 
 -- [theorem] any 3-sum of regular matroids is a regular matroid
 recall Matroid.Is3sumOf.isRegular {α : Type} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} :
   M.Is3sumOf Mₗ Mᵣ → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
+/--
+info: 'Matroid.Is3sumOf.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
+-/
+#guard_msgs in
+#print axioms Matroid.Is3sumOf.isRegular
