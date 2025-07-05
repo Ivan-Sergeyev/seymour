@@ -165,7 +165,10 @@ noncomputable abbrev fin2swap : Fin 2 ≃ Fin 2 := Equiv.ofBijective ![1, 0] (by
 @[simp] lemma fin2swap_apply_1 : fin2swap 1 = 0 := rfl
 
 @[simp] lemma fin2refl_symm : fin2refl.symm = fin2refl := rfl
-@[simp] lemma fin2swap_symm : fin2swap.symm = fin2swap := sorry
+@[simp] lemma fin2swap_symm : fin2swap.symm = fin2swap := by
+  rw [Function.Involutive.symm_eq_self_of_involutive]
+  intro i
+  fin_cases i <;> decide
 
 @[simp] lemma fin2swap_comp_fin2swap : fin2swap ∘ fin2swap = id := by decide
 @[simp] lemma fin2swap_trans_fin2swap : fin2swap.trans fin2swap = fin2refl := by decide
