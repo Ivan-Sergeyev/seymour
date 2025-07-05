@@ -2474,7 +2474,7 @@ private lemma HEq.standardRepr_matrix_apply {R : Type} {S₁ : StandardRepr α R
   rw [heq_eq_eq] at hSB
   exact congr_fun₂ hSB i j
 
-set_option maxHeartbeats 2666666 in
+set_option maxHeartbeats 3666666 in
 lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) (hS : standardReprSum3 hXX hYY hXY hYX = some S) :
@@ -2921,7 +2921,9 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
                   set M₁ := matrixSum3 Sₗ Sᵣ x₁ₗ x₀ₗ x₂ₗ y₁ₗ y₀ₗ y₂ₗ x₁ᵣ x₀ᵣ x₂ᵣ y₁ᵣ y₀ᵣ y₂ᵣ
                   have hDᵣ :
                       M₁.Dᵣ = M₀.Dᵣ.reindex (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ fin2swap
-                  · sorry
+                  · simp [M₀, M₁, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                    ext i j
+                    fin_cases j <;> rfl
                   have hD₀ :
                       M₁.D₀ₗ = M₀.D₀ₗ.reindex fin2swap fin2swap
                   · simp [M₀, M₁, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
@@ -2929,28 +2931,45 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
                     fin_cases i <;> fin_cases j <;> rfl
                   have hDₗ :
                       M₁.Dₗ = M₀.Dₗ.reindex fin2swap (drop3_comm y₀ₗ y₁ₗ y₂ₗ).≃
-                  · sorry
+                  · simp [M₀, M₁, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                    ext i j
+                    fin_cases i <;> rfl
                   have hDᵣ₀ :
                       M₁.Dᵣ * M₁.D₀ₗ⁻¹ =
                       M₀.Dᵣ.reindex (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ fin2swap * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹
                   · rw [hDᵣ, hD₀]
-                  have hDᵣ₀' : -- TODO reindex after multiplication here, adjust the proof
+                  have hDᵣ₀' :
                       M₁.Dᵣ * M₁.D₀ₗ⁻¹ =
-                      M₀.Dᵣ.reindex (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ fin2swap * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹
-                  · rw [hDᵣ₀]
+                      (M₀.Dᵣ.reindex (Equiv.refl _) fin2swap * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹).reindex
+                        (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ (Equiv.refl _)
+                  · rewrite [hDᵣ₀]
+                    rfl
                   have hDᵣ₀ₗ :
                       M₁.Dᵣ * M₁.D₀ₗ⁻¹ * M₁.Dₗ =
-                      M₀.Dᵣ.reindex (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ fin2swap * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹
+                      (M₀.Dᵣ.reindex (Equiv.refl _) fin2swap * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹).reindex
+                        (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ (Equiv.refl _)
                       * M₀.Dₗ.reindex fin2swap (drop3_comm y₀ₗ y₁ₗ y₂ₗ).≃
                   · rw [hDᵣ₀', hDₗ]
-                  have hDᵣ₀ₗ' : -- TODO reindex after multiplication here, adjust the proof
+                  have hDᵣ₀ₗ' :
                       M₁.Dᵣ * M₁.D₀ₗ⁻¹ * M₁.Dₗ =
-                      M₀.Dᵣ.reindex (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ fin2swap * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹
-                      * M₀.Dₗ.reindex fin2swap (drop3_comm y₀ₗ y₁ₗ y₂ₗ).≃
-                  · rw [hDᵣ₀ₗ]
-                  rw [hDᵣ₀ₗ']
-                  generalize_proofs hhX hhY hhi hhj
-                  sorry
+                      ((M₀.Dᵣ.reindex (Equiv.refl _) fin2swap * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹).reindex
+                        (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ (Equiv.refl _)
+                      * M₀.Dₗ.reindex fin2swap (Equiv.refl _)).reindex (Equiv.refl _) (drop3_comm y₀ₗ y₁ₗ y₂ₗ).≃
+                  · rewrite [hDᵣ₀ₗ]
+                    rfl
+                  have hDᵣ₀ₗ'' :
+                      M₁.Dᵣ * M₁.D₀ₗ⁻¹ * M₁.Dₗ = (
+                        (M₀.Dᵣ.reindex (Equiv.refl _) fin2swap
+                        * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹
+                        * M₀.Dₗ.reindex fin2swap (Equiv.refl _))
+                      ).reindex (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ (drop3_comm y₀ₗ y₁ₗ y₂ₗ).≃
+                  · rewrite [hDᵣ₀ₗ']
+                    rfl
+                  rw [hDᵣ₀ₗ'']
+                  simp /-only [Matrix.reindex_apply, Matrix.submatrix_mul_equiv, Matrix.submatrix_apply,
+                    Matrix.submatrix_submatrix, Matrix.submatrix_id_id, Matrix.inv_submatrix_equiv,
+                    Eq.interAll3, fin2swap_symm, Equiv.refl_symm, Equiv.coe_refl, Equiv.setCongr_symm_apply,
+                    Nat.succ_eq_add_one, ne_eq, not_false_eq_true, and_self, and_imp, true_and] -/
                 | inr jₗ₂ =>
                   simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
                   fin_cases jₗ₂ <;> rfl
