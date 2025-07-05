@@ -65,7 +65,7 @@ noncomputable def MatrixSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ R : Type} [CommRing R] 
 /-! ### Conversion of summands -/
 
 /-- Constructs 3-sum from summands in block form. -/
-def MatrixSum3.fromBlockSummands {Xₗ Yₗ Xᵣ Yᵣ R : Type}
+def blocksToMatrixSum3 {Xₗ Yₗ Xᵣ Yᵣ R : Type}
     (Bₗ : Matrix ((Xₗ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Fin 1) R)
     (Bᵣ : Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) R) :
     MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R where
@@ -97,11 +97,11 @@ private def MatrixSum3.Bᵣ_unexpand : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 /-- If the 3-sum is constructed from summands in block form, reconstructing the left summand yields the original one. -/
-private lemma MatrixSum3.fromBlockSummands_Bₗ_eq {Xₗ Yₗ Xᵣ Yᵣ R : Type} [Zero R] [One R]
+private lemma blocksToMatrixSum3_Bₗ_eq {Xₗ Yₗ Xᵣ Yᵣ R : Type} [Zero R] [One R]
     (Bₗ : Matrix ((Xₗ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Fin 1) R)
     (Bᵣ : Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) R)
     (hBₗ : Bₗ ◪0 ◪0 = Bᵣ ◪◩0 ◪◩0 ∧ Bₗ ◪1 ◪0 = Bᵣ ◪◩1 ◪◩0 ∧ ∀ i, Bₗ ◩i ◪0 = 0) :
-    (MatrixSum3.fromBlockSummands Bₗ Bᵣ).Bₗ = Bₗ := by
+    (blocksToMatrixSum3 Bₗ Bᵣ).Bₗ = Bₗ := by
   ext i j
   cases j with
   | inl jₗ => cases jₗ <;> cases i <;> tauto
@@ -112,11 +112,11 @@ private lemma MatrixSum3.fromBlockSummands_Bₗ_eq {Xₗ Yₗ Xᵣ Yᵣ R : Type
     | inr iᵣ => fin_cases iᵣ <;> tauto
 
 /-- If the 3-sum is constructed from summands in block form, reconstructing the right summand yields the original one. -/
-private lemma MatrixSum3.fromBlockSummands_Bᵣ_eq {Xₗ Yₗ Xᵣ Yᵣ R : Type} [Zero R] [One R]
+private lemma blocksToMatrixSum3_Bᵣ_eq {Xₗ Yₗ Xᵣ Yᵣ R : Type} [Zero R] [One R]
     (Bₗ : Matrix ((Xₗ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Fin 1) R)
     (Bᵣ : Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) R)
     (hBᵣ : Bᵣ ◩0 ◩0 = Bₗ ◩◪0 ◩◪0 ∧ Bᵣ ◩0 ◩1 = Bₗ ◩◪0 ◩◪1 ∧ ∀ i, Bᵣ ◩0 ◪i = 0) :
-    (MatrixSum3.fromBlockSummands Bₗ Bᵣ).Bᵣ = Bᵣ := by
+    (blocksToMatrixSum3 Bₗ Bᵣ).Bᵣ = Bᵣ := by
   ext i j
   cases i with
   | inl iₗ =>
@@ -481,7 +481,7 @@ private noncomputable def MatrixSum3.HasCanonicalSigning.toCanonicalSigning {X�
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) :
     MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ :=
-  MatrixSum3.fromBlockSummands hS.left.left.toCanonicalSummandₗ hS.left.right.toCanonicalSummandᵣ
+  blocksToMatrixSum3 hS.left.left.toCanonicalSummandₗ hS.left.right.toCanonicalSummandᵣ
 
 
 /-! ### Soundness of definitions -/
@@ -513,7 +513,7 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_Bₗ_eq {Xₗ Y�
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) :
     hS.toCanonicalSigning.Bₗ = hS.left.left.toCanonicalSummandₗ := by
   unfold MatrixSum3.HasCanonicalSigning.toCanonicalSigning
-  rw [MatrixSum3.fromBlockSummands_Bₗ_eq]
+  rw [blocksToMatrixSum3_Bₗ_eq]
   rcases hS.summands_hasTuCanonicalSigning with ⟨hBₗ, hBᵣ⟩ | ⟨hBₗ, hBᵣ⟩
   all_goals
     simp only [Matrix.HasTuSigning.toCanonicalSummandₗ, Matrix.HasTuSigning.toCanonicalSummandᵣ]
@@ -539,7 +539,7 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_Bᵣ_eq {Xₗ Y�
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) :
     hS.toCanonicalSigning.Bᵣ = hS.left.right.toCanonicalSummandᵣ := by
   unfold MatrixSum3.HasCanonicalSigning.toCanonicalSigning
-  rw [MatrixSum3.fromBlockSummands_Bᵣ_eq]
+  rw [blocksToMatrixSum3_Bᵣ_eq]
   rcases hS.summands_hasTuCanonicalSigning with ⟨hBₗ, hBᵣ⟩ | ⟨hBₗ, hBᵣ⟩
   all_goals
     simp only [Matrix.HasTuSigning.toCanonicalSummandₗ, Matrix.HasTuSigning.toCanonicalSummandᵣ]
@@ -1660,32 +1660,17 @@ private lemma MatrixSum3.HasCanonicalSigning.HasTuSigning {Xₗ Yₗ Xᵣ Yᵣ :
 variable {α : Type}
 
 /-- Remove one bundled element from a set. -/
-private abbrev Set.drop1 (Z : Set α) (z₀ : Z) : Set α := Z \ {z₀.val}
-
-@[app_unexpander Set.drop1]
-private def Set.drop1_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $S) => `($(S).$(Lean.mkIdent `drop1))
-  | _ => throw ()
+abbrev Set.drop1 (Z : Set α) (z₀ : Z) : Set α := Z \ {z₀.val}
 
 /-- Remove two bundled elements from a set. -/
-private abbrev Set.drop2 (Z : Set α) (z₀ z₁ : Z) : Set α := Z \ {z₀.val, z₁.val}
+abbrev Set.drop2 (Z : Set α) (z₀ z₁ : Z) : Set α := Z \ {z₀.val, z₁.val}
 
-@[app_unexpander Set.drop2]
-private def Set.drop2_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $S) => `($(S).$(Lean.mkIdent `drop2))
-  | _ => throw ()
+/-- Remove three bundled elements from a set. -/
+abbrev Set.drop3 (Z : Set α) (z₀ z₁ z₂ : Z) : Set α := Z \ {z₀.val, z₁.val, z₂.val}
 
 private lemma drop2_comm {Z : Set α} (z₀ z₁ : Z) : Z.drop2 z₀ z₁ = Z.drop2 z₁ z₀ := by
   unfold Set.drop2
   aesop
-
-/-- Remove three bundled elements from a set. -/
-private abbrev Set.drop3 (Z : Set α) (z₀ z₁ z₂ : Z) : Set α := Z \ {z₀.val, z₁.val, z₂.val}
-
-@[app_unexpander Set.drop3]
-private def Set.drop3_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $S) => `($(S).$(Lean.mkIdent `drop3))
-  | _ => throw ()
 
 private lemma drop3_comm {Z : Set α} (z₀ z₁ z₂ : Z) : Z.drop3 z₀ z₁ z₂ = Z.drop3 z₁ z₀ z₂ := by
   unfold Set.drop3
@@ -1751,7 +1736,7 @@ private lemma mem_union_drop3 {Z : Set α} {z₀ z₁ z₂ : Z} (hz₀ : z₀ �
   rw [Set.union_comm]
   exact drop3_union_mem hz₀ hz₁
 
-private def undrop3 {Z : Set α} {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z₁ z₂) : Z :=
+def undrop3 {Z : Set α} {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z₁ z₂) : Z :=
   ⟨i.val, i.property.left⟩
 
 
@@ -1884,7 +1869,7 @@ private def Eq.interAll3_unexpand : Lean.PrettyPrinter.Unexpander
 end triplets
 
 
-/-! ### New approach to conversion from union form to block form and vice versa -/
+/-! ### Conversion from union form to block form and vice versa -/
 
 def Matrix.toBlockSummandₗ {Xₗ Yₗ : Set α} {R : Type} (Bₗ : Matrix Xₗ Yₗ R) (x₀ x₁ x₂ : Xₗ) (y₀ y₁ y₂ : Yₗ) :
     Matrix ((Xₗ.drop3 x₀ x₁ x₂ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ.drop3 y₀ y₁ y₂ ⊕ Fin 2) ⊕ Fin 1) R :=
@@ -1956,7 +1941,7 @@ private def Matrix.toIntermediate_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $A) => `($(A).$(Lean.mkIdent `toIntermediate))
   | _ => throw ()
 
-private def Matrix.toDropUnionDropInternal {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
+private def Matrix.toMatrixDropUnionDropInternal {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
     (A : Matrix
@@ -1968,13 +1953,13 @@ private def Matrix.toDropUnionDropInternal {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : T
     Matrix (Xₗ.drop2 x₀ₗ x₁ₗ ∪ Xᵣ.drop1 x₂ᵣ).Elem (Yₗ.drop1 y₂ₗ ∪ Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem R :=
   (A.toIntermediate hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ).toMatrixUnionUnion
 
-@[app_unexpander Matrix.toDropUnionDropInternal]
-private def Matrix.toDropUnionDropInternal_unexpand : Lean.PrettyPrinter.Unexpander
-  | `($_ $A) => `($(A).$(Lean.mkIdent `toDropUnionDropInternal))
+@[app_unexpander Matrix.toMatrixDropUnionDropInternal]
+private def Matrix.toMatrixDropUnionDropInternal_unexpand : Lean.PrettyPrinter.Unexpander
+  | `($_ $A) => `($(A).$(Lean.mkIdent `toMatrixDropUnionDropInternal))
   | _ => throw ()
 
 @[simp]
-def Matrix.toDropUnionDrop {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
+def Matrix.toMatrixDropUnionDrop {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
     (A : Matrix
@@ -1998,7 +1983,7 @@ def Matrix.toDropUnionDrop {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
       if hjYᵣ : j.val ∈ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then ◪◪⟨j, hjYᵣ⟩ else
       False.elim (j.property.elim ↓(by simp_all) ↓(by simp_all)))
 
-private lemma Matrix.toDropUnionDrop_eq_toDropUnionDropInternal {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
+private lemma Matrix.toMatrixDropUnionDrop_eq_toMatrixDropUnionDropInternal {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
     (hx₀ₗ : x₁ₗ ≠ x₂ₗ) (hx₁ₗ : x₀ₗ ≠ x₂ₗ) (hx₀ᵣ : x₁ᵣ ≠ x₂ᵣ) (hx₁ᵣ : x₀ᵣ ≠ x₂ᵣ) (hx₂ᵣ : x₀ᵣ ≠ x₁ᵣ)
@@ -2007,7 +1992,7 @@ private lemma Matrix.toDropUnionDrop_eq_toDropUnionDropInternal {Xₗ Yₗ Xᵣ 
       ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
       ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
       R) :
-    A.toDropUnionDrop = A.toDropUnionDropInternal hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ := by
+    A.toMatrixDropUnionDrop = A.toMatrixDropUnionDropInternal hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ := by
   apply congr_arg₂
   · ext i
     unfold equiv₃X
@@ -2107,7 +2092,7 @@ private lemma Matrix.toDropUnionDrop_eq_toDropUnionDropInternal {Xₗ Yₗ Xᵣ 
 def matrixSum3 (Sₗ Sᵣ : StandardRepr α Z2)
     (x₀ₗ x₁ₗ x₂ₗ : Sₗ.X) (y₀ₗ y₁ₗ y₂ₗ : Sₗ.Y) (x₀ᵣ x₁ᵣ x₂ᵣ : Sᵣ.X) (y₀ᵣ y₁ᵣ y₂ᵣ : Sᵣ.Y) :
     MatrixSum3 (Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ) (Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ) (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ) (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ) Z2 :=
-  MatrixSum3.fromBlockSummands (Sₗ.B.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ) (Sᵣ.B.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ)
+  blocksToMatrixSum3 (Sₗ.B.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ) (Sᵣ.B.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ)
 
 
 /-! ### The 3-sum of standard representations -/
@@ -2153,7 +2138,7 @@ noncomputable def standardReprSum3aux {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x�
           ⟨⟨Sₗ.hXY.disjoint_sdiff_left.disjoint_sdiff_right, hYX.symm.disjoint_sdiff_left.disjoint_sdiff_right⟩,
           ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right, Sᵣ.hXY.disjoint_sdiff_left.disjoint_sdiff_right⟩⟩,
       -- standard representation matrix
-      (matrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).matrix.toDropUnionDrop,
+      (matrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).matrix.toMatrixDropUnionDrop,
       -- decidability of row indices
       inferInstance,
       -- decidability of col indices
@@ -2173,9 +2158,9 @@ noncomputable def standardReprSum3 {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x
     -- the special elements are all distinct
     ((x₀ ≠ x₁ ∧ x₀ ≠ x₂ ∧ x₁ ≠ x₂) ∧ (y₀ ≠ y₁ ∧ y₀ ≠ y₂ ∧ y₁ ≠ y₂))
     -- `D₀` is the same in `Bₗ` and `Bᵣ`
-    ∧ Sₗ.B.submatrix ![x₀ₗ, x₁ₗ] ![y₀ₗ, y₁ₗ] = Sᵣ.B.submatrix ![x₀ᵣ, x₁ᵣ] ![y₀ᵣ, y₁ᵣ] -- Was: `∧ !![Sₗ.B x₀ₗ y₀ₗ, Sₗ.B x₀ₗ y₁ₗ; Sₗ.B x₁ₗ y₀ₗ, Sₗ.B x₁ₗ y₁ₗ] = !![Sᵣ.B x₀ᵣ y₀ᵣ, Sᵣ.B x₀ᵣ y₁ᵣ; Sᵣ.B x₁ᵣ y₀ᵣ, Sᵣ.B x₁ᵣ y₁ᵣ]`
+    ∧ Sₗ.B.submatrix ![x₀ₗ, x₁ₗ] ![y₀ₗ, y₁ₗ] = Sᵣ.B.submatrix ![x₀ᵣ, x₁ᵣ] ![y₀ᵣ, y₁ᵣ]
     -- `D₀` is invertible
-    ∧ IsUnit (Sₗ.B.submatrix ![x₀ₗ, x₁ₗ] ![y₀ₗ, y₁ₗ]) -- Was: `∧ IsUnit !![Sₗ.B x₀ₗ y₀ₗ, Sₗ.B x₀ₗ y₁ₗ; Sₗ.B x₁ₗ y₀ₗ, Sₗ.B x₁ₗ y₁ₗ]`
+    ∧ IsUnit (Sₗ.B.submatrix ![x₀ₗ, x₁ₗ] ![y₀ₗ, y₁ₗ])
     -- `Bₗ` has the correct structure outside of `Aₗ`, `Dₗ`, and `D₀`
     ∧ Sₗ.B x₀ₗ y₂ₗ = 1
     ∧ Sₗ.B x₁ₗ y₂ₗ = 1
@@ -2201,7 +2186,7 @@ noncomputable def standardReprSum3 {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x
           ⟨⟨Sₗ.hXY.disjoint_sdiff_left.disjoint_sdiff_right, hYX.symm.disjoint_sdiff_left.disjoint_sdiff_right⟩,
           ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right, Sᵣ.hXY.disjoint_sdiff_left.disjoint_sdiff_right⟩⟩,
       -- standard representation matrix
-      (matrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).matrix.toDropUnionDrop,
+      (matrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).matrix.toMatrixDropUnionDrop,
       -- decidability of row indices
       inferInstance,
       -- decidability of col indices
@@ -2370,7 +2355,7 @@ lemma standardReprSum3aux_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ 
       · use Bₗ.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ, hBₗ.submatrix _ _
         convert hSBₗ.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ
         conv_rhs => rw [←(Sₗ.B.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ).fromBlocks_toBlocks]
-        simp_rw [M, matrixSum3, MatrixSum3.Bₗ, MatrixSum3.fromBlockSummands,
+        simp_rw [M, matrixSum3, MatrixSum3.Bₗ, blocksToMatrixSum3,
           Matrix.fromCols_toCols, Matrix.fromBlocks_inj, true_and]
         constructor
         · ext i j
@@ -2397,7 +2382,7 @@ lemma standardReprSum3aux_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ 
       · use Bᵣ.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ, hBᵣ.submatrix _ _
         convert hSBᵣ.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
         conv_rhs => rw [←(Sᵣ.B.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).fromBlocks_toBlocks]
-        simp_rw [M, matrixSum3, MatrixSum3.Bᵣ, MatrixSum3.fromBlockSummands,
+        simp_rw [M, matrixSum3, MatrixSum3.Bᵣ, blocksToMatrixSum3,
           Matrix.fromRows_toRows, Matrix.fromBlocks_inj, and_true]
         constructor
         · ext i j
@@ -2477,7 +2462,7 @@ lemma standardReprSum3aux_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ 
   constructor
   · apply Matrix.IsTotallyUnimodular.toMatrixElemElem
     apply hB.submatrix
-  · rw [Matrix.toDropUnionDrop_eq_toDropUnionDropInternal hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ] at hS'
+  · rw [Matrix.toMatrixDropUnionDrop_eq_toMatrixDropUnionDropInternal hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ] at hS'
     exact hS' ▸ (hBM.reindex (equiv₃X hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ) (equiv₃Y hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ)).toMatrixElemElem hXxxx hYyyy
 
 private lemma HEq.standardRepr_matrix_apply {R : Type} {S₁ : StandardRepr α R} {X₂ Y₂ : Set α} {B₂ : Matrix X₂ Y₂ R}
@@ -2567,7 +2552,7 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
           · use Bₗ.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ, hBₗ.submatrix _ _
             convert hSBₗ.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ
             conv_rhs => rw [←(Sₗ.B.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ).fromBlocks_toBlocks]
-            simp_rw [M, matrixSum3, MatrixSum3.Bₗ, MatrixSum3.fromBlockSummands,
+            simp_rw [M, matrixSum3, MatrixSum3.Bₗ, blocksToMatrixSum3,
               Matrix.fromCols_toCols, Matrix.fromBlocks_inj, true_and]
             constructor
             · ext i j
@@ -2594,7 +2579,7 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
           · use Bᵣ.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ, hBᵣ.submatrix _ _
             convert hSBᵣ.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
             conv_rhs => rw [←(Sᵣ.B.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).fromBlocks_toBlocks]
-            simp_rw [M, matrixSum3, MatrixSum3.Bᵣ, MatrixSum3.fromBlockSummands,
+            simp_rw [M, matrixSum3, MatrixSum3.Bᵣ, blocksToMatrixSum3,
               Matrix.fromRows_toRows, Matrix.fromBlocks_inj, and_true]
             constructor
             · ext i j
@@ -2698,7 +2683,7 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
       constructor
       · apply Matrix.IsTotallyUnimodular.toMatrixElemElem
         apply hB.submatrix
-      · rw [Matrix.toDropUnionDrop_eq_toDropUnionDropInternal hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ] at hS''
+      · rw [Matrix.toMatrixDropUnionDrop_eq_toMatrixDropUnionDropInternal hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ] at hS''
         exact hS'' ▸ (hBM.reindex (equiv₃X hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ) (equiv₃Y hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ)).toMatrixElemElem hXxxx hYyyy
     else
       have hg' : g = fin2swap := eq_fin2swap_of_ne_fin2refl hg
@@ -2722,7 +2707,7 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
           · use Bₗ.toBlockSummandₗ x₁ₗ x₀ₗ x₂ₗ y₁ₗ y₀ₗ y₂ₗ, hBₗ.submatrix _ _
             convert hSBₗ.toBlockSummandₗ x₁ₗ x₀ₗ x₂ₗ y₁ₗ y₀ₗ y₂ₗ
             conv_rhs => rw [←(Sₗ.B.toBlockSummandₗ x₁ₗ x₀ₗ x₂ₗ y₁ₗ y₀ₗ y₂ₗ).fromBlocks_toBlocks]
-            simp_rw [M, matrixSum3, MatrixSum3.Bₗ, MatrixSum3.fromBlockSummands,
+            simp_rw [M, matrixSum3, MatrixSum3.Bₗ, blocksToMatrixSum3,
               Matrix.fromCols_toCols, Matrix.fromBlocks_inj, true_and]
             constructor
             · ext i j
@@ -2749,7 +2734,7 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
           · use Bᵣ.toBlockSummandᵣ x₁ᵣ x₀ᵣ x₂ᵣ y₁ᵣ y₀ᵣ y₂ᵣ, hBᵣ.submatrix _ _
             convert hSBᵣ.toBlockSummandᵣ x₁ᵣ x₀ᵣ x₂ᵣ y₁ᵣ y₀ᵣ y₂ᵣ
             conv_rhs => rw [←(Sᵣ.B.toBlockSummandᵣ x₁ᵣ x₀ᵣ x₂ᵣ y₁ᵣ y₀ᵣ y₂ᵣ).fromBlocks_toBlocks]
-            simp_rw [M, matrixSum3, MatrixSum3.Bᵣ, MatrixSum3.fromBlockSummands,
+            simp_rw [M, matrixSum3, MatrixSum3.Bᵣ, blocksToMatrixSum3,
               Matrix.fromRows_toRows, Matrix.fromBlocks_inj, and_true]
             constructor
             · ext i j
@@ -2859,9 +2844,9 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
       constructor
       · apply Matrix.IsTotallyUnimodular.toMatrixElemElem
         apply hB.submatrix
-      · rw [Matrix.toDropUnionDrop_eq_toDropUnionDropInternal hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ] at hS''
+      · rw [Matrix.toMatrixDropUnionDrop_eq_toMatrixDropUnionDropInternal hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ] at hS''
         convert (hBM.reindex (equiv₃X hx₁ₗ hx₀ₗ hx₁ᵣ hx₀ᵣ hx₂ᵣ.symm) (equiv₃Y hy₁ₗ hy₀ₗ hy₂ₗ.symm hy₁ᵣ hy₀ᵣ)).toMatrixElemElem hXxxx hYyyy
-        simp only [Eq.interAll3, Matrix.toDropUnionDropInternal, Matrix.toIntermediate] at hS''
+        simp only [Eq.interAll3, Matrix.toMatrixDropUnionDropInternal, Matrix.toIntermediate] at hS''
         simp only [M, Matrix.reindex_apply]
         have hSB := congr_arg_heq StandardRepr.B hS''
         simp at hSB
@@ -2879,33 +2864,33 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
               | inl jₗ =>
                 cases jₗ with
                 | inl jₗₗ =>
-                  simp [Q, W, MatrixSum3.matrix, matrixSum3, MatrixSum3.fromBlockSummands, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
                   rfl
                 | inr jₗ₂ =>
-                  simp [Q, W, MatrixSum3.matrix, matrixSum3, MatrixSum3.fromBlockSummands, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
                   fin_cases jₗ₂ <;> rfl
               | inr jᵣ =>
                 cases jᵣ with
                 | inl jᵣ₁ =>
-                  simp [Q, W, MatrixSum3.matrix, matrixSum3, MatrixSum3.fromBlockSummands, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
                 | inr jᵣᵣ =>
-                  simp [Q, W, MatrixSum3.matrix, matrixSum3, MatrixSum3.fromBlockSummands, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
             | inr iₗ₁ =>
               cases j with
               | inl jₗ =>
                 cases jₗ with
                 | inl jₗₗ =>
-                  simp [Q, W, MatrixSum3.matrix, matrixSum3, MatrixSum3.fromBlockSummands, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
                   rfl
                 | inr jₗ₂ =>
-                  simp [Q, W, MatrixSum3.matrix, matrixSum3, MatrixSum3.fromBlockSummands, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
                   fin_cases jₗ₂ <;> rfl
               | inr jᵣ =>
                 cases jᵣ with
                 | inl jᵣ₁ =>
-                  simp [Q, W, MatrixSum3.matrix, matrixSum3, MatrixSum3.fromBlockSummands, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
                 | inr jᵣᵣ =>
-                  simp [Q, W, MatrixSum3.matrix, matrixSum3, MatrixSum3.fromBlockSummands, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
           | inr iᵣ =>
             cases iᵣ with
             | inl iᵣ₂ =>
@@ -2913,18 +2898,18 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
               | inl jₗ =>
                 cases jₗ with
                 | inl jₗₗ =>
-                  simp [Q, W, MatrixSum3.matrix, matrixSum3, MatrixSum3.fromBlockSummands, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
                   fin_cases iᵣ₂ <;> rfl
                 | inr jₗ₂ =>
-                  simp [Q, W, MatrixSum3.matrix, matrixSum3, MatrixSum3.fromBlockSummands, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
                   fin_cases iᵣ₂ <;> fin_cases jₗ₂ <;> rfl
               | inr jᵣ =>
                 cases jᵣ with
                 | inl jᵣ₁ =>
-                  simp [Q, W, MatrixSum3.matrix, matrixSum3, MatrixSum3.fromBlockSummands, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
                   fin_cases iᵣ₂ <;> rfl
                 | inr jᵣᵣ =>
-                  simp [Q, W, MatrixSum3.matrix, matrixSum3, MatrixSum3.fromBlockSummands, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
                   fin_cases iᵣ₂ <;> rfl
             | inr iᵣᵣ =>
               cases j with
@@ -2973,15 +2958,15 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
                       sorry
                   apply Matrix.subst_apply
                 | inr jₗ₂ =>
-                  simp [Q, W, MatrixSum3.matrix, matrixSum3, MatrixSum3.fromBlockSummands, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
                   fin_cases jₗ₂ <;> rfl
               | inr jᵣ =>
                 cases jᵣ with
                 | inl jᵣ₁ =>
-                  simp [Q, W, MatrixSum3.matrix, matrixSum3, MatrixSum3.fromBlockSummands, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
                   rfl
                 | inr jᵣᵣ =>
-                  simp [Q, W, MatrixSum3.matrix, matrixSum3, MatrixSum3.fromBlockSummands, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
                   rfl
         have hxxxxxx :
           (equiv₃X hx₁ₗ hx₀ₗ hx₁ᵣ hx₀ᵣ hx₂ᵣ.symm) =
