@@ -3,7 +3,7 @@
 \section{Definition}
 
 \begin{definition}
-    \label{standardReprSum3aux}
+    \label{standardReprSum3}
     \uses{StandardRepr,Matrix.fromBlocks}
     % \lean{}
     \leanok
@@ -82,22 +82,8 @@
     Here $x_{2} \in X_{\ell}$, $x_{0}, x_{1} \in X_{r}$, $y_{0}, y_{1} \in Y_{\ell}$, $y_{2} \in Y_{r}$, $A_{\ell} \in \mathbb{Z}_{2}^{X_{\ell} \times Y_{\ell}}$, $A_{r} \in \mathbb{Z}_{2}^{X_{r} \times Y_{r}}$, $D_{\ell} \in \mathbb{Z}_{2}^{\{x_{0}, x_{1}\} \times (Y_{\ell} \setminus \{y_{0}, y_{1}\})}$, $D_{r} \in \mathbb{Z}_{2}^{(X_{r} \setminus \{x_{0}, x_{1}\}) \times \{y_{0}, y_{1}\}}$, $D_{\ell r} \in \mathbb{Z}_{2}^{(X_{r} \setminus \{x_{0}, x_{1}\}) \times (Y_{\ell} \setminus \{y_{0}, y_{1}\})}$, $D_{0} \in \mathbb{Z}_{2}^{\{x_{0}, x_{1}\} \times \{y_{0}, y_{1}\}}$. The indexing is consistent everywhere.
 
     Note that $D_{0}$ is non-singular by construction, so $D_{\ell r}$ and $B$ are well-defined. Moreover, a non-singular $\mathbb{Z}_{2}^{2 \times 2}$ matrix is either  $\begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}$ or $\begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}$ up to re-indexing.
-\end{definition}
 
-\begin{definition}
-    \label{standardReprSum3}
-    \uses{StandardRepr,Matrix.fromBlocks}
-    % \lean{}
-    \leanok
-    Definition~\ref{standardReprSum3aux} can be equivalently restated with $D_{0}$ required to be non-singular and $B_{\ell}$, $B_{r}$, and $B$ re-indexed appropriately.
-\end{definition}
-
-\begin{definition}
-    \label{Matroid.Is3sumOfaux}
-    \uses{Matroid,StandardRepr,standardReprSum3aux}
-    % \lean{}
-    \leanok
-    A matroid $M$ is a $3$-sum of matroids $M_{\ell}$ and $M_{r}$ if there exist standard $\mathbb{Z}_{2}$ representation matrices $B_{\ell}$, $B_{r}$, and $B$ (for $M_{\ell}$, $M_{r}$, and $M$, respectively) of the form given in Definition~\ref{standardReprSum3aux}.
+    TODO change to nonsingular matrix.
 \end{definition}
 
 \begin{definition}
@@ -284,10 +270,10 @@
 
 \begin{definition}
     \label{MatrixSum3.toCanonicalSigning}
-    \uses{standardReprSum3aux,Matrix.IsTuSigningOf,Matrix.toCanonicalSigning}
+    \uses{standardReprSum3,Matrix.IsTuSigningOf,Matrix.toCanonicalSigning}
     % \lean{}
     \leanok
-    Suppose that $B_{\ell}$ and $B_{r}$ from Definition~\ref{standardReprSum3aux} have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Let $B_{\ell}''$ and $B_{r}''$ be the canonical re-signings (from Definition~\ref{Matrix.toCanonicalSigning}) of $B_{\ell}'$ and $B_{r}'$, respectively. Let $A_{\ell}''$, $A_{r}''$, $D_{\ell}''$, $D_{r}''$, and $D_{0}''$ be blocks of $B_{\ell}''$ and $B_{r}''$ analogous to blocks $A_{\ell}$, $A_{r}$, $D_{\ell}$, $D_{r}$, and $D_{0}$ of $B_{\ell}$ and $B_{r}$. The canonical signing $B''$ of $B$ is defined as
+    Suppose that $B_{\ell}$ and $B_{r}$ from Definition~\ref{standardReprSum3} have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Let $B_{\ell}''$ and $B_{r}''$ be the canonical re-signings (from Definition~\ref{Matrix.toCanonicalSigning}) of $B_{\ell}'$ and $B_{r}'$, respectively. Let $A_{\ell}''$, $A_{r}''$, $D_{\ell}''$, $D_{r}''$, and $D_{0}''$ be blocks of $B_{\ell}''$ and $B_{r}''$ analogous to blocks $A_{\ell}$, $A_{r}$, $D_{\ell}$, $D_{r}$, and $D_{0}$ of $B_{\ell}$ and $B_{r}$. The canonical signing $B''$ of $B$ is defined as
     \begin{center}
         \noindent
         \begin{tikzpicture}
@@ -337,10 +323,10 @@
 
 \begin{lemma}
     \label{MatrixSum3.HasTuBr.cccAr_isTotallyUnimodular}
-    \uses{standardReprSum3aux,Matrix.IsTuSigningOf,Matrix.toCanonicalSigning}
+    \uses{standardReprSum3,Matrix.IsTuSigningOf,Matrix.toCanonicalSigning}
     % \lean{}
     \leanok
-    Suppose that $B_{r}$ from Definition~\ref{standardReprSum3aux} has a TU signing $B_{r}'$. Let $B_{r}''$ be the canonical re-signing (from Definition~\ref{Matrix.toCanonicalSigning}) of $B_{r}'$. Let $c_{0}'' = B_{r}'' (X_{r}, y_{0})$, $c_{1}'' = B_{r}'' (X_{r}, y_{1})$, and $c_{2}'' = c_{0}'' - c_{1}''$. Then the following statements hold.
+    Suppose that $B_{r}$ from Definition~\ref{standardReprSum3} has a TU signing $B_{r}'$. Let $B_{r}''$ be the canonical re-signing (from Definition~\ref{Matrix.toCanonicalSigning}) of $B_{r}'$. Let $c_{0}'' = B_{r}'' (X_{r}, y_{0})$, $c_{1}'' = B_{r}'' (X_{r}, y_{1})$, and $c_{2}'' = c_{0}'' - c_{1}''$. Then the following statements hold.
     \begin{enumerate}
         \item\label{item:tss_Brp_c01} For every $i \in X_{r}$, $\begin{bmatrix} c_{0}'' (i) & c_{1}'' (i) \end{bmatrix} \in \{0, \pm 1\}^{\{y_{0}, y_{1}\}} \setminus \left\{ \begin{bmatrix} 1 & -1 \end{bmatrix}, \begin{bmatrix} -1 & 1 \end{bmatrix} \right\}$.
         \item\label{item:tss_Brp_c2} For every $i \in X_{r}$, $c_{2}'' (i) \in \{0, \pm 1\}$.
@@ -409,10 +395,10 @@
 
 \begin{lemma}
     \label{MatrixSum3.HasTuBr.dddAl_isTotallyUnimodular}
-    \uses{standardReprSum3aux,Matrix.IsTuSigningOf,Matrix.toCanonicalSigning}
+    \uses{standardReprSum3,Matrix.IsTuSigningOf,Matrix.toCanonicalSigning}
     % \lean{}
     \leanok
-    Suppose that $B_{\ell}$ from Definition~\ref{standardReprSum3aux} has a TU signing $B_{\ell}'$. Let $B_{\ell}''$ be the canonical re-signing (from Definition~\ref{Matrix.toCanonicalSigning}) of $B_{\ell}'$. Let $d_{0}'' = B_{\ell}'' (x_{0}, Y_{\ell})$, $d_{1}'' = B_{\ell}'' (x_{1}, Y_{\ell})$, and $d_{2}'' = d_{0}'' - d_{1}''$. Then the following statements hold.
+    Suppose that $B_{\ell}$ from Definition~\ref{standardReprSum3} has a TU signing $B_{\ell}'$. Let $B_{\ell}''$ be the canonical re-signing (from Definition~\ref{Matrix.toCanonicalSigning}) of $B_{\ell}'$. Let $d_{0}'' = B_{\ell}'' (x_{0}, Y_{\ell})$, $d_{1}'' = B_{\ell}'' (x_{1}, Y_{\ell})$, and $d_{2}'' = d_{0}'' - d_{1}''$. Then the following statements hold.
     \begin{enumerate}
         \item\label{item:tss_Blp_d01} For every $j \in Y_{\ell}$, $\begin{bmatrix} d_{0}'' (i) \\ d_{1}'' (j) \end{bmatrix} \in \{0, \pm 1\}^{\{x_{0}, x_{1}\}} \setminus \left\{ \begin{bmatrix} 1 \\ -1 \end{bmatrix}, \begin{bmatrix} -1 \\ 1 \end{bmatrix} \right\}$.
         \item\label{item:tss_Blp_d2} For every $j \in Y_{\ell}$, $d_{2}'' (j) \in \{0, \pm 1\}$.
@@ -584,20 +570,6 @@
 \end{proof}
 
 \begin{theorem}
-    \label{Matroid.Is3sumOfaux.isRegular}
-    \uses{Matroid.Is3sumOfaux,Matroid.IsRegular}
-    % \lean{}
-    \leanok
-    Let $M$ be a $3$-sum of regular matroids $M_{\ell}$ and $M_{r}$. Then $M$ is also regular.
-\end{theorem}
-
-\begin{proof}
-    \uses{StandardRepr,Matroid.Is3sumOfaux,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,MatrixSum3.toCanonicalSigning,MatrixSum3.HasCanonicalSigning.toCanonicalSigning,MatrixSum3.IsCanonicalSigning.IsTotallyUnimodular}
-    \leanok
-    Let $B_{\ell}$, $B_{r}$, and $B$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{Matroid.Is3sumOfaux}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings. Then the canonical signing $B''$ from Definition~\ref{MatrixSum3.toCanonicalSigning} is a TU signing of $B$. Indeed, $B''$ is a signing of $B$ by Lemma~\ref{MatrixSum3.HasCanonicalSigning.toCanonicalSigning}, and $B''$ is TU by Lemma~\ref{MatrixSum3.IsCanonicalSigning.IsTotallyUnimodular}. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
-\end{proof}
-
-\begin{theorem}
     \label{Matroid.Is3sumOf.isRegular}
     \uses{Matroid.Is3sumOf,Matroid.IsRegular}
     % \lean{}
@@ -607,6 +579,6 @@
 
 \begin{proof}
     \uses{StandardRepr,Matroid.Is3sumOf,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,MatrixSum3.toCanonicalSigning,MatrixSum3.HasCanonicalSigning.toCanonicalSigning,MatrixSum3.IsCanonicalSigning.IsTotallyUnimodular}
-    % \leanok
+    \leanok
     Let $B_{\ell}$, $B_{r}$, and $B$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{Matroid.Is3sumOf}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings. Then the canonical signing $B''$ from Definition~\ref{MatrixSum3.toCanonicalSigning} is a TU signing of $B$. Indeed, $B''$ is a signing of $B$ by Lemma~\ref{MatrixSum3.HasCanonicalSigning.toCanonicalSigning}, and $B''$ is TU by Lemma~\ref{MatrixSum3.IsCanonicalSigning.IsTotallyUnimodular}. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
 \end{proof}

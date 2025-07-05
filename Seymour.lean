@@ -1,7 +1,6 @@
 import Seymour.HardDirection
 
-
-/-! ## Formally verified summary of the Seymour project -/
+/-! # Formally verified summary of the Seymour project -/
 
 open scoped Matrix Set.Notation
 

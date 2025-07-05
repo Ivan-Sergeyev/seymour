@@ -1,33 +1,6 @@
 \chapter{Conclusion}
 
 \begin{definition}
-    \label{Matroid.IsGoodaux}
-    \uses{Matroid.IsRegular,Matroid.Is1sumOf,Matroid.Is2sumOf,Matroid.Is3sumOfaux}
-    \leanok
-    Any graphic matroid is good.
-    Any matroid isomorphic to R10 is good.
-    Any 1-sum (in the sense of Definition~\ref{Matroid.Is1sumOf}) of good matroids is a good matroid.
-    Any 2-sum (in the sense of Definition~\ref{Matroid.Is2sumOf}) of good matroids is a good matroid.
-    Any 3-sum (in the sense of Definition~\ref{Matroid.Is3sumOfaux}) of good matroids is a good matroid.
-    TODO some dependencies are missing in the blueprint.
-\end{definition}
-
-\begin{corollary}
-    \label{Matroid.IsGoodaux.isRegular}
-    \uses{Matroid.IsGoodaux,Matroid.IsRegular}
-    % \lean{}
-    \leanok
-    Any good matroid is regular. This is a corollary of the easy direction of the Seymour theorem.
-    TODO some dependencies are missing in the blueprint.
-\end{corollary}
-
-\begin{proof}
-    \uses{Matroid.Is1sumOf.isRegular,Matroid.Is2sumOf.isRegular,Matroid.Is3sumOfaux.isRegular}
-    \leanok
-    Structural induction.
-\end{proof}
-
-\begin{definition}
     \label{Matroid.IsGood}
     \uses{Matroid.IsRegular,Matroid.Is1sumOf,Matroid.Is2sumOf,Matroid.Is3sumOf}
     \leanok
