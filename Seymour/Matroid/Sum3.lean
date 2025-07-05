@@ -2920,7 +2920,7 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
                   set M₀ := matrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
                   set M₁ := matrixSum3 Sₗ Sᵣ x₁ₗ x₀ₗ x₂ₗ y₁ₗ y₀ₗ y₂ₗ x₁ᵣ x₀ᵣ x₂ᵣ y₁ᵣ y₀ᵣ y₂ᵣ
                   have hDᵣ :
-                      M₁.Dᵣ = drop3_comm x₁ᵣ x₀ᵣ x₂ᵣ ▸ M₀.Dᵣ.reindex (Equiv.refl _) fin2swap
+                      M₁.Dᵣ = M₀.Dᵣ.reindex (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ fin2swap
                   · sorry
                   have hD₀ :
                       M₁.D₀ₗ = M₀.D₀ₗ.reindex fin2swap fin2swap
@@ -2928,31 +2928,28 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
                     ext i j
                     fin_cases i <;> fin_cases j <;> rfl
                   have hDₗ :
-                      M₁.Dₗ = drop3_comm y₁ₗ y₀ₗ y₂ₗ ▸ M₀.Dₗ.reindex fin2swap (Equiv.refl _)
+                      M₁.Dₗ = M₀.Dₗ.reindex fin2swap (drop3_comm y₀ₗ y₁ₗ y₂ₗ).≃
                   · sorry
                   have hDᵣ₀ :
                       M₁.Dᵣ * M₁.D₀ₗ⁻¹ =
-                      (drop3_comm x₁ᵣ x₀ᵣ x₂ᵣ ▸ M₀.Dᵣ.reindex (Equiv.refl _) fin2swap) * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹
+                      M₀.Dᵣ.reindex (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ fin2swap * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹
                   · rw [hDᵣ, hD₀]
-                  have hDᵣ₀' :
+                  have hDᵣ₀' : -- TODO reindex after multiplication here, adjust the proof
                       M₁.Dᵣ * M₁.D₀ₗ⁻¹ =
-                      drop3_comm x₁ᵣ x₀ᵣ x₂ᵣ ▸ (M₀.Dᵣ.reindex (Equiv.refl _) fin2swap * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹)
-                  · clear * - hDᵣ₀
-                    rw [hDᵣ₀]
-                    sorry
+                      M₀.Dᵣ.reindex (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ fin2swap * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹
+                  · rw [hDᵣ₀]
                   have hDᵣ₀ₗ :
                       M₁.Dᵣ * M₁.D₀ₗ⁻¹ * M₁.Dₗ =
-                      (drop3_comm x₁ᵣ x₀ᵣ x₂ᵣ ▸ (M₀.Dᵣ.reindex (Equiv.refl _) fin2swap * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹))
-                      * (drop3_comm y₁ₗ y₀ₗ y₂ₗ ▸ M₀.Dₗ.reindex fin2swap (Equiv.refl _))
+                      M₀.Dᵣ.reindex (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ fin2swap * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹
+                      * M₀.Dₗ.reindex fin2swap (drop3_comm y₀ₗ y₁ₗ y₂ₗ).≃
                   · rw [hDᵣ₀', hDₗ]
-                  have hDᵣ₀ₗ' :
+                  have hDᵣ₀ₗ' : -- TODO reindex after multiplication here, adjust the proof
                       M₁.Dᵣ * M₁.D₀ₗ⁻¹ * M₁.Dₗ =
-                      drop3_comm x₁ᵣ x₀ᵣ x₂ᵣ ▸ drop3_comm y₁ₗ y₀ₗ y₂ₗ ▸
-                        (M₀.Dᵣ.reindex (Equiv.refl _) fin2swap * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹
-                        * M₀.Dₗ.reindex fin2swap (Equiv.refl _))
-                  · sorry
+                      M₀.Dᵣ.reindex (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ fin2swap * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹
+                      * M₀.Dₗ.reindex fin2swap (drop3_comm y₀ₗ y₁ₗ y₂ₗ).≃
+                  · rw [hDᵣ₀ₗ]
                   rw [hDᵣ₀ₗ']
-                  generalize_proofs hhY hhX hhi hhj
+                  generalize_proofs hhX hhY hhi hhj
                   sorry
                 | inr jₗ₂ =>
                   simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
