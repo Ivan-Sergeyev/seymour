@@ -2844,7 +2844,172 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
         simp at hSB
         set Q := (matrixSum3 Sₗ Sᵣ x₁ₗ x₀ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₁ᵣ x₀ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).matrix
         set W := (matrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).matrix
-        sorry
+        have hQW : Q = W.reindex
+            (Equiv.sumCongr (drop3_comm x₁ₗ x₀ₗ x₂ₗ).≃.leftCongr (Equiv.sumCongr fin2swap (drop3_comm x₁ᵣ x₀ᵣ x₂ᵣ).≃)).symm
+            =.≃
+        · ext i j
+          cases i with
+          | inl iₗ =>
+            cases iₗ with
+            | inl iₗₗ =>
+              cases j with
+              | inl jₗ =>
+                cases jₗ with
+                | inl jₗₗ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  rfl
+                | inr jₗ₂ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  fin_cases jₗ₂ <;> rfl
+              | inr jᵣ =>
+                cases jᵣ with
+                | inl jᵣ₁ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                | inr jᵣᵣ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+            | inr iₗ₁ =>
+              cases j with
+              | inl jₗ =>
+                cases jₗ with
+                | inl jₗₗ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  rfl
+                | inr jₗ₂ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  fin_cases jₗ₂ <;> rfl
+              | inr jᵣ =>
+                cases jᵣ with
+                | inl jᵣ₁ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                | inr jᵣᵣ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+          | inr iᵣ =>
+            cases iᵣ with
+            | inl iᵣ₂ =>
+              cases j with
+              | inl jₗ =>
+                cases jₗ with
+                | inl jₗₗ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  fin_cases iᵣ₂ <;> rfl
+                | inr jₗ₂ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  fin_cases iᵣ₂ <;> fin_cases jₗ₂ <;> rfl
+              | inr jᵣ =>
+                cases jᵣ with
+                | inl jᵣ₁ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  fin_cases iᵣ₂ <;> rfl
+                | inr jᵣᵣ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  fin_cases iᵣ₂ <;> rfl
+            | inr iᵣᵣ =>
+              cases j with
+              | inl jₗ =>
+                cases jₗ with
+                | inl jₗₗ =>
+                  simp [Q, W, MatrixSum3.matrix]
+                  set M₀ := matrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
+                  set M₁ := matrixSum3 Sₗ Sᵣ x₁ₗ x₀ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₁ᵣ x₀ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
+                  have hDᵣ :
+                      M₁.Dᵣ = M₀.Dᵣ.reindex (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ fin2refl
+                  · simp [M₀, M₁, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                    ext i j
+                    fin_cases j <;> rfl
+                  have hD₀ :
+                      M₁.D₀ₗ = M₀.D₀ₗ.reindex fin2swap fin2refl
+                  · simp [M₀, M₁, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                    ext i j
+                    fin_cases i <;> fin_cases j <;> rfl
+                  have hDₗ :
+                      M₁.Dₗ = M₀.Dₗ.reindex fin2swap =.≃
+                  · simp [M₀, M₁, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                    ext i j
+                    fin_cases i <;> rfl
+                  have hDᵣ₀ :
+                      M₁.Dᵣ * M₁.D₀ₗ⁻¹ =
+                      M₀.Dᵣ.reindex (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ fin2refl * (M₀.D₀ₗ.reindex fin2swap fin2refl)⁻¹
+                  · rw [hDᵣ, hD₀]
+                  have hDᵣ₀' :
+                      M₁.Dᵣ * M₁.D₀ₗ⁻¹ =
+                      (M₀.Dᵣ * (M₀.D₀ₗ.reindex fin2swap fin2refl)⁻¹).reindex (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ =.≃
+                  · rewrite [hDᵣ₀]
+                    rfl
+                  have hDᵣ₀ₗ :
+                      M₁.Dᵣ * M₁.D₀ₗ⁻¹ * M₁.Dₗ =
+                      (M₀.Dᵣ * (M₀.D₀ₗ.reindex fin2swap fin2refl)⁻¹).reindex (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ =.≃
+                      * M₀.Dₗ.reindex fin2swap =.≃
+                  · rw [hDᵣ₀', hDₗ]
+                  have hDᵣ₀ₗ' :
+                      M₁.Dᵣ * M₁.D₀ₗ⁻¹ * M₁.Dₗ =
+                      (M₀.Dᵣ * (M₀.D₀ₗ.reindex fin2swap fin2refl)⁻¹ * M₀.Dₗ.reindex fin2swap =.≃
+                      ).reindex (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ =.≃
+                  · rewrite [hDᵣ₀ₗ]
+                    rfl
+                  rw [hDᵣ₀ₗ']
+                  simp only [Matrix.reindex_apply, Matrix.submatrix_mul_equiv, Matrix.submatrix_apply,
+                    Matrix.submatrix_submatrix, Matrix.submatrix_id_id, Matrix.inv_submatrix_equiv]
+                  rw [Matrix.mul_assoc, Matrix.mul_assoc, Matrix.submatrix_mul_equiv]
+                  simp
+                | inr jₗ₂ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  fin_cases jₗ₂ <;> rfl
+              | inr jᵣ =>
+                cases jᵣ with
+                | inl jᵣ₁ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  rfl
+                | inr jᵣᵣ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  rfl
+        have hxxxxxx :
+          (equiv₃X hx₁ₗ hx₀ₗ hx₁ᵣ hx₀ᵣ hx₂ᵣ.symm) =
+          (Equiv.sumCongr (drop3_comm x₁ₗ x₀ₗ x₂ₗ).≃.leftCongr (Equiv.sumCongr fin2swap (drop3_comm x₁ᵣ x₀ᵣ x₂ᵣ).≃) :
+            ((((Sₗ.X.drop3 x₁ₗ x₀ₗ x₂ₗ).Elem ⊕ Fin 1) ⊕ (Fin 2 ⊕ (Sᵣ.X.drop3 x₁ᵣ x₀ᵣ x₂ᵣ).Elem)) ≃
+              ((Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ).Elem ⊕ Fin 1) ⊕ (Fin 2 ⊕ (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ).Elem))
+          ).trans
+            ((equiv₃X hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ).trans
+              ((drop2_comm x₀ₗ x₁ₗ).≃.leftCongr :
+                (Sₗ.X.drop2 x₀ₗ x₁ₗ).Elem ⊕ (Sᵣ.X.drop1 x₂ᵣ).Elem ≃
+                (Sₗ.X.drop2 x₁ₗ x₀ₗ).Elem ⊕ (Sᵣ.X.drop1 x₂ᵣ).Elem))
+        · ext i
+          cases i with
+          | inl iₗ =>
+            cases iₗ with
+            | inl => rfl
+            | inr => rfl
+          | inr iᵣ =>
+            cases iᵣ with
+            | inl i₂ => fin_cases i₂ <;> rfl
+            | inr => rfl
+        rw [hxxxxxx, hQW]
+        ext i j
+        have hXxx : Sₗ.X.drop2 x₀ₗ x₁ₗ = Sₗ.X.drop2 x₁ₗ x₀ₗ
+        · apply drop2_comm
+        have hXxxx' : S.X = Sₗ.X.drop2 x₀ₗ x₁ₗ ∪ Sᵣ.X.drop1 x₂ᵣ
+        · rw [hXxxx, hXxx]
+        rw [Matrix.toMatrixElemElem_apply, hSB.standardRepr_matrix_apply i j hXxxx' hYyyy]
+        cases hi : (hXxxx ▸ i).toSum with
+        | inl iₗ =>
+          have hii : HEq (hXxx ▸ iₗ) iₗ
+          · apply eqRec_heq
+          have hi' : (hXxxx' ▸ i).toSum = ◩(hXxx ▸ iₗ)
+          · convert hi
+          cases hj : (hYyyy ▸ j).toSum with
+          | inl jₗ =>
+            simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj]
+            congr
+          | inr jᵣ =>
+            simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj]
+            rfl
+        | inr iᵣ =>
+          have hi' : (hXxxx' ▸ i).toSum = ◪iᵣ
+          · convert hi
+          cases hj : (hYyyy ▸ j).toSum with
+          | inl jₗ =>
+            simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj]
+          | inr jᵣ =>
+            simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj]
     else
       have hg' : g = fin2swap := eq_fin2swap_of_ne_fin2refl hg
       simp [hf', hg'] at hfg
@@ -3215,7 +3380,6 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
             · convert hj
             simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj']
             congr
-
 
 /-! ### The 3-sum of matroids -/
 
