@@ -50,6 +50,18 @@ def Matroid.Is1sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) : Prop :=
   ∧ Sₗ.toMatroid = Mₗ
   ∧ Sᵣ.toMatroid = Mᵣ
 
+lemma standardReprSum1_disjoint_X {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
+    (hS : standardReprSum1 hXY hYX = some S) :
+    Sₗ.X ⫗ Sᵣ.X := by
+  simp [standardReprSum1] at hS
+  tauto
+
+lemma standardReprSum1_disjoint_Y {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
+    (hS : standardReprSum1 hXY hYX = some S) :
+    Sₗ.Y ⫗ Sᵣ.Y := by
+  simp [standardReprSum1] at hS
+  tauto
+
 -- private lemma standardReprSum1_eq_disjointSum_aux_full {Xₗ Yₗ Xᵣ Yᵣ : Set α}
 --     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Yᵣ)]
 --     (Aₗ : Matrix Xₗ Yₗ Z2) (Aᵣ : Matrix Xᵣ Yᵣ Z2) (hYY : Yₗ ⫗ Yᵣ) :
@@ -58,11 +70,12 @@ def Matroid.Is1sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) : Prop :=
 --   · simp
 --   sorry
 
--- lemma standardReprSum1_eq_disjointSum {Sₗ Sᵣ : StandardRepr α Z2} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
---     (valid : (standardReprSum1 hXY hYX).snd) :
---     (standardReprSum1 hXY hYX).fst.toMatroid = Matroid.disjointSum Sₗ.toMatroid Sᵣ.toMatroid (by
---       simp [StandardRepr.toMatroid, StandardRepr.toFull, Set.disjoint_union_left, Set.disjoint_union_right]
---       exact ⟨⟨valid.left, hYX⟩, ⟨hXY, valid.right⟩⟩) := by
+lemma standardReprSum1_eq_disjointSum {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
+    (hS : standardReprSum1 hXY hYX = some S) :
+    S.toMatroid = Matroid.disjointSum Sₗ.toMatroid Sᵣ.toMatroid (by
+      simp [StandardRepr.toMatroid, StandardRepr.toFull, Set.disjoint_union_left, Set.disjoint_union_right]
+      exact ⟨⟨standardReprSum1_disjoint_X hS, hYX⟩, ⟨hXY, standardReprSum1_disjoint_Y hS⟩⟩) := by
+  sorry
 --   convert standardReprSum1_eq_disjointSum_aux_full Sₗ.toFull Sᵣ.toFull (by aesop)
 --   have hXXYY : (Sₗ.X ∪ Sᵣ.X) ∪ (Sₗ.Y ∪ Sᵣ.Y) = (Sₗ.X ∪ Sₗ.Y) ∪ (Sᵣ.X ∪ Sᵣ.Y)
 --   · tauto_set
