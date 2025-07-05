@@ -2940,28 +2940,28 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
                   · rw [hDᵣ, hD₀]
                   have hDᵣ₀' :
                       M₁.Dᵣ * M₁.D₀ₗ⁻¹ =
-                      (M₀.Dᵣ.reindex (Equiv.refl _) fin2swap * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹).reindex
-                        (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ (Equiv.refl _)
+                      (M₀.Dᵣ.reindex =.≃ fin2swap * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹).reindex
+                        (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ =.≃
                   · rewrite [hDᵣ₀]
                     rfl
                   have hDᵣ₀ₗ :
                       M₁.Dᵣ * M₁.D₀ₗ⁻¹ * M₁.Dₗ =
-                      (M₀.Dᵣ.reindex (Equiv.refl _) fin2swap * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹).reindex
-                        (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ (Equiv.refl _)
+                      (M₀.Dᵣ.reindex =.≃ fin2swap * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹).reindex
+                        (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ =.≃
                       * M₀.Dₗ.reindex fin2swap (drop3_comm y₀ₗ y₁ₗ y₂ₗ).≃
                   · rw [hDᵣ₀', hDₗ]
                   have hDᵣ₀ₗ' :
                       M₁.Dᵣ * M₁.D₀ₗ⁻¹ * M₁.Dₗ =
-                      ((M₀.Dᵣ.reindex (Equiv.refl _) fin2swap * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹).reindex
-                        (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ (Equiv.refl _)
-                      * M₀.Dₗ.reindex fin2swap (Equiv.refl _)).reindex (Equiv.refl _) (drop3_comm y₀ₗ y₁ₗ y₂ₗ).≃
+                      ((M₀.Dᵣ.reindex =.≃ fin2swap * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹).reindex
+                        (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ =.≃
+                      * M₀.Dₗ.reindex fin2swap =.≃).reindex =.≃ (drop3_comm y₀ₗ y₁ₗ y₂ₗ).≃
                   · rewrite [hDᵣ₀ₗ]
                     rfl
                   have hDᵣ₀ₗ'' :
                       M₁.Dᵣ * M₁.D₀ₗ⁻¹ * M₁.Dₗ = (
-                        (M₀.Dᵣ.reindex (Equiv.refl _) fin2swap
+                        (M₀.Dᵣ.reindex =.≃ fin2swap
                         * (M₀.D₀ₗ.reindex fin2swap fin2swap)⁻¹
-                        * M₀.Dₗ.reindex fin2swap (Equiv.refl _))
+                        * M₀.Dₗ.reindex fin2swap =.≃)
                       ).reindex (drop3_comm x₀ᵣ x₁ᵣ x₂ᵣ).≃ (drop3_comm y₀ₗ y₁ₗ y₂ₗ).≃
                   · rewrite [hDᵣ₀ₗ']
                     rfl

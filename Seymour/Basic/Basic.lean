@@ -39,6 +39,9 @@ prefix:max "#" => Fintype.card
 /-- Canonical bijection between subtypes corresponding to equal sets. -/
 postfix:max ".≃" => Equiv.setCongr
 
+/-- The trivial bijection (identity). -/
+notation "=.≃" => Equiv.refl _
+
 /-- The "left" or "top" variant. -/
 prefix:max "◩" => Sum.inl
 
