@@ -2689,7 +2689,323 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
       have hg' : g = fin2swap := eq_fin2swap_of_ne_fin2refl hg
       simp [hf, hg'] at hfg
       clear hg' hg hf g f
-      sorry
+      let M := matrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₁ₗ y₀ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₁ᵣ y₀ᵣ y₂ᵣ
+      have hM : M.HasCanonicalSigning
+      · constructor
+        · constructor
+          · use Bₗ.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₁ₗ y₀ₗ y₂ₗ, hBₗ.submatrix _ _
+            convert hSBₗ.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₁ₗ y₀ₗ y₂ₗ
+            conv_rhs => rw [←(Sₗ.B.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₁ₗ y₀ₗ y₂ₗ).fromBlocks_toBlocks]
+            simp_rw [M, matrixSum3, MatrixSum3.Bₗ, blocksToMatrixSum3,
+              Matrix.fromCols_toCols, Matrix.fromBlocks_inj, true_and]
+            constructor
+            · ext i j
+              fin_cases j
+              simp [Matrix.toBlockSummandₗ, Matrix.toBlocks₁₂]
+              cases i with
+              | inl x => exact (hSS.right.right.right.right.right.right.right.left x.val x.property.left ⟨drop3_ne_fst x, drop3_ne_snd x⟩).symm
+              | inr => exact (hSS.right.right.right.right.right.right.right.left x₂ hXX.mem3₂ₗ (by tauto)).symm
+            · ext i j
+              have : Sₗ.B x₀ₗ y₂ₗ = Sᵣ.B x₀ᵣ y₂ᵣ
+              · have h1ₗ : Sₗ.B x₀ₗ y₂ₗ = 1
+                · tauto
+                have h1ᵣ : Sᵣ.B x₀ᵣ y₂ᵣ = 1
+                · tauto
+                rw [h1ₗ, h1ᵣ]
+              have : Sₗ.B x₁ₗ y₂ₗ = Sᵣ.B x₁ᵣ y₂ᵣ
+              · have h1ₗ : Sₗ.B x₁ₗ y₂ₗ = 1
+                · tauto
+                have h1ᵣ : Sᵣ.B x₁ᵣ y₂ᵣ = 1
+                · tauto
+                rw [h1ₗ, h1ᵣ]
+              fin_cases j
+              fin_cases i <;> tauto
+          · use Bᵣ.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₁ᵣ y₀ᵣ y₂ᵣ, hBᵣ.submatrix _ _
+            convert hSBᵣ.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₁ᵣ y₀ᵣ y₂ᵣ
+            conv_rhs => rw [←(Sᵣ.B.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₁ᵣ y₀ᵣ y₂ᵣ).fromBlocks_toBlocks]
+            simp_rw [M, matrixSum3, MatrixSum3.Bᵣ, blocksToMatrixSum3,
+              Matrix.fromRows_toRows, Matrix.fromBlocks_inj, and_true]
+            constructor
+            · ext i j
+              have : Sₗ.B x₂ₗ y₀ₗ = Sᵣ.B x₂ᵣ y₀ᵣ
+              · have h1ₗ : Sₗ.B x₂ₗ y₀ₗ = 1
+                · tauto
+                have h1ᵣ : Sᵣ.B x₂ᵣ y₀ᵣ = 1
+                · tauto
+                rw [h1ₗ, h1ᵣ]
+              have : Sₗ.B x₂ₗ y₁ₗ = Sᵣ.B x₂ᵣ y₁ᵣ
+              · have h1ₗ : Sₗ.B x₂ₗ y₁ₗ = 1
+                · tauto
+                have h1ᵣ : Sᵣ.B x₂ᵣ y₁ᵣ = 1
+                · tauto
+                rw [h1ₗ, h1ᵣ]
+              fin_cases i
+              fin_cases j <;> tauto
+            · ext i j
+              fin_cases i
+              simp [Matrix.toBlockSummandᵣ, Matrix.toBlocks₁₂]
+              cases j with
+              | inl => exact (hSS.right.right.right.right.right.right.right.right.right.right.right.right y₂ hYY.mem3₂ᵣ (by tauto)).symm
+              | inr y => exact (hSS.right.right.right.right.right.right.right.right.right.right.right.right y.val y.property.left ⟨drop3_ne_snd y, drop3_ne_fst y⟩).symm
+        · cases hfg with
+          | inl h1001 =>
+            left
+            constructor
+            · ext i j
+              fin_cases i <;> fin_cases j
+              · exact congr_fun₂ h1001 0 0
+              · exact congr_fun₂ h1001 0 1
+              · exact hSS.right.right.right.right.right.right.right.right.left
+              · exact congr_fun₂ h1001 1 0
+              · exact congr_fun₂ h1001 1 1
+              · exact hSS.right.right.right.right.right.right.right.right.right.left
+              · tauto
+              · tauto
+              · rfl
+            · ext i j
+              fin_cases i <;> fin_cases j
+              · have h00 := congr_fun₂ h1001 0 0
+                have h01 := congr_fun₂ hSS.right.left.symm 0 1
+                simp at h00 h01
+                rwa [←h01] at h00
+              · have h01 := congr_fun₂ h1001 0 1
+                have h00 := congr_fun₂ hSS.right.left.symm 0 0
+                simp at h01 h00
+                rwa [←h00] at h01
+              · tauto
+              · have h10 := congr_fun₂ h1001 1 0
+                have h00 := congr_fun₂ hSS.right.left.symm 1 1
+                simp at h10 h00
+                rwa [←h00] at h10
+              · have h11 := congr_fun₂ h1001 1 1
+                have h10 := congr_fun₂ hSS.right.left.symm 1 0
+                simp at h11 h10
+                rwa [←h10] at h11
+              · tauto
+              · exact hSS.right.right.right.right.right.right.left
+              · exact hSS.right.right.right.right.right.left
+              · rfl
+          | inr h1101 =>
+            right
+            constructor
+            · ext i j
+              fin_cases i <;> fin_cases j
+              · exact congr_fun₂ h1101 0 0
+              · exact congr_fun₂ h1101 0 1
+              · exact hSS.right.right.right.right.right.right.right.right.left
+              · exact congr_fun₂ h1101 1 0
+              · exact congr_fun₂ h1101 1 1
+              · exact hSS.right.right.right.right.right.right.right.right.right.left
+              · tauto
+              · tauto
+              · rfl
+            · ext i j
+              fin_cases i <;> fin_cases j
+              · have h00 := congr_fun₂ h1101 0 0
+                have h01 := congr_fun₂ hSS.right.left.symm 0 1
+                simp at h00 h01
+                rwa [←h01] at h00
+              · have h01 := congr_fun₂ h1101 0 1
+                have h00 := congr_fun₂ hSS.right.left.symm 0 0
+                simp at h01 h00
+                rwa [←h00] at h01
+              · tauto
+              · have h10 := congr_fun₂ h1101 1 0
+                have h11 := congr_fun₂ hSS.right.left.symm 1 1
+                simp at h10 h11
+                rwa [←h11] at h10
+              · have h11 := congr_fun₂ h1101 1 1
+                have h10 := congr_fun₂ hSS.right.left.symm 1 0
+                simp at h11 h10
+                rwa [←h10] at h11
+              · tauto
+              · exact hSS.right.right.right.right.right.right.left
+              · exact hSS.right.right.right.right.right.left
+              · rfl
+      obtain ⟨B, hB, hBM⟩ := hM.HasTuSigning
+      have hX₀₁ : Sₗ.X.drop2 x₀ₗ x₁ₗ ∪ Sᵣ.X.drop1 x₂ᵣ = Sₗ.X.drop2 x₁ₗ x₀ₗ ∪ Sᵣ.X.drop1 x₂ᵣ
+      · rw [drop2_comm x₀ₗ x₁ₗ]
+      have hY₀₁ : Sₗ.Y.drop1 y₂ₗ ∪ Sᵣ.Y.drop2 y₀ᵣ y₁ᵣ = Sₗ.Y.drop1 y₂ₗ ∪ Sᵣ.Y.drop2 y₁ᵣ y₀ᵣ
+      · rw [drop2_comm y₀ᵣ y₁ᵣ]
+      rw [hY₀₁] at hYyyy
+      use (B.toIntermediate hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₁ₗ hy₀ₗ hy₂ₗ.symm hy₁ᵣ hy₀ᵣ).toMatrixElemElem hXxxx hYyyy
+      constructor
+      · apply Matrix.IsTotallyUnimodular.toMatrixElemElem
+        apply hB.submatrix
+      · rw [Matrix.toMatrixDropUnionDrop_eq_toMatrixDropUnionDropInternal hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ] at hS''
+        convert (hBM.reindex (equiv₃X hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ) (equiv₃Y hy₁ₗ hy₀ₗ hy₂ₗ.symm hy₁ᵣ hy₀ᵣ)).toMatrixElemElem hXxxx hYyyy
+        simp only [Eq.interAll3, Matrix.toMatrixDropUnionDropInternal, Matrix.toIntermediate] at hS''
+        simp only [M, Matrix.reindex_apply]
+        have hSB := congr_arg_heq StandardRepr.B hS''
+        simp at hSB
+        set Q := (matrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₁ₗ y₀ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₁ᵣ y₀ᵣ y₂ᵣ).matrix
+        set W := (matrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).matrix
+        have hQW : Q = W.reindex =.≃
+            (Equiv.sumCongr (Equiv.sumCongr (drop3_comm y₁ₗ y₀ₗ y₂ₗ).≃ fin2swap) (drop3_comm y₁ᵣ y₀ᵣ y₂ᵣ).≃.rightCongr).symm
+        · ext i j
+          cases i with
+          | inl iₗ =>
+            cases iₗ with
+            | inl iₗₗ =>
+              cases j with
+              | inl jₗ =>
+                cases jₗ with
+                | inl jₗₗ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  rfl
+                | inr jₗ₂ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  fin_cases jₗ₂ <;> rfl
+              | inr jᵣ =>
+                cases jᵣ with
+                | inl jᵣ₁ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                | inr jᵣᵣ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+            | inr iₗ₁ =>
+              cases j with
+              | inl jₗ =>
+                cases jₗ with
+                | inl jₗₗ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  rfl
+                | inr jₗ₂ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  fin_cases jₗ₂ <;> rfl
+              | inr jᵣ =>
+                cases jᵣ with
+                | inl jᵣ₁ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                | inr jᵣᵣ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+          | inr iᵣ =>
+            cases iᵣ with
+            | inl iᵣ₂ =>
+              cases j with
+              | inl jₗ =>
+                cases jₗ with
+                | inl jₗₗ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  fin_cases iᵣ₂ <;> rfl
+                | inr jₗ₂ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  fin_cases iᵣ₂ <;> fin_cases jₗ₂ <;> rfl
+              | inr jᵣ =>
+                cases jᵣ with
+                | inl jᵣ₁ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  fin_cases iᵣ₂ <;> rfl
+                | inr jᵣᵣ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  fin_cases iᵣ₂ <;> rfl
+            | inr iᵣᵣ =>
+              cases j with
+              | inl jₗ =>
+                cases jₗ with
+                | inl jₗₗ =>
+                  simp [Q, W, MatrixSum3.matrix]
+                  set M₀ := matrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ
+                  set M₁ := matrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₁ₗ y₀ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₁ᵣ y₀ᵣ y₂ᵣ
+                  have hDᵣ :
+                      M₁.Dᵣ = M₀.Dᵣ.reindex =.≃ fin2swap
+                  · simp [M₀, M₁, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                    ext i j
+                    fin_cases j <;> rfl
+                  have hD₀ :
+                      M₁.D₀ₗ = M₀.D₀ₗ.reindex fin2refl fin2swap
+                  · simp [M₀, M₁, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                    ext i j
+                    fin_cases i <;> fin_cases j <;> rfl
+                  have hDₗ :
+                      M₁.Dₗ = M₀.Dₗ.reindex fin2refl (drop3_comm y₀ₗ y₁ₗ y₂ₗ).≃
+                  · simp [M₀, M₁, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                    ext i j
+                    fin_cases i <;> rfl
+                  have hDᵣ₀ :
+                      M₁.Dᵣ * M₁.D₀ₗ⁻¹ =
+                      M₀.Dᵣ.reindex =.≃ fin2swap * (M₀.D₀ₗ.reindex fin2refl fin2swap)⁻¹
+                  · rw [hDᵣ, hD₀]
+                  have hDᵣ₀ₗ :
+                      M₁.Dᵣ * M₁.D₀ₗ⁻¹ * M₁.Dₗ =
+                      M₀.Dᵣ.reindex =.≃ fin2swap * (M₀.D₀ₗ.reindex fin2refl fin2swap)⁻¹
+                      * M₀.Dₗ.reindex fin2refl (drop3_comm y₀ₗ y₁ₗ y₂ₗ).≃
+                  · rw [hDᵣ₀, hDₗ]
+                  have hDᵣ₀ₗ' :
+                      M₁.Dᵣ * M₁.D₀ₗ⁻¹ * M₁.Dₗ = (
+                        (M₀.Dᵣ.reindex =.≃ fin2swap
+                        * (M₀.D₀ₗ.reindex fin2refl fin2swap)⁻¹
+                        * M₀.Dₗ)
+                      ).reindex =.≃ (drop3_comm y₀ₗ y₁ₗ y₂ₗ).≃
+                  · rewrite [hDᵣ₀ₗ]
+                    rfl
+                  rw [hDᵣ₀ₗ']
+                  simp only [Matrix.reindex_apply, Matrix.submatrix_mul_equiv, Matrix.inv_submatrix_equiv]
+                  simp
+                | inr jₗ₂ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  fin_cases jₗ₂ <;> rfl
+              | inr jᵣ =>
+                cases jᵣ with
+                | inl jᵣ₁ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  rfl
+                | inr jᵣᵣ =>
+                  simp [Q, W, MatrixSum3.matrix, matrixSum3, blocksToMatrixSum3, Matrix.toBlockSummandₗ, Matrix.toBlockSummandᵣ]
+                  rfl
+        have hyyyyyy :
+          (equiv₃Y hy₁ₗ hy₀ₗ hy₂ₗ.symm hy₁ᵣ hy₀ᵣ) =
+          (Equiv.sumCongr (Equiv.sumCongr (drop3_comm y₁ₗ y₀ₗ y₂ₗ).≃ fin2swap) (drop3_comm y₁ᵣ y₀ᵣ y₂ᵣ).≃.rightCongr :
+            ((((Sₗ.Y.drop3 y₁ₗ y₀ₗ y₂ₗ).Elem ⊕ Fin 2) ⊕ (Fin 1 ⊕ (Sᵣ.Y.drop3 y₁ᵣ y₀ᵣ y₂ᵣ).Elem)) ≃
+              ((Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ).Elem ⊕ Fin 2) ⊕ (Fin 1 ⊕ (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ).Elem))
+          ).trans
+            ((equiv₃Y hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ).trans
+              ((drop2_comm y₀ᵣ y₁ᵣ).≃.rightCongr :
+                (Sₗ.Y.drop1 y₂ₗ).Elem ⊕ (Sᵣ.Y.drop2 y₀ᵣ y₁ᵣ).Elem ≃
+                (Sₗ.Y.drop1 y₂ₗ).Elem ⊕ (Sᵣ.Y.drop2 y₁ᵣ y₀ᵣ).Elem))
+        · ext j
+          cases j with
+          | inl jₗ =>
+            cases jₗ with
+            | inl => rfl
+            | inr j₂ => fin_cases j₂ <;> rfl
+          | inr jᵣ =>
+            cases jᵣ with
+            | inl => rfl
+            | inr => rfl
+        rw [hyyyyyy, hQW]
+        ext i j
+        have hYyy : Sᵣ.Y.drop2 y₀ᵣ y₁ᵣ = Sᵣ.Y.drop2 y₁ᵣ y₀ᵣ
+        · apply drop2_comm
+        have hYyyy' : S.Y = Sₗ.Y.drop1 y₂ₗ ∪ Sᵣ.Y.drop2 y₀ᵣ y₁ᵣ
+        · rw [hYyyy, hYyy]
+        rw [Matrix.toMatrixElemElem_apply, hSB.standardRepr_matrix_apply i j hXxxx hYyyy']
+        cases hi : (hXxxx ▸ i).toSum with
+        | inl iₗ =>
+          cases hj : (hYyyy ▸ j).toSum with
+          | inl jₗ =>
+            have hj' : (hYyyy' ▸ j).toSum = ◩jₗ
+            · convert hj
+            simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi, hj']
+          | inr jᵣ =>
+            have hjj : HEq (hYyy ▸ jᵣ) jᵣ
+            · apply eqRec_heq
+            have hj' : (hYyyy' ▸ j).toSum = ◪(hYyy ▸ jᵣ)
+            · convert hj
+            simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi, hj']
+            rfl
+        | inr iᵣ =>
+          cases hj : (hYyyy ▸ j).toSum with
+          | inl jₗ =>
+            have hj' : (hYyyy' ▸ j).toSum = ◩jₗ
+            · convert hj
+            simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi, hj']
+          | inr jᵣ =>
+            have hjj : HEq (hYyy ▸ jᵣ) jᵣ
+            · apply eqRec_heq
+            have hj' : (hYyyy' ▸ j).toSum = ◪(hYyy ▸ jᵣ)
+            · convert hj
+            simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi, hj']
+            congr
   else
     have hf' : f = fin2swap := eq_fin2swap_of_ne_fin2refl hf
     if hg : g = fin2refl then
@@ -3380,6 +3696,7 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
             · convert hj
             simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj']
             congr
+
 
 /-! ### The 3-sum of matroids -/
 
