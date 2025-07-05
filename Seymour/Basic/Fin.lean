@@ -156,9 +156,19 @@ lemma abs_add_add_eq_zmod_cast {a b c : Z2} {a' b' c' : ℚ} (haa : |a'| = a.cas
 def equivUnitSumUnit : Unit ⊕ Unit ≃ Fin 2 :=
   ⟨(·.casesOn ↓0 ↓1), ![◩(), ◪()], (·.casesOn (by simp) (by simp)), (by fin_cases · <;> simp)⟩
 
-@[simp] noncomputable abbrev fin2refl : Fin 2 ≃ Fin 2 := Equiv.refl (Fin 2)
+noncomputable abbrev fin2refl : Fin 2 ≃ Fin 2 := Equiv.refl (Fin 2)
+noncomputable abbrev fin2swap : Fin 2 ≃ Fin 2 := Equiv.ofBijective ![1, 0] (by decide)
 
-@[simp] noncomputable abbrev fin2swap : Fin 2 ≃ Fin 2 := Equiv.ofBijective ![1, 0] (by decide)
+@[simp] lemma fin2refl_apply_0 : fin2refl 0 = 0 := rfl
+@[simp] lemma fin2refl_apply_1 : fin2refl 1 = 1 := rfl
+@[simp] lemma fin2swap_apply_0 : fin2swap 0 = 1 := rfl
+@[simp] lemma fin2swap_apply_1 : fin2swap 1 = 0 := rfl
+
+@[simp] lemma fin2refl_symm : fin2refl.symm = fin2refl := rfl
+@[simp] lemma fin2swap_symm : fin2swap.symm = fin2swap := sorry
+
+@[simp] lemma fin2swap_comp_fin2swap : fin2swap ∘ fin2swap = id := by decide
+@[simp] lemma fin2swap_trans_fin2swap : fin2swap.trans fin2swap = fin2refl := by decide
 
 lemma eq_fin2swap_of_ne_fin2refl {e : Fin 2 ≃ Fin 2} (he : e ≠ fin2refl) : e = fin2swap := by
   if he0 : e 0 = 0 then
