@@ -186,23 +186,23 @@ recall Set.drop3 {α : Type} (Z : Set α) (z₀ z₁ z₂ : Z) : Set α :=
 recall undrop3 {α : Type} {Z : Set α} {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z₁ z₂) : Z :=
   ⟨i.val, i.property.left⟩
 
-recall MatrixSum3.Aₗ  {Xₗ Yₗ Xᵣ Yᵣ R : Type} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix (Xₗ ⊕ Fin 1) (Yₗ ⊕ Fin 2) R
+recall MatrixSum3.Aₗ  {Xₗ Yₗ Xᵣ Yᵣ R : Type} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix (Xₗ ⊕ Unit) (Yₗ ⊕ Fin 2) R
 recall MatrixSum3.Dₗ  {Xₗ Yₗ Xᵣ Yᵣ R : Type} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix (Fin 2) Yₗ R
 recall MatrixSum3.D₀ₗ {Xₗ Yₗ Xᵣ Yᵣ R : Type} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix (Fin 2) (Fin 2) R
 recall MatrixSum3.D₀ᵣ {Xₗ Yₗ Xᵣ Yᵣ R : Type} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix (Fin 2) (Fin 2) R
 recall MatrixSum3.Dᵣ  {Xₗ Yₗ Xᵣ Yᵣ R : Type} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix Xᵣ (Fin 2) R
-recall MatrixSum3.Aᵣ  {Xₗ Yₗ Xᵣ Yᵣ R : Type} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix (Fin 2 ⊕ Xᵣ) (Fin 1 ⊕ Yᵣ) R
+recall MatrixSum3.Aᵣ  {Xₗ Yₗ Xᵣ Yᵣ R : Type} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix (Fin 2 ⊕ Xᵣ) (Unit ⊕ Yᵣ) R
 /--
-info: MatrixSum3.mk {Xₗ Yₗ Xᵣ Yᵣ R : Type} (Aₗ : Matrix (Xₗ ⊕ Fin 1) (Yₗ ⊕ Fin 2) R) (Dₗ : Matrix (Fin 2) Yₗ R)
-  (D₀ₗ D₀ᵣ : Matrix (Fin 2) (Fin 2) R) (Dᵣ : Matrix Xᵣ (Fin 2) R) (Aᵣ : Matrix (Fin 2 ⊕ Xᵣ) (Fin 1 ⊕ Yᵣ) R) :
+info: MatrixSum3.mk {Xₗ Yₗ Xᵣ Yᵣ R : Type} (Aₗ : Matrix (Xₗ ⊕ Unit) (Yₗ ⊕ Fin 2) R) (Dₗ : Matrix (Fin 2) Yₗ R)
+  (D₀ₗ D₀ᵣ : Matrix (Fin 2) (Fin 2) R) (Dᵣ : Matrix Xᵣ (Fin 2) R) (Aᵣ : Matrix (Fin 2 ⊕ Xᵣ) (Unit ⊕ Yᵣ) R) :
   MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R
 -/
 #guard_msgs in
 #check MatrixSum3.mk
 
 recall blocksToMatrixSum3 {Xₗ Yₗ Xᵣ Yᵣ R : Type}
-    (Bₗ : Matrix ((Xₗ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Fin 1) R)
-    (Bᵣ : Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) R) :
+    (Bₗ : Matrix ((Xₗ ⊕ Unit) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Unit) R)
+    (Bᵣ : Matrix (Unit ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Unit ⊕ Yᵣ)) R) :
     MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R where
   Aₗ  := Bₗ.toBlocks₁₁
   Dₗ  := Bₗ.toBlocks₂₁.toCols₁
@@ -212,16 +212,16 @@ recall blocksToMatrixSum3 {Xₗ Yₗ Xᵣ Yᵣ R : Type}
   Aᵣ  := Bᵣ.toBlocks₂₂
 
 recall MatrixSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ R : Type} [CommRing R] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R) :
-    Matrix ((Xₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ)) ((Yₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ)) R :=
+    Matrix ((Xₗ ⊕ Unit) ⊕ (Fin 2 ⊕ Xᵣ)) ((Yₗ ⊕ Fin 2) ⊕ (Unit ⊕ Yᵣ)) R :=
   Matrix.fromBlocks S.Aₗ 0 S.D S.Aᵣ
 
 recall Matrix.toBlockSummandₗ {α : Type} {Xₗ Yₗ : Set α} {R : Type} (Bₗ : Matrix Xₗ Yₗ R) (x₀ x₁ x₂ : Xₗ) (y₀ y₁ y₂ : Yₗ) :
-    Matrix ((Xₗ.drop3 x₀ x₁ x₂ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ.drop3 y₀ y₁ y₂ ⊕ Fin 2) ⊕ Fin 1) R :=
-  Bₗ.submatrix (·.casesOn (·.casesOn undrop3 ![x₂]) ![x₀, x₁]) (·.casesOn (·.casesOn undrop3 ![y₀, y₁]) ![y₂])
+    Matrix ((Xₗ.drop3 x₀ x₁ x₂ ⊕ Unit) ⊕ Fin 2) ((Yₗ.drop3 y₀ y₁ y₂ ⊕ Fin 2) ⊕ Unit) R :=
+  Bₗ.submatrix (·.casesOn (·.casesOn undrop3 (fun _ => x₂)) ![x₀, x₁]) (·.casesOn (·.casesOn undrop3 ![y₀, y₁]) (fun _ => y₂))
 
 recall Matrix.toBlockSummandᵣ {α : Type} {Xᵣ Yᵣ : Set α} {R : Type} (Bᵣ : Matrix Xᵣ Yᵣ R) (x₀ x₁ x₂ : Xᵣ) (y₀ y₁ y₂ : Yᵣ) :
-    Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ x₁ x₂)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ y₁ y₂)) R :=
-  Bᵣ.submatrix (·.casesOn ![x₂] (·.casesOn ![x₀, x₁] undrop3)) (·.casesOn ![y₀, y₁] (·.casesOn ![y₂] undrop3))
+    Matrix (Unit ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ x₁ x₂)) (Fin 2 ⊕ (Unit ⊕ Yᵣ.drop3 y₀ y₁ y₂)) R :=
+  Bᵣ.submatrix (·.casesOn (fun _ => x₂) (·.casesOn ![x₀, x₁] undrop3)) (·.casesOn ![y₀, y₁] (·.casesOn (fun _ => y₂) undrop3))
 
 -- how 3-sum of matrices is defined
 recall matrixSum3 {α : Type} [DecidableEq α] (Sₗ Sᵣ : StandardRepr α Z2)
@@ -234,8 +234,8 @@ recall Matrix.toMatrixDropUnionDrop {α : Type} [DecidableEq α] {Xₗ Yₗ Xᵣ
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
     (A : Matrix
-      ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
-      ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
+      ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Unit) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
+      ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Unit ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
       R) :
     Matrix (Xₗ.drop2 x₀ₗ x₁ₗ ∪ Xᵣ.drop1 x₂ᵣ).Elem (Yₗ.drop1 y₂ₗ ∪ Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem R :=
   A.submatrix
@@ -245,14 +245,14 @@ recall Matrix.toMatrixDropUnionDrop {α : Type} [DecidableEq α] {Xₗ Yₗ Xᵣ
       if hi₀ᵣ : i.val = x₀ᵣ then ◪◩0 else
       if hi₁ᵣ : i.val = x₁ᵣ then ◪◩1 else
       if hiXᵣ : i.val ∈ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ then ◪◪⟨i, hiXᵣ⟩ else
-      False.elim (i.property.elim ↓(by simp_all) ↓(by simp_all)))
+      False.elim (i.property.elim (by intro; simp_all) (by intro; simp_all)))
     (fun j : (Yₗ.drop1 y₂ₗ ∪ Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem =>
       if hj₀ₗ : j.val = y₀ₗ then ◩◪0 else
       if hj₁ₗ : j.val = y₁ₗ then ◩◪1 else
       if hjYₗ : j.val ∈ Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ then ◩◩⟨j, hjYₗ⟩ else
       if hj₂ᵣ : j.val = y₂ᵣ then ◪◩0 else
       if hjYᵣ : j.val ∈ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then ◪◪⟨j, hjYᵣ⟩ else
-      False.elim (j.property.elim ↓(by simp_all) ↓(by simp_all)))
+      False.elim (j.property.elim (by intro; simp_all) (by intro; simp_all)))
 
 -- how 3-sum of standard representations is defined
 recall standardReprSum3 {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}

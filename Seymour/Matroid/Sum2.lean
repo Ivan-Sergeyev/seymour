@@ -158,7 +158,7 @@ def Matroid.Is2sumOf {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : 
 private abbrev shortTableauPivotOtherRow {Y Y' R : Type} [DecidableEq Y'] [DivisionRing R]
     (p : Y → R) (r : Y' → R) (g : Y' → Y) (y' : Y') : Y' → R :=
   -- `p` is the pivot row; `r` is the other row; `g` is a map from the columns of `r` to the columns of `p`
-  (▬(p ∘ g) ⊟ ▬r).shortTableauPivot ◩() y' ◪()
+  (▬(p ∘ g) ⊟ ▬r).shortTableauPivot ◩⟨⟩ y' ◪⟨⟩
 
 private lemma Matrix.shortTableauPivot_otherRow_eq {X Y Y' R : Type}
     [Field R] [DecidableEq X] [DecidableEq Y] [DecidableEq Y']
@@ -203,7 +203,7 @@ private lemma matrixSum2_shortTableauPivot {Xₗ Yₗ Xᵣ Yᵣ : Type}
 
 private lemma Matrix.shortTableauPivot_adjoinRow_eq {X Y : Type} [DecidableEq X] [DecidableEq Y]
     (A : Matrix X Y ℚ) (r : Y → ℚ) (x : X) (y : Y) (j : Y) :
-    (▬A x ⊟ ▬r).shortTableauPivot (◩()) y (◪()) j = (A ⊟ ▬r).shortTableauPivot (◩x) y (◪()) j := by
+    (▬A x ⊟ ▬r).shortTableauPivot (◩⟨⟩) y (◪⟨⟩) j = (A ⊟ ▬r).shortTableauPivot (◩x) y (◪⟨⟩) j := by
   by_cases hj : j = y <;> simp [hj, Matrix.shortTableauPivot, Matrix.longTableauPivot]
 
 private lemma Matrix.IsTotallyUnimodular.fromRows_pivot {α : Type} [DecidableEq α] {X Y : Set α}
@@ -233,9 +233,9 @@ private lemma Matrix.IsTotallyUnimodular.fromCols_outer {X Yᵣ Y' : Type} [Deci
     (A ◫ (c ⊗ r)).IsTotallyUnimodular := by
   convert hAc.fromCols_pnz.comp_cols
     (fun j : Yᵣ ⊕ Y' => j.casesOn (Sum.inl ∘ Sum.inl ∘ Sum.inl) (fun j : Y' =>
-      if h0 : r j = 0 then ◪()
-      else if h1 : r j = 1 then ◩◩◪()
-      else if h9 : r j = -1 then ◩◪()
+      if h0 : r j = 0 then ◪⟨⟩
+      else if h1 : r j = 1 then ◩◩◪⟨⟩
+      else if h9 : r j = -1 then ◩◪⟨⟩
       else False.elim (by obtain ⟨s, hs⟩ := hr j; cases s <;> simp_all)
     ))
   ext (_ | j)
@@ -251,7 +251,7 @@ private lemma matrixSum2_bottom_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type}
     {Aₗ : Matrix Xₗ Yₗ ℚ} {r : Yₗ → ℚ} {Aᵣ : Matrix Xᵣ Yᵣ ℚ} {c : Xᵣ → ℚ}
     (hAr : (Aₗ ⊟ ▬r).IsTotallyUnimodular) (hAc : (▮c ◫ Aᵣ).IsTotallyUnimodular) :
     ((c ⊗ r) ◫ Aᵣ).IsTotallyUnimodular :=
-  (hAc.fromCols_comm.fromCols_outer (hAr.apply ◪())).fromCols_comm
+  (hAc.fromCols_comm.fromCols_outer (hAr.apply ◪⟨⟩)).fromCols_comm
 
 
 /-! ## Proof of regularity of the 2-sum -/
@@ -269,7 +269,7 @@ private lemma matrixSum2_isPartiallyUnimodular_1 {Xₗ Yₗ Xᵣ Yᵣ : Set α}
     | inl jₗ => exact (hAr.comp_rows Sum.inl).apply iₗ jₗ
     | inr jᵣ => exact zero_in_signTypeCastRange
   | inr iᵣ => cases g 0 with
-    | inl jₗ => exact in_signTypeCastRange_mul_in_signTypeCastRange (hAc.apply iᵣ ◩()) (hAr.apply ◪() jₗ)
+    | inl jₗ => exact in_signTypeCastRange_mul_in_signTypeCastRange (hAc.apply iᵣ ◩⟨⟩) (hAr.apply ◪⟨⟩ jₗ)
     | inr jᵣ => exact (hAc.comp_cols Sum.inr).apply iᵣ jᵣ
 
 variable [DecidableEq α]

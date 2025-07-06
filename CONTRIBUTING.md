@@ -214,6 +214,7 @@ The guideline below is written primarily to assist you in reading the code.
 ### Other
 
 - We currently prefer `Type` over universe-polymorphic types. Generalization to `Type*` will probably be done at the end of the project.
+- We prefer `Unit` over `Fin 1` and we prefer `⟨⟩` over `()` for its only value.
 - We prefer not to write parentheses after quantifiers.
 - We do not write a space after `¬` but we write redundant parentheses around the negated expression when it contains any infix operator.
 - Orphaning parentheses is allowed.

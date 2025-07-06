@@ -44,12 +44,12 @@ private abbrev matrix3x3signed₁ : Matrix (Fin 3) (Fin 3) ℚ :=
 
 /-- Structural data of 3-sum of matrices. -/
 structure MatrixSum3 (Xₗ Yₗ Xᵣ Yᵣ : Type) (R : Type) where
-  Aₗ  : Matrix (Xₗ ⊕ Fin 1) (Yₗ ⊕ Fin 2) R
+  Aₗ  : Matrix (Xₗ ⊕ Unit) (Yₗ ⊕ Fin 2) R
   Dₗ  : Matrix (Fin 2) Yₗ R
   D₀ₗ : Matrix (Fin 2) (Fin 2) R
   D₀ᵣ : Matrix (Fin 2) (Fin 2) R
   Dᵣ  : Matrix Xᵣ (Fin 2) R
-  Aᵣ  : Matrix (Fin 2 ⊕ Xᵣ) (Fin 1 ⊕ Yᵣ) R
+  Aᵣ  : Matrix (Fin 2 ⊕ Xᵣ) (Unit ⊕ Yᵣ) R
 
 /-- The bottom-left block of 3-sum. -/
 noncomputable abbrev MatrixSum3.D {Xₗ Yₗ Xᵣ Yᵣ R : Type} [CommRing R] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R) :
@@ -58,7 +58,7 @@ noncomputable abbrev MatrixSum3.D {Xₗ Yₗ Xᵣ Yᵣ R : Type} [CommRing R] (S
 
 /-- The resulting matrix of 3-sum. -/
 noncomputable def MatrixSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ R : Type} [CommRing R] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R) :
-    Matrix ((Xₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ)) ((Yₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ)) R :=
+    Matrix ((Xₗ ⊕ Unit) ⊕ (Fin 2 ⊕ Xᵣ)) ((Yₗ ⊕ Fin 2) ⊕ (Unit ⊕ Yᵣ)) R :=
   ⊞ S.Aₗ 0 S.D S.Aᵣ
 
 
@@ -66,8 +66,8 @@ noncomputable def MatrixSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ R : Type} [CommRing R] 
 
 /-- Constructs 3-sum from summands in block form. -/
 def blocksToMatrixSum3 {Xₗ Yₗ Xᵣ Yᵣ R : Type}
-    (Bₗ : Matrix ((Xₗ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Fin 1) R)
-    (Bᵣ : Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) R) :
+    (Bₗ : Matrix ((Xₗ ⊕ Unit) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Unit) R)
+    (Bᵣ : Matrix (Unit ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Unit ⊕ Yᵣ)) R) :
     MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R where
   Aₗ  := Bₗ.toBlocks₁₁
   Dₗ  := Bₗ.toBlocks₂₁.toCols₁
@@ -78,8 +78,8 @@ def blocksToMatrixSum3 {Xₗ Yₗ Xᵣ Yᵣ R : Type}
 
 /-- Reconstructs the left summand from the matrix 3-sum structure. -/
 private abbrev MatrixSum3.Bₗ {Xₗ Yₗ Xᵣ Yᵣ R : Type} [Zero R] [One R] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R) :
-    Matrix ((Xₗ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Fin 1) R :=
-  ⊞ S.Aₗ 0 (S.Dₗ ◫ S.D₀ₗ) !![S.Aᵣ ◩0 ◩0; S.Aᵣ ◩1 ◩0]
+    Matrix ((Xₗ ⊕ Unit) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Unit) R :=
+  ⊞ S.Aₗ 0 (S.Dₗ ◫ S.D₀ₗ) (▮![S.Aᵣ ◩0 ◩0, S.Aᵣ ◩1 ◩0])
 
 @[app_unexpander MatrixSum3.Bₗ]
 private def MatrixSum3.Bₗ_unexpand : Lean.PrettyPrinter.Unexpander
@@ -88,8 +88,8 @@ private def MatrixSum3.Bₗ_unexpand : Lean.PrettyPrinter.Unexpander
 
 /-- Reconstructs the right summand from the matrix 3-sum structure. -/
 private abbrev MatrixSum3.Bᵣ {Xₗ Yₗ Xᵣ Yᵣ R : Type} [Zero R] [One R] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R) :
-    Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) R :=
-  ⊞ !![S.Aₗ ◪0 ◪0, S.Aₗ ◪0 ◪1] 0 (S.D₀ᵣ ⊟ S.Dᵣ) S.Aᵣ
+    Matrix (Unit ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Unit ⊕ Yᵣ)) R :=
+  ⊞ (▬![S.Aₗ ◪0 ◪0, S.Aₗ ◪0 ◪1]) 0 (S.D₀ᵣ ⊟ S.Dᵣ) S.Aᵣ
 
 @[app_unexpander MatrixSum3.Bᵣ]
 private def MatrixSum3.Bᵣ_unexpand : Lean.PrettyPrinter.Unexpander
@@ -98,8 +98,8 @@ private def MatrixSum3.Bᵣ_unexpand : Lean.PrettyPrinter.Unexpander
 
 /-- If the 3-sum is constructed from summands in block form, reconstructing the left summand yields the original one. -/
 private lemma blocksToMatrixSum3_Bₗ_eq {Xₗ Yₗ Xᵣ Yᵣ R : Type} [Zero R] [One R]
-    (Bₗ : Matrix ((Xₗ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Fin 1) R)
-    (Bᵣ : Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) R)
+    (Bₗ : Matrix ((Xₗ ⊕ Unit) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Unit) R)
+    (Bᵣ : Matrix (Unit ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Unit ⊕ Yᵣ)) R)
     (hBₗ : Bₗ ◪0 ◪0 = Bᵣ ◪◩0 ◪◩0 ∧ Bₗ ◪1 ◪0 = Bᵣ ◪◩1 ◪◩0 ∧ ∀ i, Bₗ ◩i ◪0 = 0) :
     (blocksToMatrixSum3 Bₗ Bᵣ).Bₗ = Bₗ := by
   ext i j
@@ -113,8 +113,8 @@ private lemma blocksToMatrixSum3_Bₗ_eq {Xₗ Yₗ Xᵣ Yᵣ R : Type} [Zero R]
 
 /-- If the 3-sum is constructed from summands in block form, reconstructing the right summand yields the original one. -/
 private lemma blocksToMatrixSum3_Bᵣ_eq {Xₗ Yₗ Xᵣ Yᵣ R : Type} [Zero R] [One R]
-    (Bₗ : Matrix ((Xₗ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Fin 1) R)
-    (Bᵣ : Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) R)
+    (Bₗ : Matrix ((Xₗ ⊕ Unit) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Unit) R)
+    (Bᵣ : Matrix (Unit ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Unit ⊕ Yᵣ)) R)
     (hBᵣ : Bᵣ ◩0 ◩0 = Bₗ ◩◪0 ◩◪0 ∧ Bᵣ ◩0 ◩1 = Bₗ ◩◪0 ◩◪1 ∧ ∀ i, Bᵣ ◩0 ◪i = 0) :
     (blocksToMatrixSum3 Bₗ Bᵣ).Bᵣ = Bᵣ := by
   ext i j
@@ -466,14 +466,14 @@ private def MatrixSum3.IsCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Type} (S : Matr
 
 /-- Canonically re-signs the left summand of a 3-sum. -/
 private noncomputable abbrev Matrix.HasTuSigning.toCanonicalSummandₗ {Xₗ Yₗ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ]
-    {Bₗ : Matrix ((Xₗ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Fin 1) Z2} (hBₗ : Bₗ.HasTuSigning) :
-    Matrix ((Xₗ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Fin 1) ℚ :=
+    {Bₗ : Matrix ((Xₗ ⊕ Unit) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Unit) Z2} (hBₗ : Bₗ.HasTuSigning) :
+    Matrix ((Xₗ ⊕ Unit) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Unit) ℚ :=
   hBₗ.choose.toCanonicalSigning ◪0 ◪1 ◩◪0 ◩◪0 ◩◪1 ◪0
 
 /-- Canonically re-signs the right summand of a 3-sum. -/
 private noncomputable abbrev Matrix.HasTuSigning.toCanonicalSummandᵣ {Xᵣ Yᵣ : Type} [DecidableEq Xᵣ] [DecidableEq Yᵣ]
-    {Bᵣ : Matrix (Fin 1 ⊕ Fin 2 ⊕ Xᵣ) (Fin 2 ⊕ Fin 1 ⊕ Yᵣ) Z2} (hBᵣ : Bᵣ.HasTuSigning) :
-    Matrix (Fin 1 ⊕ Fin 2 ⊕ Xᵣ) (Fin 2 ⊕ Fin 1 ⊕ Yᵣ) ℚ :=
+    {Bᵣ : Matrix (Unit ⊕ Fin 2 ⊕ Xᵣ) (Fin 2 ⊕ Unit ⊕ Yᵣ) Z2} (hBᵣ : Bᵣ.HasTuSigning) :
+    Matrix (Unit ⊕ Fin 2 ⊕ Xᵣ) (Fin 2 ⊕ Unit ⊕ Yᵣ) ℚ :=
   hBᵣ.choose.toCanonicalSigning ◪◩0 ◪◩1 ◩0 ◩0 ◩1 ◪◩0
 
 /-- Canonical re-signing of a 3-sum of matrices over `Z2`. -/
@@ -602,8 +602,8 @@ private lemma MatrixSum3.c₀_c₂_Aᵣ_isTotallyUnimodular_of_Bᵣ {Xₗ Yₗ X
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) (hS : S.Bᵣ.IsTotallyUnimodular) (hSAₗ : S.Aₗ ◪0 ◪0 = 1 ∧ S.Aₗ ◪0 ◪1 = 1) :
     (▮S.c₀ ◫ ▮(S.c₀ - S.c₁) ◫ S.Aᵣ).IsTotallyUnimodular := by
-  let B : Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) ℚ := S.Bᵣ.shortTableauPivot ◩0 ◩0
-  let B' : Matrix (Fin 2 ⊕ Xᵣ) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) ℚ := B.submatrix Sum.inr id
+  let B : Matrix (Unit ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Unit ⊕ Yᵣ)) ℚ := S.Bᵣ.shortTableauPivot ◩0 ◩0
+  let B' : Matrix (Fin 2 ⊕ Xᵣ) (Fin 2 ⊕ (Unit ⊕ Yᵣ)) ℚ := B.submatrix Sum.inr id
   have B'_eq : B' = (▮(-S.c₀) ◫ ▮(S.c₁ - S.c₀) ◫ S.Aᵣ).submatrix id equivUnitSumUnit.leftCongr.symm
   · ext _ (j₂ | _)
     · fin_cases j₂ <;> simp [Matrix.shortTableauPivot_eq, B, B', hSAₗ]
@@ -617,8 +617,8 @@ private lemma MatrixSum3.c₀_c₂_Aᵣ_isTotallyUnimodular_of_Bᵣ {Xₗ Yₗ X
   have hScc : (▮(-S.c₀) ◫ ▮(S.c₁ - S.c₀) ◫ S.Aᵣ).IsTotallyUnimodular
   · simpa only [Matrix.submatrix_submatrix, Equiv.symm_comp_self, Function.comp_id, Matrix.submatrix_id_id] using
       hB'.submatrix id equivUnitSumUnit.leftCongr
-  let q : (Unit ⊕ Unit) ⊕ (Fin 1 ⊕ Yᵣ) → ℚ := (·.casesOn (-1) 1)
-  have hq : ∀ i : (Unit ⊕ Unit) ⊕ (Fin 1 ⊕ Yᵣ), q i ∈ SignType.cast.range
+  let q : (Unit ⊕ Unit) ⊕ (Unit ⊕ Yᵣ) → ℚ := (·.casesOn (-1) 1)
+  have hq : ∀ i : (Unit ⊕ Unit) ⊕ (Unit ⊕ Yᵣ), q i ∈ SignType.cast.range
   · rintro (_|_) <;> simp [q]
   convert hScc.mul_cols hq
   ext _ ((_|_)|_) <;> simp [q]
@@ -627,8 +627,8 @@ private lemma MatrixSum3.c₂_c₁_Aᵣ_isTotallyUnimodular_of_Bᵣ {Xₗ Yₗ X
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) (hS : S.Bᵣ.IsTotallyUnimodular) (hSAₗ : S.Aₗ ◪0 ◪0 = 1 ∧ S.Aₗ ◪0 ◪1 = 1) :
     (▮(S.c₀ - S.c₁) ◫ ▮S.c₁ ◫ S.Aᵣ).IsTotallyUnimodular := by
-  let B : Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) ℚ := S.Bᵣ.shortTableauPivot ◩0 ◩1
-  let B' : Matrix (Fin 2 ⊕ Xᵣ) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ)) ℚ := B.submatrix Sum.inr id
+  let B : Matrix (Unit ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Unit ⊕ Yᵣ)) ℚ := S.Bᵣ.shortTableauPivot ◩0 ◩1
+  let B' : Matrix (Fin 2 ⊕ Xᵣ) (Fin 2 ⊕ (Unit ⊕ Yᵣ)) ℚ := B.submatrix Sum.inr id
   have B'_eq : B' = (▮(S.c₀ - S.c₁) ◫ ▮(-S.c₁) ◫ S.Aᵣ).submatrix id equivUnitSumUnit.leftCongr.symm
   · ext _ (j₂ | _)
     · fin_cases j₂ <;> simp [Matrix.shortTableauPivot_eq, B, B', hSAₗ]
@@ -642,8 +642,8 @@ private lemma MatrixSum3.c₂_c₁_Aᵣ_isTotallyUnimodular_of_Bᵣ {Xₗ Yₗ X
   have hScc : (▮(S.c₀ - S.c₁) ◫ ▮(-S.c₁) ◫ S.Aᵣ).IsTotallyUnimodular
   · simpa only [Matrix.submatrix_submatrix, Equiv.symm_comp_self, Function.comp_id, Matrix.submatrix_id_id] using
       hB'.submatrix id equivUnitSumUnit.leftCongr
-  let q : (Unit ⊕ Unit) ⊕ (Fin 1 ⊕ Yᵣ) → ℚ := (·.casesOn (·.casesOn 1 (-1)) 1)
-  have hq : ∀ i : (Unit ⊕ Unit) ⊕ (Fin 1 ⊕ Yᵣ), q i ∈ SignType.cast.range
+  let q : (Unit ⊕ Unit) ⊕ (Unit ⊕ Yᵣ) → ℚ := (·.casesOn (·.casesOn 1 (-1)) 1)
+  have hq : ∀ i : (Unit ⊕ Unit) ⊕ (Unit ⊕ Yᵣ), q i ∈ SignType.cast.range
   · rintro ((_|_)|_) <;> simp [q]
   convert hScc.mul_cols hq
   ext _ ((_|_)|_) <;> simp [q]
@@ -653,11 +653,11 @@ private lemma MatrixSum3.c₀_c₁_c₂_Aᵣ_isTotallyUnimodular_of_Bᵣ {Xₗ Y
     (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) (hS : S.Bᵣ.IsTotallyUnimodular) (hSAₗ : S.Aₗ ◪0 ◪0 = 1 ∧ S.Aₗ ◪0 ◪1 = 1) :
     (▮S.c₀ ◫ ▮S.c₁ ◫ ▮(S.c₀ - S.c₁) ◫ S.Aᵣ).IsTotallyUnimodular := by
   intro k f g hf hg
-  if hgc₂ : ∃ j, g j = ◩◪() then -- `c₂` is contained in the submatrix
+  if hgc₂ : ∃ j, g j = ◩◪⟨⟩ then -- `c₂` is contained in the submatrix
     obtain ⟨j₂, hj₂⟩ := hgc₂
-    if hgc₀ : ∃ j, g j = ◩◩◩() then -- `c₀` is contained in the submatrix
+    if hgc₀ : ∃ j, g j = ◩◩◩⟨⟩ then -- `c₀` is contained in the submatrix
       obtain ⟨j₀, hj₀⟩ := hgc₀
-      if hgc₁ : ∃ j, g j = ◩◩◪() then -- `c₁` is contained in the submatrix
+      if hgc₁ : ∃ j, g j = ◩◩◪⟨⟩ then -- `c₁` is contained in the submatrix
         obtain ⟨j₁, hj₁⟩ := hgc₁
         use 0
         symm
@@ -690,8 +690,8 @@ private lemma MatrixSum3.c₀_c₁_c₂_Aᵣ_isTotallyUnimodular_of_Bᵣ {Xₗ Y
       | inr z₁ => cases z₁ <;> simp [hgj]
   else
     -- Here we have a submatrix of the original matrix.
-    let f' : Fin k → Fin 1 ⊕ (Fin 2 ⊕ Xᵣ) := Sum.inr ∘ f
-    let g' : Fin k → Fin 2 ⊕ (Fin 1 ⊕ Yᵣ) := (·.map (·.casesOn equivUnitSumUnit ↓0) id) ∘ g
+    let f' : Fin k → Unit ⊕ (Fin 2 ⊕ Xᵣ) := Sum.inr ∘ f
+    let g' : Fin k → Fin 2 ⊕ (Unit ⊕ Yᵣ) := (·.map (·.casesOn equivUnitSumUnit ↓0) id) ∘ g
     convert hS.det f' g'
     ext i j
     cases hgj : g j with
@@ -705,8 +705,8 @@ private lemma MatrixSum3.c₀_c₀_c₁_c₁_c₂_c₂_Aᵣ_isTotallyUnimodular_
     (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) (hS : S.Bᵣ.IsTotallyUnimodular) (hSAₗ : S.Aₗ ◪0 ◪0 = 1 ∧ S.Aₗ ◪0 ◪1 = 1) :
     (▮S.c₀ ◫ ▮S.c₀ ◫ ▮S.c₁ ◫ ▮S.c₁ ◫ ▮(S.c₀ - S.c₁) ◫ ▮(S.c₀ - S.c₁) ◫ S.Aᵣ).IsTotallyUnimodular := by
   convert (S.c₀_c₁_c₂_Aᵣ_isTotallyUnimodular_of_Bᵣ hS hSAₗ).comp_cols
-    (fun j : ((((((Unit ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ (Fin 1 ⊕ Yᵣ)) =>
-      (j.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (↓◩◩◩()) ↓◩◩◩()) ↓◩◩◪()) ↓◩◩◪()) ↓◩◪()) ↓◩◪()) Sum.inr))
+    (fun j : ((((((Unit ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ (Unit ⊕ Yᵣ)) =>
+      (j.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (↓◩◩◩⟨⟩) ↓◩◩◩⟨⟩) ↓◩◩◪⟨⟩) ↓◩◩◪⟨⟩) ↓◩◪⟨⟩) ↓◩◪⟨⟩) Sum.inr))
   aesop
 
 private lemma MatrixSum3.pmz_c₀_c₁_c₂_Aᵣ_isTotallyUnimodular_of_Bᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type}
@@ -875,17 +875,17 @@ private lemma MatrixSum3.IsCanonicalSigning.Aₗ_D_isTotallyUnimodular {Xₗ Y�
     (hS : S.IsCanonicalSigning) :
     (S.Aₗ ⊟ S.D).IsTotallyUnimodular := by
   classical
-  let e : ((Xₗ ⊕ Fin 1) ⊕ Fin 2 ⊕ Xᵣ → (Unit ⊕ (((((Unit ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Xₗ ⊕ Fin 1)) :=
+  let e : ((Xₗ ⊕ Unit) ⊕ Fin 2 ⊕ Xᵣ → (Unit ⊕ (((((Unit ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Xₗ ⊕ Unit)) :=
     (·.casesOn
       (Sum.inr ∘ Sum.inr)
       fun j : Fin 2 ⊕ Xᵣ =>
-        if h0 : S.D j = 0 then ◩() else
-        if hpc₀ : S.D j = S.d₀ then ◪◩◩◩◩◩◩() else
-        if hmc₀ : S.D j = -S.d₀ then ◪◩◩◩◩◩◪() else
-        if hpc₁ : S.D j = S.d₁ then ◪◩◩◩◩◪() else
-        if hmc₁ : S.D j = -S.d₁ then ◪◩◩◩◪() else
-        if hpc₂ : S.D j = S.d₀ - S.d₁ then ◪◩◩◪() else
-        if hmc₂ : S.D j = S.d₁ - S.d₀ then ◪◩◪() else
+        if h0 : S.D j = 0 then ◩⟨⟩ else
+        if hpc₀ : S.D j = S.d₀ then ◪◩◩◩◩◩◩⟨⟩ else
+        if hmc₀ : S.D j = -S.d₀ then ◪◩◩◩◩◩◪⟨⟩ else
+        if hpc₁ : S.D j = S.d₁ then ◪◩◩◩◩◪⟨⟩ else
+        if hmc₁ : S.D j = -S.d₁ then ◪◩◩◩◪⟨⟩ else
+        if hpc₂ : S.D j = S.d₀ - S.d₁ then ◪◩◩◪⟨⟩ else
+        if hmc₂ : S.D j = S.d₁ - S.d₀ then ◪◩◪⟨⟩ else
         False.elim (have := hS.D_eq_rows j; by aesop))
   convert (S.pmz_d₀_d₁_d₂_Aₗ_isTotallyUnimodular_of_Bₗ hS.left.left hS.Aᵣ_elem).submatrix e id
   ext i j
@@ -1211,7 +1211,7 @@ structure MatrixLikeSum3 (Xₗ Yₗ Xᵣ Yᵣ : Type) (c₀ c₁ : Fin 2 ⊕ X�
   LeftTU : (Aₗ ⊟ D).IsTotallyUnimodular
   Parallels : ∀ j : Yₗ, (D · j).IsParallelTo₃ c₀ c₁ (c₀ - c₁)
   BottomTU : (▮c₀ ◫ ▮c₁ ◫ ▮(c₀ - c₁) ◫ Aᵣ).IsTotallyUnimodular
-  AuxTU : (⊞ Aₗ 0 D.toRows₁ !![1; 1]).IsTotallyUnimodular
+  AuxTU : (⊞ Aₗ 0 D.toRows₁ (▮![1, 1])).IsTotallyUnimodular
   Col₀ : c₀ ◩0 = 1 ∧ c₀ ◩1 = 0
   Col₁ : (c₁ ◩0 = 0 ∧ c₁ ◩1 = -1) ∨ (c₁ ◩0 = 1 ∧ c₁ ◩1 = 1)
 
@@ -1250,7 +1250,7 @@ private lemma MatrixLikeSum3.shortTableauPivotAₗ_eq {Xₗ Yₗ Xᵣ Yᵣ : Typ
 private abbrev MatrixLikeSum3.shortTableauPivotD {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xᵣ] [DecidableEq Yₗ]
     {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) (x : Xₗ) (y : Yₗ) :
     Matrix (Fin 2 ⊕ Xᵣ) Yₗ ℚ :=
-  ((▬(M.Aₗ x) ⊟ M.D).shortTableauPivot ◩() y).toRows₂
+  ((▬(M.Aₗ x) ⊟ M.D).shortTableauPivot ◩⟨⟩ y).toRows₂
 
 @[app_unexpander MatrixLikeSum3.shortTableauPivotD]
 private def MatrixLikeSum3.shortTableauPivotD_unexpand : Lean.PrettyPrinter.Unexpander
@@ -1322,8 +1322,8 @@ private lemma MatrixLikeSum3.mulCols_leftTU {Xₗ Yₗ Xᵣ Yᵣ : Type} [Decida
 
 private lemma MatrixLikeSum3.mulCols_auxTU {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Xᵣ] [DecidableEq Yₗ]
     {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) {q : Yₗ → ℚ} (hq : ∀ j : Yₗ, q j ∈ SignType.cast.range) :
-    (⊞ (M.mulColsAₗ q) 0 (M.mulColsD q).toRows₁ !![1; 1]).IsTotallyUnimodular := by
-  let q' : Yₗ ⊕ Fin 1 → ℚ := (·.casesOn q 1)
+    (⊞ (M.mulColsAₗ q) 0 (M.mulColsD q).toRows₁ (▮![1, 1])).IsTotallyUnimodular := by
+  let q' : Yₗ ⊕ Unit → ℚ := (·.casesOn q 1)
   have hq' : ∀ j, q' j ∈ SignType.cast.range := (·.casesOn hq (by simp [q']))
   convert M.AuxTU.mul_cols hq'
   aesop
@@ -1457,8 +1457,8 @@ private lemma MatrixLikeSum3.shortTableauPivot_isParallelTo₃ {Xₗ Yₗ Xᵣ Y
 
 private lemma MatrixLikeSum3.shortTableauPivot_auxTU {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ]
     {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) {x : Xₗ} {y : Yₗ} (hxy : M.Aₗ x y ≠ 0) :
-    (⊞ (M.shortTableauPivotAₗ x y) 0 (M.shortTableauPivotD x y).toRows₁ !![1; 1]).IsTotallyUnimodular := by
-  have hxy' : (⊞ M.Aₗ 0 M.D.toRows₁ !![1; 1]) ◩x ◩y ≠ 0 := hxy
+    (⊞ (M.shortTableauPivotAₗ x y) 0 (M.shortTableauPivotD x y).toRows₁ (▮![1, 1])).IsTotallyUnimodular := by
+  have hxy' : (⊞ M.Aₗ 0 M.D.toRows₁ (▮![1, 1])) ◩x ◩y ≠ 0 := hxy
   convert M.AuxTU.shortTableauPivot hxy'
   aesop
 
@@ -1487,7 +1487,7 @@ private lemma MatrixLikeSum3.c₀_c₀_c₁_c₁_c₂_c₂_Aᵣ_isTotallyUnimodu
     (▮c₀ ◫ ▮c₀ ◫ ▮c₁ ◫ ▮c₁ ◫ ▮(c₀ - c₁) ◫ ▮(c₀ - c₁) ◫ M.Aᵣ).IsTotallyUnimodular := by
   convert M.BottomTU.comp_cols
     (fun j : ((((((Unit ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Yᵣ) =>
-      (j.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (↓◩◩◩()) ↓◩◩◩()) ↓◩◩◪()) ↓◩◩◪()) ↓◩◪()) ↓◩◪()) Sum.inr))
+      (j.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (↓◩◩◩⟨⟩) ↓◩◩◩⟨⟩) ↓◩◩◪⟨⟩) ↓◩◩◪⟨⟩) ↓◩◪⟨⟩) ↓◩◪⟨⟩) Sum.inr))
   aesop
 
 private lemma MatrixLikeSum3.pmz_c₀_c₁_c₂_Aᵣ_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Yᵣ] {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ}
@@ -1506,13 +1506,13 @@ private lemma MatrixLikeSum3.D_Aᵣ_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : T
   let e : (Yₗ ⊕ Yᵣ → (Unit ⊕ (((((Unit ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Yᵣ)) :=
     (·.casesOn
       (fun j : Yₗ =>
-        if h0 : (M.D · j) = 0 then ◩() else
-        if hpc₀ : (M.D · j) = c₀ then ◪◩◩◩◩◩◩() else
-        if hmc₀ : (M.D · j) = -c₀ then ◪◩◩◩◩◩◪() else
-        if hpc₁ : (M.D · j) = c₁ then ◪◩◩◩◩◪() else
-        if hmc₁ : (M.D · j) = -c₁ then ◪◩◩◩◪() else
-        if hpc₂ : (M.D · j) = c₀ - c₁ then ◪◩◩◪() else
-        if hmc₂ : (M.D · j) = c₁ - c₀ then ◪◩◪() else
+        if h0 : (M.D · j) = 0 then ◩⟨⟩ else
+        if hpc₀ : (M.D · j) = c₀ then ◪◩◩◩◩◩◩⟨⟩ else
+        if hmc₀ : (M.D · j) = -c₀ then ◪◩◩◩◩◩◪⟨⟩ else
+        if hpc₁ : (M.D · j) = c₁ then ◪◩◩◩◩◪⟨⟩ else
+        if hmc₁ : (M.D · j) = -c₁ then ◪◩◩◩◪⟨⟩ else
+        if hpc₂ : (M.D · j) = c₀ - c₁ then ◪◩◩◪⟨⟩ else
+        if hmc₂ : (M.D · j) = c₁ - c₀ then ◪◩◪⟨⟩ else
         (False.elim (by have := M.Parallels j; aesop)))
       (Sum.inr ∘ Sum.inr))
   convert M.pmz_c₀_c₁_c₂_Aᵣ_isTotallyUnimodular.submatrix id e
@@ -1625,14 +1625,14 @@ private lemma MatrixSum3.IsCanonicalSigning.col₁ {Xₗ Yₗ Xᵣ Yᵣ : Type}
 private noncomputable def MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3 {Xₗ Yₗ Xᵣ Yᵣ : Type}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ} (hS : S.IsCanonicalSigning) :
-    MatrixLikeSum3 (Xₗ ⊕ Fin 1) (Yₗ ⊕ Fin 2) Xᵣ (Fin 1 ⊕ Yᵣ) S.c₀ S.c₁ where
+    MatrixLikeSum3 (Xₗ ⊕ Unit) (Yₗ ⊕ Fin 2) Xᵣ (Unit ⊕ Yᵣ) S.c₀ S.c₁ where
   Aₗ := S.Aₗ
   D  := S.D
   Aᵣ := S.Aᵣ
   LeftTU := hS.Aₗ_D_isTotallyUnimodular
   Parallels := hS.D_eq_cols
   BottomTU := hS.c₀_c₁_c₂_Aᵣ_isTotallyUnimodular
-  AuxTU := congr_arg (!![1; ·]) hS.Aᵣ_elem.right ▸ hS.Aᵣ_elem.left ▸ hS.left.left
+  AuxTU := congr_arg (▮![1, ·]) hS.Aᵣ_elem.right ▸ hS.Aᵣ_elem.left ▸ hS.left.left
   Col₀ := hS.col₀
   Col₁ := hS.col₁
 
@@ -1872,12 +1872,12 @@ end triplets
 /-! ### Conversion from union form to block form and vice versa -/
 
 def Matrix.toBlockSummandₗ {Xₗ Yₗ : Set α} {R : Type} (Bₗ : Matrix Xₗ Yₗ R) (x₀ x₁ x₂ : Xₗ) (y₀ y₁ y₂ : Yₗ) :
-    Matrix ((Xₗ.drop3 x₀ x₁ x₂ ⊕ Fin 1) ⊕ Fin 2) ((Yₗ.drop3 y₀ y₁ y₂ ⊕ Fin 2) ⊕ Fin 1) R :=
-  Bₗ.submatrix (·.casesOn (·.casesOn undrop3 ![x₂]) ![x₀, x₁]) (·.casesOn (·.casesOn undrop3 ![y₀, y₁]) ![y₂])
+    Matrix ((Xₗ.drop3 x₀ x₁ x₂ ⊕ Unit) ⊕ Fin 2) ((Yₗ.drop3 y₀ y₁ y₂ ⊕ Fin 2) ⊕ Unit) R :=
+  Bₗ.submatrix (·.casesOn (·.casesOn undrop3 ↓x₂) ![x₀, x₁]) (·.casesOn (·.casesOn undrop3 ![y₀, y₁]) ↓y₂)
 
 def Matrix.toBlockSummandᵣ {Xᵣ Yᵣ : Set α} {R : Type} (Bᵣ : Matrix Xᵣ Yᵣ R) (x₀ x₁ x₂ : Xᵣ) (y₀ y₁ y₂ : Yᵣ) :
-    Matrix (Fin 1 ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ x₁ x₂)) (Fin 2 ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ y₁ y₂)) R :=
-  Bᵣ.submatrix (·.casesOn ![x₂] (·.casesOn ![x₀, x₁] undrop3)) (·.casesOn ![y₀, y₁] (·.casesOn ![y₂] undrop3))
+    Matrix (Unit ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ x₁ x₂)) (Fin 2 ⊕ (Unit ⊕ Yᵣ.drop3 y₀ y₁ y₂)) R :=
+  Bᵣ.submatrix (·.casesOn ↓x₂ (·.casesOn ![x₀, x₁] undrop3)) (·.casesOn ![y₀, y₁] (·.casesOn ↓y₂ undrop3))
 
 private lemma Matrix.IsSigningOf.toBlockSummandₗ {Xₗ Yₗ : Set α} {R : Type} [LinearOrderedRing R]
     {Bₗ : Matrix Xₗ Yₗ R} {n : ℕ} {Aₗ : Matrix Xₗ Yₗ (ZMod n)}
@@ -1891,8 +1891,8 @@ private lemma Matrix.IsSigningOf.toBlockSummandᵣ {Xᵣ Yᵣ : Set α} {R : Typ
     (Bᵣ.toBlockSummandᵣ x₀ x₁ x₂ y₀ y₁ y₂).IsSigningOf (Aᵣ.toBlockSummandᵣ x₀ x₁ x₂ y₀ y₁ y₂) :=
   hBAᵣ.submatrix _ _
 
-private def equivFin1 {Z : Set α} (z : Z) : Fin 1 ≃ Set.Elem {z.val} :=
-  Equiv.ofUnique (Fin 1) (Set.Elem {z.val})
+private def equivFin1 {Z : Set α} (z : Z) : Unit ≃ Set.Elem {z.val} :=
+  Equiv.ofUnique Unit (Set.Elem {z.val})
 
 variable [DecidableEq α]
 
@@ -1906,7 +1906,7 @@ private def equivFin2 {Z : Set α} {z₀ z₁ : Z} (hzz : z₀ ≠ z₁) : Fin 2
 
 private def equiv₃X {Xₗ Xᵣ : Set α} [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Xᵣ)] {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ}
     (hx₀ₗ : x₁ₗ ≠ x₂ₗ) (hx₁ₗ : x₀ₗ ≠ x₂ₗ) (hx₀ᵣ : x₁ᵣ ≠ x₂ᵣ) (hx₁ᵣ : x₀ᵣ ≠ x₂ᵣ) (hx₂ᵣ : x₀ᵣ ≠ x₁ᵣ) :
-    (Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ) ≃ (Xₗ.drop2 x₀ₗ x₁ₗ).Elem ⊕ (Xᵣ.drop1 x₂ᵣ).Elem :=
+    (Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Unit) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ) ≃ (Xₗ.drop2 x₀ₗ x₁ₗ).Elem ⊕ (Xᵣ.drop1 x₂ᵣ).Elem :=
   Equiv.sumCongr
     (((equivFin1 x₂ₗ).rightCongr.trans (Xₗ.drop3_disjoint_thr x₀ₗ x₁ₗ x₂ₗ).equivSumUnion).trans
       (drop3_union_mem hx₁ₗ hx₀ₗ).≃)
@@ -1915,7 +1915,7 @@ private def equiv₃X {Xₗ Xᵣ : Set α} [∀ a, Decidable (a ∈ Xₗ)] [∀ 
 
 private def equiv₃Y {Yₗ Yᵣ : Set α} [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Yᵣ)] {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
     (hy₀ₗ : y₁ₗ ≠ y₂ₗ) (hy₁ₗ : y₀ₗ ≠ y₂ₗ) (hy₂ₗ : y₀ₗ ≠ y₁ₗ) (hy₀ᵣ : y₁ᵣ ≠ y₂ᵣ) (hy₁ᵣ : y₀ᵣ ≠ y₂ᵣ) :
-    (Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ) ≃ (Yₗ.drop1 y₂ₗ).Elem ⊕ (Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem :=
+    (Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Unit ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ) ≃ (Yₗ.drop1 y₂ₗ).Elem ⊕ (Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem :=
   Equiv.sumCongr
     (((equivFin2 hy₂ₗ).rightCongr.trans (Yₗ.drop3_disjoint_fst_snd y₀ₗ y₁ₗ y₂ₗ).equivSumUnion).trans
       (drop3_union_pair hy₁ₗ hy₀ₗ).≃)
@@ -1926,8 +1926,8 @@ private def Matrix.toIntermediate {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
     (A : Matrix
-      ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
-      ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
+      ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Unit) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
+      ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Unit ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
       R)
     (hx₀ₗ : x₁ₗ ≠ x₂ₗ) (hx₁ₗ : x₀ₗ ≠ x₂ₗ) (hx₀ᵣ : x₁ᵣ ≠ x₂ᵣ) (hx₁ᵣ : x₀ᵣ ≠ x₂ᵣ) (hx₂ᵣ : x₀ᵣ ≠ x₁ᵣ)
     (hy₀ₗ : y₁ₗ ≠ y₂ₗ) (hy₁ₗ : y₀ₗ ≠ y₂ₗ) (hy₂ₗ : y₀ₗ ≠ y₁ₗ) (hy₀ᵣ : y₁ᵣ ≠ y₂ᵣ) (hy₁ᵣ : y₀ᵣ ≠ y₂ᵣ) :
@@ -1945,8 +1945,8 @@ private def Matrix.toMatrixDropUnionDropInternal {Xₗ Yₗ Xᵣ Yᵣ : Set α} 
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
     (A : Matrix
-      ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
-      ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
+      ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Unit) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
+      ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Unit ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
       R)
     (hx₀ₗ : x₁ₗ ≠ x₂ₗ) (hx₁ₗ : x₀ₗ ≠ x₂ₗ) (hx₀ᵣ : x₁ᵣ ≠ x₂ᵣ) (hx₁ᵣ : x₀ᵣ ≠ x₂ᵣ) (hx₂ᵣ : x₀ᵣ ≠ x₁ᵣ)
     (hy₀ₗ : y₁ₗ ≠ y₂ₗ) (hy₁ₗ : y₀ₗ ≠ y₂ₗ) (hy₂ₗ : y₀ₗ ≠ y₁ₗ) (hy₀ᵣ : y₁ᵣ ≠ y₂ᵣ) (hy₁ᵣ : y₀ᵣ ≠ y₂ᵣ) :
@@ -1963,8 +1963,8 @@ def Matrix.toMatrixDropUnionDrop {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
     (A : Matrix
-      ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
-      ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
+      ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Unit) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
+      ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Unit ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
       R) :
     Matrix (Xₗ.drop2 x₀ₗ x₁ₗ ∪ Xᵣ.drop1 x₂ᵣ).Elem (Yₗ.drop1 y₂ₗ ∪ Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem R :=
   A.submatrix
@@ -1989,8 +1989,8 @@ private lemma Matrix.toMatrixDropUnionDrop_eq_toMatrixDropUnionDropInternal {X�
     (hx₀ₗ : x₁ₗ ≠ x₂ₗ) (hx₁ₗ : x₀ₗ ≠ x₂ₗ) (hx₀ᵣ : x₁ᵣ ≠ x₂ᵣ) (hx₁ᵣ : x₀ᵣ ≠ x₂ᵣ) (hx₂ᵣ : x₀ᵣ ≠ x₁ᵣ)
     (hy₀ₗ : y₁ₗ ≠ y₂ₗ) (hy₁ₗ : y₀ₗ ≠ y₂ₗ) (hy₂ₗ : y₀ₗ ≠ y₁ₗ) (hy₀ᵣ : y₁ᵣ ≠ y₂ᵣ) (hy₁ᵣ : y₀ᵣ ≠ y₂ᵣ)
     (A : Matrix
-      ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Fin 1) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
-      ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Fin 1 ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
+      ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Unit) ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
+      ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2) ⊕ (Unit ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
       R) :
     A.toMatrixDropUnionDrop = A.toMatrixDropUnionDropInternal hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ := by
   apply congr_arg₂
@@ -2002,7 +2002,6 @@ private lemma Matrix.toMatrixDropUnionDrop_eq_toMatrixDropUnionDropInternal {X�
       · simp [hi₂ₗ, hx₂ₗXₗ]
       simp_rw [hi₂ₗ, hi]
       simp [Disjoint.equivSumUnion]
-      rfl
     else if hiXₗ : i.val ∈ Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ then
       have hiXₗ' := mem_drop3_mem_drop2 hiXₗ
       have hi : i.toSum = ◩⟨i.val, hiXₗ'⟩
@@ -2074,7 +2073,6 @@ private lemma Matrix.toMatrixDropUnionDrop_eq_toMatrixDropUnionDropInternal {X�
       · simp [hj₂ᵣ, hy₂ᵣYₗ, hy₂ᵣYᵣ]
       simp_rw [hj₀ₗ, hj₁ₗ, hjYₗ, hj₂ᵣ, hj]
       simp [Disjoint.equivSumUnion]
-      rfl
     else if hjYᵣ : j.val ∈ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
       have hjYₗ' : j.val ∉ Yₗ.drop1 y₂ₗ
       · intro contr
@@ -2681,8 +2679,8 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
         have hyyyyyy :
           (equiv₃Y hy₁ₗ hy₀ₗ hy₂ₗ.symm hy₁ᵣ hy₀ᵣ) =
           (Equiv.sumCongr (Equiv.sumCongr (drop3_comm y₁ₗ y₀ₗ y₂ₗ).≃ fin2swap) (drop3_comm y₁ᵣ y₀ᵣ y₂ᵣ).≃.rightCongr :
-            ((((Sₗ.Y.drop3 y₁ₗ y₀ₗ y₂ₗ).Elem ⊕ Fin 2) ⊕ (Fin 1 ⊕ (Sᵣ.Y.drop3 y₁ᵣ y₀ᵣ y₂ᵣ).Elem)) ≃
-              ((Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ).Elem ⊕ Fin 2) ⊕ (Fin 1 ⊕ (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ).Elem))
+            ((((Sₗ.Y.drop3 y₁ₗ y₀ₗ y₂ₗ).Elem ⊕ Fin 2) ⊕ (Unit ⊕ (Sᵣ.Y.drop3 y₁ᵣ y₀ᵣ y₂ᵣ).Elem)) ≃
+              ((Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ).Elem ⊕ Fin 2) ⊕ (Unit ⊕ (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ).Elem))
           ).trans
             ((equiv₃Y hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ).trans
               ((drop2_comm y₀ᵣ y₁ᵣ).≃.rightCongr :
@@ -3007,8 +3005,8 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
         have hxxxxxx :
           (equiv₃X hx₁ₗ hx₀ₗ hx₁ᵣ hx₀ᵣ hx₂ᵣ.symm) =
           (Equiv.sumCongr (drop3_comm x₁ₗ x₀ₗ x₂ₗ).≃.leftCongr (Equiv.sumCongr fin2swap (drop3_comm x₁ᵣ x₀ᵣ x₂ᵣ).≃) :
-            ((((Sₗ.X.drop3 x₁ₗ x₀ₗ x₂ₗ).Elem ⊕ Fin 1) ⊕ (Fin 2 ⊕ (Sᵣ.X.drop3 x₁ᵣ x₀ᵣ x₂ᵣ).Elem)) ≃
-              ((Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ).Elem ⊕ Fin 1) ⊕ (Fin 2 ⊕ (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ).Elem))
+            ((((Sₗ.X.drop3 x₁ₗ x₀ₗ x₂ₗ).Elem ⊕ Unit) ⊕ (Fin 2 ⊕ (Sᵣ.X.drop3 x₁ᵣ x₀ᵣ x₂ᵣ).Elem)) ≃
+              ((Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ).Elem ⊕ Unit) ⊕ (Fin 2 ⊕ (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ).Elem))
           ).trans
             ((equiv₃X hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ).trans
               ((drop2_comm x₀ₗ x₁ₗ).≃.leftCongr :
@@ -3340,8 +3338,8 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
         have hxxxxxx :
           (equiv₃X hx₁ₗ hx₀ₗ hx₁ᵣ hx₀ᵣ hx₂ᵣ.symm) =
           (Equiv.sumCongr (drop3_comm x₁ₗ x₀ₗ x₂ₗ).≃.leftCongr (Equiv.sumCongr fin2swap (drop3_comm x₁ᵣ x₀ᵣ x₂ᵣ).≃) :
-            ((((Sₗ.X.drop3 x₁ₗ x₀ₗ x₂ₗ).Elem ⊕ Fin 1) ⊕ (Fin 2 ⊕ (Sᵣ.X.drop3 x₁ᵣ x₀ᵣ x₂ᵣ).Elem)) ≃
-              ((Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ).Elem ⊕ Fin 1) ⊕ (Fin 2 ⊕ (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ).Elem))
+            ((((Sₗ.X.drop3 x₁ₗ x₀ₗ x₂ₗ).Elem ⊕ Unit) ⊕ (Fin 2 ⊕ (Sᵣ.X.drop3 x₁ᵣ x₀ᵣ x₂ᵣ).Elem)) ≃
+              ((Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ).Elem ⊕ Unit) ⊕ (Fin 2 ⊕ (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ).Elem))
           ).trans
             ((equiv₃X hx₀ₗ hx₁ₗ hx₀ᵣ hx₁ᵣ hx₂ᵣ).trans
               ((drop2_comm x₀ₗ x₁ₗ).≃.leftCongr :
@@ -3360,8 +3358,8 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
         have hyyyyyy :
           (equiv₃Y hy₁ₗ hy₀ₗ hy₂ₗ.symm hy₁ᵣ hy₀ᵣ) =
           (Equiv.sumCongr (Equiv.sumCongr (drop3_comm y₁ₗ y₀ₗ y₂ₗ).≃ fin2swap) (drop3_comm y₁ᵣ y₀ᵣ y₂ᵣ).≃.rightCongr :
-            ((((Sₗ.Y.drop3 y₁ₗ y₀ₗ y₂ₗ).Elem ⊕ Fin 2) ⊕ (Fin 1 ⊕ (Sᵣ.Y.drop3 y₁ᵣ y₀ᵣ y₂ᵣ).Elem)) ≃
-              ((Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ).Elem ⊕ Fin 2) ⊕ (Fin 1 ⊕ (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ).Elem))
+            ((((Sₗ.Y.drop3 y₁ₗ y₀ₗ y₂ₗ).Elem ⊕ Fin 2) ⊕ (Unit ⊕ (Sᵣ.Y.drop3 y₁ᵣ y₀ᵣ y₂ᵣ).Elem)) ≃
+              ((Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ).Elem ⊕ Fin 2) ⊕ (Unit ⊕ (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ).Elem))
           ).trans
             ((equiv₃Y hy₀ₗ hy₁ₗ hy₂ₗ hy₀ᵣ hy₁ᵣ).trans
               ((drop2_comm y₀ᵣ y₁ᵣ).≃.rightCongr :
