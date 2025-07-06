@@ -50,9 +50,9 @@ lemma Matrix.isTuSigningOf_iff {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y
 
 private lemma Matrix.toMatroid_mapEquiv {α β : Type} {X Y : Set α} (A : Matrix X Y ℚ) (e : α ≃ β) :
     (A.submatrix (e.image X).symm (e.image Y).symm).toMatroid = A.toMatroid.mapEquiv e := by
+  ext I hI
+  · rfl
   let Aₑ := (A.submatrix (e.image X).symm (e.image Y).symm)
-  apply Matroid.ext_indep (A.toMatroid.mapEquiv_ground_eq e)
-  intro I hI
   rw [A.toMatroid.mapEquiv_indep_iff, Aₑ.toMatroid_indep, A.toMatroid_indep, Matrix.IndepCols, Matrix.IndepCols,
     Equiv.symm_image_subset]
   constructor
