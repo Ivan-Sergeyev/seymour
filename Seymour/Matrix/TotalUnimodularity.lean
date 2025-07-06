@@ -388,7 +388,7 @@ private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_card_lt
       0
       (A₂.submatrix (·.val.val.snd) ((·.val.snd) ∘ e₂))
     ).submatrix
-      ((f.decomposeSum.trans (=.≃.sumCongr e')).trans e₃)
+      ((f.decomposeSum.trans (Equiv.sumCongr =.≃ e')).trans e₃)
       (g.decomposeSum.trans (Equiv.sumCongr e₁.symm e₂.symm))
   · ext
     simp only [Function.decomposeSum, Equiv.coe_fn_mk, Equiv.coe_trans, Equiv.sumCongr_apply, Function.comp_apply,
