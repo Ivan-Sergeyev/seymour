@@ -272,11 +272,11 @@ private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_of_support {X Y : Set α} 
 /-- Binary matroid constructed from a full representation is regular if the binary matrix has a TU signing. -/
 private lemma Matrix.toMatroid_isRegular_if_hasTuSigning {X Y : Set α} (A : Matrix X Y Z2) :
     A.HasTuSigning → A.toMatroid.IsRegular := by
-  intro ⟨S, hS, hSV⟩
+  intro ⟨S, hS, hSA⟩
   use X, Y, S, hS
   apply hS.toMatroid_eq_of_support
   ext i j
-  specialize hSV i j
+  specialize hSA i j
   simp
   if h0 : A i j = 0 then
     simp_all
@@ -284,8 +284,8 @@ private lemma Matrix.toMatroid_isRegular_if_hasTuSigning {X Y : Set α} (A : Mat
     have h1 := Z2_eq_1_of_ne_0 h0
     simp_all
     intro hS0
-    rw [hS0, abs_zero] at hSV
-    exact Rat.zero_ne_one hSV
+    rw [hS0, abs_zero] at hSA
+    exact Rat.zero_ne_one hSA
 
 
 /-! ## Main results of this file -/

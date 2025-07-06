@@ -168,7 +168,6 @@ The guideline below is written primarily to assist you in reading the code.
 - `E` ... ground set
 - `F` ... field
 - `G` ... base
-- `H` ... base
 - `I` ... independent set
 - `J` ... independent set
 - `M` ... matroid
@@ -177,8 +176,6 @@ The guideline below is written primarily to assist you in reading the code.
 - `Q` ... proposition
 - `R` ... (semi)ring
 - `S` ... standard representation of a matroid
-- `V` ... vector matroid
-- `W` ... vector matroid
 - `X` ... set of row indices
 - `Y` ... set of col indices
 - `Z` ... subset of indices
