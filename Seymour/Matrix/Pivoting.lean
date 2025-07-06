@@ -390,14 +390,14 @@ lemma Matrix.submatrix_shortTableauPivot [DecidableEq X] [DecidableEq Y] {X' Y' 
 
 /-! ## Lemma 1 of Proof of Regularity of 2-Sum and 3-Sum of Matroids -/
 
-private lemma Matrix.shortTableauPivot_submatrix_succAbove_pivot_apply [Field F] {k : ℕ} (A : Matrix (Fin k.succ) (Fin k.succ) F)
-    {x y : Fin k.succ} (i j : Fin k) :
+private lemma Matrix.shortTableauPivot_submatrix_succAbove_pivot_apply [Field F] {k : ℕ} {x y : Fin k.succ}
+    (A : Matrix (Fin k.succ) (Fin k.succ) F) (i j : Fin k) :
     (A.shortTableauPivot x y).submatrix x.succAbove y.succAbove i j =
     A (x.succAbove i) (y.succAbove j) - A (x.succAbove i) y * A x (y.succAbove j) / A x y := by
   simp [Matrix.shortTableauPivot, Matrix.longTableauPivot, y.succAbove_ne j, x.succAbove_ne i, div_mul_eq_mul_div]
 
-private lemma Matrix.shortTableauPivot_submatrix_eq [Field F] {k : ℕ} (A : Matrix (Fin k.succ) (Fin k.succ) F)
-    {x y : Fin k.succ} :
+private lemma Matrix.shortTableauPivot_submatrix_eq [Field F] {k : ℕ} {x y : Fin k.succ}
+    (A : Matrix (Fin k.succ) (Fin k.succ) F) :
     (A.shortTableauPivot x y).submatrix x.succAbove y.succAbove =
     Matrix.of (fun i j : Fin k => A (x.succAbove i) (y.succAbove j) - A (x.succAbove i) y * A x (y.succAbove j) / A x y) := by
   ext i j

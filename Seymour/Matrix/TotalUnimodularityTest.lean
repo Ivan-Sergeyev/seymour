@@ -52,7 +52,7 @@ lemma Matrix.testTotallyUnimodular_eq_isTotallyUnimodular {m n : ℕ} (A : Matri
 instance {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Decidable A.IsTotallyUnimodular :=
   decidable_of_iff _ A.testTotallyUnimodular_eq_isTotallyUnimodular
 
-lemma filter_length_card {n : ℕ} {s : Finset (Fin n)} : ((List.finRange n).filter (· ∈ s)).length = s.card := by
+lemma filter_length_card {n : ℕ} (s : Finset (Fin n)) : ((List.finRange n).filter (· ∈ s)).length = s.card := by
   have := ((List.finRange n).filter (· ∈ s)).toFinset_card_of_nodup (List.Nodup.filter _ (List.nodup_finRange n))
   simp_all
 
@@ -60,8 +60,8 @@ def Matrix.squareSetSubmatrix {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ)
     {X : Finset (Fin m)} {Y : Finset (Fin n)} (hXY : X.card = Y.card) :
     Matrix (Fin X.card) (Fin X.card) ℚ :=
   A.submatrix
-    (fun p : Fin X.card => ((List.finRange m).filter (· ∈ X))[p]'(by convert p.isLt; exact filter_length_card))
-    (fun p : Fin X.card => ((List.finRange n).filter (· ∈ Y))[p]'(by convert p.isLt; exact hXY ▸ filter_length_card))
+    (fun p : Fin X.card => ((List.finRange m).filter (· ∈ X))[p]'(by convert p.isLt; apply filter_length_card))
+    (fun p : Fin X.card => ((List.finRange n).filter (· ∈ Y))[p]'(by convert p.isLt; exact hXY ▸ filter_length_card _))
 
 /-- Faster algorithm for testing total unimodularity without permutation with pending formal guarantees. -/
 def Matrix.testTotallyUnimodularFast {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Bool :=
@@ -148,8 +148,8 @@ lemma Matrix.isTotallyUnimodular_of_testTotallyUnimodularFast {m n : ℕ} (A : M
   · simp_rw [Set.toFinset_card, Set.card_range_of_injective hf, Set.card_range_of_injective hg]
   obtain ⟨e₁, e₂, hee⟩ := @A.submatrix_eq_submatrix_reindex
     _ _ (Fin f.range.toFinset.card) (Fin f.range.toFinset.card) _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-    (fun p => ((List.finRange m).filter (· ∈ f.range.toFinset))[p]'(by convert p.isLt; exact filter_length_card))
-    (fun p => ((List.finRange n).filter (· ∈ g.range.toFinset))[p]'(by convert p.isLt; rw [hfg]; exact filter_length_card))
+    (fun p => ((List.finRange m).filter (· ∈ f.range.toFinset))[p]'(by convert p.isLt; apply filter_length_card))
+    (fun p => ((List.finRange n).filter (· ∈ g.range.toFinset))[p]'(by convert p.isLt; rw [hfg]; apply filter_length_card))
     f g
     (fun a₁ a₂ haa => by simpa [Fin.mk.injEq, Fin.val_inj] using
         (List.nodup_iff_injective_get.→ ((List.nodup_finRange m).filter _) haa))
@@ -157,11 +157,11 @@ lemma Matrix.isTotallyUnimodular_of_testTotallyUnimodularFast {m n : ℕ} (A : M
         (List.nodup_iff_injective_get.→ ((List.nodup_finRange n).filter _) haa))
     hf hg
     (by
-      rw [range_of_list_get filter_length_card.symm]
+      rw [range_of_list_get (filter_length_card _).symm]
       simp
     )
     (by
-      rw [range_of_list_get (by rw [hfg]; exact filter_length_card.symm)]
+      rw [range_of_list_get (hfg ▸ (filter_length_card _).symm)]
       simp
     )
   have hAfg := hA f.range.toFinset g.range.toFinset hfg

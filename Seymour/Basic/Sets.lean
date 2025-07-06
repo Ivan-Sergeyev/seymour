@@ -14,25 +14,12 @@ lemma singleton_inter_in_left {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : a �
 lemma singleton_inter_in_right {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : a ∈ Y :=
   Set.mem_of_mem_inter_right (ha.symm.subset rfl)
 
-lemma disjoint_of_sdiff_inter (X Y : Set α) : X \ (X ∩ Y) ⫗ Y \ (X ∩ Y) := by
-  rw [Set.diff_self_inter, Set.diff_inter_self_eq_diff]
-  exact disjoint_sdiff_sdiff
-
-lemma disjoint_of_sdiff_singleton {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) :
-    X \ {a} ⫗ Y \ {a} :=
-  ha ▸ disjoint_of_sdiff_inter X Y
-
 lemma right_eq_right_of_union_eq_union {A₁ A₂ B₁ B₂ : Set α}
     (hA : A₁ = A₂) (hB₁ : A₁ ⫗ B₁) (hB₂ : A₂ ⫗ B₂) (hAB : A₁ ∪ B₁ = A₂ ∪ B₂) :
     B₁ = B₂ := by
   tauto_set
 
 lemma eq_toFinset_of_toSet_eq {s : Finset α} {S : Set α} [Fintype S] (hsS : s.toSet = S) : s = S.toFinset := by
-  aesop
-
-lemma impossible_nmem_sdiff_triplet {S : Set α} {a b c : α} {e : (S \ {c}).Elem}
-    (heS : e.val ∉ S \ {a, b, c}) (hea : e.val ≠ a) (heb : e.val ≠ b) :
-    False := by
   aesop
 
 def HasSubset.Subset.equiv {A B : Set α} [∀ i, Decidable (i ∈ A)] (hAB : A ⊆ B) : A.Elem ⊕ (B \ A).Elem ≃ B.Elem :=

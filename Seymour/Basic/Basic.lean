@@ -87,25 +87,6 @@ def Function.support_unexpand : Lean.PrettyPrinter.Unexpander
 
 /-! ## Basic lemmas -/
 
-lemma and_congr_l {P₁ P₂ : Prop} (hP : P₁ ↔ P₂) (Q : Prop) : P₁ ∧ Q ↔ P₂ ∧ Q :=
-  and_congr_left ↓hP
-
-lemma and_congr_r {P₁ P₂ : Prop} (hP : P₁ ↔ P₂) (Q : Prop) : Q ∧ P₁ ↔ Q ∧ P₂ :=
-  and_congr_right ↓hP
-
-lemma Int.neg_one_ne_zero : -1 ≠ 0 := by
-  norm_num
-
-lemma exists_minimal_nat_le_of_exists {n : ℕ} (P : { a : ℕ | a ≤ n } → Prop) (hP : P ⟨n, le_refl n⟩) :
-    ∃ n : { a : ℕ | a ≤ n }, Minimal P n := by
-  obtain ⟨b, -, hb⟩ := Finite.exists_minimal_le hP
-  exact ⟨b, hb⟩
-
-lemma exists_minimal_nat_of_exists {P : ℕ → Prop} (hP : ∃ n : ℕ, P n) : ∃ n : ℕ, Minimal P n := by
-  obtain ⟨n, hn⟩ := hP
-  obtain ⟨c, hc⟩ := exists_minimal_nat_le_of_exists (P ·.val) hn
-  exact ⟨c.val, hc.left, fun m hPm hmc => @hc.right ⟨m, hmc.trans c.property⟩ hPm hmc⟩
-
 variable {α : Type}
 
 lemma dite_of_true {P : Prop} [Decidable P] (p : P) {f : P → α} {a : α} : (if hp : P then f hp else a) = f p := by
@@ -116,10 +97,6 @@ lemma dite_of_false {P : Prop} [Decidable P] (p : ¬P) {f : P → α} {a : α} :
 
 lemma Function.range_eq {ι : Type} (f : ι → α) : f.range = { a : α | ∃ i : ι, f i = a } :=
   rfl
-
-lemma Sum.swap_inj {β : Type} : (@Sum.swap α β).Injective := by
-  intro
-  aesop
 
 lemma Finset.sum_of_single_nonzero {ι : Type} (s : Finset ι) [AddCommMonoid α] (f : ι → α) (a : ι) (ha : a ∈ s)
     (hf : ∀ i ∈ s, i ≠ a → f i = 0) :
@@ -145,18 +122,6 @@ lemma sum_elem_of_single_nonzero {ι : Type} [AddCommMonoid α] {f : ι → α} 
   apply hi
   ext
   exact contr
-
-lemma sum_insert_elem {ι : Type} [DecidableEq ι] [AddCommMonoid α] {S : Set ι} [Fintype S] {a : ι} (ha : a ∉ S) (f : ι → α) :
-    ∑ i : (a ᕃ S).Elem, f i = f a + ∑ i : S.Elem, f i := by
-  simp_all [Finset.sum_set_coe]
-
-lemma finset_toSet_sum {ι : Type} [AddCommMonoid α] {s : Finset ι} {S : Set ι} [Fintype S] (hsS : s.toSet = S) (f : ι → α) :
-    ∑ i : s.toSet, f i = ∑ i : S, f i := by
-  apply Finset.sum_bij (fun a => ↓⟨a.val, hsS ▸ a.coe_prop⟩)
-  · simp
-  · simp
-  · aesop
-  · simp
 
 lemma sum_over_fin_succ_of_only_zeroth_nonzero {n : ℕ} [AddCommMonoid α] {f : Fin n.succ → α}
     (hf : ∀ i : Fin n.succ, i ≠ 0 → f i = 0) :
