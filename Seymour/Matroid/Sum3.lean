@@ -2001,13 +2001,13 @@ private lemma Matrix.toMatrixDropUnionDrop_eq_toMatrixDropUnionDropInternal {X�
       have hi : i.toSum = ◩⟨x₂ₗ.val, hx₂ₗXₗ⟩
       · simp [hi₂ₗ, hx₂ₗXₗ]
       simp_rw [hi₂ₗ, hi]
-      simp [Disjoint.equivSumUnion]
+      simp
     else if hiXₗ : i.val ∈ Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ then
       have hiXₗ' := mem_drop3_mem_drop2 hiXₗ
       have hi : i.toSum = ◩⟨i.val, hiXₗ'⟩
       · simp [hiXₗ']
       simp_rw [hi₂ₗ, hiXₗ, hi]
-      simp [Disjoint.equivSumUnion, hiXₗ]
+      simp [hiXₗ]
     else if hi₀ᵣ : i.val = x₀ᵣ then
       have hx₀ᵣXₗ : x₀ᵣ.val ∉ Xₗ.drop2 x₀ₗ x₁ₗ
       · intro contr
@@ -2017,7 +2017,7 @@ private lemma Matrix.toMatrixDropUnionDrop_eq_toMatrixDropUnionDropInternal {X�
       have hi : i.toSum = ◪⟨x₀ᵣ.val, hx₀ᵣXᵣ⟩
       · simp [hi₀ᵣ, hx₀ᵣXₗ, hx₀ᵣXᵣ]
       simp_rw [hi₂ₗ, hiXₗ, hi₀ᵣ, hi]
-      simp [Disjoint.equivSumUnion, equivFin2]
+      simp [equivFin2]
     else if hi₁ᵣ : i.val = x₁ᵣ then
       have hx₁ᵣXₗ : x₁ᵣ.val ∉ Xₗ.drop2 x₀ₗ x₁ₗ
       · intro contr
@@ -2027,7 +2027,7 @@ private lemma Matrix.toMatrixDropUnionDrop_eq_toMatrixDropUnionDropInternal {X�
       have hi : i.toSum = ◪⟨x₁ᵣ.val, hx₁ᵣXᵣ⟩
       · simp [hi₁ᵣ, hx₁ᵣXₗ, hx₁ᵣXᵣ]
       simp_rw [hi₂ₗ, hiXₗ, hi₀ᵣ, hi₁ᵣ, hi]
-      simp [Disjoint.equivSumUnion, equivFin2, Subtype.coe_ne_coe.← hx₂ᵣ.symm]
+      simp [equivFin2, Subtype.coe_ne_coe.← hx₂ᵣ.symm]
     else if hiXᵣ : i.val ∈ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ then
       have hiXₗ' : i.val ∉ Xₗ.drop2 x₀ₗ x₁ₗ
       · intro contr
@@ -2038,7 +2038,7 @@ private lemma Matrix.toMatrixDropUnionDrop_eq_toMatrixDropUnionDropInternal {X�
       have hi : i.toSum = ◪⟨i.val, hiXᵣ''⟩
       · simp [hiXₗ', hiXᵣ'']
       simp_rw [hi₂ₗ, hiXₗ, hi₀ᵣ, hi₁ᵣ, hiXᵣ, hi]
-      simp [Disjoint.equivSumUnion, hi₀ᵣ, hi₁ᵣ, hiXᵣ]
+      simp [hi₀ᵣ, hi₁ᵣ, hiXᵣ]
     else
       exfalso
       exact i.property.elim ↓(by simp_all) ↓(by simp_all)
@@ -2049,20 +2049,20 @@ private lemma Matrix.toMatrixDropUnionDrop_eq_toMatrixDropUnionDropInternal {X�
       have hj : j.toSum = ◩⟨y₀ₗ.val, hy₀ₗYₗ⟩
       · simp [hj₀ₗ, hy₀ₗYₗ]
       simp_rw [hj₀ₗ, hj]
-      simp [Disjoint.equivSumUnion, equivFin2]
+      simp [equivFin2]
     else if hj₁ₗ : j.val = y₁ₗ then
       have hy₁ₗYₗ : y₁ₗ.val ∈ Yₗ.drop1 y₂ₗ := Yₗ.mem_drop1 hy₀ₗ
       have hj : j.toSum = ◩⟨y₁ₗ.val, hy₁ₗYₗ⟩
       · simp [hj₁ₗ, hy₁ₗYₗ]
       simp_rw [hj₀ₗ, hj₁ₗ, hj]
-      simp [Disjoint.equivSumUnion, equivFin2, Subtype.coe_ne_coe.← hy₂ₗ.symm]
+      simp [equivFin2, Subtype.coe_ne_coe.← hy₂ₗ.symm]
     else if hjYₗ : j.val ∈ Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ then
       have hjYₗ' := mem_drop3_mem_drop2 (drop3_comm' y₀ₗ y₁ₗ y₂ₗ ▸ hjYₗ)
       have hjYₗ'' := mem_drop2_mem_drop1 (drop2_comm y₀ₗ y₂ₗ ▸ hjYₗ')
       have hj : j.toSum = ◩⟨j.val, hjYₗ''⟩
       · simp [hjYₗ'']
       simp_rw [hj₀ₗ, hj₁ₗ, hjYₗ, hj]
-      simp [Disjoint.equivSumUnion, equivFin2, hjYₗ]
+      simp [equivFin2, hjYₗ]
     else if hj₂ᵣ : j.val = y₂ᵣ then
       have hy₂ᵣYₗ : y₂ᵣ.val ∉ Yₗ.drop1 y₂ₗ
       · intro contr
@@ -2709,26 +2709,26 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
           | inl jₗ =>
             have hj' : (hYyyy' ▸ j).toSum = ◩jₗ
             · convert hj
-            simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi, hj']
+            simp [equiv₃X, equiv₃Y, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi, hj']
           | inr jᵣ =>
             have hjj : HEq (hYyy ▸ jᵣ) jᵣ
             · apply eqRec_heq
             have hj' : (hYyyy' ▸ j).toSum = ◪(hYyy ▸ jᵣ)
             · convert hj
-            simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi, hj']
+            simp [equiv₃X, equiv₃Y, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi, hj']
             rfl
         | inr iᵣ =>
           cases hj : (hYyyy ▸ j).toSum with
           | inl jₗ =>
             have hj' : (hYyyy' ▸ j).toSum = ◩jₗ
             · convert hj
-            simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi, hj']
+            simp [equiv₃X, equiv₃Y, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi, hj']
           | inr jᵣ =>
             have hjj : HEq (hYyy ▸ jᵣ) jᵣ
             · apply eqRec_heq
             have hj' : (hYyyy' ▸ j).toSum = ◪(hYyy ▸ jᵣ)
             · convert hj
-            simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi, hj']
+            simp [equiv₃X, equiv₃Y, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi, hj']
             congr
   else
     have hf' : f = fin2swap := eq_fin2swap_of_ne_fin2refl hf
@@ -3037,19 +3037,19 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
           · convert hi
           cases hj : (hYyyy ▸ j).toSum with
           | inl jₗ =>
-            simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj]
+            simp [equiv₃X, equiv₃Y, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj]
             congr
           | inr jᵣ =>
-            simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj]
+            simp [equiv₃X, equiv₃Y, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj]
             rfl
         | inr iᵣ =>
           have hi' : (hXxxx' ▸ i).toSum = ◪iᵣ
           · convert hi
           cases hj : (hYyyy ▸ j).toSum with
           | inl jₗ =>
-            simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj]
+            simp [equiv₃X, equiv₃Y, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj]
           | inr jᵣ =>
-            simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj]
+            simp [equiv₃X, equiv₃Y, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj]
     else
       have hg' : g = fin2swap := eq_fin2swap_of_ne_fin2refl hg
       simp [hf', hg'] at hfg
@@ -3396,14 +3396,14 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
           | inl jₗ =>
             have hj' : (hYyyy' ▸ j).toSum = ◩jₗ
             · convert hj
-            simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj']
+            simp [equiv₃X, equiv₃Y, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj']
             congr
           | inr jᵣ =>
             have hjj : HEq (hYyy ▸ jᵣ) jᵣ
             · apply eqRec_heq
             have hj' : (hYyyy' ▸ j).toSum = ◪(hYyy ▸ jᵣ)
             · convert hj
-            simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj']
+            simp [equiv₃X, equiv₃Y, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj']
             rfl
         | inr iᵣ =>
           have hi' : (hXxxx' ▸ i).toSum = ◪iᵣ
@@ -3412,13 +3412,13 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
           | inl jₗ =>
             have hj' : (hYyyy' ▸ j).toSum = ◩jₗ
             · convert hj
-            simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj']
+            simp [equiv₃X, equiv₃Y, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj']
           | inr jᵣ =>
             have hjj : HEq (hYyy ▸ jᵣ) jᵣ
             · apply eqRec_heq
             have hj' : (hYyyy' ▸ j).toSum = ◪(hYyy ▸ jᵣ)
             · convert hj
-            simp [equiv₃X, equiv₃Y, Disjoint.equivSumUnion, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj']
+            simp [equiv₃X, equiv₃Y, Matrix.toMatrixUnionUnion, ←Function.comp_assoc, hi', hj']
             congr
 
 
