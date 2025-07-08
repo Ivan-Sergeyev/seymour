@@ -2151,10 +2151,16 @@ private lemma standardReprSum3_X_xxx {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
   obtain ⟨_, hSSS⟩ := hS
   exact congr_arg StandardRepr.X hSSS.symm
 
-lemma standardReprSum3_X {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α} (hx₀ : x₁ ≠ x₂) (hx₁ : x₀ ≠ x₂)
+lemma standardReprSum3_X_eq {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hS : standardReprSum3 hXX hYY hXY hYX = some S) :
     S.X = Sₗ.X ∪ Sᵣ.X := by
+  have hx₀ : x₁ ≠ x₂
+  · simp_rw [standardReprSum3, Option.ite_none_right_eq_some, Option.some.injEq] at hS
+    exact hS.left.left.left.right.right
+  have hx₁ : x₀ ≠ x₂
+  · simp_rw [standardReprSum3, Option.ite_none_right_eq_some, Option.some.injEq] at hS
+    exact hS.left.left.left.right.left
   rw [standardReprSum3_X_xxx hS]
   ext a
   if hax₂ : a = x₂ then
@@ -2174,10 +2180,16 @@ private lemma standardReprSum3_Y_yyy {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
   obtain ⟨_, hSSS⟩ := hS
   exact congr_arg StandardRepr.Y hSSS.symm
 
-lemma standardReprSum3_Y {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α} (hy₀ : y₁ ≠ y₂) (hy₁ : y₀ ≠ y₂)
+lemma standardReprSum3_Y_eq {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hS : standardReprSum3 hXX hYY hXY hYX = some S) :
     S.Y = Sₗ.Y ∪ Sᵣ.Y := by
+  have hy₀ : y₁ ≠ y₂
+  · simp_rw [standardReprSum3, Option.ite_none_right_eq_some, Option.some.injEq] at hS
+    exact hS.left.left.right.right.right
+  have hy₁ : y₀ ≠ y₂
+  · simp_rw [standardReprSum3, Option.ite_none_right_eq_some, Option.some.injEq] at hS
+    exact hS.left.left.right.right.left
   rw [standardReprSum3_Y_yyy hS]
   ext a
   if hay₂ : a = y₂ then
@@ -3432,12 +3444,20 @@ def Matroid.Is3sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) : Prop :=
   ∧ Sₗ.toMatroid = Mₗ
   ∧ Sᵣ.toMatroid = Mᵣ
 
+lemma Matroid.Is3sumOf.E_eq (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hMMM : M.Is3sumOf Mₗ Mᵣ) :
+    M.E = Mₗ.E ∪ Mᵣ.E := by
+  obtain ⟨S, _, _, _, _, _, _, _, _, _, _, _, _, hS, _, _, rfl, rfl, rfl⟩ := hMMM
+  have hX := standardReprSum3_X_eq hS
+  have hY := standardReprSum3_Y_eq hS
+  simp only [StandardRepr.toMatroid_E]
+  tauto_set
+
 /-- Any 3-sum of two regular matroids is a regular matroid.
     This is the final part of the easy direction of the Seymour's theorem. -/
 theorem Matroid.Is3sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
-    (hM : M.Is3sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
+    (hMMM : M.Is3sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
-  obtain ⟨S, _, _, _, _, _, _, _, _, _, _, _, _, hS, _, _, rfl, rfl, rfl⟩ := hM
-  have : Finite S.X := standardReprSum3_X_xxx hS ▸ Finite.Set.finite_union ..
+  obtain ⟨S, _, _, _, _, _, _, _, _, _, _, _, _, hS, _, _, rfl, rfl, rfl⟩ := hMMM
+  have : Finite S.X := standardReprSum3_X_eq hS ▸ Finite.Set.finite_union ..
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
   exact standardReprSum3_hasTuSigning hMₗ hMᵣ hS

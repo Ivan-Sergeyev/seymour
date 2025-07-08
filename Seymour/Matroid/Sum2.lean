@@ -330,7 +330,7 @@ private lemma standardReprSum2_X_x {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
   obtain ⟨_, hSSS⟩ := hS
   exact congr_arg StandardRepr.X hSSS.symm
 
-lemma standardReprSum2_X {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
+lemma standardReprSum2_X_eq {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
     {hx : Sₗ.X ∩ Sᵣ.X = {x}} {hy : Sₗ.Y ∩ Sᵣ.Y = {y}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hS : standardReprSum2 hx hy hXY hYX = some S) :
     S.X = Sₗ.X ∪ Sᵣ.X := by
@@ -349,7 +349,7 @@ private lemma standardReprSum2_Y_y {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
   obtain ⟨_, hSSS⟩ := hS
   exact congr_arg StandardRepr.Y hSSS.symm
 
-lemma standardReprSum2_Y {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
+lemma standardReprSum2_Y_eq {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α}
     {hx : Sₗ.X ∩ Sᵣ.X = {x}} {hy : Sₗ.Y ∩ Sᵣ.Y = {y}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hS : standardReprSum2 hx hy hXY hYX = some S) :
     S.Y = Sₗ.Y ∪ Sᵣ.Y := by
@@ -381,12 +381,20 @@ lemma standardReprSum2_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α
     (fun iₗ => (hSY ▸ j).toSum.casesOn (hBBₗ (Set.diff_subset.elem iₗ)) ↓abs_zero)
     (fun iᵣ => (hSY ▸ j).toSum.casesOn (abs_mul_eq_zmod_cast (hBBᵣ iᵣ hy._ᵣ) <| hBBₗ hx._ₗ ·) (hBBᵣ iᵣ <| Set.diff_subset.elem ·))
 
+lemma Matroid.Is2sumOf.E_eq (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hMMM : M.Is2sumOf Mₗ Mᵣ) :
+    M.E = Mₗ.E ∪ Mᵣ.E := by
+  obtain ⟨S, _, _, _, _, _, _, _, _, hS, _, _, rfl, rfl, rfl⟩ := hMMM
+  have hX := standardReprSum2_X_eq hS
+  have hY := standardReprSum2_Y_eq hS
+  simp only [StandardRepr.toMatroid_E]
+  tauto_set
+
 /-- Any 2-sum of regular matroids is a regular matroid.
     This is part two (of three) of the easy direction of the Seymour's theorem. -/
 theorem Matroid.Is2sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
-    (hM : M.Is2sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
+    (hMMM : M.Is2sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
-  obtain ⟨S, _, _, _, _, _, _, _, _, hS, _, _, rfl, rfl, rfl⟩ := hM
-  have : Finite S.X := standardReprSum2_X hS ▸ Finite.Set.finite_union ..
+  obtain ⟨S, _, _, _, _, _, _, _, _, hS, _, _, rfl, rfl, rfl⟩ := hMMM
+  have : Finite S.X := standardReprSum2_X_eq hS ▸ Finite.Set.finite_union ..
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
   exact standardReprSum2_hasTuSigning hMₗ hMᵣ hS
