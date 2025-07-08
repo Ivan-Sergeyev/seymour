@@ -151,10 +151,10 @@ lemma Matrix.longTableauPivot_toMatroid [Field R] {X Y : Set α} (A : Matrix X Y
 
 set_option maxHeartbeats 666666 in
 -- Implicit Gaussian elimination for the proof of the lemma below.
-private lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular_aux [Field R] {G : Set α} [Fintype G]
-    {X Y : Set α} (A : Matrix X Y R) (hAG : A.toMatroid.IsBase G) (hA : A.IsTotallyUnimodular) {k : ℕ} (hk : k ≤ #G) :
-    ∃ X' : Set α, ∃ Y' : Set α, ∃ A' : Matrix X' Y' R,
-      A'.toMatroid = A.toMatroid ∧ A'.IsTotallyUnimodular ∧ ∃ hGY : G ⊆ Y', ∃ f : Fin k → X', f.Injective ∧
+private lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular_aux [Field R] {G : Set α} [Fintype G] {X Y : Set α}
+    (A : Matrix X Y R) (hAG : A.toMatroid.IsBase G) (hA : A.IsTotallyUnimodular) {k : ℕ} (hk : k ≤ #G) :
+    ∃ X' : Set α, ∃ A' : Matrix X' Y R,
+      A'.toMatroid = A.toMatroid ∧ A'.IsTotallyUnimodular ∧ ∃ hGY : G ⊆ Y, ∃ f : Fin k → X', f.Injective ∧
         ∀ i : X', ∀ j : Fin k,
           if i = f j
           then A' i (hGY.elem (G.equivFin ⟨j.val, by omega⟩)) = 1
@@ -162,11 +162,11 @@ private lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular_aux [Field R
     := by
   induction k with
   | zero =>
-    use X, Y, A, rfl, hA, hAG.subset_ground, (Nat.not_succ_le_zero _ ·.isLt |>.elim), ↓↓↓(by omega)
+    use X, A, rfl, hA, hAG.subset_ground, (Nat.not_succ_le_zero _ ·.isLt |>.elim), ↓↓↓(by omega)
     intro _ ⟨_, _⟩
     omega
   | succ n ih =>
-    obtain ⟨X', Y', A', hAA, hA', hGY, f, hf, hfA'⟩ := ih (by omega)
+    obtain ⟨X', A', hAA, hA', hGY, f, hf, hfA'⟩ := ih (by omega)
     have hnG : n < #G
     · omega
     wlog hgf : ∃ x : X', A' x (hGY.elem (G.equivFin ⟨n, hnG⟩)) ≠ 0 ∧ x ∉ f.range
@@ -184,7 +184,7 @@ private lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular_aux [Field R
         intro _
         rw [linearDepOn_iff]
         classical
-        let c : Y' → R := fun j : Y' =>
+        let c : Y → R := fun j : Y =>
           if hjG : j.val ∈ G then
             let j' : G := ⟨j.val, hjG⟩
             if hj' : j' ∈ G' then A' (f hj'.choose) (hGY.elem (G.equivFin ⟨n, hnG⟩))
@@ -320,7 +320,7 @@ private lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular_aux [Field R
       exact hG'' (hAA ▸ hAG.indep.subset hGG'')
     obtain ⟨x, hx, hxf⟩ := hgf
     let f' : Fin n.succ → X' := Fin.snoc f x
-    use X', Y', A'.longTableauPivot x (hGY.elem (G.equivFin ⟨n, hnG⟩)),
+    use X', A'.longTableauPivot x (hGY.elem (G.equivFin ⟨n, hnG⟩)),
       hAA ▸ A'.longTableauPivot_toMatroid hx, hA'.longTableauPivot _ _ hx, hGY, f'
     constructor
     · intro a b hab
@@ -406,15 +406,15 @@ private lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular_aux [Field R
 set_option maxHeartbeats 333333 in
 /-- Every vector matroid whose full representation matrix is totally unimodular has a standard representation whose rows are
     a given base and the standard representation matrix is totally unimodular. -/
-lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G : Set α} [Fintype G]
-    {X Y : Set α} (A : Matrix X Y R) (hAG : A.toMatroid.IsBase G) (hA : A.IsTotallyUnimodular) :
+lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G : Set α} [Fintype G] {X Y : Set α}
+    (A : Matrix X Y R) (hAG : A.toMatroid.IsBase G) (hA : A.IsTotallyUnimodular) :
     ∃ S : StandardRepr α R, S.X = G ∧ S.toMatroid = A.toMatroid ∧ S.B.IsTotallyUnimodular := by
-  obtain ⟨X', Y', A', hAA, hA', hGY, f, hf, hfA'⟩ := A.exists_standardRepr_isBase_isTotallyUnimodular_aux hAG hA (le_refl #G)
+  obtain ⟨X', A', hAA, hA', hGY, f, hf, hfA'⟩ := A.exists_standardRepr_isBase_isTotallyUnimodular_aux hAG hA (le_refl #G)
   have hGA' := hAA ▸ hAG
   rw [←hAA] at *
   clear hA hAG hAA A
-  have hYGY : Y' \ G ⊆ Y' := Set.diff_subset
-  have hGYY : G ∪ Y' = Y' := Set.union_eq_self_of_subset_left hGY
+  have hYGY : Y \ G ⊆ Y := Set.diff_subset
+  have hGYY : G ∪ Y = Y := Set.union_eq_self_of_subset_left hGY
   let g : G ↪ X' := ⟨f ∘ Fintype.equivFin G, ((Fintype.equivFin G).injective_comp f).← hf⟩
   let g' : G.Elem → (Subtype.val '' g.toFun.range).Elem := (⟨g ·, by simp⟩)
   let g'' : (Subtype.val '' g.toFun.range).Elem → G.Elem
@@ -452,12 +452,12 @@ lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G : Set �
   have hA₂₂ : A'.submatrix ξ hYGY.elem = 0
   · ext ⟨i, hi⟩ ⟨j, hj⟩
     have hiX : i ∈ X' := hXgX hi
-    have hjY : j ∈ Y' := hYGY hj
+    have hjY : j ∈ Y := hYGY hj
     simp only [Function.Embedding.toFun_eq_coe, HasSubset.Subset.elem, Matrix.submatrix_apply, Matrix.zero_apply]
     by_contra hAij
     have hAjG : A'.toMatroid.Indep (j ᕃ G)
     · simp only [Matrix.toMatroid_indep_iff_elem]
-      have hjGY : j ᕃ G ⊆ Y' := Set.insert_subset (hYGY hj) hGY
+      have hjGY : j ᕃ G ⊆ Y := Set.insert_subset (hYGY hj) hGY
       use hjGY
       rw [linearIndepOn_iff]
       intro c hc hc0
@@ -529,8 +529,8 @@ lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {G : Set �
       (Matrix.of (((1 ◫ A'.submatrix g hYGY.elem) ⊟ 0).reindex (e'.leftCongr.trans e) hGY.equiv)).toMatroid
   · rewrite [←((Matrix.reindex (e'.leftCongr.trans e) hGY.equiv).symm_apply_eq).→ hA]
     rfl
-  use ⟨G, Y' \ G, Set.disjoint_sdiff_right, A'.submatrix g hYGY.elem,
-    G.decidableMemOfFintype, (Classical.propDecidable <| · ∈ Y' \ G)⟩
+  use ⟨G, Y \ G, Set.disjoint_sdiff_right, A'.submatrix g hYGY.elem,
+    G.decidableMemOfFintype, (Classical.propDecidable <| · ∈ Y \ G)⟩
   refine ⟨by simp, ?_, hA'.submatrix g hYGY.elem⟩
   rw [hA'']
   simp only [StandardRepr.toMatroid, StandardRepr.toFull]
