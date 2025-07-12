@@ -10,28 +10,28 @@
 % This is a VERY rough draft. I expect that much revision will be needed!
 
 \section{Related Works}
-There exist repositories due to \href{https://github.com/VArtem/lean-matroids}{Artem Vasilyev} and \href{https://github.com/bryangingechen/lean-matroids}{Bryan Gin-ge Chen} 
-dedicated to formalizing some of the theory of finite rank matroids in Lean 3. As is standard in the literature, both of these formalizations follow the definition of a 
-finite rank matroid as given in the first chapter of \textit{Matroid Theory} by John Oxley. % clarify standard definition of finite rank matroid?
-In particular, this means that they define bases of matroids separately and then prove that they exist, are maximal, and satisfy the exchange property. 
+There exist repositories due to \href{https://github.com/VArtem/lean-matroids}{Artem Vasilyev} and \href{https://github.com/bryangingechen/lean-matroids}{Bryan Gin-ge Chen}
+dedicated to formalizing some of the theory of finite-rank matroids in Lean 3. As is standard in the literature, both of these formalizations follow the definition of a
+finite-rank matroid as given in the first chapter of \textit{Matroid Theory} by John Oxley. % clarify standard definition of finite rank matroid?
+In particular, this means that they define bases of matroids separately and then prove that they exist, are maximal, and satisfy the exchange property.
 In contrast, the definition of matroids used in this paper is the current definition in \texttt{mathlib4}, which takes the definition of an infinite matrix from the
-Bruhn et al. paper \textit{Axioms of Infinite Matroids}. Here, the notion of a base is baked in along with the requirement that the set of all bases satisfies the 
-maximality and exchange properties. From this point, Chen and Vasilyev both prove basic properties about matroids, circuits, bases, and rank functions. 
+Bruhn et al.'s paper \textit{Axioms of Infinite Matroids}. Here, the notion of a base is baked in along with the requirement that the set of all bases satisfies the
+maximality and exchange properties. From this point, Chen and Vasilyev both prove basic properties about matroids, circuits, bases, and rank functions.
 Namely they both show that the rank function of a matroid satisfies the monotonicity and submodularity properties.
 
-Alena Gusakov's \href{https://dspacemainprd01.lib.uwaterloo.ca/server/api/core/bitstreams/fe5957ef-3e10-4493-b11d-8d8121cafeba/content}{master's thesis} 
-implements the \texttt{mathlib4} definition of a matroid due to Bruhn et al. as a basis for formalizing and proving facts about matroids, 
+Alena Gusakov's \href{https://dspacemainprd01.lib.uwaterloo.ca/server/api/core/bitstreams/fe5957ef-3e10-4493-b11d-8d8121cafeba/content}{master's thesis}
+implements the \texttt{mathlib4} definition of a matroid due to Bruhn et al.\ as a basis for formalizing and proving facts about matroids,
 matroid minors, and their representability. In particular, Gusakov formalizes the statement and proof of Tutte's 1985 excluded minor characterization of binary matroids:
-\begin{theorem}
+\begin{quote}
     A matroid is binary if and only if it has no $U_{2,4}$-minor.
-\end{theorem}
+\end{quote}
 
-Using the interactive theorem prover Isabelle / HOL, \href{https://link.springer.com/chapter/10.1007/978-981-96-1621-3_18}{Wan et al.} 
+Using the interactive theorem prover Isabelle/HOL, \href{https://link.springer.com/chapter/10.1007/978-981-96-1621-3_18}{Wan et al.}
 formalize the standard notion of a matroid of finite rank (using a collection of independent sets) and create a ``mechanized verification framework''
 for judging whether or not a pair $(S, L)$ with $S$ a set and $L$ a set of subsets of $S$ is a matroid by using a Locale. The authors then use
 this as a way to model the 0-1 knapsack problem, which can be stated as follows:
 \begin{quote}
-    Suppose one has $n$ indivisible items each of of weight $w_i$ and value $v_i$ where $i \in \{1,\ldots, n\}$ and a knapsack of capacity $w$. 
+    Suppose one has $n$ indivisible items each of of weight $w_i$ and value $v_i$ where $i \in \{1,\ldots, n\}$ and a knapsack of capacity $w$.
     How does one maximize $\sum_{i=1}^n v_i$ subject to the constraint $\sum_{i=1}^n w_i \le w$?
 \end{quote}
 They also formalise the so-called ``fractional knapsack problem'' in which the indivisibility requirement on the items in question is removed.
