@@ -1,35 +1,10 @@
 # Matroid Decomposition Theorem Verification
 
-The goal of this project is to formally verify Seymour's decomposition theorem for regular matroids in Lean 4.
-
-## Abstract
-
-Seymour's theorem is an important chapter of matroid theory. We aim to formally verify Seymour's theorem in Lean 4.
-[First, we build a library for working with totally unimodular matrices.](https://github.com/Ivan-Sergeyev/seymour/blob/main/Seymour/Matrix/TotalUnimodularity.lean)
-We define
-[binary matroids](https://github.com/Ivan-Sergeyev/seymour/blob/019dc97f8ee0641c031dc5df01afca603b2f915e/Seymour/Matroid/FromMatrix.lean#L20)
-and their
-[standard representation](https://github.com/Ivan-Sergeyev/seymour/blob/019dc97f8ee0641c031dc5df01afca603b2f915e/Seymour/Matroid/StandardRepresentation.lean#L64)
-and we
-[prove that they form a matroid](https://github.com/Ivan-Sergeyev/seymour/blob/019dc97f8ee0641c031dc5df01afca603b2f915e/Seymour/Matroid/FromMatrix.lean#L206)
-in the sense that
-[Mathlib 4 defines matroids](https://github.com/leanprover-community/mathlib4/tree/master/Mathlib/Data/Matroid).
-[We define regular matroids to be matroids for which there exists a full representation rational matrix that is totally unimodular](https://github.com/Ivan-Sergeyev/seymour/blob/019dc97f8ee0641c031dc5df01afca603b2f915e/Seymour/Matroid/Regularity.lean#L15)
-and
-[we prove that all regular matroids are binary](https://github.com/Ivan-Sergeyev/seymour/blob/019dc97f8ee0641c031dc5df01afca603b2f915e/Seymour/Matroid/Regularity.lean#L294).
-We define
-[1-sum](https://github.com/Ivan-Sergeyev/seymour/blob/019dc97f8ee0641c031dc5df01afca603b2f915e/Seymour/Matroid/Sum1.lean#L44),
-[2-sum](https://github.com/Ivan-Sergeyev/seymour/blob/019dc97f8ee0641c031dc5df01afca603b2f915e/Seymour/Matroid/Sum2.lean#L141),
-and
-[3-sum](https://github.com/Ivan-Sergeyev/seymour/blob/019dc97f8ee0641c031dc5df01afca603b2f915e/Seymour/Matroid/Sum3.lean#L3433)
-of binary matroids as specific ways to compose their standard representation matrices. We prove that the
-[1-sum](https://github.com/Ivan-Sergeyev/seymour/blob/019dc97f8ee0641c031dc5df01afca603b2f915e/Seymour/Matroid/Sum1.lean#L213), 
-the
-[2-sum](https://github.com/Ivan-Sergeyev/seymour/blob/019dc97f8ee0641c031dc5df01afca603b2f915e/Seymour/Matroid/Sum2.lean#L394),
-and the
-[3-sum](https://github.com/Ivan-Sergeyev/seymour/blob/019dc97f8ee0641c031dc5df01afca603b2f915e/Seymour/Matroid/Sum3.lean#L3457)
-of regular matroids are a regular matroid.
-[This concludes the composition direction of the Seymour's theorem.](https://github.com/Ivan-Sergeyev/seymour/blob/main/Seymour.lean)
+Seymour's theorem is a key structural result about regular matroids.
+We aim to formally verify Seymour's theorem in Lean 4.
+You can read a [formally verified summary](Seymour.lean) of what we completed so far.
+It lists our main results together with the key definitions they depend on.
+Ultimately, we would like to prove the [decomposition direction](Seymour/HardDirection.lean) of the Seymour theorem, which we only stated but haven't started proving yet.
 
 ## Timeline
 
