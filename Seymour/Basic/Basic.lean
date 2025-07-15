@@ -77,7 +77,7 @@ abbrev Matrix.element_prod {X Y α β : Type*} [SMul α β] (A : Matrix X Y α) 
 infixr:66 " ⊡ " => Matrix.element_prod
 
 /-- The set of possible outputs of a function. -/
-abbrev Function.range {α ι : Type} (f : ι → α) : Set α := Set.range f
+abbrev Function.range {α ι : Type*} (f : ι → α) : Set α := Set.range f
 
 @[app_unexpander Function.range]
 def Function.range_unexpand : Lean.PrettyPrinter.Unexpander
@@ -92,7 +92,7 @@ def Function.support_unexpand : Lean.PrettyPrinter.Unexpander
 
 /-! ## Basic lemmas -/
 
-variable {α : Type}
+variable {α : Type*}
 
 lemma dite_of_true {P : Prop} [Decidable P] (p : P) {f : P → α} {a : α} : (if hp : P then f hp else a) = f p := by
   simp [p]
@@ -100,10 +100,10 @@ lemma dite_of_true {P : Prop} [Decidable P] (p : P) {f : P → α} {a : α} : (i
 lemma dite_of_false {P : Prop} [Decidable P] (p : ¬P) {f : P → α} {a : α} : (if hp : P then f hp else a) = a := by
   simp [p]
 
-lemma Function.range_eq {ι : Type} (f : ι → α) : f.range = { a : α | ∃ i : ι, f i = a } :=
+lemma Function.range_eq {ι : Type*} (f : ι → α) : f.range = { a : α | ∃ i : ι, f i = a } :=
   rfl
 
-lemma Finset.sum_of_single_nonzero {ι : Type} (s : Finset ι) [AddCommMonoid α] (f : ι → α) (a : ι) (ha : a ∈ s)
+lemma Finset.sum_of_single_nonzero {ι : Type*} (s : Finset ι) [AddCommMonoid α] (f : ι → α) (a : ι) (ha : a ∈ s)
     (hf : ∀ i ∈ s, i ≠ a → f i = 0) :
     s.sum f = f a := by
   rw [←Finset.sum_subset (s.singleton_subset_iff.← ha)]
@@ -112,12 +112,12 @@ lemma Finset.sum_of_single_nonzero {ι : Type} (s : Finset ι) [AddCommMonoid α
   apply hf x hxs
   rwa [Finset.not_mem_singleton] at hxa
 
-lemma fintype_sum_of_single_nonzero {ι : Type} [Fintype ι] [AddCommMonoid α] (f : ι → α) (a : ι)
+lemma fintype_sum_of_single_nonzero {ι : Type*} [Fintype ι] [AddCommMonoid α] (f : ι → α) (a : ι)
     (hf : ∀ i : ι, i ≠ a → f i = 0) :
     Finset.univ.sum f = f a :=
   Finset.univ.sum_of_single_nonzero f a (Finset.mem_univ a) (by simpa using hf)
 
-lemma sum_elem_of_single_nonzero {ι : Type} [AddCommMonoid α] {f : ι → α} {S : Set ι} [Fintype S] {a : ι} (haS : a ∈ S)
+lemma sum_elem_of_single_nonzero {ι : Type*} [AddCommMonoid α] {f : ι → α} {S : Set ι} [Fintype S] {a : ι} (haS : a ∈ S)
     (hf : ∀ i : ι, i ≠ a → f i = 0) :
     ∑ i : S.Elem, f i = f a := by
   apply fintype_sum_of_single_nonzero (fun s : S.Elem => f s.val) ⟨a, haS⟩
