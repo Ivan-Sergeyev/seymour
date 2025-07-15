@@ -241,9 +241,8 @@ lemma Matrix.fromRows_zero_reindex_toMatroid [DivisionRing R] {G : Set α} [Fint
     (A : Matrix G (G ⊕ (Y \ G).Elem) R) (hGY : G ⊆ Y) {Z : Type*} (e : G ⊕ Z ≃ X) :
     (Matrix.of (fun i : G => A i ∘ Subtype.toSum)).toMatroid =
     (Matrix.of ((A ⊟ 0).reindex e hGY.equiv)).toMatroid := by
-  apply Matroid.ext_indep
+  ext I hI
   · simp [Set.union_diff_cancel' (by rfl) hGY]
-  intro I hI
   have hIGYG : I ⊆ G ∪ Y \ G := by assumption
   have hIY : I ⊆ Y := Set.union_diff_cancel' (by rfl) hGY ▸ hIGYG
   simp only [Matrix.toMatroid_indep_iff_submatrix, Matrix.reindex_apply]

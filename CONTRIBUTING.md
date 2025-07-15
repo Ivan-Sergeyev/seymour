@@ -168,7 +168,6 @@ The guideline below is written primarily to assist you in reading the code.
 - `E` ... ground set
 - `F` ... field
 - `G` ... base
-- `H` ... base
 - `I` ... independent set
 - `J` ... independent set
 - `M` ... matroid
@@ -177,8 +176,6 @@ The guideline below is written primarily to assist you in reading the code.
 - `Q` ... proposition
 - `R` ... (semi)ring
 - `S` ... standard representation of a matroid
-- `V` ... vector matroid
-- `W` ... vector matroid
 - `X` ... set of row indices
 - `Y` ... set of col indices
 - `Z` ... subset of indices
@@ -214,6 +211,7 @@ The guideline below is written primarily to assist you in reading the code.
 ### Other
 
 - We currently prefer `Type` over universe-polymorphic types. Generalization to `Type*` will probably be done at the end of the project.
+- We prefer `Unit` over `Fin 1` and we prefer `⟨⟩` over `()` for its only value.
 - We prefer not to write parentheses after quantifiers.
 - We do not write a space after `¬` but we write redundant parentheses around the negated expression when it contains any infix operator.
 - Orphaning parentheses is allowed.

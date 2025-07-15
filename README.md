@@ -1,6 +1,17 @@
 # Matroid Decomposition Theorem Verification
 
-The goal of this project is to formally verify Seymour's decomposition theorem for regular matroids in Lean 4.
+Seymour's theorem is a key structural result about regular matroids.
+We aim to formally verify Seymour's theorem in Lean 4.
+You can read a [formally verified summary](Seymour.lean) of what we completed so far.
+It lists our main results together with the key definitions they depend on.
+Ultimately, we would like to prove the [decomposition direction](Seymour/HardDirection.lean) of the Seymour theorem, which we only stated but haven't started proving yet.
+
+## Timeline
+
+- 2024-10-15 project announced
+- 2025-03-24 finished proof that every vector matroid is a matroid
+- 2025-05-17 finished proof that the 2-sum of regular matroids is a regular matroid
+- 2025-07-05 finished proof that the 3-sum of regular matroids is a regular matroid
 
 ## Blueprint
 

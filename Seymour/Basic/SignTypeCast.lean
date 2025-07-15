@@ -13,12 +13,7 @@ lemma zero_iff_ratCast_zero_of_in_signTypeCastRange {a : ℚ} (ha : a ∈ SignTy
   · obtain ⟨s, rfl⟩ := ha
     cases s <;> simp_all
 
-lemma ratCast_eq_intCast_ratFloor_of_in_signTypeCastRange {a : ℚ} (ha : a ∈ SignType.cast.range) :
-    (a.cast : Z2) = (a.floor.cast : Z2) := by
-  obtain ⟨s, hs⟩ := ha
-  cases s <;> aesop
-
-variable {R : Type*}
+variable {R : Type}
 
 @[simp high]
 lemma zero_in_signTypeCastRange [NonAssocRing R] : (0 : R) ∈ SignType.cast.range :=
@@ -44,7 +39,6 @@ lemma SignType.cast_ne_neg_one_sub_one [Ring R] [CharZero R] (s : SignType) : s.
 lemma SignType.cast_ne_neg_one_add_neg_one [Ring R] [CharZero R] (s : SignType) : s.cast ≠ (-1 : R) + (-1 : R) := by
   cases s <;> norm_num
 
--- Why cannot `simp` work with this lemma?
 lemma in_signTypeCastRange_mul_in_signTypeCastRange [NonAssocRing R] {a b : R}
     (ha : a ∈ SignType.cast.range) (hb : b ∈ SignType.cast.range) :
     a * b ∈ SignType.cast.range := by

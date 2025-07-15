@@ -50,9 +50,9 @@ lemma Matrix.isTuSigningOf_iff {X Y : Type*} (A : Matrix X Y ℚ) (U : Matrix X 
 
 private lemma Matrix.toMatroid_mapEquiv {α β : Type*} {X Y : Set α} (A : Matrix X Y ℚ) (e : α ≃ β) :
     (A.submatrix (e.image X).symm (e.image Y).symm).toMatroid = A.toMatroid.mapEquiv e := by
+  ext I hI
+  · rfl
   let Aₑ := (A.submatrix (e.image X).symm (e.image Y).symm)
-  apply Matroid.ext_indep (A.toMatroid.mapEquiv_ground_eq e)
-  intro I hI
   rw [A.toMatroid.mapEquiv_indep_iff, Aₑ.toMatroid_indep, A.toMatroid_indep, Matrix.IndepCols, Matrix.IndepCols,
     Equiv.symm_image_subset]
   constructor
@@ -272,11 +272,11 @@ private lemma Matrix.IsTotallyUnimodular.toMatroid_eq_of_support {X Y : Set α} 
 /-- Binary matroid constructed from a full representation is regular if the binary matrix has a TU signing. -/
 private lemma Matrix.toMatroid_isRegular_if_hasTuSigning {X Y : Set α} (A : Matrix X Y Z2) :
     A.HasTuSigning → A.toMatroid.IsRegular := by
-  intro ⟨S, hS, hSV⟩
+  intro ⟨S, hS, hSA⟩
   use X, Y, S, hS
   apply hS.toMatroid_eq_of_support
   ext i j
-  specialize hSV i j
+  specialize hSA i j
   simp
   if h0 : A i j = 0 then
     simp_all
@@ -284,8 +284,8 @@ private lemma Matrix.toMatroid_isRegular_if_hasTuSigning {X Y : Set α} (A : Mat
     have h1 := Z2_eq_1_of_ne_0 h0
     simp_all
     intro hS0
-    rw [hS0, abs_zero] at hSV
-    exact Rat.zero_ne_one hSV
+    rw [hS0, abs_zero] at hSA
+    exact Rat.zero_ne_one hSA
 
 
 /-! ## Main results of this file -/
