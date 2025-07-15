@@ -64,12 +64,17 @@ notation:64 "▬"r:81 => Matrix.replicateRow Unit r
 notation:64 "▮"c:81 => Matrix.replicateCol Unit c
 
 /-- Outer product of two vectors (the column vector comes on left; the row vector comes on right). -/
-infix:67 " ⊗ " => fun {X Y α : Type} [Mul α] =>
-  (fun c : X → α => fun r : Y → α => Matrix.of (fun i : X => fun j : Y => c i * r j))
+abbrev Matrix.outer_prod {X Y α : Type*} [Mul α] (c : X → α) (r : Y → α) := Matrix.of (fun i : X => fun j : Y => c i * r j)
+
+@[inherit_doc]
+infix:67 " ⊗ " => Matrix.outer_prod
 
 /-- Element-wise product of two matrices (rarely used). -/
-infixr:66 " ⊡ " => fun {X Y α β : Type} [SMul α β] =>
-  (fun A : Matrix X Y α => fun B : Matrix X Y β => Matrix.of (fun i : X => fun j : Y => A i j • B i j))
+abbrev Matrix.element_prod {X Y α β : Type*} [SMul α β] (A : Matrix X Y α) (B : Matrix X Y β) :=
+  Matrix.of (fun i : X => fun j : Y => A i j • B i j)
+
+@[inherit_doc]
+infixr:66 " ⊡ " => Matrix.element_prod
 
 /-- The set of possible outputs of a function. -/
 abbrev Function.range {α ι : Type} (f : ι → α) : Set α := Set.range f
