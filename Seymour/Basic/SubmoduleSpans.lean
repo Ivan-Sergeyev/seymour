@@ -6,7 +6,7 @@ import Seymour.Basic.Basic
 This file provides lemmas about the linear spans of vector sets that are not present in Mathlib.
 -/
 
-variable {α R O : Type} [DivisionRing R] [AddCommGroup O] [Module R O] {v : α → O} {s : Set α}
+variable {α R O : Type*} [DivisionRing R] [AddCommGroup O] [Module R O] {v : α → O} {s : Set α}
 
 lemma span_eq_of_maximal_subset_linearIndepOn (t : Set α) (hs : Maximal (fun r : Set α => r ⊆ t ∧ LinearIndepOn R v r) s) :
     Submodule.span R (v '' s) = Submodule.span R (v '' t) := by

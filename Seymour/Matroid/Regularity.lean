@@ -12,7 +12,7 @@ Here we study regular matroids.
 /-! ## Definition of regularity (LI & TU over ℚ) -/
 
 /-- Matroid is regular iff it can be constructed from a rational TU matrix. -/
-def Matroid.IsRegular {α : Type} (M : Matroid α) : Prop :=
+def Matroid.IsRegular {α : Type*} (M : Matroid α) : Prop :=
   ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsTotallyUnimodular ∧ A.toMatroid = M
 
 
@@ -21,21 +21,21 @@ def Matroid.IsRegular {α : Type} (M : Matroid α) : Prop :=
 /-- Rational matrix `A` is a TU signing of `U` (matrix of the same size but different type) iff `A` is TU and its entries are
     the same as entries in `U` on respective positions up to signs.
     Do not ask `U.IsTotallyUnimodular` ... see `Matrix.overZ2_isTotallyUnimodular` for example! -/
-def Matrix.IsTuSigningOf {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y Z2) : Prop :=
+def Matrix.IsTuSigningOf {X Y : Type*} (A : Matrix X Y ℚ) (U : Matrix X Y Z2) : Prop :=
   A.IsTotallyUnimodular ∧ A.IsSigningOf U
 
 /-- Matrix `U` has a TU signing iff there is a rational TU matrix whose entries are the same as those in `U` up to signs. -/
-def Matrix.HasTuSigning {X Y : Type} (U : Matrix X Y Z2) : Prop :=
+def Matrix.HasTuSigning {X Y : Type*} (U : Matrix X Y Z2) : Prop :=
   ∃ A : Matrix X Y ℚ, A.IsTuSigningOf U
 
 
 /-! ## Auxiliary stuff -/
 
-lemma Matrix.IsTotallyUnimodular.isTuSigningOf_support {X Y : Type} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
+lemma Matrix.IsTotallyUnimodular.isTuSigningOf_support {X Y : Type*} {A : Matrix X Y ℚ} (hA : A.IsTotallyUnimodular) :
     A.IsTuSigningOf A.support :=
   ⟨hA, hA.abs_eq_support_val⟩
 
-lemma Matrix.isTuSigningOf_iff {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y Z2) :
+lemma Matrix.isTuSigningOf_iff {X Y : Type*} (A : Matrix X Y ℚ) (U : Matrix X Y Z2) :
     A.IsTuSigningOf U ↔ A.IsTotallyUnimodular ∧ A.support = U := by
   constructor
   · intro ⟨hA, hAU⟩
@@ -48,7 +48,7 @@ lemma Matrix.isTuSigningOf_iff {X Y : Type} (A : Matrix X Y ℚ) (U : Matrix X Y
   · intro ⟨hA, hAU⟩
     exact hAU ▸ hA.isTuSigningOf_support
 
-private lemma Matrix.toMatroid_mapEquiv {α β : Type} {X Y : Set α} (A : Matrix X Y ℚ) (e : α ≃ β) :
+private lemma Matrix.toMatroid_mapEquiv {α β : Type*} {X Y : Set α} (A : Matrix X Y ℚ) (e : α ≃ β) :
     (A.submatrix (e.image X).symm (e.image Y).symm).toMatroid = A.toMatroid.mapEquiv e := by
   let Aₑ := (A.submatrix (e.image X).symm (e.image Y).symm)
   apply Matroid.ext_indep (A.toMatroid.mapEquiv_ground_eq e)
@@ -103,7 +103,7 @@ private lemma Matrix.toMatroid_mapEquiv {α β : Type} {X Y : Set α} (A : Matri
 
 /-- Regularity of matroids is preserved under remapping. -/
 @[simp]
-lemma Matroid.isRegular_mapEquiv_iff {α β : Type} (M : Matroid α) (e : α ≃ β) : (M.mapEquiv e).IsRegular ↔ M.IsRegular := by
+lemma Matroid.isRegular_mapEquiv_iff {α β : Type*} (M : Matroid α) (e : α ≃ β) : (M.mapEquiv e).IsRegular ↔ M.IsRegular := by
   constructor
   <;> intro ⟨X, Y, A, hA, hAM⟩
   · use e.symm '' X, e.symm '' Y, A.submatrix (e.symm.image X).symm (e.symm.image Y).symm, hA.submatrix _ _
@@ -113,7 +113,7 @@ lemma Matroid.isRegular_mapEquiv_iff {α β : Type} (M : Matroid α) (e : α ≃
     rw [A.toMatroid_mapEquiv e]
     aesop
 
-variable {α : Type} [DecidableEq α]
+variable {α : Type*} [DecidableEq α]
 
 private lemma Matrix.IsTotallyUnimodular.intCast_det_eq_support_det [Fintype α] {A : Matrix α α ℤ}
     (hA : A.IsTotallyUnimodular) :
@@ -143,7 +143,7 @@ private lemma Matrix.IsTotallyUnimodular.det_eq_zero_iff_support [Fintype α] {A
   apply zero_iff_ratCast_zero_of_in_signTypeCastRange
   exact hA.det id id
 
-private def Matrix.AllColsIn {X Y R : Type} (A : Matrix X Y R) (Y' : Set Y) : Prop :=
+private def Matrix.AllColsIn {X Y R : Type*} (A : Matrix X Y R) (Y' : Set Y) : Prop :=
   ∀ y : Y, ∃ y' : Y', (A · y) = (A · y')
 
 @[app_unexpander Matrix.AllColsIn]
@@ -151,7 +151,7 @@ private def Matrix.AllColsIn_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $A) => `($(A).$(Lean.mkIdent `AllColsIn))
   | _ => throw ()
 
-private lemma Matrix.exists_finite_allColsIn {X Y R : Type} [Fintype X] [DecidableEq Y] (A : Matrix X Y R) (V : Finset R)
+private lemma Matrix.exists_finite_allColsIn {X Y R : Type*} [Fintype X] [DecidableEq Y] (A : Matrix X Y R) (V : Finset R)
     (hAV : ∀ i j, A i j ∈ V) :
     ∃ Y' : Set Y, Finite Y' ∧ A.AllColsIn Y' := by
   let C : Set (X → R) := { (A · y) | y : Y }
@@ -176,7 +176,7 @@ private lemma Matrix.exists_finite_allColsIn {X Y R : Type} [Fintype X] [Decidab
     have hj : (A · j) ∈ C := by use j
     exact ⟨⟨hj.choose, by aesop⟩, hj.choose_spec.symm⟩
 
-private lemma Matrix.linearIndependent_if_LinearIndependent_subset_cols {X Y R : Type} [Ring R]
+private lemma Matrix.linearIndependent_if_LinearIndependent_subset_cols {X Y R : Type*} [Ring R]
     (A : Matrix X Y R) {Y' : Set Y} (hA : LinearIndependent R (A.submatrix id (fun y' : Y' => y'.val))) :
     LinearIndependent R A := by
   by_contra lin_dep
@@ -188,7 +188,7 @@ private lemma Matrix.linearIndependent_if_LinearIndependent_subset_cols {X Y R :
   convert congr_fun hscA j
   simp
 
-private lemma Matrix.linearIndependent_iff_allColsSubmatrix_linearIndependent {X Y R : Type} [Ring R] {Y' : Set Y}
+private lemma Matrix.linearIndependent_iff_allColsSubmatrix_linearIndependent {X Y R : Type*} [Ring R] {Y' : Set Y}
     (A : Matrix X Y R) (hAY' : A.AllColsIn Y') :
     LinearIndependent R A ↔ LinearIndependent R (A.submatrix id (·.val) : Matrix X Y' R) := by
   constructor
@@ -211,7 +211,7 @@ private lemma Matrix.linearIndependent_iff_allColsSubmatrix_linearIndependent {X
   · exact A.linearIndependent_if_LinearIndependent_subset_cols
 
 private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent_of_finite_of_finite
-    {X Y : Type} [DecidableEq X] [DecidableEq Y] [Fintype X] [Fintype Y] {A : Matrix X Y ℚ}
+    {X Y : Type*} [DecidableEq X] [DecidableEq Y] [Fintype X] [Fintype Y] {A : Matrix X Y ℚ}
     (hA : A.IsTotallyUnimodular) :
     LinearIndependent ℚ A ↔ LinearIndependent Z2 A.support := by
   constructor
@@ -224,7 +224,7 @@ private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearInd
   · exact result.← (A.support_submatrix id g ▸ hAg)
 
 private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent_of_finite
-    {X Y : Type} [DecidableEq X] [DecidableEq Y] [Fintype X] {A : Matrix X Y ℚ}
+    {X Y : Type*} [DecidableEq X] [DecidableEq Y] [Fintype X] {A : Matrix X Y ℚ}
     (hA : A.IsTotallyUnimodular) :
     LinearIndependent ℚ A ↔ LinearIndependent Z2 A.support := by
   constructor
@@ -242,7 +242,7 @@ private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearInd
     exact A.linearIndependent_if_LinearIndependent_subset_cols lin_indep
 
 private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent
-    {X Y : Type} [DecidableEq X] [DecidableEq Y] {A : Matrix X Y ℚ}
+    {X Y : Type*} [DecidableEq X] [DecidableEq Y] {A : Matrix X Y ℚ}
     (hA : A.IsTotallyUnimodular) :
     LinearIndependent ℚ A ↔ LinearIndependent Z2 A.support := by
   constructor

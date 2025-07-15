@@ -6,7 +6,7 @@ import Seymour.Matrix.Basic
 This file is about matrices that are totally unimodular up to certain size of the square submatrix.
 -/
 
-variable {X Y R : Type} [CommRing R]
+variable {X Y R : Type*} [CommRing R]
 
 /-- Matrix `A` satisfies TUness for submatrices up to `k`×`k` size, i.e.,
     the determinant of every `k`×`k` submatrix of `A` (not necessarily injective) is `1`, `0`, or `-1`. -/

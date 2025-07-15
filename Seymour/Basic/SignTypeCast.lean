@@ -18,7 +18,7 @@ lemma ratCast_eq_intCast_ratFloor_of_in_signTypeCastRange {a : ℚ} (ha : a ∈ 
   obtain ⟨s, hs⟩ := ha
   cases s <;> aesop
 
-variable {R : Type}
+variable {R : Type*}
 
 @[simp high]
 lemma zero_in_signTypeCastRange [NonAssocRing R] : (0 : R) ∈ SignType.cast.range :=

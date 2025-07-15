@@ -76,7 +76,7 @@ lemma Matrix.isUnit_2x2 (A : Matrix (Fin 2) (Fin 2) Z2) (hA : IsUnit A) :
     simp_all [fin2_eq_1_of_ne_0]
 
 
-variable {Z R : Type} [Fintype Z] [DecidableEq Z] [CommRing R]
+variable {Z R : Type*} [Fintype Z] [DecidableEq Z] [CommRing R]
 
 lemma Matrix.det_eq_zero_of_col_eq_mul_col (A : Matrix Z Z R) (j₀ j₁ : Z) (hjj : j₀ ≠ j₁) (k : R)
     (hAjj : ∀ i : Z, A i j₀ = k * A i j₁) :
@@ -123,7 +123,7 @@ lemma Matrix.det_eq_zero_of_col_sub_col_eq_col [CommRing R] [IsDomain R] (A : Ma
     Finset.sum_insert (hj₀.elim <| Finset.mem_singleton.→ ·), Finset.sum_singleton, Finset.mem_singleton]
   simp [f, hj₀.symm, hj₁.symm, hj₂.symm]
 
-variable {X Y : Type}
+variable {X Y : Type*}
 
 lemma Matrix.submatrix_det_zero_of_not_injective_cols (A : Matrix X Y R) (f : Z → X) {g : Z → Y} (hg : ¬g.Injective) :
     (A.submatrix f g).det = 0 := by

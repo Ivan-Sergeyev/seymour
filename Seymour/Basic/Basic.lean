@@ -12,6 +12,8 @@ This file provides notation used throughout the project, some very basic lemmas,
 
 /-! ## Notation -/
 
+universe u
+
 /-- The finite field on 2 elements; write `Z2` for "value" type but `Fin 2` for "indexing" type. -/
 abbrev Z2 : Type := ZMod 2
 
@@ -64,15 +66,20 @@ notation:64 "▬"r:81 => Matrix.replicateRow Unit r
 notation:64 "▮"c:81 => Matrix.replicateCol Unit c
 
 /-- Outer product of two vectors (the column vector comes on left; the row vector comes on right). -/
-infix:67 " ⊗ " => fun {X Y α : Type} [Mul α] =>
-  (fun c : X → α => fun r : Y → α => Matrix.of (fun i : X => fun j : Y => c i * r j))
+abbrev Matrix.outer_prod {X Y α : Type*} [Mul α] (c : X → α) (r : Y → α) := Matrix.of (fun i : X => fun j : Y => c i * r j)
+
+@[inherit_doc]
+infix:67 " ⊗ " => Matrix.outer_prod
 
 /-- Element-wise product of two matrices (rarely used). -/
-infixr:66 " ⊡ " => fun {X Y α β : Type} [SMul α β] =>
-  (fun A : Matrix X Y α => fun B : Matrix X Y β => Matrix.of (fun i : X => fun j : Y => A i j • B i j))
+abbrev Matrix.element_prod {X Y α β : Type*} [SMul α β] (A : Matrix X Y α) (B : Matrix X Y β) :=
+  Matrix.of (fun i : X => fun j : Y => A i j • B i j)
+
+@[inherit_doc]
+infixr:66 " ⊡ " => Matrix.element_prod
 
 /-- The set of possible outputs of a function. -/
-abbrev Function.range {α ι : Type} (f : ι → α) : Set α := Set.range f
+abbrev Function.range {α ι : Type*} (f : ι → α) : Set α := Set.range f
 
 @[app_unexpander Function.range]
 def Function.range_unexpand : Lean.PrettyPrinter.Unexpander
@@ -106,7 +113,7 @@ lemma exists_minimal_nat_of_exists {P : ℕ → Prop} (hP : ∃ n : ℕ, P n) : 
   obtain ⟨c, hc⟩ := exists_minimal_nat_le_of_exists (P ·.val) hn
   exact ⟨c.val, hc.left, fun m hPm hmc => @hc.right ⟨m, hmc.trans c.property⟩ hPm hmc⟩
 
-variable {α : Type}
+variable {α : Type*}
 
 lemma dite_of_true {P : Prop} [Decidable P] (p : P) {f : P → α} {a : α} : (if hp : P then f hp else a) = f p := by
   simp [p]
@@ -114,14 +121,14 @@ lemma dite_of_true {P : Prop} [Decidable P] (p : P) {f : P → α} {a : α} : (i
 lemma dite_of_false {P : Prop} [Decidable P] (p : ¬P) {f : P → α} {a : α} : (if hp : P then f hp else a) = a := by
   simp [p]
 
-lemma Function.range_eq {ι : Type} (f : ι → α) : f.range = { a : α | ∃ i : ι, f i = a } :=
+lemma Function.range_eq {ι : Type*} (f : ι → α) : f.range = { a : α | ∃ i : ι, f i = a } :=
   rfl
 
-lemma Sum.swap_inj {β : Type} : (@Sum.swap α β).Injective := by
+lemma Sum.swap_inj {β : Type*} : (@Sum.swap α β).Injective := by
   intro
   aesop
 
-lemma Finset.sum_of_single_nonzero {ι : Type} (s : Finset ι) [AddCommMonoid α] (f : ι → α) (a : ι) (ha : a ∈ s)
+lemma Finset.sum_of_single_nonzero {ι : Type*} (s : Finset ι) [AddCommMonoid α] (f : ι → α) (a : ι) (ha : a ∈ s)
     (hf : ∀ i ∈ s, i ≠ a → f i = 0) :
     s.sum f = f a := by
   rw [←Finset.sum_subset (s.singleton_subset_iff.← ha)]
@@ -130,12 +137,12 @@ lemma Finset.sum_of_single_nonzero {ι : Type} (s : Finset ι) [AddCommMonoid α
   apply hf x hxs
   rwa [Finset.not_mem_singleton] at hxa
 
-lemma fintype_sum_of_single_nonzero {ι : Type} [Fintype ι] [AddCommMonoid α] (f : ι → α) (a : ι)
+lemma fintype_sum_of_single_nonzero {ι : Type*} [Fintype ι] [AddCommMonoid α] (f : ι → α) (a : ι)
     (hf : ∀ i : ι, i ≠ a → f i = 0) :
     Finset.univ.sum f = f a :=
   Finset.univ.sum_of_single_nonzero f a (Finset.mem_univ a) (by simpa using hf)
 
-lemma sum_elem_of_single_nonzero {ι : Type} [AddCommMonoid α] {f : ι → α} {S : Set ι} [Fintype S] {a : ι} (haS : a ∈ S)
+lemma sum_elem_of_single_nonzero {ι : Type*} [AddCommMonoid α] {f : ι → α} {S : Set ι} [Fintype S] {a : ι} (haS : a ∈ S)
     (hf : ∀ i : ι, i ≠ a → f i = 0) :
     ∑ i : S.Elem, f i = f a := by
   apply fintype_sum_of_single_nonzero (fun s : S.Elem => f s.val) ⟨a, haS⟩
@@ -146,11 +153,11 @@ lemma sum_elem_of_single_nonzero {ι : Type} [AddCommMonoid α] {f : ι → α} 
   ext
   exact contr
 
-lemma sum_insert_elem {ι : Type} [DecidableEq ι] [AddCommMonoid α] {S : Set ι} [Fintype S] {a : ι} (ha : a ∉ S) (f : ι → α) :
+lemma sum_insert_elem {ι : Type*} [DecidableEq ι] [AddCommMonoid α] {S : Set ι} [Fintype S] {a : ι} (ha : a ∉ S) (f : ι → α) :
     ∑ i : (a ᕃ S).Elem, f i = f a + ∑ i : S.Elem, f i := by
   simp_all [Finset.sum_set_coe]
 
-lemma finset_toSet_sum {ι : Type} [AddCommMonoid α] {s : Finset ι} {S : Set ι} [Fintype S] (hsS : s.toSet = S) (f : ι → α) :
+lemma finset_toSet_sum {ι : Type*} [AddCommMonoid α] {s : Finset ι} {S : Set ι} [Fintype S] (hsS : s.toSet = S) (f : ι → α) :
     ∑ i : s.toSet, f i = ∑ i : S, f i := by
   apply Finset.sum_bij (fun a => ↓⟨a.val, hsS ▸ a.coe_prop⟩)
   · simp

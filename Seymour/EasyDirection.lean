@@ -5,7 +5,7 @@ import Seymour.Matroid.Graphicness
 import Seymour.Matroid.R10
 
 
-variable {α : Type} [DecidableEq α]
+variable {α : Type*} [DecidableEq α]
 
 /-- Given matroid can be constructed from graphic matroids & cographics matroids & R10 using 1-sums & 2-sums & 3-sums. -/
 inductive Matroid.IsGood : Matroid α → Prop

@@ -14,7 +14,7 @@ Here we study vector matroids with emphasis on binary matroids.
 open scoped Matrix Set.Notation
 
 
-variable {α R : Type} {X Y : Set α}
+variable {α R : Type*} {X Y : Set α}
 
 /-- A set is independent in a vector matroid iff it corresponds to a linearly independent submultiset of columns. -/
 def Matrix.IndepCols [Semiring R] (A : Matrix X Y R) (I : Set α) : Prop :=
@@ -238,7 +238,7 @@ lemma Matrix.toMatroid_indep_iff_submatrix [DivisionRing R] (A : Matrix X Y R) (
 
 lemma Matrix.fromRows_zero_reindex_toMatroid [DivisionRing R] {G : Set α} [Fintype G]
     [∀ a, Decidable (a ∈ G)] [∀ a, Decidable (a ∈ Y)]
-    (A : Matrix G (G ⊕ (Y \ G).Elem) R) (hGY : G ⊆ Y) {Z : Type} (e : G ⊕ Z ≃ X) :
+    (A : Matrix G (G ⊕ (Y \ G).Elem) R) (hGY : G ⊆ Y) {Z : Type*} (e : G ⊕ Z ≃ X) :
     (Matrix.of (fun i : G => A i ∘ Subtype.toSum)).toMatroid =
     (Matrix.of ((A ⊟ 0).reindex e hGY.equiv)).toMatroid := by
   apply Matroid.ext_indep

@@ -1,7 +1,7 @@
 import Seymour.EasyDirection
 
 
-variable {α : Type} [DecidableEq α]
+variable {α : Type*} [DecidableEq α]
 
 /-- The hard direction of the Seymour's theorem. -/
 theorem Matroid.IsRegular.isGood {M : Matroid α} (hM : M.IsRegular) : M.IsGood := by

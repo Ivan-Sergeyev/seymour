@@ -13,7 +13,7 @@ Here we study the standard representation of vector matroids.
 open scoped Matrix Set.Notation
 
 /-- Standard matrix representation of a vector matroid. -/
-structure StandardRepr (α R : Type) [DecidableEq α] where
+structure StandardRepr (α R : Type*) [DecidableEq α] where
   /-- Row indices. -/
   X : Set α
   /-- Col indices. -/
@@ -27,7 +27,7 @@ structure StandardRepr (α R : Type) [DecidableEq α] where
   /-- The computer can determine whether certain element is a col. -/
   decmemY : ∀ a, Decidable (a ∈ Y)
 
-abbrev mkStandardRepr {α R : Type} [DecidableEq α]
+abbrev mkStandardRepr {α R : Type*} [DecidableEq α]
     {X : Set α} [hX : ∀ a, Decidable (a ∈ X)]
     {Y : Set α} [hY : ∀ a, Decidable (a ∈ Y)]
     (hXY : X ⫗ Y) (B : Matrix X Y R) :
@@ -38,7 +38,7 @@ attribute [instance] StandardRepr.decmemX
 attribute [instance] StandardRepr.decmemY
 
 
-variable {α : Type}
+variable {α : Type*}
 
 lemma Matroid.IsBase.not_ssubset_indep {M : Matroid α} {G I : Set α} (hMG : M.IsBase G) (hMH : M.Indep I) : ¬(G ⊂ I) :=
   (M.isBase_iff_maximal_indep.→ hMG).not_ssuperset hMH
@@ -51,14 +51,14 @@ private def Set.equivFin_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $S) => `($(S).$(Lean.mkIdent `equivFin))
   | _ => throw ()
 
-abbrev Equiv.leftCongr {ι₁ ι₂ : Type} (e : ι₁ ≃ ι₂) : ι₁ ⊕ α ≃ ι₂ ⊕ α :=
+abbrev Equiv.leftCongr {ι₁ ι₂ : Type*} (e : ι₁ ≃ ι₂) : ι₁ ⊕ α ≃ ι₂ ⊕ α :=
   Equiv.sumCongr e (Equiv.refl α)
 
-abbrev Equiv.rightCongr {ι₁ ι₂ : Type} (e : ι₁ ≃ ι₂) : α ⊕ ι₁ ≃ α ⊕ ι₂ :=
+abbrev Equiv.rightCongr {ι₁ ι₂ : Type*} (e : ι₁ ≃ ι₂) : α ⊕ ι₁ ≃ α ⊕ ι₂ :=
   Equiv.sumCongr (Equiv.refl α) e
 
 
-variable [DecidableEq α] {R : Type}
+variable [DecidableEq α] {R : Type*}
 
 /-- Convert standard representation of a vector matroid to a full representation. -/
 def StandardRepr.toFull [Zero R] [One R] (S : StandardRepr α R) : Matrix S.X (S.X ∪ S.Y).Elem R :=
@@ -569,7 +569,7 @@ lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype
 
 omit R
 
-private lemma sum_support_image_subtype_eq_zero {X Y : Set α} {F : Type} [Field F] {B : Matrix Y X F} {D : Set X} {y : Y}
+private lemma sum_support_image_subtype_eq_zero {X Y : Set α} {F : Type*} [Field F] {B : Matrix Y X F} {D : Set X} {y : Y}
     [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (hXXY : X ⊆ X ∪ Y) (hYXY : Y ⊆ X ∪ Y) -- redundant but keep
     {l : (X ∪ Y).Elem →₀ F} (hl : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' D) (hly : l (hYXY.elem y) = 0)
     {i : (X ∪ Y).Elem} (hiX : i.val ∈ X) (hlBi : ∑ a ∈ l.support, l a • (1 ⊟ B) a.toSum ⟨i, hiX⟩ = 0) :
@@ -602,7 +602,7 @@ private lemma sum_support_image_subtype_eq_zero {X Y : Set α} {F : Type} [Field
     rfl
 
 set_option maxHeartbeats 1000000 in
-private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type} [Field F₁] [Field F₂] [DecidableEq F₁] [DecidableEq F₂]
+private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type*} [Field F₁] [Field F₂] [DecidableEq F₁] [DecidableEq F₂]
     {X Y : Set α} {hXY : X ⫗ Y} {B₁ : Matrix X Y F₁} {B₂ : Matrix X Y F₂}
     [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] [Fintype X]
     (hSS : (mkStandardRepr hXY B₁).toMatroid = (mkStandardRepr hXY B₂).toMatroid) :
@@ -789,7 +789,7 @@ lemma ext_standardRepr_of_same_matroid_same_X {S₁ S₂ : StandardRepr α Z2} [
 
 /-- If two standard representations of the same matroid have the same base, then the standard representation matrices have
     the same support. -/
-lemma support_eq_support_of_same_matroid_same_X {F₁ F₂ : Type} [Field F₁] [Field F₂] [DecidableEq F₁] [DecidableEq F₂]
+lemma support_eq_support_of_same_matroid_same_X {F₁ F₂ : Type*} [Field F₁] [Field F₂] [DecidableEq F₁] [DecidableEq F₂]
     {S₁ : StandardRepr α F₁} {S₂ : StandardRepr α F₂} [Fintype S₂.X]
     (hSS : S₁.toMatroid = S₂.toMatroid) (hXX : S₁.X = S₂.X) :
     let hYY : S₁.Y = S₂.Y := right_eq_right_of_union_eq_union hXX S₁.hXY S₂.hXY (congr_arg Matroid.E hSS)
