@@ -4,11 +4,12 @@ import Seymour.HardDirection
 
 open scoped Matrix Set.Notation
 
+universe u
 
 /-! ## Preliminaries -/
 
 -- what `Disjoint` means
-recall Set.disjoint_iff_inter_eq_empty {α : Type* _} (X Y : Set α) :
+recall Set.disjoint_iff_inter_eq_empty {α : Type u} (X Y : Set α) :
   Disjoint X Y ↔ X ∩ Y = ∅
 
 -- what `Matrix.submatrix` means
@@ -27,8 +28,9 @@ recall StandardRepr.hXY {α R : Type*} [DecidableEq α] (S : StandardRepr α R) 
 recall StandardRepr.decmemX {α R : Type*} [DecidableEq α] (S : StandardRepr α R) : ∀ a, Decidable (a ∈ S.X)
 recall StandardRepr.decmemY {α R : Type*} [DecidableEq α] (S : StandardRepr α R) : ∀ a, Decidable (a ∈ S.Y)
 /--
-info: StandardRepr.mk {α R : Type*} [DecidableEq α] (X Y : Set α) (hXY : X ⫗ Y) (B : Matrix (↑X) (↑Y) R)
-  (decmemX : (a : α) → Decidable (a ∈ X)) (decmemY : (a : α) → Decidable (a ∈ Y)) : StandardRepr α R
+info: StandardRepr.mk.{u_1, u_2} {α : Type u_1} {R : Type u_2} [DecidableEq α] (X Y : Set α) (hXY : X ⫗ Y)
+  (B : Matrix (↑X) (↑Y) R) (decmemX : (a : α) → Decidable (a ∈ X)) (decmemY : (a : α) → Decidable (a ∈ Y)) :
+  StandardRepr α R
 -/
 #guard_msgs in
 #check StandardRepr.mk
@@ -171,7 +173,7 @@ info: 'Matroid.Is2sumOf.isRegular' depends on axioms: [propext, Classical.choice
 /-! ## The 3-sum -/
 
 -- how Mathlib handles invertibility
-recall isUnit_iff_exists_and_exists {T : Type* _} [Monoid T] {a : T} :
+recall isUnit_iff_exists_and_exists {T : Type*} [Monoid T] {a : T} :
   IsUnit a ↔ (∃ b : T, a * b = 1) ∧ (∃ c : T, c * a = 1)
 
 recall Set.drop1 {α : Type*} (Z : Set α) (z₀ : Z) : Set α :=
@@ -193,9 +195,9 @@ recall MatrixSum3.D₀ᵣ {Xₗ Yₗ Xᵣ Yᵣ R : Type*} : MatrixSum3 Xₗ Yₗ
 recall MatrixSum3.Dᵣ  {Xₗ Yₗ Xᵣ Yᵣ R : Type*} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix Xᵣ (Fin 2) R
 recall MatrixSum3.Aᵣ  {Xₗ Yₗ Xᵣ Yᵣ R : Type*} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix (Fin 2 ⊕ Xᵣ) (Unit ⊕ Yᵣ) R
 /--
-info: MatrixSum3.mk {Xₗ Yₗ Xᵣ Yᵣ R : Type*} (Aₗ : Matrix (Xₗ ⊕ Unit) (Yₗ ⊕ Fin 2) R) (Dₗ : Matrix (Fin 2) Yₗ R)
-  (D₀ₗ D₀ᵣ : Matrix (Fin 2) (Fin 2) R) (Dᵣ : Matrix Xᵣ (Fin 2) R) (Aᵣ : Matrix (Fin 2 ⊕ Xᵣ) (Unit ⊕ Yᵣ) R) :
-  MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R
+info: MatrixSum3.mk.{u_1, u_2, u_3, u_4, u_5} {Xₗ : Type u_1} {Yₗ : Type u_2} {Xᵣ : Type u_3} {Yᵣ : Type u_4} {R : Type u_5}
+  (Aₗ : Matrix (Xₗ ⊕ Unit) (Yₗ ⊕ Fin 2) R) (Dₗ : Matrix (Fin 2) Yₗ R) (D₀ₗ D₀ᵣ : Matrix (Fin 2) (Fin 2) R)
+  (Dᵣ : Matrix Xᵣ (Fin 2) R) (Aᵣ : Matrix (Fin 2 ⊕ Xᵣ) (Unit ⊕ Yᵣ) R) : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R
 -/
 #guard_msgs in
 #check MatrixSum3.mk
