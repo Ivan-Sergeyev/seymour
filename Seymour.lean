@@ -4,12 +4,10 @@ import Seymour.HardDirection
 
 open scoped Matrix Set.Notation
 
-universe u
-
 /-! ## Preliminaries -/
 
 -- what `Disjoint` means
-recall Set.disjoint_iff_inter_eq_empty {α : Type u} (X Y : Set α) :
+recall Set.disjoint_iff_inter_eq_empty {α : Type _} (X Y : Set α) :
   Disjoint X Y ↔ X ∩ Y = ∅
 
 -- what `Matrix.submatrix` means
