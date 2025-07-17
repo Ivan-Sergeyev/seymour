@@ -1,5 +1,5 @@
 import Seymour.Basic.Fin
-import Seymour.Basic.SubmoduleBasis
+import Seymour.Matrix.SubmoduleBasis
 import Seymour.Matrix.LinearIndependence
 import Seymour.Matrix.Pivoting
 import Seymour.Matrix.Support
@@ -285,13 +285,13 @@ lemma Matrix.exists_standardRepr_isBase [DivisionRing R] {X Y G : Set α}
   · simp
   ext I hIGY
   · aesop
+  have hGYY : G ∪ Y = Y := Set.union_eq_self_of_subset_left hGY
   have hB :
     ∀ j : α, ∀ g : G, ∀ hjy : j ∈ Y, ∀ hjg : j ∈ G, ∀ hjR : Aᵀ ⟨j, hjy⟩ ∈ Submodule.span R Aᵀ.range,
       B.repr ⟨Aᵀ ⟨j, hjy⟩, hjR⟩ g = B.repr (B ⟨j, hjg⟩) g
   · simp [B]
   simp only [Matrix.toMatroid_indep_iff_elem, StandardRepr.toMatroid_indep_iff_elem,
     Matrix.one_fromCols_transpose, Matrix.transpose_submatrix, Set.union_diff_self]
-  have hGYY : G ∪ Y = Y := Set.union_eq_self_of_subset_left hGY
   constructor
   · intro ⟨hI, hRCI⟩
     use hGYY ▸ hI
@@ -302,6 +302,8 @@ lemma Matrix.exists_standardRepr_isBase [DivisionRing R] {X Y G : Set α}
     use hGYY.symm ▸ hI
     classical
     convert exists_standardRepr_isBase_aux_left hGY hYGY hI hIGY hB hRAI
+
+#print axioms Matrix.exists_standardRepr_isBase
 
 /-- Every vector matroid has a standard representation. -/
 lemma Matrix.exists_standardRepr [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) :
@@ -565,7 +567,9 @@ private lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular_aux [Field R
 
 set_option maxHeartbeats 333333 in
 /-- Every vector matroid whose full representation matrix is totally unimodular has a standard representation whose rows are
-    a given base and the standard representation matrix is totally unimodular. -/
+    a given base and the standard representation matrix is totally unimodular.
+    Unlike `Matrix.exists_standardRepr_isBase` this lemma does not allow infinite `G` and does not allow `R` to have
+    noncommutative multiplication. -/
 lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {X Y G : Set α} [Fintype G]
     (A : Matrix X Y R) (hAG : A.toMatroid.IsBase G) (hA : A.IsTotallyUnimodular) :
     ∃ S : StandardRepr α R, S.X = G ∧ S.toMatroid = A.toMatroid ∧ S.B.IsTotallyUnimodular := by
