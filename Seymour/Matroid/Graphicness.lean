@@ -94,7 +94,8 @@ lemma Matrix.IsGraphic.submatrix_one_if_not_graphic {l m o n : Type} [DecidableE
   obtain ⟨y, hy⟩ := hAfg
   use y
   rcases hA (g y) with (hAg | ⟨i₁, i₂, hii⟩)
-  · absurd hy.left
+  · exfalso
+    apply hy.left
     rw [funext_iff] at hAg
     ext x
     simp_all [hAg (f x)]
@@ -110,16 +111,16 @@ lemma Matrix.IsGraphic.submatrix_one_if_not_graphic {l m o n : Type} [DecidableE
         by_contra! hfi
         subst hx hfi
         obtain ⟨i', hyi'⟩ := hy.right x i (Ne.symm hi) hii.right.left hii.right.right.left
-        exact absurd (hii.right.right.right (f i') (hf.ne hyi'.left) (hf.ne hyi'.right.left)) hyi'.right.right
+        exact hyi'.right.right (hii.right.right.right (f i') (hf.ne hyi'.left) (hf.ne hyi'.right.left))
       · refine hii.right.right.right (f i) ?_ ((hf.ne_iff' hx).← hi)
         by_contra! hfi
         subst hx hfi
         obtain ⟨i', hyi'⟩ := hy.right i x hi hii.right.left hii.right.right.left
-        exact absurd (hii.right.right.right (f i') (hf.ne hyi'.left) (hf.ne hyi'.right.left)) hyi'.right.right
-    · rw [not_or] at hxq
-      absurd hy.left
+        exact hyi'.right.right (hii.right.right.right (f i') (hf.ne hyi'.left) (hf.ne hyi'.right.left))
+    · exfalso
+      apply hy.left
+      rw [not_or] at hxq
       ext j
-      have := hii.right.right.right (f j)
       simp_all
 
 variable {α : Type} [DecidableEq α]

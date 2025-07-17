@@ -745,9 +745,10 @@ private lemma sum_support_image_subtype_eq_zero {X Y : Set α} {F : Type} [Field
     have hzD : z.val.val ∈ Subtype.val '' D
     · cases hl z (by simp) with
       | inl hp =>
+        exfalso
         have hzy : z.val = hYXY.elem y := Subtype.coe_inj.→ hp
         rw [←hzy] at hly
-        exact absurd hly (l.mem_support_iff.→ (Finset.coe_mem z))
+        exact (l.mem_support_iff.→ (Finset.coe_mem z)) hly
       | inr hp => exact hp
     have hDX : Subtype.val '' D ⊆ X
     · rw [Set.image, Set.setOf_subset]

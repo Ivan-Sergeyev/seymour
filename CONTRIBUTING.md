@@ -219,6 +219,7 @@ The guideline below is written primarily to assist you in reading the code.
 - We do not write `.1` and `.2` to access fields; write their names instead (with the exception for `Iff.mp` and `Iff.mpr` where we prefer our notation `.→` and `.←` respectively).
 - We prefer Mathlib's `have` over Std's `have` inside tactic-block proofs.
 - We prefer Mathlib's `congr_arg` and `congr_fun` over Std's `congrArg` and `congrFun` respectively.
+- We prefer `exfalso` over `absurd` to discharge "impossible" proof branches.
 - When a variable name refers to exactly 2 out of 3 objects, we often refer to the missing object (instead of the two present objects) (analogical to naming parts of a triangle).
 - We do not write a space after `←` in the `rw` syntax.
 - We do not write `↦` as this syntax does not work everywhere. Write `=>` instead.

@@ -180,7 +180,8 @@ private lemma Matrix.linearIndependent_if_LinearIndependent_subset_cols {X Y R :
     (A : Matrix X Y R) {Y' : Set Y} (hA : LinearIndependent R (A.submatrix id (fun y' : Y' => y'.val))) :
     LinearIndependent R A := by
   by_contra lin_dep
-  absurd hA
+  suffices hA' : ¬ LinearIndependent R (A.submatrix id Subtype.val)
+  · exact hA' hA
   rw [not_linearIndependent_iff] at lin_dep ⊢
   obtain ⟨s, c, hscA, hsc⟩ := lin_dep
   refine ⟨s, c, ?_, hsc⟩
@@ -188,13 +189,14 @@ private lemma Matrix.linearIndependent_if_LinearIndependent_subset_cols {X Y R :
   convert congr_fun hscA j
   simp
 
-private lemma Matrix.linearIndependent_iff_allColsSubmatrix_linearIndependent {X Y R : Type} [Ring R] {Y' : Set Y}
+private lemma Matrix.linearIndependent_iff_allCols_submatrix_linearIndependent {X Y R : Type} [Ring R] {Y' : Set Y}
     (A : Matrix X Y R) (hAY' : A.AllColsIn Y') :
     LinearIndependent R A ↔ LinearIndependent R (A.submatrix id (·.val) : Matrix X Y' R) := by
   constructor
   · intro lin_indep
     by_contra lin_dep
-    absurd lin_indep
+    suffices lin_dep' : ¬ LinearIndependent R A
+    · exact lin_dep' lin_indep
     rw [not_linearIndependent_iff] at lin_dep ⊢
     obtain ⟨s, c, hscA, hsc⟩ := lin_dep
     refine ⟨s, c, ?_, hsc⟩
@@ -230,12 +232,12 @@ private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearInd
   constructor
   <;> intro lin_indep
   · obtain ⟨Y', hY', hAY'⟩ := A.exists_finite_allColsIn {-1, 0, 1} (by have ⟨s, hs⟩ := hA.apply · · ; cases s <;> aesop)
-    rw [A.linearIndependent_iff_allColsSubmatrix_linearIndependent hAY'] at lin_indep
+    rw [A.linearIndependent_iff_allCols_submatrix_linearIndependent hAY'] at lin_indep
     have := Set.Finite.fintype hY'
     rw [(hA.submatrix id Subtype.val).linearIndependent_iff_support_linearIndependent_of_finite_of_finite] at lin_indep
     exact A.support.linearIndependent_if_LinearIndependent_subset_cols lin_indep
   · obtain ⟨Y', hY', hAY'⟩ := A.support.exists_finite_allColsIn Finset.univ (Finset.mem_univ <| A.support · ·)
-    rw [A.support.linearIndependent_iff_allColsSubmatrix_linearIndependent hAY'] at lin_indep
+    rw [A.support.linearIndependent_iff_allCols_submatrix_linearIndependent hAY'] at lin_indep
     rw [Matrix.support_submatrix] at lin_indep
     have := Set.Finite.fintype hY'
     rw [←(hA.submatrix id Subtype.val).linearIndependent_iff_support_linearIndependent_of_finite_of_finite] at lin_indep

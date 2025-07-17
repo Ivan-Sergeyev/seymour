@@ -415,13 +415,14 @@ private lemma Fin.reindexFun_bijective {n : ℕ} (i : Fin n.succ) : i.reindexFun
         congr
         apply fin1_eq_fin1
       | inr bₙ =>
-        symm at hab
-        absurd i.succAbove_ne bₙ
-        simpa using hab
+        exfalso
+        apply i.succAbove_ne bₙ
+        simpa using hab.symm
     | inr aₙ =>
       cases b with
       | inl b₁ =>
-        absurd i.succAbove_ne aₙ
+        exfalso
+        apply i.succAbove_ne aₙ
         simpa using hab
       | inr bₙ =>
         simpa using hab,
