@@ -600,32 +600,14 @@ private lemma sum_support_image_subtype_eq_zero {X Y : Set α} {F : Type*} [Fiel
   · intros
     rfl
 
-universe u
-
 set_option maxHeartbeats 1000000 in
-private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type u} [Field F₁] [Field F₂] [DecidableEq F₁] [DecidableEq F₂]
-    {X Y : Set α} {hXY : X ⫗ Y} {B₁ : Matrix X Y F₁} {B₂ : Matrix X Y F₂}
-    {hX : ∀ a, Decidable (a ∈ X)} {hY : ∀ a, Decidable (a ∈ Y)} [Fintype X]
-    (hSS : (StandardRepr.mk X Y hXY B₁ hX hY).toMatroid = (StandardRepr.mk X Y hXY B₂ hX hY).toMatroid) :
-    B₁.support = B₂.support := by
-  rw [←Matrix.transpose_inj]
-  apply Matrix.ext_col
-  intro y
+private lemma support_eq_support_of_same_matroid_aux_aux {F F₀ : Type*} [Field F] [Field F₀] [DecidableEq F] [DecidableEq F₀]
+    {X Y : Set α} {hXY : X ⫗ Y} {B : Matrix X Y F} {Bₒ : Matrix X Y F₀}
+    [hX : ∀ a, Decidable (a ∈ X)] [hY : ∀ a, Decidable (a ∈ Y)] [Fintype X]
+    (hSS : (mkStandardRepr hXY B).toMatroid = (mkStandardRepr hXY Bₒ).toMatroid) (y : Y) :
+    {x | Bᵀ y x ≠ 0} ⊆ {x | Bₒᵀ y x ≠ 0} := by
   have hXXY : X ⊆ X ∪ Y := Set.subset_union_left
   have hYXY : Y ⊆ X ∪ Y := Set.subset_union_right
-  suffices hDD : { x | B₁ᵀ y x ≠ 0 } = { x | B₂ᵀ y x ≠ 0 }
-  · ext x
-    repeat rw [Matrix.support, Matrix.transpose_apply, Matrix.of_apply]
-    simp_rw [Matrix.transpose_apply, Set.setOf_inj, funext_iff] at hDD
-    specialize hDD x
-    rw [ne_eq, ne_eq, propext_iff, not_iff_not, ←propext_iff] at hDD
-    simp_rw [hDD]
-  suffices ∀ F Fₒ : Type u, [Field F] → [Field Fₒ] → [DecidableEq F] → [DecidableEq Fₒ] →
-      ∀ B : Matrix X Y F, ∀ Bₒ : Matrix X Y Fₒ,
-      (StandardRepr.mk X Y hXY B hX hY).toMatroid = (StandardRepr.mk X Y hXY Bₒ hX hY).toMatroid →
-      {x | Bᵀ y x ≠ 0} ⊆ {x | Bₒᵀ y x ≠ 0} from
-    Set.eq_of_subset_of_subset (this F₁ F₂ B₁ B₂ hSS) (this F₂ F₁ B₂ B₁ hSS.symm)
-  intro F F₀ _ _ _ _ B Bₒ hSS
   have hSS' := congr_arg Matroid.Indep hSS
   let D := {x | Bᵀ y x ≠ 0}
   let Dₒ := {x | Bₒᵀ y x ≠ 0}
@@ -749,6 +731,25 @@ private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type u} [Field
       exact SetCoe.ext contr
   exact (hSS' ▸ hMₒ) hM
 
+private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type*} [Field F₁] [Field F₂] [DecidableEq F₁] [DecidableEq F₂]
+    {X Y : Set α} {hXY : X ⫗ Y} {B₁ : Matrix X Y F₁} {B₂ : Matrix X Y F₂}
+    [hX : ∀ a, Decidable (a ∈ X)] [hY : ∀ a, Decidable (a ∈ Y)] [Fintype X]
+    (hSS : (mkStandardRepr hXY B₁).toMatroid = (mkStandardRepr hXY B₂).toMatroid) :
+    B₁.support = B₂.support := by
+  rw [←Matrix.transpose_inj]
+  apply Matrix.ext_col
+  intro y
+  suffices hDD : { x | B₁ᵀ y x ≠ 0 } = { x | B₂ᵀ y x ≠ 0 }
+  · ext x
+    repeat rw [Matrix.support, Matrix.transpose_apply, Matrix.of_apply]
+    simp_rw [Matrix.transpose_apply, Set.setOf_inj, funext_iff] at hDD
+    specialize hDD x
+    rw [ne_eq, ne_eq, propext_iff, not_iff_not, ←propext_iff] at hDD
+    simp_rw [hDD]
+  apply Set.eq_of_subset_of_subset
+  · exact support_eq_support_of_same_matroid_aux_aux hSS y
+  · exact support_eq_support_of_same_matroid_aux_aux hSS.symm y
+
 private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁ B₂ : Matrix X Y Z2}
     [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] [Fintype X]
     (hSS : (mkStandardRepr hXY B₁).toMatroid = (mkStandardRepr hXY B₂).toMatroid) :
@@ -766,11 +767,11 @@ lemma ext_standardRepr_of_same_matroid_same_X {S₁ S₂ : StandardRepr α Z2} [
   convert hSS
   cc
 
-universe v
+universe u u' v
 
 /-- If two standard representations of the same matroid have the same base, then the standard representation matrices have
     the same support. -/
-lemma support_eq_support_of_same_matroid_same_X {F₁ F₂ : Type v} {α : Type max v u} [DecidableEq α]
+lemma support_eq_support_of_same_matroid_same_X {F₁ : Type u} {F₂ : Type u'} {α : Type max u u' v} [DecidableEq α]
       [Field F₁] [Field F₂] [DecidableEq F₁] [DecidableEq F₂]
     {S₁ : StandardRepr α F₁} {S₂ : StandardRepr α F₂} [Fintype S₂.X]
     (hSS : S₁.toMatroid = S₂.toMatroid) (hXX : S₁.X = S₂.X) :
