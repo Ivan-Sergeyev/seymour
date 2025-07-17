@@ -68,12 +68,12 @@ def Matrix.testTotallyUnimodularFast {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ
   ∀ (X : Finset (Fin m)) (Y : Finset (Fin n)) (hXY : X.card = Y.card),
     (A.squareSetSubmatrix hXY).det ∈ SignType.cast.range
 
-lemma Matrix.abs_det_reindex_self_self {m n : Type} [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
-    {R : Type} [LinearOrderedCommRing R] (A : Matrix m m R) (e₁ e₂ : m ≃ n) :
+lemma Matrix.abs_det_reindex_self_self {m n : Type*} [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
+    {R : Type*} [LinearOrderedCommRing R] (A : Matrix m m R) (e₁ e₂ : m ≃ n) :
     |(A.reindex e₁ e₂).det| = |A.det| :=
   A.abs_det_submatrix_equiv_equiv e₁.symm e₂.symm
 
-lemma range_eq_range_iff_exists_comp_equiv {α β γ : Type} {f : α → γ} {g : β → γ} (hf : f.Injective) (hg : g.Injective) :
+lemma range_eq_range_iff_exists_comp_equiv {α β γ : Type*} {f : α → γ} {g : β → γ} (hf : f.Injective) (hg : g.Injective) :
     f.range = g.range ↔ ∃ e : α ≃ β, f = g ∘ e := by
   constructor
   · classical
@@ -115,7 +115,7 @@ lemma range_eq_range_iff_exists_comp_equiv {α β γ : Type} {f : α → γ} {g 
     · use e.symm w
       rw [Equiv.apply_symm_apply]
 
-lemma range_of_list_get {α : Type} [DecidableEq α] {n : ℕ} {s : List α} (hn : n = s.length) :
+lemma range_of_list_get {α : Type*} [DecidableEq α] {n : ℕ} {s : List α} (hn : n = s.length) :
     (fun x : Fin n => s[x]).range = s.toFinset := by
   ext a
   simp_rw [Function.range, Fin.getElem_fin, List.coe_toFinset, Set.mem_range, Set.mem_setOf_eq]
@@ -126,7 +126,7 @@ lemma range_of_list_get {α : Type} [DecidableEq α] {n : ℕ} {s : List α} (hn
   · have ⟨i, hi, _⟩ := List.getElem_of_mem ha
     use ⟨i, hn ▸ hi⟩
 
-lemma Matrix.submatrix_eq_submatrix_reindex {r c n o p q α : Type}
+lemma Matrix.submatrix_eq_submatrix_reindex {r c n o p q α : Type*}
     [DecidableEq r] [Fintype r] [DecidableEq c] [Fintype c] [DecidableEq n] [Fintype n]
     [DecidableEq o] [Fintype o] [DecidableEq p] [Fintype p] [DecidableEq q] [Fintype q]
     {f₁ : n → r} {g₁ : o → c} {f₂ : p → r} {g₂ : q → c}

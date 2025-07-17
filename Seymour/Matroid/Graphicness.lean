@@ -8,19 +8,19 @@ Here we study graphic and cographic matroids.
 
 /-- Column of a node-edge incidence matrix is either all `0`,
     or has exactly one `+1` entry, exactly one `-1` entry, and all other elements `0`. -/
-def IsIncidenceMatrixColumn {m : Type} [DecidableEq m] (v : m → ℚ) : Prop :=
+def IsIncidenceMatrixColumn {m : Type*} [DecidableEq m] (v : m → ℚ) : Prop :=
   (v = 0) ∨ (∃ i₁ i₂ : m, i₁ ≠ i₂ ∧ v i₁ = 1 ∧ v i₂ = -1 ∧ (∀ i : m, i ≠ i₁ → i ≠ i₂ → v i = 0))
 
 -- Under additional assumption that `m` is nonempty, `IsIncidenceMatrixColumn v` is equivalent to:
 -- `∃ i₁ i₂ : m, v = Function.update (0 : m → ℚ) i₁ 1 + Function.update (0 : m → ℚ) i₂ (-1)`
 
 /-- Matrix is called graphic iff it is a node-edge incidence matrix of a (directed) graph. -/
-def Matrix.IsGraphic {m n : Type} [DecidableEq m] (A : Matrix m n ℚ) : Prop :=
+def Matrix.IsGraphic {m n : Type*} [DecidableEq m] (A : Matrix m n ℚ) : Prop :=
   ∀ y : n, IsIncidenceMatrixColumn (A · y)
 
 /-- The column function can be defined as an if statement with membership.
     We write it in this form to satisfy `Fintype.sum_ite_mem`. -/
-lemma IsIncidenceMatrixColumn.eq_if_mem {m : Type} [DecidableEq m] {v : m → ℚ} (hv : IsIncidenceMatrixColumn v) :
+lemma IsIncidenceMatrixColumn.eq_if_mem {m : Type*} [DecidableEq m] {v : m → ℚ} (hv : IsIncidenceMatrixColumn v) :
     v = 0 ∨ ∃ i₁ i₂ : m, i₁ ≠ i₂ ∧ v = (fun i : m => if i ∈ [i₁, i₂].toFinset then (if i = i₁ then 1 else -1) else 0) := by
   refine Or.imp_right (fun hv => ?_) hv
   peel hv with i₁ i₂ hii
@@ -34,7 +34,7 @@ lemma IsIncidenceMatrixColumn.eq_if_mem {m : Type} [DecidableEq m] {v : m → �
   simp_all
 
 /-- Every element of a column of a node-edge incidence matrix is `1`, `0`, or `-1`. -/
-lemma IsIncidenceMatrixColumn.elem_in_signTypeCastRange {m : Type} [DecidableEq m] {v : m → ℚ} (hv : IsIncidenceMatrixColumn v) :
+lemma IsIncidenceMatrixColumn.elem_in_signTypeCastRange {m : Type*} [DecidableEq m] {v : m → ℚ} (hv : IsIncidenceMatrixColumn v) :
     ∀ i : m, v i ∈ SignType.cast.range := by
   intro i
   cases hv with
@@ -48,7 +48,7 @@ lemma IsIncidenceMatrixColumn.elem_in_signTypeCastRange {m : Type} [DecidableEq 
     simp [hvnii i hii₁ hii₂]
 
 /-- The sum of a column of an incidence matrix is `0`. -/
-lemma IsIncidenceMatrixColumn.sum_zero {m : Type} [Fintype m] [DecidableEq m] {v : m → ℚ} (hv : IsIncidenceMatrixColumn v) :
+lemma IsIncidenceMatrixColumn.sum_zero {m : Type*} [Fintype m] [DecidableEq m] {v : m → ℚ} (hv : IsIncidenceMatrixColumn v) :
     ∑ i : m, v i = 0 := by
   cases IsIncidenceMatrixColumn.eq_if_mem hv with
   | inl => simp_all
@@ -59,24 +59,24 @@ lemma IsIncidenceMatrixColumn.sum_zero {m : Type} [Fintype m] [DecidableEq m] {v
     simp_rw [ne_eq, ite_true, hv.choose_spec.choose_spec.left.symm, ite_false, add_neg_cancel]
 
 /-- Every element of a graphic matrix is `1`, `0`, or `-1`. -/
-lemma Matrix.IsGraphic.elem_in_signTypeCastRange {m n : Type} [DecidableEq m] {A : Matrix m n ℚ}
+lemma Matrix.IsGraphic.elem_in_signTypeCastRange {m n : Type*} [DecidableEq m] {A : Matrix m n ℚ}
     (hA : A.IsGraphic) (i : m) (j : n) :
     A i j ∈ SignType.cast.range :=
   (hA j).elem_in_signTypeCastRange i
 
 /-- Column of a node-edge incidence matrix has either zero or two non-zero entries. -/
 -- future refactor: it's probably easier to unfold the definition in-place to get this result
-lemma IsIncidenceMatrixColumn.zero_or_two_nonzeros {m : Type} [DecidableEq m] {v : m → ℚ} (hv : IsIncidenceMatrixColumn v) :
+lemma IsIncidenceMatrixColumn.zero_or_two_nonzeros {m : Type*} [DecidableEq m] {v : m → ℚ} (hv : IsIncidenceMatrixColumn v) :
     (v = 0) ∨ (∃ i₁ i₂ : m, i₁ ≠ i₂ ∧ ∀ i, i ≠ i₁ → i ≠ i₂ → v i = 0) :=
   Or.imp_right (fun ⟨i₁, i₂, hii, _, _, hvnii⟩ => ⟨i₁, i₂, hii, hvnii⟩) hv
 
 /-- Column of a node-edge incidence matrix has either zero or two non-zero entries. -/
-lemma Matrix.IsGraphic.col_zero_or_two_nonzeros {m n : Type} [DecidableEq m] {A : Matrix m n ℚ} (hA : A.IsGraphic) (y : n) :
+lemma Matrix.IsGraphic.col_zero_or_two_nonzeros {m n : Type*} [DecidableEq m] {A : Matrix m n ℚ} (hA : A.IsGraphic) (y : n) :
     ((A · y) = 0) ∨ (∃ i₁ i₂ : m, i₁ ≠ i₂ ∧ ∀ i : m, i ≠ i₁ → i ≠ i₂ → (A · y) i = 0) :=
   (hA y).zero_or_two_nonzeros
 
 /-- The sum of the columns in a graphic matrix is `0`. -/
-lemma Matrix.IsGraphic.cols_sum_zero {m n : Type} [Fintype n] [Fintype m] [DecidableEq m] {A : Matrix m n ℚ}
+lemma Matrix.IsGraphic.cols_sum_zero {m n : Type*} [Fintype n] [Fintype m] [DecidableEq m] {A : Matrix m n ℚ}
     (hA : A.IsGraphic) :
     ∑ x, A x = 0 := by
   ext x
@@ -85,7 +85,7 @@ lemma Matrix.IsGraphic.cols_sum_zero {m n : Type} [Fintype n] [Fintype m] [Decid
 
 /-- A nongraphic submatrix of a graphic matrix is only nongraphic iff there exists a column in it that only has
 one non-zero entry -/
-lemma Matrix.IsGraphic.submatrix_one_if_not_graphic {l m o n : Type} [DecidableEq l] [DecidableEq m]
+lemma Matrix.IsGraphic.submatrix_one_if_not_graphic {l m o n : Type*} [DecidableEq l] [DecidableEq m]
     {A : Matrix m n ℚ} (hA : A.IsGraphic) {f : l → m} {g : o → n} (hf : f.Injective) (hAfg : ¬(A.submatrix f g).IsGraphic) :
     ∃ y : o, ∃ x : l,
       ((A.submatrix f g x y = 1 ∨ A.submatrix f g x y = -1)) ∧ (∀ i : l, i ≠ x → (A.submatrix f g) i y = 0) := by
@@ -122,7 +122,7 @@ lemma Matrix.IsGraphic.submatrix_one_if_not_graphic {l m o n : Type} [DecidableE
       have := hii.right.right.right (f j)
       simp_all
 
-variable {α : Type} [DecidableEq α]
+variable {α : Type*} [DecidableEq α]
 
 /-- Matroid is graphic iff it can be represented by a graphic matrix. -/
 def Matroid.IsGraphic (M : Matroid α) : Prop :=

@@ -12,7 +12,7 @@ This file defines and studies pivoting in matrices. Pivoting is later used in ma
 
 open scoped Matrix
 
-variable {X Y F : Type}
+variable {X Y F : Type*}
 
 /-! ## Elementary row operations -/
 
@@ -365,19 +365,19 @@ lemma Matrix.IsTotallyUnimodular.shortTableauPivot [DecidableEq X] [DecidableEq 
     (A.shortTableauPivot x y).IsTotallyUnimodular :=
   ((hA.one_fromCols).longTableauPivot x ◪y hAxy).submatrix id (fun j : Y => if j = y then ◩x else ◪j)
 
-lemma Matrix.shortTableauPivot_zero {X' Y' : Type} [DecidableEq X] [DecidableEq Y] [DecidableEq X'] [DivisionRing F]
+lemma Matrix.shortTableauPivot_zero {X' Y' : Type*} [DecidableEq X] [DecidableEq Y] [DecidableEq X'] [DivisionRing F]
     (A : Matrix X Y F) (x : X') (y : Y) (f : X' → X) (g : Y' → Y) (hg : y ∉ g.range) (hAfg : ∀ i j, A (f i) (g j) = 0) :
     ∀ i : X', ∀ j : Y', (A.shortTableauPivot (f x) y) (f i) (g j) = 0 := by
   unfold Matrix.shortTableauPivot Matrix.longTableauPivot
   aesop
 
 lemma Matrix.shortTableauPivot_submatrix_zero_external_row [DivisionRing F] [DecidableEq X] [DecidableEq Y] (A : Matrix X Y F)
-    (x : X) (y : Y) {X' Y' : Type} (f : X' → X) (g : Y' → Y) (hf : x ∉ f.range) (hg : y ∉ g.range) (hAg : ∀ j, A x (g j) = 0) :
+    (x : X) (y : Y) {X' Y' : Type*} (f : X' → X) (g : Y' → Y) (hf : x ∉ f.range) (hg : y ∉ g.range) (hAg : ∀ j, A x (g j) = 0) :
     (A.shortTableauPivot x y).submatrix f g = A.submatrix f g := by
   unfold Matrix.shortTableauPivot Matrix.longTableauPivot
   aesop
 
-lemma Matrix.submatrix_shortTableauPivot [DecidableEq X] [DecidableEq Y] {X' Y' : Type} [DecidableEq X'] [DecidableEq Y']
+lemma Matrix.submatrix_shortTableauPivot [DecidableEq X] [DecidableEq Y] {X' Y' : Type*} [DecidableEq X'] [DecidableEq Y']
     [DivisionRing F] {f : X' → X} {g : Y' → Y}
     (A : Matrix X Y F) (hf : f.Injective) (hg : g.Injective) (x : X') (y : Y') :
     (A.submatrix f g).shortTableauPivot x y = (A.shortTableauPivot (f x) (g y)).submatrix f g := by

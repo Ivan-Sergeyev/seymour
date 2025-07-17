@@ -6,7 +6,7 @@ import Seymour.Basic.Basic
 These conversions are frequently used throughout the project.
 -/
 
-variable {α : Type} {X Y : Set α}
+variable {α : Type*} {X Y : Set α}
 
 /-- Given `X ⊆ Y` cast an element of `X` as an element of `Y`. -/
 @[simp low]
