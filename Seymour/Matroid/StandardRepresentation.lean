@@ -13,6 +13,9 @@ Here we study the standard representation of vector matroids.
 
 open scoped Matrix Set.Notation
 
+
+/-! ## Definition and basic API -/
+
 /-- Standard matrix representation of a vector matroid. -/
 structure StandardRepr (α R : Type) [DecidableEq α] where
   /-- Row indices. -/
@@ -52,12 +55,6 @@ private def Set.equivFin_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $S) => `($(S).$(Lean.mkIdent `equivFin))
   | _ => throw ()
 
-abbrev Equiv.leftCongr {ι₁ ι₂ : Type} (e : ι₁ ≃ ι₂) : ι₁ ⊕ α ≃ ι₂ ⊕ α :=
-  Equiv.sumCongr e (Equiv.refl α)
-
-abbrev Equiv.rightCongr {ι₁ ι₂ : Type} (e : ι₁ ≃ ι₂) : α ⊕ ι₁ ≃ α ⊕ ι₂ :=
-  Equiv.sumCongr (Equiv.refl α) e
-
 
 variable [DecidableEq α] {R : Type}
 
@@ -78,7 +75,6 @@ lemma StandardRepr.toFull_indep_iff_elem [DivisionRing R] (S : StandardRepr α R
   aesop
 
 attribute [local ext] StandardRepr in
-/-- Kinda extensionality on `StandardRepr` but `@[ext]` cannot be here. -/
 lemma standardRepr_eq_standardRepr_of_B_eq_B [DivisionRing R] {S₁ S₂ : StandardRepr α R}
     (hX : S₁.X = S₂.X) (hY : S₁.Y = S₂.Y) (hB : S₁.B = hX ▸ hY ▸ S₂.B) :
     S₁ = S₂ := by
@@ -143,6 +139,27 @@ lemma StandardRepr.toMatroid_indep [DivisionRing R] (S : StandardRepr α R) :
     S.toMatroid.Indep = (∃ hI : · ⊆ S.X ∪ S.Y, LinearIndepOn R ((1 ◫ S.B)ᵀ ∘ Subtype.toSum) hI.elem.range) := by
   ext I
   exact S.toFull_indep_iff_elem I
+
+/-- The set of all rows of a standard representation is a base in the resulting matroid. -/
+lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype S.X] :
+    S.toMatroid.IsBase S.X := by
+  apply Matroid.Indep.isBase_of_forall_insert
+  · rw [StandardRepr.toMatroid_indep_iff_submatrix]
+    use Set.subset_union_left
+    simp [Matrix.submatrix]
+    show @LinearIndependent S.X R _ 1ᵀ ..
+    rw [Matrix.transpose_one]
+    exact Matrix.one_linearIndependent
+  · intro e he
+    rw [StandardRepr.toMatroid_indep_iff_submatrix]
+    push_neg
+    intro _
+    apply Matrix.not_linearIndependent_of_too_many_rows
+    have heX : e ∉ S.X.toFinset := (Set.not_mem_of_mem_diff he <| Set.mem_toFinset.→ ·)
+    simp [heX]
+
+
+/-! ## Guaranteeing that a standard representation of desired properties exists -/
 
 lemma Matrix.longTableauPivot_toMatroid [Field R] {X Y : Set α} (A : Matrix X Y R) {x : X} {y : Y} (hAxy : A x y ≠ 0) :
     (A.longTableauPivot x y).toMatroid = A.toMatroid := by
@@ -302,8 +319,6 @@ lemma Matrix.exists_standardRepr_isBase [DivisionRing R] {X Y G : Set α}
     use hGYY.symm ▸ hI
     classical
     convert exists_standardRepr_isBase_aux_left hGY hYGY hI hIGY hB hRAI
-
-#print axioms Matrix.exists_standardRepr_isBase
 
 /-- Every vector matroid has a standard representation. -/
 lemma Matrix.exists_standardRepr [DivisionRing R] {X Y : Set α} (A : Matrix X Y R) :
@@ -705,31 +720,8 @@ lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {X Y G : S
   else
     cases j.property <;> simp [*, StandardRepr.toFull] at hjG ⊢
 
-/-- The identity matrix has linearly independent rows. -/
-lemma Matrix.one_linearIndependent [Ring R] : LinearIndependent R (1 : Matrix α α R) := by
-  -- Riccardo Brasca proved:
-  rw [linearIndependent_iff]
-  intro l hl
-  ext j
-  simpa [Finsupp.linearCombination_apply, Pi.zero_apply, Finsupp.sum_apply', Matrix.one_apply] using congr_fun hl j
 
-/-- The set of all rows of a standard representation is a base in the resulting matroid. -/
-lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype S.X] :
-    S.toMatroid.IsBase S.X := by
-  apply Matroid.Indep.isBase_of_forall_insert
-  · rw [StandardRepr.toMatroid_indep_iff_submatrix]
-    use Set.subset_union_left
-    simp [Matrix.submatrix]
-    show @LinearIndependent S.X R _ 1ᵀ ..
-    rw [Matrix.transpose_one]
-    exact Matrix.one_linearIndependent
-  · intro e he
-    rw [StandardRepr.toMatroid_indep_iff_submatrix]
-    push_neg
-    intro _
-    apply Matrix.not_linearIndependent_of_too_many_rows
-    have heX : e ∉ S.X.toFinset := (Set.not_mem_of_mem_diff he <| Set.mem_toFinset.→ ·)
-    simp [heX]
+/-! ## Conditional uniqueness of standard representation -/
 
 omit R
 
