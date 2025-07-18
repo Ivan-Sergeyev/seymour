@@ -203,7 +203,7 @@ private lemma exists_standardRepr_isBase_aux_left {X Y G I : Set α} [∀ a, Dec
           simpa using hij
   else
     have hiX : i ∈ X := hX ▸ hi
-    simp [Matrix.submatrix, Subtype.toSum, hiX, hiG, e]
+    simp [hiX, hiG, e, Matrix.submatrix, Subtype.toSum]
 
 private lemma exists_standardRepr_isBase_aux_right {X Y G I : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ G)]
     [DivisionRing R] {A : Matrix X Y R} {B : Basis G R (Submodule.span R A.range)}
@@ -226,16 +226,16 @@ private lemma exists_standardRepr_isBase_aux_right {X Y G I : Set α} [∀ a, De
     if hij : i = j then
       convert Eq.refl (1 : R)
       · simp [*]
-      · simp [Matrix.submatrix, Subtype.toSum, e, hiG]
-        simpa [Matrix.one_apply] using hij
+      · simp [hiG, e, Matrix.submatrix, Subtype.toSum]
+        simpa [hiG, e, Matrix.one_apply] using hij
     else
       convert Eq.refl (0 : R)
       · simp [*]
-      · simp [Matrix.submatrix, Subtype.toSum, e, hiG]
+      · simp [hiG, e, Matrix.submatrix, Subtype.toSum]
         simpa [Matrix.one_apply] using hij
   else
     have hiX : i ∈ X := hX ▸ hi
-    simp [Matrix.submatrix, Subtype.toSum, hiX, hiG, e]
+    simp [hiX, hiG, e, Matrix.submatrix, Subtype.toSum]
 
 /-- Every vector matroid has a standard representation whose rows are a given base. -/
 lemma Matrix.exists_standardRepr_isBase [DivisionRing R] {X Y G : Set α}
@@ -257,7 +257,7 @@ lemma Matrix.exists_standardRepr_isBase [DivisionRing R] {X Y G : Set α}
         have hv : v ∈ (Aᵀ.submatrix hGY.elem id).range
         · aesop
         rw [Submodule.mem_span]
-        exact (fun _ hR => hR hv)
+        exact ↓(· hv)
       have hMvG : A.toMatroid.Indep (j.val ᕃ G)
       · obtain ⟨-, hAG⟩ := hAG.indep
         use Set.insert_subset_iff.← ⟨j.property, hGY⟩
@@ -292,9 +292,9 @@ lemma Matrix.exists_standardRepr_isBase [DivisionRing R] {X Y G : Set α}
     · apply le_of_eq
       -- Christian Merten's idea:
       apply Submodule.map_injective_of_injective (Submodule.span R Aᵀ.range).subtype_injective
-      simp [Submodule.map_span, ←hRAGY, ←Set.range_comp, Function.comp_def]
+      simp [←hRAGY, Submodule.map_span, ←Set.range_comp, Function.comp_def]
       rfl
-  let C : Matrix G Y R := Matrix.of (fun i : G => fun j : Y => B.coord i ⟨Aᵀ j, in_submoduleSpan_range Aᵀ j⟩)
+  let C : Matrix G Y R := (fun i : G => fun j : Y => B.coord i ⟨Aᵀ j, in_submoduleSpan_range Aᵀ j⟩)
   have hYGY : Y \ G ⊆ Y := Set.diff_subset
   use ⟨G, Y \ G, Set.disjoint_sdiff_right, C.submatrix id hYGY.elem,
     (Classical.propDecidable <| · ∈ G), (Classical.propDecidable <| · ∈ Y \ G)⟩
@@ -705,7 +705,7 @@ lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {X Y G : S
     refine ⟨?_, ?_, ?_, ?_⟩ <;> ext <;> rfl
   rw [hA₁₁, hA₂₁, hA₂₂, ←Matrix.fromRows_fromCols_eq_fromBlocks, Matrix.fromCols_zero] at hA
   have hA'' : A'.toMatroid =
-      (Matrix.of (((1 ◫ A'.submatrix g hYGY.elem) ⊟ 0).reindex (e'.leftCongr.trans e) hGY.equiv)).toMatroid
+      (((1 ◫ A'.submatrix g hYGY.elem) ⊟ 0).reindex (e'.leftCongr.trans e) hGY.equiv).toMatroid
   · rewrite [←((Matrix.reindex (e'.leftCongr.trans e) hGY.equiv).symm_apply_eq).→ hA]
     rfl
   use ⟨G, Y \ G, Set.disjoint_sdiff_right, A'.submatrix g hYGY.elem,
@@ -733,7 +733,7 @@ private lemma sum_support_image_subtype_eq_zero {X Y : Set α} {F : Type} [Field
       l (hXXY.elem a) • (1 ⊟ B) (hXXY.elem a).toSum ⟨i, hiX⟩ = 0 := by
   rw [←Finset.sum_finset_coe] at hlBi
   convert hlBi
-  apply Finset.sum_bij (fun a ha => ⟨hXXY.elem a, by simpa using ha⟩)
+  apply Finset.sum_bij (⟨hXXY.elem ·, by simpa using ·⟩)
   · simp
   · simp
   · intro z _

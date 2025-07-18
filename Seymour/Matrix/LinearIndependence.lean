@@ -22,8 +22,8 @@ private lemma LinearIndepOn.exists_maximal {ι R O : Type} [DivisionRing R] [Add
     {v : ι → O} {s₀ : Set ι} (hRv : LinearIndepOn R v s₀) (ht : s₀ ⊆ t) :
     ∃ s : Set ι, s₀ ⊆ s ∧ Maximal (fun r : Set ι => r ⊆ t ∧ LinearIndepOn R v r) s :=
   zorn_subset_nonempty { r : Set ι | r ⊆ t ∧ LinearIndepOn R v r }
-    (fun c hcss cchain _ => ⟨⋃₀ c, ⟨Set.sUnion_subset ↓(hcss ·|>.left),
-      linearIndepOn_sUnion_of_directed cchain.directedOn ↓(hcss ·|>.right)⟩,
+    (fun c hcss hc _ => ⟨⋃₀ c, ⟨Set.sUnion_subset ↓(hcss ·|>.left),
+      linearIndepOn_sUnion_of_directed hc.directedOn ↓(hcss ·|>.right)⟩,
       ↓Set.subset_sUnion_of_mem⟩) s₀ ⟨ht, hRv⟩
 
 namespace Matrix
