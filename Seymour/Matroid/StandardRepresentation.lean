@@ -720,6 +720,22 @@ lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {X Y G : S
   else
     cases j.property <;> simp [*, StandardRepr.toFull] at hjG ⊢
 
+private def List.seqApply (l : List (α → α)) : α → α :=
+  l.foldl Function.comp id
+
+lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular_strong [Field R] {X Y G : Set α}
+    (A : Matrix X Y R) (hAG : A.toMatroid.IsBase G) (hA : A.IsTotallyUnimodular) :
+    ∃ S : StandardRepr α R, S.X = G ∧ S.toMatroid = A.toMatroid ∧ S.B.IsTotallyUnimodular := by
+  have hYGY : Y \ G ⊆ Y := Set.diff_subset
+  use ⟨G, Y \ G, Set.disjoint_sdiff_right,
+    Matrix.of <| fun i : G.Elem => fun j : (Y \ G).Elem =>
+      let D := { x : X | A x (hYGY.elem j) ≠ 0 }
+      have finiteD : Finite D := sorry
+      have fintypeD : Fintype D := Set.Finite.fintype finiteD
+      let A' : Matrix X Y R := (D.toFinset.toList.map (fun N : Matrix X Y R => N.longTableauPivot · (hYGY.elem j))).seqApply A
+      sorry,
+    (Classical.propDecidable <| · ∈ G), (Classical.propDecidable <| · ∈ Y \ G)⟩
+  sorry
 
 /-! ## Conditional uniqueness of standard representation -/
 
