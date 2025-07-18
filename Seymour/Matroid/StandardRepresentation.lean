@@ -14,7 +14,7 @@ Here we study the standard representation of vector matroids.
 open scoped Matrix Set.Notation
 
 
-/-! ## Definition and basic API -/
+/-! ## Definition and API -/
 
 /-- Standard matrix representation of a vector matroid. -/
 structure StandardRepr (α R : Type) [DecidableEq α] where
