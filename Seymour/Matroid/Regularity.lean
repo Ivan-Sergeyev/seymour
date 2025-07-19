@@ -76,6 +76,7 @@ private lemma Matrix.toMatroid_mapEquiv {α β : Type*} {X Y : Set α} (A : Matr
       Matrix.transpose_apply, smul_eq_mul, Matrix.submatrix_id_id, Equiv.image_symm_apply_coe]
     rfl
   on_goal 3 =>
+    -- TODO golf
     rw [Finsupp.linearCombination_embDomain]
     rw [Matrix.transpose_reindex] at hll
     ext x
@@ -83,13 +84,10 @@ private lemma Matrix.toMatroid_mapEquiv {α β : Type*} {X Y : Set α} (A : Matr
     specialize hll ⟨e.image X x, Subtype.coe_prop ((e.image X) x)⟩
     rw [Pi.zero_apply] at hll ⊢
     rw [←hll, Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, Finsupp.sum.eq_1, Finsupp.sum.eq_1]
-    simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, Equiv.image_apply_coe]
-    -- TODO golf:
-    congr
-    ext
-    congr
-    convert rfl
-    rewrite [Equiv.symm_apply_eq]
+    simp only [Equiv.coe_toEmbedding, Function.comp_apply, Finset.sum_apply, Pi.smul_apply,
+      transpose_apply, smul_eq_mul, reindex_apply, Equiv.image_apply_coe, submatrix_apply]
+    congr!
+    rewrite [Equiv.eq_symm_apply]
     rfl
   all_goals
     rw [Finsupp.mem_supported] at hl ⊢

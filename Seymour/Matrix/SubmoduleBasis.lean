@@ -2,7 +2,7 @@ import Seymour.Basic.SubmoduleSpans
 import Seymour.Basic.Conversions
 
 
-variable {α R : Type} [Ring R] {X Y G I : Set α} {A : Matrix X Y R} {hIX : I ⊆ X}
+variable {α R : Type*} [Ring R] {X Y G I : Set α} {A : Matrix X Y R} {hIX : I ⊆ X}
 
 private lemma Basis.linearIndepOn_in_submodule_aux (B : Basis G R (Submodule.span R A.range)) :
     LinearIndepOn R (fun x : X => fun g : G => B.repr ⟨A x, in_submoduleSpan_range A x⟩ g) hIX.elem.range ↔
