@@ -743,14 +743,13 @@ lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular_strong [Field R] {X 
   let A' : Matrix X Y R :=
     Matrix.of <| fun i : X.Elem => fun j : Y.Elem =>
       let D := { x : X | A x j ≠ 0 }
-      have finiteD : Finite D := by
+      have : Fintype D := Set.Finite.fintype (by
         by_contra hD
-        have indep : A.toMatroid.Indep (i.val ᕃ X)
+        have indep : A.toMatroid.Indep (j.val ᕃ X)
         · sorry
-        have dep : ¬ A.toMatroid.Indep (i.val ᕃ X)
+        have dep : ¬ A.toMatroid.Indep (j.val ᕃ X)
         · sorry
-        exact dep indep
-      have fintypeD : Fintype D := Set.Finite.fintype finiteD
+        exact dep indep)
       (D.toFinset.toList.map (fun N : Matrix X Y R => N.longTableauPivot · j)).seqApply A i j
   have hYGY : Y \ G ⊆ Y := Set.diff_subset
   use ⟨G, Y \ G, Set.disjoint_sdiff_right, sorry,
