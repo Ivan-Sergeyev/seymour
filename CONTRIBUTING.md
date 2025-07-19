@@ -223,4 +223,5 @@ The guideline below is written primarily to assist you in reading the code.
 - When a variable name refers to exactly 2 out of 3 objects, we often refer to the missing object (instead of the two present objects) (analogical to naming parts of a triangle).
 - We do not write a space after `←` in the `rw` syntax.
 - We do not write `↦` as this syntax does not work everywhere. Write `=>` instead.
+- When passing arguments to `simp` and other tactics that don't care about in which order they come, pass variables first, constants later.
 - Ordering of cases when eliminating `SignType` is: first `zero` (0), then `pos` (1), then `neg` (-1).

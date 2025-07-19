@@ -211,9 +211,9 @@ private lemma Matrix.IsTotallyUnimodular.fromRows_pivot {α : Type} [DecidableEq
     ((A.shortTableauPivot x y) ⊟ ▬(shortTableauPivotOtherRow (A x) r id y)).IsTotallyUnimodular := by
   have hArxy : (A ⊟ ▬r) ◩x y ≠ 0 := hAxy
   convert hAr.shortTableauPivot hArxy
-  exact Matrix.ext (fun i : X ⊕ Unit => fun j : Y => (i.casesOn (fun iₗ : X =>
-      congr_fun₂ ((A ⊟ ▬r).submatrix_shortTableauPivot Sum.inl_injective Function.injective_id x y) iₗ j)
-    ↓(A.shortTableauPivot_adjoinRow_eq r x y j)))
+  exact Matrix.ext (·.casesOn
+    (congr_fun₂ ((A ⊟ ▬r).submatrix_shortTableauPivot Sum.inl_injective Function.injective_id x y))
+    ↓(A.shortTableauPivot_adjoinRow_eq r x y))
 
 
 /-! ## Total unimodularity after adjoining an outer product -/
