@@ -740,16 +740,21 @@ private lemma seqApply_singleton (f : α → α) (a : α) : [f].seqApply a = f a
 lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular_strong [Field R] {X Y G : Set α}
     (A : Matrix X Y R) (hAG : A.toMatroid.IsBase G) (hA : A.IsTotallyUnimodular) :
     ∃ S : StandardRepr α R, S.X = G ∧ S.toMatroid = A.toMatroid ∧ S.B.IsTotallyUnimodular := by
+  have hGY : G ⊆ Y := hAG.subset_ground
   let A' : Matrix X Y R :=
     Matrix.of <| fun i : X.Elem => fun j : Y.Elem =>
       let D := { x : X | A x j ≠ 0 }
       have : Fintype D := Set.Finite.fintype (by
         by_contra hD
-        have indep : A.toMatroid.Indep (j.val ᕃ X)
+        have hAjG : A.toMatroid.Indep (j.val ᕃ G)
+        · have hjX : j.val ᕃ G ⊆ Y := Set.insert_subset j.property hGY
+          simp [hjX]
+          rw [linearIndepOn_iff']
+          intro s q hs hsqA
+          sorry
+        have hGjG : G ⊂ j.val ᕃ G
         · sorry
-        have dep : ¬ A.toMatroid.Indep (j.val ᕃ X)
-        · sorry
-        exact dep indep)
+        exact hAG.not_ssubset_indep hAjG hGjG)
       (D.toFinset.toList.map (fun N : Matrix X Y R => N.longTableauPivot · j)).seqApply A i j
   have hYGY : Y \ G ⊆ Y := Set.diff_subset
   use ⟨G, Y \ G, Set.disjoint_sdiff_right, sorry,
