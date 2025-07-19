@@ -745,9 +745,9 @@ lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular_strong [Field R] {X 
       let D := { x : X | A x j ≠ 0 }
       have finiteD : Finite D := by
         by_contra hD
-        have indep : A.toMatroid.Indep (Subtype.val '' (i ᕃ D))
+        have indep : A.toMatroid.Indep (i.val ᕃ X)
         · sorry
-        have dep : ¬ A.toMatroid.Indep (Subtype.val '' (i ᕃ D))
+        have dep : ¬ A.toMatroid.Indep (i.val ᕃ X)
         · sorry
         exact dep indep
       have fintypeD : Fintype D := Set.Finite.fintype finiteD
