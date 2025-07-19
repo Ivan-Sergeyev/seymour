@@ -48,8 +48,8 @@ lemma Z2.eq_0_or_1 (a : Z2) : a = 0 ∨ a = 1 := by
   · left
     exact ha
   · fin_cases a
-    · absurd ha
-      rfl
+    · exfalso
+      exact ha rfl
     · right
       rfl
 
@@ -173,7 +173,8 @@ noncomputable abbrev fin2swap : Fin 2 ≃ Fin 2 := Equiv.ofBijective ![1, 0] (by
 lemma eq_fin2swap_of_ne_fin2refl {e : Fin 2 ≃ Fin 2} (he : e ≠ fin2refl) : e = fin2swap := by
   if he0 : e 0 = 0 then
     if he1 : e 1 = 1 then
-      absurd he
+      exfalso
+      apply he
       ext i
       fin_cases i <;> tauto
     else

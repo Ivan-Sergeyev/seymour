@@ -90,9 +90,12 @@ def Function.support_unexpand : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 
-/-! ## Basic lemmas -/
+/-! ## Basic stuff -/
 
 variable {α : Type*}
+
+lemma Function.range_eq {ι : Type} (f : ι → α) : f.range = { a : α | ∃ i : ι, f i = a } :=
+  rfl
 
 lemma dite_of_true {P : Prop} [Decidable P] (p : P) {f : P → α} {a : α} : (if hp : P then f hp else a) = f p := by
   simp [p]
@@ -100,8 +103,11 @@ lemma dite_of_true {P : Prop} [Decidable P] (p : P) {f : P → α} {a : α} : (i
 lemma dite_of_false {P : Prop} [Decidable P] (p : ¬P) {f : P → α} {a : α} : (if hp : P then f hp else a) = a := by
   simp [p]
 
-lemma Function.range_eq {ι : Type*} (f : ι → α) : f.range = { a : α | ∃ i : ι, f i = a } :=
-  rfl
+abbrev Equiv.leftCongr {ι₁ ι₂ : Type*} (e : ι₁ ≃ ι₂) : ι₁ ⊕ α ≃ ι₂ ⊕ α :=
+  Equiv.sumCongr e (Equiv.refl α)
+
+abbrev Equiv.rightCongr {ι₁ ι₂ : Type*} (e : ι₁ ≃ ι₂) : α ⊕ ι₁ ≃ α ⊕ ι₂ :=
+  Equiv.sumCongr (Equiv.refl α) e
 
 lemma Finset.sum_of_single_nonzero {ι : Type*} (s : Finset ι) [AddCommMonoid α] (f : ι → α) (a : ι) (ha : a ∈ s)
     (hf : ∀ i ∈ s, i ≠ a → f i = 0) :

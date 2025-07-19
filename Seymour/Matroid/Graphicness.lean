@@ -94,10 +94,11 @@ lemma Matrix.IsGraphic.submatrix_one_if_not_graphic {l m o n : Type*} [Decidable
   obtain ⟨y, hy⟩ := hAfg
   use y
   rcases hA (g y) with (hAg | ⟨i₁, i₂, hii⟩)
-  · absurd hy.left
+  · exfalso
+    apply hy.left
     rw [funext_iff] at hAg
-    ext x
-    simp_all [hAg (f x)]
+    ext
+    simp [hAg]
   · by_cases hxq : i₁ ∈ Set.range f ∨ i₂ ∈ Set.range f
     · simp_rw [Matrix.submatrix_apply, ne_eq]
       rcases hxq with (⟨x, hx⟩ | ⟨x, hx⟩)
@@ -110,16 +111,16 @@ lemma Matrix.IsGraphic.submatrix_one_if_not_graphic {l m o n : Type*} [Decidable
         by_contra! hfi
         subst hx hfi
         obtain ⟨i', hyi'⟩ := hy.right x i (Ne.symm hi) hii.right.left hii.right.right.left
-        exact absurd (hii.right.right.right (f i') (hf.ne hyi'.left) (hf.ne hyi'.right.left)) hyi'.right.right
+        exact hyi'.right.right (hii.right.right.right (f i') (hf.ne hyi'.left) (hf.ne hyi'.right.left))
       · refine hii.right.right.right (f i) ?_ ((hf.ne_iff' hx).← hi)
         by_contra! hfi
         subst hx hfi
         obtain ⟨i', hyi'⟩ := hy.right i x hi hii.right.left hii.right.right.left
-        exact absurd (hii.right.right.right (f i') (hf.ne hyi'.left) (hf.ne hyi'.right.left)) hyi'.right.right
-    · rw [not_or] at hxq
-      absurd hy.left
-      ext j
-      have := hii.right.right.right (f j)
+        exact hyi'.right.right (hii.right.right.right (f i') (hf.ne hyi'.left) (hf.ne hyi'.right.left))
+    · exfalso
+      apply hy.left
+      rw [not_or] at hxq
+      ext
       simp_all
 
 variable {α : Type*} [DecidableEq α]
@@ -146,10 +147,9 @@ lemma Matrix.IsGraphic.isTotallyUnimodular {X Y : Set α} {A : Matrix X Y ℚ} (
       · simp [Matrix.det_eq_zero_of_column_eq_zero hAfg'.choose hAfg'.choose_spec]
       · use SignType.zero
         simp only [SignType.zero_eq_zero, SignType.coe_zero]
-        symm
         -- we enter contradiction since there is no `eq` (instead of `ne`) for `linearIndependent_cols_of_det_ne_zero`
         by_contra hA0
-        have hl := Matrix.linearIndependent_rows_of_det_ne_zero hA0
+        have hl := Matrix.linearIndependent_rows_of_det_ne_zero (Ne.symm hA0)
         rw [Fintype.linearIndependent_iff] at hl
         have hl1 := hl ↓1
         simp_rw [one_smul, one_ne_zero, forall_const] at hl1

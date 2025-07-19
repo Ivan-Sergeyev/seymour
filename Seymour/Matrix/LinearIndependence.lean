@@ -22,8 +22,8 @@ private lemma LinearIndepOn.exists_maximal {ι R O : Type*} [DivisionRing R] [Ad
     {v : ι → O} {s₀ : Set ι} (hRv : LinearIndepOn R v s₀) (ht : s₀ ⊆ t) :
     ∃ s : Set ι, s₀ ⊆ s ∧ Maximal (fun r : Set ι => r ⊆ t ∧ LinearIndepOn R v r) s :=
   zorn_subset_nonempty { r : Set ι | r ⊆ t ∧ LinearIndepOn R v r }
-    (fun c hcss cchain _ => ⟨⋃₀ c, ⟨Set.sUnion_subset ↓(hcss ·|>.left),
-      linearIndepOn_sUnion_of_directed cchain.directedOn ↓(hcss ·|>.right)⟩,
+    (fun c hcss hc _ => ⟨⋃₀ c, ⟨Set.sUnion_subset ↓(hcss ·|>.left),
+      linearIndepOn_sUnion_of_directed hc.directedOn ↓(hcss ·|>.right)⟩,
       ↓Set.subset_sUnion_of_mem⟩) s₀ ⟨ht, hRv⟩
 
 namespace Matrix
@@ -136,6 +136,14 @@ end Matrix
 
 
 open scoped Matrix
+
+/-- The identity matrix has linearly independent rows. -/
+lemma Matrix.one_linearIndependent {α R : Type} [DecidableEq α] [Ring R] : LinearIndependent R (1 : Matrix α α R) := by
+  -- Riccardo Brasca proved:
+  rw [linearIndependent_iff]
+  intro l hl
+  ext j
+  simpa [Finsupp.linearCombination_apply, Pi.zero_apply, Finsupp.sum_apply', Matrix.one_apply] using congr_fun hl j
 
 /-- Every invertible matrix has linearly independent rows (unapplied version). -/
 lemma IsUnit.linearIndependent_matrix {α R : Type*} [DecidableEq α] [Fintype α] [Ring R] {A : Matrix α α R} (hA : IsUnit A) :

@@ -34,30 +34,30 @@ private lemma Matrix.mulCol_linearIndepOn [DecidableEq Y] [Field F] (A : Matrix 
     LinearIndepOn F (A.mulCol y q) S ↔ LinearIndepOn F A S := by
   rw [Matrix.mulCol, linearIndepOn_iffₛ, linearIndepOn_iffₛ]
   constructor
-  all_goals
-    intro hFFS
-    peel hFFS with f hf g hg hfg
-    refine fun hfgl => hfg ?_
-    rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, Finsupp.sum, Finsupp.sum] at hfgl ⊢
-    ext x'
-    rw [funext_iff] at hfgl
-    specialize hfgl x'
-    simp_rw [Finset.sum_apply, Pi.smul_apply, Matrix.updateCol_apply, Pi.smul_apply, smul_eq_mul, mul_ite,
-      Finset.sum_ite_irrel] at hfgl ⊢
-  · split_ifs with hx'
-    · subst hx'
-      conv => enter [1, 2, x]; rw [←mul_assoc, mul_comm (f x), mul_assoc]
-      conv => enter [2, 2, x]; rw [←mul_assoc, mul_comm (g x), mul_assoc]
+  <;> intro hFFS
+  <;> peel hFFS with c hc d hd hcd
+  <;> intro hcdA
+  <;> apply hcd
+  <;> rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, Finsupp.sum, Finsupp.sum] at hcdA ⊢
+  <;> ext y'
+  <;> rw [funext_iff] at hcdA
+  <;> have hcdAy' := hcdA y'
+  <;> simp_rw [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, Matrix.updateCol_apply, Pi.smul_apply, smul_eq_mul, mul_ite,
+        Finset.sum_ite_irrel] at hcdA hcdAy' ⊢
+  · split_ifs with hyy
+    · subst hyy
+      conv => enter [1, 2, x]; rw [←mul_assoc, mul_comm (c x), mul_assoc]
+      conv => enter [2, 2, x]; rw [←mul_assoc, mul_comm (d x), mul_assoc]
       rw [←Finset.mul_sum, ←Finset.mul_sum]
-      exact congr_arg (q * ·) hfgl
-    · exact hfgl
-  · split_ifs at hfgl with hx'
-    · subst hx'
-      conv at hfgl => enter [1, 2, x]; rw [←mul_assoc, mul_comm (f x), mul_assoc]
-      conv at hfgl => enter [2, 2, x]; rw [←mul_assoc, mul_comm (g x), mul_assoc]
-      rw [←Finset.mul_sum, ←Finset.mul_sum] at hfgl
-      exact mul_left_cancel₀ hq hfgl
-    · exact hfgl
+      exact congr_arg (q * ·) hcdAy'
+    · exact hcdAy'
+  · split_ifs at hcdAy' with hyy
+    · subst hyy
+      conv at hcdAy' => enter [1, 2, x]; rw [←mul_assoc, mul_comm (c x), mul_assoc]
+      conv at hcdAy' => enter [2, 2, x]; rw [←mul_assoc, mul_comm (d x), mul_assoc]
+      rw [←Finset.mul_sum, ←Finset.mul_sum] at hcdAy'
+      exact mul_left_cancel₀ hq hcdAy'
+    · exact hcdAy'
 
 /-- Multiply row `x` of `A` by factor `q` and keep the rest of `A` unchanged. -/
 private def Matrix.mulRow [DecidableEq X] [Mul F] (A : Matrix X Y F) (x : X) (q : F) :
@@ -109,35 +109,33 @@ private def Matrix.addColMultiples [DecidableEq Y] [Add F] [SMul F F] (A : Matri
   fun i : X => fun j : Y => if j = y then A i y else A i j + q j • A i y
 
 /-- `Matrix.addColMultiples` preserves linear (in)dependence on the transpose. -/
-private lemma Matrix.addColMultiples_linearIndepOn [DecidableEq Y] [Field F] (A : Matrix X Y F) (y : Y) {q : Y → F}
-    (S : Set X) :
+private lemma Matrix.addColMultiples_linearIndepOn [DecidableEq Y] [Field F]
+    (A : Matrix X Y F) (y : Y) (q : Y → F) (S : Set X) :
     LinearIndepOn F (A.addColMultiples y q) S ↔ LinearIndepOn F A S := by
-  -- TODO there is a lot of shared code (mainly the setup) between `Matrix.mulCol_linearIndepOn` and here.
-  -- Can we have an aux lemma to show it suffices to show `LinearIndepOn .. ↔ LinearIndepOn ..` for this?
   rw [linearIndepOn_iffₛ, linearIndepOn_iffₛ]
   constructor
-  all_goals
-    intro hFFS
-    peel hFFS with f hf g hg hfg
-    refine fun hfgl => hfg ?_
-    rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, Finsupp.sum, Finsupp.sum] at hfgl ⊢
-    ext x'
-    rw [funext_iff] at hfgl
-    have hfgl' := hfgl x'
-    simp_rw [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, Matrix.addColMultiples] at hfgl hfgl' ⊢
-  · split_ifs with hx'
-    · subst hx'; exact hfgl'
-    · conv => enter [1, 2, x]; rw [left_distrib, smul_eq_mul, mul_comm (q x'), ←mul_assoc]
-      conv => enter [2, 2, x]; rw [left_distrib, smul_eq_mul, mul_comm (q x'), ←mul_assoc]
-      rw [Finset.sum_add_distrib, Finset.sum_add_distrib, ←Finset.sum_mul, ←Finset.sum_mul, hfgl', hfgl y]
-  · split_ifs at hfgl' with hx'
-    · subst hx'; exact hfgl'
-    · conv at hfgl' => enter [1, 2, x]; rw [left_distrib, smul_eq_mul, mul_comm (q x'), ←mul_assoc]
-      conv at hfgl' => enter [2, 2, x]; rw [left_distrib, smul_eq_mul, mul_comm (q x'), ←mul_assoc]
-      rw [Finset.sum_add_distrib, Finset.sum_add_distrib, ←Finset.sum_mul, ←Finset.sum_mul] at hfgl'
-      have hfgly := hfgl y
-      simp only [↓reduceIte] at hfgly
-      rwa [hfgly, add_left_inj] at hfgl'
+  <;> intro hFFS
+  <;> peel hFFS with c hc d hd hcd
+  <;> intro hcdA
+  <;> apply hcd
+  <;> rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, Finsupp.sum, Finsupp.sum] at hcdA ⊢
+  <;> ext y'
+  <;> rw [funext_iff] at hcdA
+  <;> have hcdAy' := hcdA y'
+  <;> simp_rw [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, Matrix.addColMultiples] at hcdA hcdAy' ⊢
+  · split_ifs with hy'
+    · exact hy' ▸ hcdAy'
+    · conv => enter [1, 2, x]; rw [left_distrib, smul_eq_mul, mul_comm (q y'), ←mul_assoc]
+      conv => enter [2, 2, x]; rw [left_distrib, smul_eq_mul, mul_comm (q y'), ←mul_assoc]
+      rw [Finset.sum_add_distrib, Finset.sum_add_distrib, ←Finset.sum_mul, ←Finset.sum_mul, hcdAy', hcdA y]
+  · split_ifs at hcdAy' with hy'
+    · exact hy' ▸ hcdAy'
+    · conv at hcdAy' => enter [1, 2, x]; rw [left_distrib, smul_eq_mul, mul_comm (q y'), ←mul_assoc]
+      conv at hcdAy' => enter [2, 2, x]; rw [left_distrib, smul_eq_mul, mul_comm (q y'), ←mul_assoc]
+      rw [Finset.sum_add_distrib, Finset.sum_add_distrib, ←Finset.sum_mul, ←Finset.sum_mul] at hcdAy'
+      have hcdAy := hcdA y
+      simp only [↓reduceIte] at hcdAy
+      rwa [hcdAy, add_left_inj] at hcdAy'
 
 /-- Add row `x` of `A` multiplied by factor `q` (where `q` is different for each row) to every row of `A` except `x`. -/
 private def Matrix.addRowMultiples [DecidableEq X] [Add F] [SMul F F] (A : Matrix X Y F) (x : X) (q : X → F) :
@@ -151,11 +149,11 @@ private lemma Matrix.addRowMultiples_tranpose_eq [DecidableEq X] [Add F] [SMul F
   split_ifs <;> rfl
 
 /-- `Matrix.addRowMultiples` preserves linear (in)dependence on the transpose. -/
-private lemma Matrix.addRowMultiples_linearIndepOn [DecidableEq X] [Field F] (A : Matrix X Y F) (x : X)
-    {q : X → F} (S : Set Y) :
+private lemma Matrix.addRowMultiples_linearIndepOn [DecidableEq X] [Field F]
+    (A : Matrix X Y F) (x : X) (q : X → F) (S : Set Y) :
     LinearIndepOn F (A.addRowMultiples x q)ᵀ S ↔ LinearIndepOn F Aᵀ S := by
   rw [Matrix.addRowMultiples_tranpose_eq]
-  exact Matrix.addColMultiples_linearIndepOn Aᵀ x S
+  exact Matrix.addColMultiples_linearIndepOn Aᵀ x q S
 
 /-- Adding multiples of a row to all other rows of a matrix does not change the determinant of the matrix. -/
 private lemma Matrix.addRowMultiples_det [DecidableEq X] [Fintype X] [CommRing F] (A : Matrix X X F) (x : X) (q : X → F) :
@@ -415,13 +413,14 @@ private lemma Fin.reindexFun_bijective {n : ℕ} (i : Fin n.succ) : i.reindexFun
         congr
         apply fin1_eq_fin1
       | inr bₙ =>
-        symm at hab
-        absurd i.succAbove_ne bₙ
-        simpa using hab
+        exfalso
+        apply i.succAbove_ne bₙ
+        simpa using hab.symm
     | inr aₙ =>
       cases b with
       | inl b₁ =>
-        absurd i.succAbove_ne aₙ
+        exfalso
+        apply i.succAbove_ne aₙ
         simpa using hab
       | inr bₙ =>
         simpa using hab,

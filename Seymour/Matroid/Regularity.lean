@@ -49,10 +49,10 @@ lemma Matrix.isTuSigningOf_iff {X Y : Type*} (A : Matrix X Y ℚ) (U : Matrix X 
     exact hAU ▸ hA.isTuSigningOf_support
 
 private lemma Matrix.toMatroid_mapEquiv {α β : Type*} {X Y : Set α} (A : Matrix X Y ℚ) (e : α ≃ β) :
-    (A.submatrix (e.image X).symm (e.image Y).symm).toMatroid = A.toMatroid.mapEquiv e := by
+    (A.reindex (e.image X) (e.image Y)).toMatroid = A.toMatroid.mapEquiv e := by
   ext I hI
   · rfl
-  let Aₑ := (A.submatrix (e.image X).symm (e.image Y).symm)
+  let Aₑ := A.reindex (e.image X) (e.image Y)
   rw [A.toMatroid.mapEquiv_indep_iff, Aₑ.toMatroid_indep, A.toMatroid_indep, Matrix.IndepCols, Matrix.IndepCols,
     Equiv.symm_image_subset]
   constructor
@@ -64,7 +64,7 @@ private lemma Matrix.toMatroid_mapEquiv {α β : Type*} {X Y : Set α} (A : Matr
   on_goal 1 => refine Finsupp.embDomain_eq_zero.→ (hI (Finsupp.embDomain (e.image Y) l) ?_ ?_)
   on_goal 3 => refine Finsupp.embDomain_eq_zero.→ (hI (Finsupp.embDomain (e.image Y).symm l) ?_ ?_)
   on_goal 2 =>
-    rw [Finsupp.linearCombination_embDomain, Matrix.transpose_submatrix]
+    rw [Finsupp.linearCombination_embDomain, Matrix.transpose_reindex]
     show (Finsupp.linearCombination ℚ (A.transpose.submatrix ((e.image Y).symm ∘ e.image Y) (e.image X).symm)) l = 0
     rw [Equiv.symm_comp_self]
     ext x
@@ -77,18 +77,19 @@ private lemma Matrix.toMatroid_mapEquiv {α β : Type*} {X Y : Set α} (A : Matr
     rfl
   on_goal 3 =>
     rw [Finsupp.linearCombination_embDomain]
-    rw [Matrix.transpose_submatrix] at hll
+    rw [Matrix.transpose_reindex] at hll
     ext x
     rw [funext_iff] at hll
     specialize hll ⟨e.image X x, Subtype.coe_prop ((e.image X) x)⟩
     rw [Pi.zero_apply] at hll ⊢
     rw [←hll, Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, Finsupp.sum.eq_1, Finsupp.sum.eq_1]
-    simp only [Finset.sum_apply, Pi.smul_apply, Matrix.submatrix_apply, Matrix.transpose_apply, smul_eq_mul, id_eq,
-      Equiv.image_apply_coe,
-      show ((e.image X).symm ⟨e x, by simp⟩) = x by
-        apply_fun e.image X
-        rw [Equiv.apply_symm_apply]
-        rfl]
+    simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, Equiv.image_apply_coe]
+    -- TODO golf:
+    congr
+    ext
+    congr
+    convert rfl
+    rewrite [Equiv.symm_apply_eq]
     rfl
   all_goals
     rw [Finsupp.mem_supported] at hl ⊢
@@ -106,10 +107,10 @@ private lemma Matrix.toMatroid_mapEquiv {α β : Type*} {X Y : Set α} (A : Matr
 lemma Matroid.isRegular_mapEquiv_iff {α β : Type*} (M : Matroid α) (e : α ≃ β) : (M.mapEquiv e).IsRegular ↔ M.IsRegular := by
   constructor
   <;> intro ⟨X, Y, A, hA, hAM⟩
-  · use e.symm '' X, e.symm '' Y, A.submatrix (e.symm.image X).symm (e.symm.image Y).symm, hA.submatrix _ _
+  · use e.symm '' X, e.symm '' Y, A.reindex (e.symm.image X) (e.symm.image Y), hA.reindex _ _
     rw [A.toMatroid_mapEquiv e.symm]
     aesop
-  · use e '' X, e '' Y, A.submatrix (e.image X).symm (e.image Y).symm, hA.submatrix _ _
+  · use e '' X, e '' Y, A.reindex (e.image X) (e.image Y), hA.reindex _ _
     rw [A.toMatroid_mapEquiv e]
     aesop
 
@@ -159,7 +160,7 @@ private lemma Matrix.exists_finite_allColsIn {X Y R : Type*} [Fintype X] [Decida
   use Y'
   constructor
   · let S : Set (X → V) := Set.univ
-    let S' : Set (X → R) := (· · |>.val) '' S
+    let S' : Set (X → R) := (· ·|>.val) '' S
     have hCS' : C ⊆ S'
     · rintro - ⟨w, rfl⟩
       exact ⟨(⟨_, hAV · w⟩), trivial, rfl⟩
@@ -180,7 +181,8 @@ private lemma Matrix.linearIndependent_if_LinearIndependent_subset_cols {X Y R :
     (A : Matrix X Y R) {Y' : Set Y} (hA : LinearIndependent R (A.submatrix id (fun y' : Y' => y'.val))) :
     LinearIndependent R A := by
   by_contra lin_dep
-  absurd hA
+  suffices hA' : ¬ LinearIndependent R (A.submatrix id Subtype.val)
+  · exact hA' hA
   rw [not_linearIndependent_iff] at lin_dep ⊢
   obtain ⟨s, c, hscA, hsc⟩ := lin_dep
   refine ⟨s, c, ?_, hsc⟩
@@ -188,13 +190,14 @@ private lemma Matrix.linearIndependent_if_LinearIndependent_subset_cols {X Y R :
   convert congr_fun hscA j
   simp
 
-private lemma Matrix.linearIndependent_iff_allColsSubmatrix_linearIndependent {X Y R : Type*} [Ring R] {Y' : Set Y}
+private lemma Matrix.linearIndependent_iff_allCols_submatrix_linearIndependent {X Y R : Type*} [Ring R] {Y' : Set Y}
     (A : Matrix X Y R) (hAY' : A.AllColsIn Y') :
     LinearIndependent R A ↔ LinearIndependent R (A.submatrix id (·.val) : Matrix X Y' R) := by
   constructor
   · intro lin_indep
     by_contra lin_dep
-    absurd lin_indep
+    suffices lin_dep' : ¬ LinearIndependent R A
+    · exact lin_dep' lin_indep
     rw [not_linearIndependent_iff] at lin_dep ⊢
     obtain ⟨s, c, hscA, hsc⟩ := lin_dep
     refine ⟨s, c, ?_, hsc⟩
@@ -230,12 +233,12 @@ private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearInd
   constructor
   <;> intro lin_indep
   · obtain ⟨Y', hY', hAY'⟩ := A.exists_finite_allColsIn {-1, 0, 1} (by have ⟨s, hs⟩ := hA.apply · · ; cases s <;> aesop)
-    rw [A.linearIndependent_iff_allColsSubmatrix_linearIndependent hAY'] at lin_indep
+    rw [A.linearIndependent_iff_allCols_submatrix_linearIndependent hAY'] at lin_indep
     have := Set.Finite.fintype hY'
     rw [(hA.submatrix id Subtype.val).linearIndependent_iff_support_linearIndependent_of_finite_of_finite] at lin_indep
     exact A.support.linearIndependent_if_LinearIndependent_subset_cols lin_indep
   · obtain ⟨Y', hY', hAY'⟩ := A.support.exists_finite_allColsIn Finset.univ (Finset.mem_univ <| A.support · ·)
-    rw [A.support.linearIndependent_iff_allColsSubmatrix_linearIndependent hAY'] at lin_indep
+    rw [A.support.linearIndependent_iff_allCols_submatrix_linearIndependent hAY'] at lin_indep
     rw [Matrix.support_submatrix] at lin_indep
     have := Set.Finite.fintype hY'
     rw [←(hA.submatrix id Subtype.val).linearIndependent_iff_support_linearIndependent_of_finite_of_finite] at lin_indep
