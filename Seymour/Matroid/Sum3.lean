@@ -21,22 +21,22 @@ Here we study the 3-sum of matroids (starting with the 3-sum of matrices).
 
 /-- Unsigned version of the first special case of the 3×3 submatrix in the intersection of the summands. -/
 @[simp]
-private abbrev matrix3x3unsigned₀ (R : Type) [Zero R] [One R] : Matrix (Fin 3) (Fin 3) R :=
+private def matrix3x3unsigned₀ (R : Type) [Zero R] [One R] : Matrix (Fin 3) (Fin 3) R :=
   !![1, 0, 1; 0, 1, 1; 1, 1, 0]
 
 /-- Unsigned version of the second special case of the 3×3 submatrix in the intersection of the summands. -/
 @[simp]
-private abbrev matrix3x3unsigned₁ (R : Type) [Zero R] [One R] : Matrix (Fin 3) (Fin 3) R :=
+private def matrix3x3unsigned₁ (R : Type) [Zero R] [One R] : Matrix (Fin 3) (Fin 3) R :=
   !![1, 1, 1; 0, 1, 1; 1, 1, 0]
 
 /-- Signed version of the first special case of the 3×3 submatrix in the intersection of the summands. -/
 @[simp]
-private abbrev matrix3x3signed₀ : Matrix (Fin 3) (Fin 3) ℚ :=
+private def matrix3x3signed₀ : Matrix (Fin 3) (Fin 3) ℚ :=
   !![1, 0, 1; 0, -1, 1; 1, 1, 0]
 
 /-- Signed version of the second special case of the 3×3 submatrix in the intersection of the summands. -/
 @[simp]
-private abbrev matrix3x3signed₁ : Matrix (Fin 3) (Fin 3) ℚ :=
+private def matrix3x3signed₁ : Matrix (Fin 3) (Fin 3) ℚ :=
   matrix3x3unsigned₁ ℚ
 
 

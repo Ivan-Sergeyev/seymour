@@ -31,7 +31,7 @@ structure StandardRepr (α R : Type) [DecidableEq α] where
   /-- The computer can determine whether certain element is a col. -/
   decmemY : ∀ a, Decidable (a ∈ Y)
 
-abbrev mkStandardRepr {α R : Type} [DecidableEq α]
+private abbrev mkStandardRepr {α R : Type} [DecidableEq α]
     {X : Set α} [hX : ∀ a, Decidable (a ∈ X)]
     {Y : Set α} [hY : ∀ a, Decidable (a ∈ Y)]
     (hXY : X ⫗ Y) (B : Matrix X Y R) :

@@ -10,7 +10,7 @@ Here we study the 1-sum of matroids (starting with the 1-sum of matrices).
 /-! ## Definition -/
 
 /-- `Matrix`-level 1-sum for matroids defined by their standard representation matrices; does not check legitimacy. -/
-abbrev matrixSum1 {R : Type} [Zero R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
+def matrixSum1 {R : Type} [Zero R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
     (Aₗ : Matrix Xₗ Yₗ R) (Aᵣ : Matrix Xᵣ Yᵣ R) :
     Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) R :=
   ⊞ Aₗ 0 0 Aᵣ
