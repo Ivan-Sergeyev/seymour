@@ -13,6 +13,8 @@ Here we study the 2-sum of matroids (starting with the 2-sum of matrices).
 
 /-! ## Shorthands for convenience -/
 
+/-! All declarations in this section are private. -/
+
 private abbrev Eq._ₗ {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : X :=
   ⟨a, Set.mem_of_mem_inter_left (ha.symm.subset rfl)⟩
 
@@ -155,6 +157,8 @@ def Matroid.Is2sumOf {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : 
 
 /-! ## Specifics about pivoting for the proof of 2-sum regularity -/
 
+/-! All declarations in this section are private. -/
+
 private abbrev shortTableauPivotOtherRow {Y Y' R : Type} [DecidableEq Y'] [DivisionRing R]
     (p : Y → R) (r : Y' → R) (g : Y' → Y) (y' : Y') : Y' → R :=
   -- `p` is the pivot row; `r` is the other row; `g` is a map from the columns of `r` to the columns of `p`
@@ -217,6 +221,8 @@ private lemma Matrix.IsTotallyUnimodular.fromRows_pivot {α : Type} [DecidableEq
 
 
 /-! ## Total unimodularity after adjoining an outer product -/
+
+/-! All declarations in this section are private. -/
 
 private lemma Matrix.IsTotallyUnimodular.fromCols_pnz {X Y : Type} [DecidableEq Y] {A : Matrix X Y ℚ} {c : X → ℚ}
     (hAc : (A ◫ ▮c).IsTotallyUnimodular) :

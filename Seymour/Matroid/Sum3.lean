@@ -151,6 +151,8 @@ private def MatrixSum3.Sᵣ_unexpand : Lean.PrettyPrinter.Unexpander
 
 /-! ### Definition -/
 
+/-! All declarations in this section are private. -/
+
 /-- Canonical re-signing of a matrix. -/
 private def Matrix.toCanonicalSigning {X Y : Type} [DecidableEq X] [DecidableEq Y]
     (Q : Matrix X Y ℚ) (x₀ x₁ x₂ : X) (y₀ y₁ y₂ : Y) :
@@ -174,6 +176,8 @@ private def Matrix.toCanonicalSigning_unexpand : Lean.PrettyPrinter.Unexpander
 
 
 /-! ### General results -/
+
+/-! All declarations in this section are private. -/
 
 /-- Canonical re-signing of a TU matrix is TU. -/
 private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Type} [DecidableEq X] [DecidableEq Y] {Q : Matrix X Y ℚ}
@@ -226,6 +230,8 @@ private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Type} [Decida
 
 /-! ### Definition of re-signing in two special cases -/
 
+/-! All declarations in this section are private. -/
+
 /-- Sufficient condition for existence of a TU canonical signing in the first special case. -/
 private def Matrix.HasTuCanonicalSigning₀ {X Y : Type} (Q : Matrix X Y ℚ) (x₀ x₁ x₂ : X) (y₀ y₁ y₂ : Y) : Prop :=
   Q.IsTotallyUnimodular ∧ |Q.submatrix ![x₀, x₁, x₂] ![y₀, y₁, y₂]| = matrix3x3unsigned₀ ℚ
@@ -246,6 +252,8 @@ private def Matrix.HasTuCanonicalSigning₁_unexpand : Lean.PrettyPrinter.Unexpa
 
 
 /-! ### Lemmas about distinctness of row and column indices -/
+
+/-! All declarations in this section are private. -/
 
 private lemma Matrix.HasTuCanonicalSigning₀.distinct_x₀_x₁_x₂ {X Y : Type} {Q : Matrix X Y ℚ} {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y}
     (hQ : Q.HasTuCanonicalSigning₀ x₀ x₁ x₂ y₀ y₁ y₂) :
@@ -452,6 +460,8 @@ private lemma Function.IsParallelTo₃.mul_sign {X R : Type} [CommRing R] {v : X
 
 /-! ### Auxiliary definitions -/
 
+/-! All declarations in this section are private. -/
+
 /-- Sufficient condition for existence of a canonical signing of a 3-sum of matrices over `Z2`. -/
 private def MatrixSum3.HasCanonicalSigning {Xₗ Yₗ Xᵣ Yᵣ : Type} (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2) : Prop :=
   (S.Bₗ.HasTuSigning ∧ S.Bᵣ.HasTuSigning)
@@ -577,6 +587,8 @@ private lemma MatrixSum3.HasCanonicalSigning.toCanonicalSigning_isCanonicalSigni
 
 
 /-! ### Lemmas about extending bottom-right block with special columns and top-left block with special rows -/
+
+/-! All declarations in this section are private. -/
 
 private lemma MatrixSum3.aux_d₀ {Xₗ Yₗ Xᵣ Yᵣ : Type}
     (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) (hS : S.Bₗ.IsTotallyUnimodular) (hSAᵣ : S.Aᵣ ◩0 ◩0 = 1 ∧ S.Aᵣ ◩1 ◩0 = 1) (i : Yₗ ⊕ Fin 2) :
@@ -744,6 +756,8 @@ private lemma MatrixSum3.pmz_d₀_d₁_d₂_Aₗ_isTotallyUnimodular_of_Bₗ {X�
 
 
 /-! ### Properties of canonical signings of 3-sums -/
+
+/-! All declarations in this section are private. -/
 
 private lemma MatrixSum3.IsCanonicalSigning.Aₗ_elem {Xₗ Yₗ Xᵣ Yᵣ : Type} {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ}
     (hS : S.IsCanonicalSigning) :
@@ -1482,6 +1496,8 @@ private def MatrixLikeSum3.shortTableauPivot_unexpand : Lean.PrettyPrinter.Unexp
 
 /-! ### Total unimodularity -/
 
+/-! All declarations in this section are private. -/
+
 private lemma MatrixLikeSum3.c₀_c₀_c₁_c₁_c₂_c₂_Aᵣ_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ}
     (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) :
     (▮c₀ ◫ ▮c₀ ◫ ▮c₁ ◫ ▮c₁ ◫ ▮(c₀ - c₁) ◫ ▮(c₀ - c₁) ◫ M.Aᵣ).IsTotallyUnimodular := by
@@ -1655,6 +1671,8 @@ private lemma MatrixSum3.HasCanonicalSigning.HasTuSigning {Xₗ Yₗ Xᵣ Yᵣ :
 
 /-! ### Additional notation for convenience -/
 
+/-! All declarations in this section are private. -/
+
 private lemma And.rrrr {P₁ P₂ P₃ P₄ P₅} (hP : P₁ ∧ P₂ ∧ P₃ ∧ P₄ ∧ P₅) : P₅ :=
   hP.right.right.right.right
 
@@ -1742,7 +1760,7 @@ def undrop3 {Z : Set α} {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z₁ z₂) : Z :
 
 /-! #### Membership in drop-sets -/
 
--- todo: generalize to equivalences?
+/-! All declarations in this section are private. -/
 
 private lemma Set.mem_drop1' {Z : Set α} {z₀ : Z} {v : α} (hv : v ∈ Z) (hz₀ : v ≠ z₀) :
     v ∈ Z.drop1 z₀ := by
@@ -1805,6 +1823,8 @@ private lemma mem_drop2_mem_drop3_or_eq₂ {Z : Set α} {z₀ z₁ z₂ : Z} {v 
 
 
 /-! #### Re-typing elements of the triplet intersection -/
+
+/-! All declarations in this section are private. -/
 
 section triplets
 variable {Zₗ Zᵣ : Set α} {a₀ a₁ a₂ : α}
