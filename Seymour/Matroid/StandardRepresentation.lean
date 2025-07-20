@@ -737,6 +737,15 @@ omit [DecidableEq α] in
 private lemma seqApply_singleton (f : α → α) (a : α) : [f].seqApply a = f a := by
   rfl
 
+private lemma aux_seqApply_longTableauPivot_supersets [Field R] {X Y : Set α}
+    {A : Matrix X Y R} {y : Y} {l₁ l₂ : List X}
+    (hAl₁ : ∀ x : X, A x y ≠ 0 → x ∈ l₁) -- in the context of the next lemma, it means `D ⊆ l₁`
+    (hAl₂ : ∀ x : X, A x y ≠ 0 → x ∈ l₂) -- in the context of the next lemma, it means `D ⊆ l₂`
+    (i : X) :
+    (l₁.map (fun N : Matrix X Y R => N.longTableauPivot · y)).seqApply A i y =
+    (l₂.map (fun N : Matrix X Y R => N.longTableauPivot · y)).seqApply A i y := by
+  sorry
+
 lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular_strong [Field R] {X Y G : Set α}
     (A : Matrix X Y R) (hAG : A.toMatroid.IsBase G) (hA : A.IsTotallyUnimodular) :
     ∃ S : StandardRepr α R, S.X = G ∧ S.toMatroid = A.toMatroid ∧ S.B.IsTotallyUnimodular := by
