@@ -2095,7 +2095,7 @@ def matrixSum3 (Sₗ Sᵣ : StandardRepr α Z2)
 
 /-! ### The 3-sum of standard representations -/
 
-/-- Full version of the 3-sum of standard representations. -/
+/-- `StandardRepr`-level 3-sum of two matroids. Returns the result only if valid. -/
 noncomputable def standardReprSum3 {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
     Option (StandardRepr α Z2) :=
