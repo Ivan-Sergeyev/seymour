@@ -7,7 +7,14 @@
     \uses{StandardRepr,Matrix.fromBlocks}
     % \lean{}
     \leanok
-    Let $B_{\ell} \in \mathbb{Z}_{2}^{(X_{\ell} \cup \{x_{0}, x_{1}\}) \times (Y_{\ell} \cup \{y_{2}\})}, B_{r} \in \mathbb{Z}_{2}^{(X_{r} \cup \{x_{2}\}) \times (Y_{r} \cup \{y_{0}, y_{1}\})}$ be matrices of the form
+    Let $X_{\ell}$, $Y_{\ell}$, $X_{r}$, and $Y_{r}$ be sets satisfying the following properties:
+    \begin{itemize}
+        \item $X_{\ell} \cap X_{r} = \{x_{2}, x_{1}, x_{0}\}$ for some distinct $x_{0}$, $x_{1}$, and $x_{2}$;
+        \item $Y_{\ell} \cap Y_{r} = \{y_{0}, y_{1}, y_{2}\}$ for some distinct $y_{0}$, $y_{1}$, and $y_{2}$;
+        \item $X_{\ell}$ is disjoint with $Y_{r}$; and
+        \item $Y_{\ell}$ is disjoint with $X_{r}$.
+    \end{itemize}
+    Let $B_{\ell} \in \mathbb{Z}_{2}^{X_{\ell} \times Y_{\ell}}$ and $B_{r} \in \mathbb{Z}_{2}^{X_{r} \times Y_{r}}$ be matrices of the form
     \begin{center}
         \noindent
         \begin{tikzpicture}
@@ -48,10 +55,9 @@
                 \node at (2.5, 4.5) {$0$};
                 \node at (4, 2) {$A_{r}$};
             \end{scope}
-            \node[anchor=west] at (5, 0) {where $D_{0} = \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}$ or $D_{0} = \begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}$.};
         \end{tikzpicture}
     \end{center}
-    The $3$-sum $B = B_{\ell} \oplus_{3} B_{r} \in \mathbb{Z}_{2}^{(X_{\ell} \cup X_{r}) \times (Y_{\ell} \cup Y_{r})}$ of $B_{\ell}$ and $B_{r}$ is defined as
+    where $D_{0}$ is invertible. Then the $3$-sum $B = B_{\ell} \oplus_{3} B_{r}$ of $B_{\ell}$ and $B_{r}$ is defined as
     \begin{center}
         \noindent
         \begin{tikzpicture}
@@ -79,11 +85,23 @@
             \node[anchor=west] at (4.25, 0) {where $D_{\ell r} = D_{r} \cdot (D_{0})^{-1} \cdot D_{\ell}$.};
         \end{tikzpicture}
     \end{center}
-    Here $x_{2} \in X_{\ell}$, $x_{0}, x_{1} \in X_{r}$, $y_{0}, y_{1} \in Y_{\ell}$, $y_{2} \in Y_{r}$, $A_{\ell} \in \mathbb{Z}_{2}^{X_{\ell} \times Y_{\ell}}$, $A_{r} \in \mathbb{Z}_{2}^{X_{r} \times Y_{r}}$, $D_{\ell} \in \mathbb{Z}_{2}^{\{x_{0}, x_{1}\} \times (Y_{\ell} \setminus \{y_{0}, y_{1}\})}$, $D_{r} \in \mathbb{Z}_{2}^{(X_{r} \setminus \{x_{0}, x_{1}\}) \times \{y_{0}, y_{1}\}}$, $D_{\ell r} \in \mathbb{Z}_{2}^{(X_{r} \setminus \{x_{0}, x_{1}\}) \times (Y_{\ell} \setminus \{y_{0}, y_{1}\})}$, $D_{0} \in \mathbb{Z}_{2}^{\{x_{0}, x_{1}\} \times \{y_{0}, y_{1}\}}$. The indexing is consistent everywhere.
-
-    Note that $D_{0}$ is non-singular by construction, so $D_{\ell r}$ and $B$ are well-defined. Moreover, a non-singular $\mathbb{Z}_{2}^{2 \times 2}$ matrix is either  $\begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}$ or $\begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}$ up to re-indexing.
-
-    TODO change to nonsingular matrix.
+    Here the indexing is consistent between all the matrices, $D_{0} \in \mathbb{Z}_{2}^{\{x_{1}, x_{0}\} \times \{y_{0}, y_{1}\}}$, and the submatrix
+    \begin{tikzpicture}
+        \begin{scope}[scale=0.5, shift={(-3.5, -1.5)}]
+            \draw (0, 0) -- (3, 0) -- (3, 3) -- (0, 3) -- cycle;
+            \draw (0, 2) -- (3, 2);
+            \draw (2, 0) -- (2, 3);
+            \draw (1, 2) -- (1, 3);
+            \draw (2, 1) -- (3, 1);
+            \node at (1, 1) {$D_{0}$};
+            \node at (0.5, 2.5) {$1$};
+            \node at (1.5, 2.5) {$1$};
+            \node at (2.5, 2.5) {$0$};
+            \node at (2.5, 1.5) {$1$};
+            \node at (2.5, 0.5) {$1$};
+        \end{scope}
+    \end{tikzpicture}
+    is indexed by $\{x_{2}, x_{1}, x_{0}\} \times \{y_{0}, y_{1}, y_{2}\}$ in $B_{\ell}$, $B_{r}$, and $B$.
 \end{definition}
 
 \begin{definition}
@@ -97,12 +115,22 @@
 
 \section{Canonical Signing}
 
+\begin{lemma}
+    \label{Matrix.isUnit_2x2}
+    \uses{Matrix.det}
+    % \lean{}
+    \leanok
+    Let $D_{0} \in \mathbb{Z}_{2}^{\{x_{1}, x_{0}\} \times \{y_{0}, y_{1}\}}$ be an invertible matrix. Then, up to reindexing of rows and columns, either $D_{0} = \begin{bmatrix} 1 & 0 \\ 0 & 1 \\ \end{bmatrix}$ or $D_{0} = \begin{bmatrix} 1 & 1 \\ 0 & 1 \\ \end{bmatrix}$.
+\end{lemma}
+
+For the sake of simplicity of notation, going forward we assume that the submatrix $D_{0}$ in Definition~\ref{standardReprSum3} falls into one of the two special cases presented in Lemma~\ref{Matrix.isUnit_2x2}.
+
 \begin{definition}
     \label{matrix3x3signed}
     \uses{Matrix.fromBlocks}
     % \lean{}
     \leanok
-    We call $D_{0}' \in \mathbb{Q}^{\{x_{0}, x_{1}\} \times \{y_{0}, y_{1}\}}$ the canonical signing of $D_{0} \in \mathbb{Z}_{2}^{\{x_{0}, x_{1}\} \times \{y_{0}, y_{1}\}}$ if
+    We call $D_{0}' \in \mathbb{Q}^{\{x_{1}, x_{0}\} \times \{y_{0}, y_{1}\}}$ the canonical signing of $D_{0} \in \mathbb{Z}_{2}^{\{x_{1}, x_{0}\} \times \{y_{0}, y_{1}\}}$ if
     \[
         D_{0} = \begin{bmatrix}
             1 & 0 \\
@@ -124,7 +152,7 @@
             0 & 1
         \end{bmatrix}.
     \]
-    Similarly, we call $S' \in \mathbb{Q}^{\{x_{0}, x_{1}, x_{2}\} \times \{y_{0}, y_{1}, y_{2}\}}$ the canonical signing of $S \in \mathbb{Z}_{2}^{\{x_{0}, x_{1}, x_{2}\} \times \{y_{0}, y_{1}, y_{2}\}}$ if
+    Similarly, we call $S' \in \mathbb{Q}^{\{x_{2}, x_{1}, x_{0}\} \times \{y_{0}, y_{1}, y_{2}\}}$ the canonical signing of $S \in \mathbb{Z}_{2}^{\{x_{2}, x_{1}, x_{0}\} \times \{y_{0}, y_{1}, y_{2}\}}$ if
     \begin{center}
         \noindent
         \begin{tikzpicture}
@@ -160,7 +188,7 @@
         \end{tikzpicture}
     \end{center}
     To simplify notation, going forward we use $D_{0}$, $D_{0}'$, $S$, and $S'$ to refer to the matrices of the form above.
-    BTW, the canonical signing $S'$ of $S$ (from Definition~\ref{matrix3x3signed}) is TU.
+    Observe that the canonical signing $S'$ of $S$ (from Definition~\ref{matrix3x3signed}) is TU.
 \end{definition}
 
 \begin{lemma}
@@ -168,7 +196,7 @@
     \uses{Matrix.IsTuSigningOf,matrix3x3signed}
     % \lean{}
     \leanok
-    Let $Q$ be a TU signing of $S$ (from Definition~\ref{matrix3x3signed}). Let $u \in \{0, \pm 1\}^{\{x_{0}, x_{1}, x_{2}\}}$, $v \in \{0, \pm 1\}^{\{y_{0}, y_{1}, y_{2}\}}$, and $Q'$ be defined as follows:
+    Let $Q$ be a TU signing of $S$ (from Definition~\ref{matrix3x3signed}). Let $u \in \{0, \pm 1\}^{\{x_{2}, x_{1}, x_{0}\}}$, $v \in \{0, \pm 1\}^{\{y_{0}, y_{1}, y_{2}\}}$, and $Q'$ be defined as follows:
     \begin{align*}
         u(i) &= \begin{cases}
             Q (x_{2}, y_{0}) \cdot Q (x_{0}, y_{0}), & i = x_{0}, \\
@@ -180,7 +208,7 @@
             Q (x_{2}, y_{1}), & j = y_{1}, \\
             Q (x_{2}, y_{0}) \cdot Q (x_{0}, y_{0}) \cdot Q (x_{0}, y_{2}), & j = y_{2}, \\
         \end{cases} \\
-        Q' (i, j) &= Q (i, j) \cdot u(i) \cdot v(j) \quad \forall i \in \{x_{0}, x_{1}, x_{2}\}, \ \forall j \in \{y_{0}, y_{1}, y_{2}\}.
+        Q' (i, j) &= Q (i, j) \cdot u(i) \cdot v(j) \quad \forall i \in \{x_{2}, x_{1}, x_{0}\}, \ \forall j \in \{y_{0}, y_{1}, y_{2}\}.
     \end{align*}
     Then $Q' = S'$ (from Definition~\ref{matrix3x3signed}).
 \end{lemma}
@@ -221,7 +249,7 @@
         which contradicts TUness of $Q'$. Thus, $Q' (x_{1}, y_{1}) = -1 = S' (x_{1}, y_{1})$.
         \item Suppose that $D_{0} = \begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}$. If $Q' (x_{1}, y_{1}) = -1$, then
         $
-            \det Q (\{x_{0}, x_{1}\}, \{y_{1}, y_{2}\}) = \det \begin{bmatrix}
+            \det Q (\{x_{1}, x_{0}\}, \{y_{1}, y_{2}\}) = \det \begin{bmatrix}
                 1 & 1 \\
                 -1 & 1
             \end{bmatrix} = 2 \notin \{0, \pm 1\},
@@ -235,13 +263,13 @@
     \uses{Matrix.IsTotallyUnimodular}
     % \lean{}
     \leanok
-    Let $X$ and $Y$ be sets with $\{x_{0}, x_{1}, x_{2}\} \subseteq X$ and $\{y_{0}, y_{1}, y_{2}\} \subseteq Y$. Let $Q \in \mathbb{Q}^{X \times Y}$ be a TU matrix. Define $u \in \{0, \pm 1\}^{X}$, $v \in \{0, \pm 1\}^{Y}$, and $Q'$ as follows:
+    Let $X$ and $Y$ be sets with $\{x_{2}, x_{1}, x_{0}\} \subseteq X$ and $\{y_{0}, y_{1}, y_{2}\} \subseteq Y$. Let $Q \in \mathbb{Q}^{X \times Y}$ be a TU matrix. Define $u \in \{0, \pm 1\}^{X}$, $v \in \{0, \pm 1\}^{Y}$, and $Q'$ as follows:
     \begin{align*}
         u(i) &= \begin{cases}
             Q (x_{2}, y_{0}) \cdot Q (x_{0}, y_{0}), & i = x_{0}, \\
             Q (x_{2}, y_{0}) \cdot Q (x_{0}, y_{0}) \cdot Q (x_{0}, y_{2}) \cdot Q (x_{1}, y_{2}), & i = x_{1}, \\
             1, & i = x_{2}, \\
-            1, & i \in X \setminus \{x_{0}, x_{1}, x_{2}\},
+            1, & i \in X \setminus \{x_{2}, x_{1}, x_{0}\},
         \end{cases} \\
         v(j) &= \begin{cases}
             Q (x_{2}, y_{0}), & j = y_{0}, \\
@@ -259,13 +287,13 @@
     \uses{Matrix.IsTuSigningOf,matrix3x3signed,Matrix.toCanonicalSigning}
     % \lean{}
     \leanok
-    Let $X$ and $Y$ be sets with $\{x_{0}, x_{1}, x_{2}\} \subseteq X$ and $\{y_{0}, y_{1}, y_{2}\} \subseteq Y$. Let $Q \in \mathbb{Q}^{X \times Y}$ be a TU signing of $Q_{0} \in \mathbb{Z}_{2}^{X \times Y}$ such that $Q_{0} (\{x_{0}, x_{1}, x_{2}\}, \{y_{0}, y_{1}, y_{2}\}) = S$ (from Definition~\ref{matrix3x3signed}). Then the canonical re-signing $Q'$ of $Q$ (from Definition~\ref{Matrix.toCanonicalSigning}) is a TU signing of $Q_{0}$ and $Q' (\{x_{0}, x_{1}, x_{2}\}, \{y_{0}, y_{1}, y_{2}\}) = S'$ (from Definition~\ref{matrix3x3signed}).
+    Let $X$ and $Y$ be sets with $\{x_{2}, x_{1}, x_{0}\} \subseteq X$ and $\{y_{0}, y_{1}, y_{2}\} \subseteq Y$. Let $Q \in \mathbb{Q}^{X \times Y}$ be a TU signing of $Q_{0} \in \mathbb{Z}_{2}^{X \times Y}$ such that $Q_{0} (\{x_{2}, x_{1}, x_{0}\}, \{y_{0}, y_{1}, y_{2}\}) = S$ (from Definition~\ref{matrix3x3signed}). Then the canonical re-signing $Q'$ of $Q$ (from Definition~\ref{Matrix.toCanonicalSigning}) is a TU signing of $Q_{0}$ and $Q' (\{x_{2}, x_{1}, x_{0}\}, \{y_{0}, y_{1}, y_{2}\}) = S'$ (from Definition~\ref{matrix3x3signed}).
 \end{lemma}
 
 \begin{proof}
     \uses{Matrix.IsTuSigningOf,Matrix.IsTotallyUnimodular.mul_rows,Matrix.IsTotallyUnimodular.mul_cols,Matrix.HasTuCanonicalSigning.toCanonicalSigning_submatrix3x3}
     \leanok
-    Since $Q$ is a TU signing of $Q_{0}$ and $Q'$ is obtained from $Q$ by multiplying some rows and columns by $\pm 1$ factors, $Q'$ is also a TU signing of $Q_{0}$. Equality $Q' (\{x_{0}, x_{1}, x_{2}\}, \{y_{0}, y_{1}, y_{2}\}) = S'$ follows from Lemma~\ref{Matrix.HasTuCanonicalSigning.toCanonicalSigning_submatrix3x3}.
+    Since $Q$ is a TU signing of $Q_{0}$ and $Q'$ is obtained from $Q$ by multiplying some rows and columns by $\pm 1$ factors, $Q'$ is also a TU signing of $Q_{0}$. Equality $Q' (\{x_{2}, x_{1}, x_{0}\}, \{y_{0}, y_{1}, y_{2}\}) = S'$ follows from Lemma~\ref{Matrix.HasTuCanonicalSigning.toCanonicalSigning_submatrix3x3}.
 \end{proof}
 
 \begin{definition}
@@ -400,7 +428,7 @@
     \leanok
     Suppose that $B_{\ell}$ from Definition~\ref{standardReprSum3} has a TU signing $B_{\ell}'$. Let $B_{\ell}''$ be the canonical re-signing (from Definition~\ref{Matrix.toCanonicalSigning}) of $B_{\ell}'$. Let $d_{0}'' = B_{\ell}'' (x_{0}, Y_{\ell})$, $d_{1}'' = B_{\ell}'' (x_{1}, Y_{\ell})$, and $d_{2}'' = d_{0}'' - d_{1}''$. Then the following statements hold.
     \begin{enumerate}
-        \item\label{item:tss_Blp_d01} For every $j \in Y_{\ell}$, $\begin{bmatrix} d_{0}'' (i) \\ d_{1}'' (j) \end{bmatrix} \in \{0, \pm 1\}^{\{x_{0}, x_{1}\}} \setminus \left\{ \begin{bmatrix} 1 \\ -1 \end{bmatrix}, \begin{bmatrix} -1 \\ 1 \end{bmatrix} \right\}$.
+        \item\label{item:tss_Blp_d01} For every $j \in Y_{\ell}$, $\begin{bmatrix} d_{0}'' (i) \\ d_{1}'' (j) \end{bmatrix} \in \{0, \pm 1\}^{\{x_{1}, x_{0}\}} \setminus \left\{ \begin{bmatrix} 1 \\ -1 \end{bmatrix}, \begin{bmatrix} -1 \\ 1 \end{bmatrix} \right\}$.
         \item\label{item:tss_Blp_d2} For every $j \in Y_{\ell}$, $d_{2}'' (j) \in \{0, \pm 1\}$.
         \item\label{item:tss_Blp_tu1} $\begin{bmatrix} A_{\ell}'' \\ d_{0}'' \\ d_{2}'' \end{bmatrix}$ is TU.
         \item\label{item:tss_Blp_tu2} $\begin{bmatrix} A_{\ell}'' \\ d_{1}'' \\ d_{2}'' \end{bmatrix}$ is TU.
@@ -453,7 +481,7 @@
         Considering the two cases for $D_{0}''$ and performing the calculations yields the desired results.
         % If $D_{0}'' = \begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix}$, then $(D_{0}'')^{-1} = \begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix}$, and the formula above yields $D'' = c_{0}'' \otimes d_{0}'' - c_{1}'' \otimes d_{1}''$. If $D_{0}'' = \begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}$, then $(D_{0}'')^{-1} = \begin{bmatrix} 1 & -1 \\ 0 & 1 \end{bmatrix}$, and the formula above yields $D'' = c_{0}'' \otimes d_{0}'' - c_{0}'' \otimes d_{1}'' + c_{1}'' \otimes d_{1}''$.
 
-        \item Let $j \in Y_{\ell}$. By Lemma~\ref{MatrixSum3.HasTuBr.dddAl_isTotallyUnimodular}.\ref{item:tss_Blp_d01}, $\begin{bmatrix} d_{0}'' (i) \\ d_{1}'' (j) \end{bmatrix} \in \{0, \pm 1\}^{\{x_{0}, x_{1}\}} \setminus \left\{ \begin{bmatrix} 1 \\ -1 \end{bmatrix}, \begin{bmatrix} -1 \\ 1 \end{bmatrix} \right\}$. Consider two cases.
+        \item Let $j \in Y_{\ell}$. By Lemma~\ref{MatrixSum3.HasTuBr.dddAl_isTotallyUnimodular}.\ref{item:tss_Blp_d01}, $\begin{bmatrix} d_{0}'' (i) \\ d_{1}'' (j) \end{bmatrix} \in \{0, \pm 1\}^{\{x_{1}, x_{0}\}} \setminus \left\{ \begin{bmatrix} 1 \\ -1 \end{bmatrix}, \begin{bmatrix} -1 \\ 1 \end{bmatrix} \right\}$. Consider two cases.
         \begin{enumerate}
             \item If $D_{0}'' = \begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix}$, then by item~\ref{item:tss_Bp_Deq} we have $D'' (X_{r}, j) = d_{0}'' (j) \cdot c_{0}''  + (-d_{1}'' (j)) \cdot c_{1}''$. By considering all possible cases for $d_{0}'' (j)$ and $d_{1}'' (j)$, we conclude that $D'' (X_{r}, j) \in \{0, \pm c_{0}'', \pm c_{1}'', \pm (c_{0}'' - c_{1}'')\}$.
             \item If $D_{0}'' = \begin{bmatrix} 1 & 1 \\ 0 & 1 \end{bmatrix}$, then by item~\ref{item:tss_Bp_Deq} we have $D'' (X_{r}, j) = (d_{0}'' (j) - d_{1}'' (j)) \cdot c_{0}''  + d_{1}'' (j) \cdot c_{1}''$. By considering all possible cases for $d_{0}'' (j)$ and $d_{1}'' (j)$, we conclude that $D'' (X_{r}, j) \in \{0, \pm c_{0}'', \pm c_{1}'', \pm (c_{0}'' - c_{1}'')\}$.
@@ -479,13 +507,13 @@
     \uses{Matrix.IsTotallyUnimodular}
     % \lean{}
     \leanok
-    Let $X_{\ell}$, $Y_{\ell}$, $X_{r}$, $Y_{r}$ be sets, let $x_{0}, x_{1} \in X_{r} \setminus X_{\ell}$, and let $c_{0}, c_{1} \in \mathbb{Q}^{X_{r} \cup \{x_{0}, x_{1}\}}$ be column vectors. We define $\mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ to be the family of matrices of the form $\begin{bmatrix} A_{\ell} & 0 \\ D & A_{r} \end{bmatrix}$ such that:
+    Let $X_{\ell}'$, $Y_{\ell}'$, $X_{r}'$, $Y_{r}'$ be sets and let $x_{0}$ and $x_{1}$ be distinct elements contained neither in $X_{\ell}'$ nor $X_{r}'$. Additionally, let $c_{0}, c_{1} \in \mathbb{Q}^{X_{r}' \cup \{x_{1}, x_{0}\}}$ be column vectors. We define $\mathcal{C} (X_{\ell}', Y_{\ell}', X_{r}', Y_{r}'; c_{0}, c_{1})$ to be the family of matrices of the form $\begin{bmatrix} A_{\ell} & 0 \\ D & A_{r} \end{bmatrix}$ such that:
     \begin{enumerate}
-        \item $A_{\ell} \in \mathbb{Q}^{X_{\ell} \times Y_{\ell}}$, $A_{r} \in \mathbb{Q}^{X_{r} \times Y_{r}}$, and $D \in \mathbb{Q}^{X_{r} \times Y_{\ell}}$;
+        \item $A_{\ell} \in \mathbb{Q}^{X_{\ell}' \times Y_{\ell}'}$, $A_{r} \in \mathbb{Q}^{(X_{r}' \cup \{x_{1}, x_{0}\}) \times Y_{r}'}$, and $D \in \mathbb{Q}^{(X_{r}' \cup \{x_{1}, x_{0}\}) \times Y_{\ell}'}$;
         \item\label{item:mls3_LeftTU} $\begin{bmatrix} A_{\ell} \\ D \end{bmatrix}$ is TU;
-        \item\label{item:mls3_Parallels} for every $j \in Y_{\ell}$, $D (X_{r}, j) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$;
+        \item\label{item:mls3_Parallels} for every $j \in Y_{\ell}'$, $D (X_{r}', j) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$;
         \item\label{item:mls3_BottomTU} $\begin{bmatrix} c_{0} & c_{1} & c_{0} - c_{1} & A_{r} \end{bmatrix}$ is TU;
-        \item\label{item:mls3_AuxTU} $\begin{bmatrix} A_{\ell} & 0 \\ D (x_{0}, Y_{\ell}) & 1 \\ D (x_{1}, Y_{r}) & 1 \end{bmatrix}$ is TU;
+        \item\label{item:mls3_AuxTU} $\begin{bmatrix} A_{\ell} & 0 \\ D (x_{0}, Y_{\ell}') & 1 \\ D (x_{1}, Y_{\ell}') & 1 \end{bmatrix}$ is TU;
         \item\label{item:mls3_Col0} $c_{0} (x_{0}) = 1$ and $c_{0} (x_{1}) = 0$;
         \item\label{item:mls3_Col1} either $c_{1} (x_{0}) = 0$ and $c_{1} (x_{1}) = -1$, or $c_{1} (x_{0}) = 1$ and $c_{1} (x_{1}) = 1$.
     \end{enumerate}
@@ -496,13 +524,13 @@
     \uses{MatrixSum3.toCanonicalSigning,MatrixLikeSum3}
     % \lean{}
     \leanok
-    Let $B''$ be from Definition~\ref{MatrixSum3.toCanonicalSigning}. Then $B'' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$ where $c_{0}'' = B'' (X_{r}, y_{0})$ and $c_{1}'' = B'' (X_{r}, y_{1})$.
+    Let $B''$ be from Definition~\ref{MatrixSum3.toCanonicalSigning}. Then $B'' \in \mathcal{C} (X_{\ell}', Y_{\ell}', X_{r}', Y_{r}'; c_{0}'', c_{1}'')$ with $X_{\ell}' = X_{\ell} \setminus \{x_{1}, x_{0}\}$, $X_{r}' = X_{r} \setminus \{x_{2}, x_{1}, x_{0}\}$, $Y_{\ell}' = Y_{\ell} \setminus \{y_{2}\}$, $Y_{r}' = Y_{r} \setminus \{y_{0}, y_{1}\}$, $x_{0}$ and $x_{1}$ are the same, $c_{0}'' = B'' (X_{r}', y_{0})$, and $c_{1}'' = B'' (X_{r}', y_{1})$.
 \end{lemma}
 
 \begin{proof}
     \uses{MatrixSum3.IsCanonicalSigning.Al_D_isTotallyUnimodular,MatrixLikeSum3}
     \leanok
-    Recall that $c_{0}'' - c_{1}'' \in \{0, \pm 1\}^{X_{r}}$ by Lemma~\ref{MatrixSum3.IsCanonicalSigning.Al_D_isTotallyUnimodular}.\ref{item:tss_Bp_c2}, so $\mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$ is well-defined. To see that $B'' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$, note that all properties from Definition~\ref{MatrixLikeSum3} are satisfied: property~\ref{item:mls3_Parallels} holds by Lemma~\ref{MatrixSum3.IsCanonicalSigning.Al_D_isTotallyUnimodular}.\ref{item:tss_Bp_Dcols}, property~\ref{item:mls3_BottomTU} holds by Lemma~\ref{MatrixSum3.HasTuBr.cccAr_isTotallyUnimodular}.\ref{item:tss_Brp_tu3}, and property~\ref{item:mls3_LeftTU} holds by Lemma~\ref{MatrixSum3.IsCanonicalSigning.Al_D_isTotallyUnimodular}.\ref{item:tss_Bp_AlD}.
+    Recall that $c_{0}'' - c_{1}'' \in \{0, \pm 1\}^{X_{r}'}$ by Lemma~\ref{MatrixSum3.IsCanonicalSigning.Al_D_isTotallyUnimodular}.\ref{item:tss_Bp_c2}, so $\mathcal{C} (X_{\ell}', Y_{\ell}', X_{r}', Y_{r}'; c_{0}'', c_{1}'')$ is well-defined. To see that $B'' \in \mathcal{C} (X_{\ell}', Y_{\ell}', X_{r}', Y_{r}'; c_{0}'', c_{1}'')$, note that all properties from Definition~\ref{MatrixLikeSum3} are satisfied: property~\ref{item:mls3_Parallels} holds by Lemma~\ref{MatrixSum3.IsCanonicalSigning.Al_D_isTotallyUnimodular}.\ref{item:tss_Bp_Dcols}, property~\ref{item:mls3_BottomTU} holds by Lemma~\ref{MatrixSum3.HasTuBr.cccAr_isTotallyUnimodular}.\ref{item:tss_Brp_tu3}, and property~\ref{item:mls3_LeftTU} holds by Lemma~\ref{MatrixSum3.IsCanonicalSigning.Al_D_isTotallyUnimodular}.\ref{item:tss_Bp_AlD}.
 \end{proof}
 
 \begin{lemma}
@@ -510,7 +538,7 @@
     \uses{MatrixLikeSum3,Matrix.shortTableauPivot}
     % \lean{}
     \leanok
-    Let $C \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ from Definition~\ref{MatrixLikeSum3}. Let $x \in X_{\ell}$ and $y \in Y_{\ell}$ be such that $A_{\ell} (x, y) \neq 0$, and let $C'$ be the result of performing a short tableau pivot in $C$ on $(x, y)$. Then $C' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$.
+    Let $C \in \mathcal{C} (X_{\ell}', Y_{\ell}', X_{r}', Y_{r}'; c_{0}, c_{1})$ from Definition~\ref{MatrixLikeSum3}. Let $x \in X_{\ell}'$ and $y \in Y_{\ell}'$ be such that $A_{\ell} (x, y) \neq 0$, and let $C'$ be the result of performing a short tableau pivot in $C$ on $(x, y)$. Then $C' \in \mathcal{C} (X_{\ell}', Y_{\ell}', X_{r}', Y_{r}'; c_{0}, c_{1})$.
 \end{lemma}
 
 \begin{proof}
@@ -525,11 +553,11 @@
         \item Since $\begin{bmatrix} A_{\ell} \\ D \end{bmatrix}$ is TU by property~\ref{item:mls3_LeftTU} for $C$, and since pivoting preserves TUness, $\begin{bmatrix} A_{\ell}' \\ D' \end{bmatrix}$ is also TU.
     \end{itemize}
 
-    These observations immediately imply properties~\ref{item:mls3_BottomTU} and~\ref{item:mls3_LeftTU} for $C'$. Indeed, property~\ref{item:mls3_BottomTU} holds for $C'$, since $C_{22}' = A_{r}$ and $\begin{bmatrix} c_{0} & c_{1} & c_{0} - c_{1} & A_{r} \end{bmatrix}$ is TU by property~\ref{item:mls3_BottomTU} for $C$. On the other hand, property~\ref{item:mls3_LeftTU} follows from $C_{11}' = A_{\ell}'$, $C_{21}' = D'$, and $\begin{bmatrix} A_{\ell}' \\ D' \end{bmatrix}$ being TU. Thus, it only remains to show that $C'$ satisfies property~\ref{item:mls3_Parallels}. Let $j \in Y_{r}$. Our goal is to prove that $D' (X_{r}, j) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$.
+    These observations immediately imply properties~\ref{item:mls3_BottomTU} and~\ref{item:mls3_LeftTU} for $C'$. Indeed, property~\ref{item:mls3_BottomTU} holds for $C'$, since $C_{22}' = A_{r}$ and $\begin{bmatrix} c_{0} & c_{1} & c_{0} - c_{1} & A_{r} \end{bmatrix}$ is TU by property~\ref{item:mls3_BottomTU} for $C$. On the other hand, property~\ref{item:mls3_LeftTU} follows from $C_{11}' = A_{\ell}'$, $C_{21}' = D'$, and $\begin{bmatrix} A_{\ell}' \\ D' \end{bmatrix}$ being TU. Thus, it only remains to show that $C'$ satisfies property~\ref{item:mls3_Parallels}. Let $j \in Y_{r}$. Our goal is to prove that $D' (X_{r}', j) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$.
 
-    Suppose $j = y$. By the pivot formula, $D' (X_{r}, y) = -\frac{D (X_{r}, y)}{A_{\ell} (x, y)}$. Since $D (X_{r}, y) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$ by property~\ref{item:mls3_Parallels} for $C$ and since $A_{\ell} (x, y) \in \{\pm 1\}$, we get $D' (X_{r}, y) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$.
+    Suppose $j = y$. By the pivot formula, $D' (X_{r}', y) = -\frac{D (X_{r}', y)}{A_{\ell} (x, y)}$. Since $D (X_{r}', y) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$ by property~\ref{item:mls3_Parallels} for $C$ and since $A_{\ell} (x, y) \in \{\pm 1\}$, we get $D' (X_{r}', y) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$.
 
-    Now suppose $j \in Y_{\ell} \setminus \{y\}$. By the pivot formula, $D' (X_{r}, j) = D (X_{r}, j) - \frac{A_{\ell} (x, j)}{A_{\ell} (x, y)} \cdot D (X_{r}, y)$. Here $D (X_{r}, j), \ D (X_{r}, y) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$ by property~\ref{item:mls3_Parallels} for $C$, and $A_{\ell} (x, j) \in \{0, \pm 1\}$ and $A_{\ell} (x, y) \in \{\pm 1\}$ by the prior observations. Perform an exhaustive case distinction on $D (X_{r}, j)$, $D (X_{r}, y)$, $A_{\ell} (x, j)$, and $A_{\ell} (x, y)$. In every case, we can show that either $\begin{bmatrix} A_{\ell} (x, y) & A_{\ell} (x, j) \\ D (X_{r}, y) & D (X_{r}, j) \end{bmatrix}$ contains a submatrix with determinant not in $\{0, \pm 1\}$, which contradicts TUness of $\begin{bmatrix} A_{\ell} \\ D \end{bmatrix}$, or that $D' (X_{r}, j) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$, as desired. \todo{need details?}
+    Now suppose $j \in Y_{\ell} \setminus \{y\}$. By the pivot formula, $D' (X_{r}', j) = D (X_{r}', j) - \frac{A_{\ell} (x, j)}{A_{\ell} (x, y)} \cdot D (X_{r}', y)$. Here $D (X_{r}', j), \ D (X_{r}', y) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$ by property~\ref{item:mls3_Parallels} for $C$, and $A_{\ell} (x, j) \in \{0, \pm 1\}$ and $A_{\ell} (x, y) \in \{\pm 1\}$ by the prior observations. Perform an exhaustive case distinction on $D (X_{r}', j)$, $D (X_{r}', y)$, $A_{\ell} (x, j)$, and $A_{\ell} (x, y)$. The number of cases can be significantly reduced by using symmetries. In every remaining case, we can either show that $D' (X_{r}', j) \in \{0, \pm c_{0}, \pm c_{1}, \pm (c_{0} - c_{1})\}$, as desired, or obtain a contradiction with property~\ref{item:mls3_AuxTU}.
 \end{proof}
 
 \begin{lemma}
@@ -537,7 +565,7 @@
     \uses{MatrixLikeSum3,Matrix.IsTotallyUnimodular}
     % \lean{}
     \leanok
-    Let $C \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ from Definition~\ref{MatrixLikeSum3}. Then $C$ is TU.
+    Let $C \in \mathcal{C} (X_{\ell}', Y_{\ell}', X_{r}', Y_{r}'; c_{0}, c_{1})$ from Definition~\ref{MatrixLikeSum3}. Then $C$ is TU.
 \end{lemma}
 
 \begin{proof}
@@ -545,13 +573,13 @@
     \leanok
     By Lemma~\ref{Matrix.isTotallyUnimodular_iff_forall_isPartiallyUnimodular}, it suffices to show that $C$ is $k$-PU for every $k \in \mathbb{N}$. We prove this claim by induction on $k$. The base case with $k = 1$ holds, since properties~\ref{item:mls3_BottomTU} and~\ref{item:mls3_LeftTU} in Definition~\ref{MatrixLikeSum3} imply that $A_{\ell}$, $A_{r}$, and $D$ are TU, so all their entries of $C = \begin{bmatrix} A_{\ell} & 0 \\ D & A_{r} \end{bmatrix}$ are in $\{0, \pm 1\}$, as desired.
 
-    Suppose that for some $k \in \mathbb{N}$ we know that every $C' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$ is $k$-PU. Our goal is to show that $C$ is $(k + 1)$-PU, i.e., that every $(k + 1) \times (k + 1)$ submatrix $S$ of $C$ has $\det V \in \{0, \pm 1\}$.
+    Suppose that for some $k \in \mathbb{N}$ we know that every $C' \in \mathcal{C} (X_{\ell}', Y_{\ell}', X_{r}', Y_{r}'; c_{0}, c_{1})$ is $k$-PU. Our goal is to show that $C$ is $(k + 1)$-PU, i.e., that every $(k + 1) \times (k + 1)$ submatrix $S$ of $C$ has $\det V \in \{0, \pm 1\}$.
 
-    First, suppose that $V$ has no rows in $X_{\ell}$. Then $V$ is a submatrix of $\begin{bmatrix} D & A_{r} \end{bmatrix}$, which is TU by property~\ref{item:mls3_BottomTU} in Definition~\ref{MatrixLikeSum3}, so $\det V \in \{0, \pm 1\}$. Thus, we may assume that $S$ contains a row $x_{\ell} \in X_{\ell}$.
+    First, suppose that $V$ has no rows in $X_{\ell}'$. Then $V$ is a submatrix of $\begin{bmatrix} D & A_{r} \end{bmatrix}$, which is TU by property~\ref{item:mls3_BottomTU} in Definition~\ref{MatrixLikeSum3}, so $\det V \in \{0, \pm 1\}$. Thus, we may assume that $S$ contains a row $x_{\ell} \in X_{\ell}'$.
 
-    Next, note that without loss of generality we may assume that there exists $y_{\ell} \in Y_{\ell}$ such that $V (x_{\ell}, y_{\ell}) \neq 0$. Indeed, if $V (x_{\ell}, y) = 0$ for all $y$, then $\det V = 0$ and we are done, and $V (x_{\ell}, y) = 0$ holds whenever $y \in Y_{r}$.
+    Next, note that without loss of generality we may assume that there exists $y_{\ell} \in Y_{\ell}'$ such that $V (x_{\ell}, y_{\ell}) \neq 0$. Indeed, if $V (x_{\ell}, y) = 0$ for all $y$, then $\det V = 0$ and we are done, and $V (x_{\ell}, y) = 0$ holds whenever $y \in Y_{r}'$.
 
-    Since $C$ is $1$-PU, all entries of $V$ are in $\{0, \pm 1\}$, and hence $V (x_{\ell}, y_{\ell}) \in \{\pm 1\}$. Thus, by Lemma~\ref{shortTableauPivot_submatrix_det_abs_eq_div}, performing a short tableau pivot in $V$ on $(x_{\ell}, y_{\ell})$ yields a matrix that contains a $k \times k$ submatrix $S''$ such that $|\det V| = |\det V''|$. Since $V$ is a submatrix of $C$, matrix $V''$ is a submatrix of the matrix $C'$ resulting from performing a short tableau pivot in $C$ on the same entry $(x_{\ell}, y_{\ell})$. By Lemma~\ref{MatrixLikeSum3.shortTableauPivot}, we have $C' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}, c_{1})$. Thus, by the inductive hypothesis applied to $V''$ and $C'$, we have $\det V'' \in \{0, \pm 1\}$. Since $|\det V| = |\det V''|$, we conclude that $\det V \in \{0, \pm 1\}$.
+    Since $C$ is $1$-PU, all entries of $V$ are in $\{0, \pm 1\}$, and hence $V (x_{\ell}, y_{\ell}) \in \{\pm 1\}$. Thus, by Lemma~\ref{shortTableauPivot_submatrix_det_abs_eq_div}, performing a short tableau pivot in $V$ on $(x_{\ell}, y_{\ell})$ yields a matrix that contains a $k \times k$ submatrix $S''$ such that $|\det V| = |\det V''|$. Since $V$ is a submatrix of $C$, matrix $V''$ is a submatrix of the matrix $C'$ resulting from performing a short tableau pivot in $C$ on the same entry $(x_{\ell}, y_{\ell})$. By Lemma~\ref{MatrixLikeSum3.shortTableauPivot}, we have $C' \in \mathcal{C} (X_{\ell}', Y_{\ell}', X_{r}', Y_{r}'; c_{0}, c_{1})$. Thus, by the inductive hypothesis applied to $V''$ and $C'$, we have $\det V'' \in \{0, \pm 1\}$. Since $|\det V| = |\det V''|$, we conclude that $\det V \in \{0, \pm 1\}$.
 \end{proof}
 
 \begin{lemma}
@@ -566,12 +594,12 @@
     \uses{MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3,MatrixLikeSum3.IsTotallyUnimodular}
     \leanok
     Combine the results of Lemmas~\ref{MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3} and~\ref{MatrixLikeSum3.IsTotallyUnimodular}.
-    % By Lemma~\ref{MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3}, $B'' \in \mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$, and by Lemma~\ref{MatrixLikeSum3.IsTotallyUnimodular}, every matrix in $\mathcal{C} (X_{\ell}, Y_{\ell}, X_{r}, Y_{r}; c_{0}'', c_{1}'')$ is TU.
+    % By Lemma~\ref{MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3}, $B'' \in \mathcal{C} (X_{\ell}', Y_{\ell}', X_{r}', Y_{r}'; c_{0}'', c_{1}'')$, and by Lemma~\ref{MatrixLikeSum3.IsTotallyUnimodular}, every matrix in $\mathcal{C} (X_{\ell}', Y_{\ell}', X_{r}', Y_{r}'; c_{0}'', c_{1}'')$ is TU.
 \end{proof}
 
 \begin{theorem}
     \label{Matroid.Is3sumOf.isRegular}
-    \uses{Matroid.Is3sumOf,Matroid.IsRegular}
+    \uses{Matroid.Is3sumOf,Matroid.IsRegular,Matrix.isUnit_2x2}
     % \lean{}
     \leanok
     Let $M$ be a $3$-sum of regular matroids $M_{\ell}$ and $M_{r}$. Then $M$ is also regular.
