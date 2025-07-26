@@ -53,52 +53,40 @@ private lemma Matrix.toMatroid_mapEquiv {α β : Type*} {X Y : Set α} (A : Matr
   ext I hI
   · rfl
   let Aₑ := A.reindex (e.image X) (e.image Y)
-  rw [A.toMatroid.mapEquiv_indep_iff, Aₑ.toMatroid_indep, A.toMatroid_indep, Matrix.IndepCols, Matrix.IndepCols,
-    Equiv.symm_image_subset]
+  rw [A.toMatroid.mapEquiv_indep_iff, Aₑ.toMatroid_indep_iff, A.toMatroid_indep_iff, Equiv.symm_image_subset]
   constructor
   all_goals
     apply And.imp_right
     intro hI
     rw [linearIndepOn_iff] at hI ⊢
-    intro l hl hll
-  on_goal 1 => refine Finsupp.embDomain_eq_zero.→ (hI (Finsupp.embDomain (e.image Y) l) ?_ ?_)
-  on_goal 3 => refine Finsupp.embDomain_eq_zero.→ (hI (Finsupp.embDomain (e.image Y).symm l) ?_ ?_)
+    intro l hl hlA
+  on_goal 1 => refine Finsupp.embDomain_eq_zero.→ (hI (l.embDomain (e.image Y)) ?_ ?_)
+  on_goal 3 => refine Finsupp.embDomain_eq_zero.→ (hI (l.embDomain (e.image Y).symm) ?_ ?_)
   on_goal 2 =>
-    rw [Finsupp.linearCombination_embDomain, Matrix.transpose_reindex]
+    rw [Finsupp.linearCombination_embDomain]
     show (Finsupp.linearCombination ℚ (A.transpose.submatrix ((e.image Y).symm ∘ e.image Y) (e.image X).symm)) l = 0
     rw [Equiv.symm_comp_self]
     ext x
-    rw [funext_iff] at hll
-    specialize hll ⟨(e.image X).symm x, (Set.mem_image_equiv).→ x.prop⟩
-    rw [Pi.zero_apply] at hll ⊢
-    rw [←hll, Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, Finsupp.sum.eq_1, Finsupp.sum.eq_1]
-    simp only [Finset.sum_apply, Pi.smul_apply, Matrix.submatrix_apply, id_eq,
-      Matrix.transpose_apply, smul_eq_mul, Matrix.submatrix_id_id, Equiv.image_symm_apply_coe]
+    rw [funext_iff] at hlA
+    specialize hlA ⟨(e.image X).symm x, (Set.mem_image_equiv).→ x.prop⟩
+    rw [Pi.zero_apply] at hlA ⊢
+    simp [←hlA, Finsupp.linearCombination_apply, Finsupp.sum.eq_1]
     rfl
   on_goal 3 =>
     -- TODO golf
     rw [Finsupp.linearCombination_embDomain]
-    rw [Matrix.transpose_reindex] at hll
+    rw [Matrix.transpose_reindex] at hlA
     ext x
-    rw [funext_iff] at hll
-    specialize hll ⟨e.image X x, Subtype.coe_prop ((e.image X) x)⟩
-    rw [Pi.zero_apply] at hll ⊢
-    rw [←hll, Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, Finsupp.sum.eq_1, Finsupp.sum.eq_1]
-    simp only [Equiv.coe_toEmbedding, Function.comp_apply, Finset.sum_apply, Pi.smul_apply,
-      transpose_apply, smul_eq_mul, reindex_apply, Equiv.image_apply_coe, submatrix_apply]
-    congr!
-    rewrite [Equiv.eq_symm_apply]
-    rfl
+    rw [funext_iff] at hlA
+    specialize hlA ⟨e.image X x, (e.image X x).coe_prop⟩
+    rw [Pi.zero_apply] at hlA ⊢
+    simp [←hlA, Finsupp.linearCombination_apply, Finsupp.sum.eq_1]
   all_goals
     rw [Finsupp.mem_supported] at hl ⊢
     simp_rw [Finsupp.support_embDomain, Finset.coe_map, Set.image_subset_iff] at hl ⊢
     apply subset_of_subset_of_eq hl
-    ext x
-    simp_rw [Set.mem_preimage, Set.mem_image_equiv, Equiv.symm_symm]
-  · rfl
-  · rw [show ((e.image Y).symm.toEmbedding x) = ⟨e.symm x, Set.mem_image_equiv.→ x.prop⟩
-        by apply_fun (Equiv.Set.image e Y e.injective); simp,
-      Equiv.apply_symm_apply]
+    ext
+    simp
 
 /-- Regularity of matroids is preserved under remapping. -/
 @[simp]

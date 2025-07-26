@@ -109,6 +109,10 @@ abbrev Equiv.leftCongr {ι₁ ι₂ : Type*} (e : ι₁ ≃ ι₂) : ι₁ ⊕ �
 abbrev Equiv.rightCongr {ι₁ ι₂ : Type*} (e : ι₁ ≃ ι₂) : α ⊕ ι₁ ≃ α ⊕ ι₂ :=
   Equiv.sumCongr (Equiv.refl α) e
 
+@[simp]
+lemma Equiv.image_symm_apply {β : Type*} {X : Set α} (e : α ≃ β) (x : X) : (e.image X).symm ⟨e x.val, by simp⟩ = x :=
+  (e.image X).symm_apply_eq.← rfl
+
 lemma Finset.sum_of_single_nonzero {ι : Type*} (s : Finset ι) [AddCommMonoid α] (f : ι → α) (a : ι) (ha : a ∈ s)
     (hf : ∀ i ∈ s, i ≠ a → f i = 0) :
     s.sum f = f a := by

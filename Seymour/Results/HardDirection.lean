@@ -1,4 +1,4 @@
-import Seymour.EasyDirection
+import Seymour.Results.EasyDirection
 
 
 variable {α : Type*} [DecidableEq α]

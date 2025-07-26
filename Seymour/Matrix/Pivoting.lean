@@ -16,6 +16,8 @@ variable {X Y F : Type*}
 
 /-! ## Elementary row operations -/
 
+/-! All declarations in this section are private. -/
+
 /-- Multiply column `y` of `A` by factor `q` and keep the rest of `A` unchanged. -/
 private def Matrix.mulCol [DecidableEq Y] [Mul F] (A : Matrix X Y F) (y : Y) (q : F) :
     Matrix X Y F :=

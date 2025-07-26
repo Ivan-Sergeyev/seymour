@@ -1,4 +1,4 @@
-import Seymour.HardDirection
+import Seymour.Results.HardDirection
 
 /-! # Formally verified summary of the Seymour project -/
 
