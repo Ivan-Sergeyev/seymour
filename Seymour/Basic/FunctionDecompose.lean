@@ -6,7 +6,7 @@ import Seymour.Basic.Basic
 Here we decompose a function of type `α → β₁ ⊕ β₂` into a function and two bijections: `α → α₁ ⊕ α₂ ≃ β₁ ⊕ β₂`
 -/
 
-variable {α β₁ β₂ : Type}
+variable {α β₁ β₂ : Type*}
 
 /-- Given `f : α → β₁ ⊕ β₂` decompose `α` into two preïmages. -/
 @[simp low]

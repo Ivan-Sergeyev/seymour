@@ -8,7 +8,7 @@ import Seymour.Matrix.Basic
 This file provides lemmas about linear independence in the context of matrices that are not present in Mathlib.
 -/
 
-lemma Matrix.linearIndependent_iff_fromCols_zero {X Y R : Type} [Ring R] (A : Matrix X Y R) (Y₀ : Type) :
+lemma Matrix.linearIndependent_iff_fromCols_zero {X Y R : Type*} [Ring R] (A : Matrix X Y R) (Y₀ : Type*) :
     LinearIndependent R A ↔ LinearIndependent R (A ◫ (0 : Matrix X Y₀ R)) := by
   simp only [linearIndependent_iff']
   constructor
@@ -18,7 +18,7 @@ lemma Matrix.linearIndependent_iff_fromCols_zero {X Y R : Type} [Ring R] (A : Ma
   · simpa using congr_fun hscA ◩j
   · exact j.casesOn (by simpa using congr_fun hscA ·) (by simp)
 
-private lemma LinearIndepOn.exists_maximal {ι R O : Type} [DivisionRing R] [AddCommGroup O] [Module R O] {t : Set ι}
+private lemma LinearIndepOn.exists_maximal {ι R O : Type*} [DivisionRing R] [AddCommGroup O] [Module R O] {t : Set ι}
     {v : ι → O} {s₀ : Set ι} (hRv : LinearIndepOn R v s₀) (ht : s₀ ⊆ t) :
     ∃ s : Set ι, s₀ ⊆ s ∧ Maximal (fun r : Set ι => r ⊆ t ∧ LinearIndepOn R v r) s :=
   zorn_subset_nonempty { r : Set ι | r ⊆ t ∧ LinearIndepOn R v r }
@@ -28,7 +28,7 @@ private lemma LinearIndepOn.exists_maximal {ι R O : Type} [DivisionRing R] [Add
 
 namespace Matrix
 
-variable {m n R : Type}
+variable {m n R : Type*}
 
 private def rowFun (A : Matrix m n R) (i : m) : n → R := A i
 
@@ -38,7 +38,7 @@ private lemma colFun_apply (A : Matrix m n R) (i : m) (j : n) : A.colFun j i = A
 
 private lemma transpose_rowFun (A : Matrix m n R) : Aᵀ.rowFun = A.colFun := rfl
 
-private lemma range_submatrix_left {α l : Type} (A : Matrix m n α) (f : l → m) :
+private lemma range_submatrix_left {α l : Type*} (A : Matrix m n α) (f : l → m) :
     (A.submatrix f id).rowFun.range = A.rowFun '' f.range := by
   ext
   simp only [Set.mem_range, Set.mem_image, exists_exists_eq_and]
@@ -46,12 +46,12 @@ private lemma range_submatrix_left {α l : Type} (A : Matrix m n α) (f : l → 
 
 /-- For `A : Matrix m n R` and `s : Set m`
     `A.IsRowBasis R s` means that `s` indexes an `R`-basis for the row space of `A`. -/
-private def IsRowBasis (R : Type) [Semiring R] (A : Matrix m n R) (s : Set m) : Prop :=
+private def IsRowBasis (R : Type*) [Semiring R] (A : Matrix m n R) (s : Set m) : Prop :=
   Maximal (LinearIndepOn R A.rowFun ·) s
 
 /-- For `A : Matrix m n R` and `t : Set n`
     `A.IsColBasis R t` means that `t` indexes an `R`-basis for the column space of `A`. -/
-private def IsColBasis (R : Type) [Semiring R] (A : Matrix m n R) (t : Set n) : Prop :=
+private def IsColBasis (R : Type*) [Semiring R] (A : Matrix m n R) (t : Set n) : Prop :=
   Aᵀ.IsRowBasis R t
 
 private lemma IsRowBasis.span_eq [DivisionRing R] {s : Set m} {A : Matrix m n R} (hs : A.IsRowBasis R s) :
@@ -67,17 +67,17 @@ private lemma IsColBasis.encard_eq [DivisionRing R] {t : Set n} {A : Matrix m n 
     t.encard = A.eRank := by
   simpa using congr_arg Cardinal.toENat hA.basis.mk_eq_rank
 
-private lemma exists_isRowBasis {R : Type} [DivisionRing R] (A : Matrix m n R) :
+private lemma exists_isRowBasis {R : Type*} [DivisionRing R] (A : Matrix m n R) :
     ∃ s : Set m, A.IsRowBasis R s := by
   obtain ⟨s, -, hs⟩ := (linearIndepOn_empty R A).exists_maximal (Set.subset_univ _)
   exact ⟨s, by simpa using hs⟩
 
-private lemma exists_isColBasis (R : Type) [DivisionRing R] (A : Matrix m n R) : ∃ s : Set n, A.IsColBasis R s :=
+private lemma exists_isColBasis (R : Type*) [DivisionRing R] (A : Matrix m n R) : ∃ s : Set n, A.IsColBasis R s :=
   Aᵀ.exists_isRowBasis
 
 /-- If the row space of `A₁` is a subspace of the row space of `A₂`, then independence of
     a set of columns of `A₁` implies independence in `A₂`. -/
-private lemma linearIndepOn_col_le_of_span_row_le {m₁ m₂ : Type} [CommRing R] {A₁ : Matrix m₁ n R}
+private lemma linearIndepOn_col_le_of_span_row_le {m₁ m₂ : Type*} [CommRing R] {A₁ : Matrix m₁ n R}
     {A₂ : Matrix m₂ n R} (hR : Submodule.span R A₁.rowFun.range ≤ Submodule.span R A₂.rowFun.range) :
     LinearIndepOn R A₁.colFun ≤ LinearIndepOn R A₂.colFun := by
   refine fun t ht => linearIndepOn_iff.← fun l hl hl0 => linearIndepOn_iff.→ ht l hl ?_
@@ -93,13 +93,13 @@ private lemma linearIndepOn_col_le_of_span_row_le {m₁ m₂ : Type} [CommRing R
   simp [hrw]
 
 /-- Two matrices with the same row space have the same linearly independent sets of columns. -/
-private lemma linearIndepOn_col_eq_of_span_row_eq {m₁ m₂ : Type} [CommRing R] {A₁ : Matrix m₁ n R}
+private lemma linearIndepOn_col_eq_of_span_row_eq {m₁ m₂ : Type*} [CommRing R] {A₁ : Matrix m₁ n R}
     {A₂ : Matrix m₂ n R} (hA : Submodule.span R A₁.rowFun.range = Submodule.span R A₂.rowFun.range) :
     LinearIndepOn R A₁.colFun = LinearIndepOn R A₂.colFun :=
   (linearIndepOn_col_le_of_span_row_le hA.le).antisymm
     (linearIndepOn_col_le_of_span_row_le hA.symm.le)
 
-private lemma isColBasis_iff_of_span_row_eq {m₁ m₂ : Type} [CommRing R] {A₁ : Matrix m₁ n R}
+private lemma isColBasis_iff_of_span_row_eq {m₁ m₂ : Type*} [CommRing R] {A₁ : Matrix m₁ n R}
     {A₂ : Matrix m₂ n R} (hA : Submodule.span R A₁.rowFun.range = Submodule.span R A₂.rowFun.range) (t : Set n) :
     A₁.IsColBasis R t ↔ A₂.IsColBasis R t := by
   rw [IsColBasis, IsRowBasis, transpose_rowFun, linearIndepOn_col_eq_of_span_row_eq hA,
@@ -138,7 +138,7 @@ end Matrix
 open scoped Matrix
 
 /-- The identity matrix has linearly independent rows. -/
-lemma Matrix.one_linearIndependent {α R : Type} [DecidableEq α] [Ring R] : LinearIndependent R (1 : Matrix α α R) := by
+lemma Matrix.one_linearIndependent {α R : Type*} [DecidableEq α] [Ring R] : LinearIndependent R (1 : Matrix α α R) := by
   -- Riccardo Brasca proved:
   rw [linearIndependent_iff]
   intro l hl
@@ -146,11 +146,11 @@ lemma Matrix.one_linearIndependent {α R : Type} [DecidableEq α] [Ring R] : Lin
   simpa [Finsupp.linearCombination_apply, Pi.zero_apply, Finsupp.sum_apply', Matrix.one_apply] using congr_fun hl j
 
 /-- Every invertible matrix has linearly independent rows (unapplied version). -/
-lemma IsUnit.linearIndependent_matrix {α R : Type} [DecidableEq α] [Fintype α] [Ring R] {A : Matrix α α R} (hA : IsUnit A) :
+lemma IsUnit.linearIndependent_matrix {α R : Type*} [DecidableEq α] [Fintype α] [Ring R] {A : Matrix α α R} (hA : IsUnit A) :
     LinearIndependent R A :=
   A.linearIndependent_rows_of_isUnit hA
 
-variable {X Y F : Type} [Fintype X] [Fintype Y] [Field F]
+variable {X Y F : Type*} [Fintype X] [Fintype Y] [Field F]
 
 lemma Matrix.not_linearIndependent_of_rank_lt (A : Matrix X Y F) (hA : A.rank < #X) :
     ¬ LinearIndependent F A :=
