@@ -924,11 +924,11 @@ lemma ext_standardRepr_of_same_matroid_same_X {S₁ S₂ : StandardRepr α Z2} [
   convert hSS
   cc
 
-universe u u' v
+universe u₁ u₂ v
 
 /-- If two standard representations of the same matroid have the same base, then the standard representation matrices have
     the same support. -/
-lemma support_eq_support_of_same_matroid_same_X {F₁ : Type u} {F₂ : Type u'} {α : Type max u u' v} [DecidableEq α]
+lemma support_eq_support_of_same_matroid_same_X {F₁ : Type u₁} {F₂ : Type u₂} {α : Type max u₁ u₂ v} [DecidableEq α]
       [Field F₁] [Field F₂] [DecidableEq F₁] [DecidableEq F₂]
     {S₁ : StandardRepr α F₁} {S₂ : StandardRepr α F₂} [Fintype S₂.X]
     (hSS : S₁.toMatroid = S₂.toMatroid) (hXX : S₁.X = S₂.X) :
