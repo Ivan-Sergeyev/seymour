@@ -73,7 +73,6 @@ private lemma Matrix.toMatroid_mapEquiv {α β : Type*} {X Y : Set α} (A : Matr
     simp [←hlA, Finsupp.linearCombination_apply, Finsupp.sum.eq_1]
     rfl
   on_goal 3 =>
-    -- TODO golf
     rw [Finsupp.linearCombination_embDomain]
     rw [Matrix.transpose_reindex] at hlA
     ext x
