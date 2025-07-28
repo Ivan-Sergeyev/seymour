@@ -767,7 +767,7 @@ private lemma support_eq_support_of_same_matroid_aux_aux {F F₀ : Type*} [Field
   have hYXY : Y ⊆ X ∪ Y := Set.subset_union_right
   have hSS' := congr_arg Matroid.Indep hSS
   let D := {x | Bᵀ y x ≠ 0}
-  let Dₒ := {x | Bₒᵀ y x ≠ 0}
+  let Dₒ := { x : X | Bₒᵀ y x ≠ 0 }
   have hsy : (hYXY.elem y).toSum = ◪y := toSum_right (Disjoint.not_mem_of_mem_right hXY y.prop) ..
   by_contra hD
   rw [Set.not_subset_iff_exists_mem_not_mem] at hD
