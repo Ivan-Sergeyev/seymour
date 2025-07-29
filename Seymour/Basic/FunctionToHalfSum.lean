@@ -6,27 +6,15 @@ import Seymour.Basic.Basic
 Here we study functions of type `α → β₁ ⊕ β₂` that happen to contain image in only one of the half of its codomain.
 -/
 
-variable {β₁ β₂ : Type}
+variable {β₁ β₂ : Type*}
 
 lemma sum_ne_inl {x : β₁ ⊕ β₂} (hx₁ : ∀ b₁ : β₁, x ≠ ◩b₁) : ∃ b₂ : β₂, x = ◪b₂ := by
-  cases hx : x with
-  | inl =>
-    exfalso
-    apply hx₁
-    exact hx
-  | inr a =>
-    use a
+  aesop
 
 lemma sum_ne_inr {x : β₁ ⊕ β₂} (hx₂ : ∀ b₂ : β₂, x ≠ ◪b₂) : ∃ b₁ : β₁, x = ◩b₁ := by
-  cases hx : x with
-  | inl a =>
-    use a
-  | inr a =>
-    exfalso
-    apply hx₂
-    exact hx
+  aesop
 
-variable {α : Type}
+variable {α : Type*}
 
 lemma fn_sum_ne_inl {f : α → β₁ ⊕ β₂} (hf : ∀ a : α, ∀ b₁ : β₁, f a ≠ ◩b₁) : ∀ a : α, ∃ b₂ : β₂, f a = ◪b₂ :=
   (sum_ne_inl <| hf ·)

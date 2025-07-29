@@ -6,7 +6,7 @@ import Seymour.Basic.Conversions
 This file provides lemmas about sets that are not present in Mathlib.
 -/
 
-variable {α : Type}
+variable {α : Type*}
 
 lemma singleton_inter_in_left {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : a ∈ X :=
   Set.mem_of_mem_inter_left (ha.symm.subset rfl)
@@ -28,7 +28,7 @@ def HasSubset.Subset.equiv {A B : Set α} [∀ i, Decidable (i ∈ A)] (hAB : A 
   fun _ => by aesop,
   fun _ => by aesop⟩
 
-variable {β : Type}
+variable {β : Type*}
 
 lemma ofSupportFinite_support_eq [Zero β] {f : α → β} {S : Set α} (hS : Finite S) (hfS : f.support = S) :
     (Finsupp.ofSupportFinite f (hfS ▸ hS)).support = S := by

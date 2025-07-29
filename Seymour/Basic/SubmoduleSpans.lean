@@ -6,7 +6,7 @@ import Seymour.Basic.Basic
 This file provides lemmas about the linear spans of vector sets that are not present in Mathlib.
 -/
 
-variable {α R O : Type} [AddCommGroup O]
+variable {α R O : Type*} [AddCommGroup O]
 
 lemma in_submoduleSpan_range [Semiring R] [Module R O] (f : α → O) (a : α) :
     f a ∈ Submodule.span R f.range := by

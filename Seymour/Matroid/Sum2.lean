@@ -15,7 +15,7 @@ Here we study the 2-sum of matroids (starting with the 2-sum of matrices).
 
 /-! All declarations in this section are private. -/
 
-private abbrev Eq._ₗ {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : X :=
+private abbrev Eq._ₗ {α : Type*} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : X :=
   ⟨a, Set.mem_of_mem_inter_left (ha.symm.subset rfl)⟩
 
 @[app_unexpander Eq._ₗ]
@@ -23,7 +23,7 @@ private def Eq._ₗ_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $e) => `($(e).$(Lean.mkIdent `_ₗ))
   | _ => throw ()
 
-private abbrev Eq._ᵣ {α : Type} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : Y :=
+private abbrev Eq._ᵣ {α : Type*} {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : Y :=
   ⟨a, Set.mem_of_mem_inter_right (ha.symm.subset rfl)⟩
 
 @[app_unexpander Eq._ᵣ]
@@ -31,7 +31,7 @@ private def Eq._ᵣ_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $e) => `($(e).$(Lean.mkIdent `_ᵣ))
   | _ => throw ()
 
-private abbrev Matrix.dropRow {α R : Type} {X Y : Set α} (A : Matrix X Y R) (a : α) :
+private abbrev Matrix.dropRow {α R : Type*} {X Y : Set α} (A : Matrix X Y R) (a : α) :
     Matrix (X \ {a}).Elem Y.Elem R :=
   A ∘ Set.diff_subset.elem
 
@@ -40,7 +40,7 @@ private def Matrix.dropRow_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $A) => `($(A).$(Lean.mkIdent `dropRow))
   | _ => throw ()
 
-private abbrev Matrix.dropCol {α R : Type} {X Y : Set α} (A : Matrix X Y R) (a : α) :
+private abbrev Matrix.dropCol {α R : Type*} {X Y : Set α} (A : Matrix X Y R) (a : α) :
     Matrix X.Elem (Y \ {a}).Elem R :=
   (A · ∘ Set.diff_subset.elem)
 
@@ -49,7 +49,7 @@ private def Matrix.dropCol_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $A) => `($(A).$(Lean.mkIdent `dropCol))
   | _ => throw ()
 
-private abbrev Matrix.interRow {α R : Type} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : X ∩ Z = {a}) :
+private abbrev Matrix.interRow {α R : Type*} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : X ∩ Z = {a}) :
     Y.Elem → R :=
   A ha._ₗ
 
@@ -58,7 +58,7 @@ private def Matrix.interRow_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $A) => `($(A).$(Lean.mkIdent `interRow))
   | _ => throw ()
 
-private abbrev Matrix.interCol {α R : Type} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : Z ∩ Y = {a}) :
+private abbrev Matrix.interCol {α R : Type*} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : Z ∩ Y = {a}) :
     X.Elem → R :=
   (A · ha._ᵣ)
 
@@ -67,7 +67,7 @@ private def Matrix.interCol_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $A) => `($(A).$(Lean.mkIdent `interCol))
   | _ => throw ()
 
-private abbrev Matrix.reglueRow {α R : Type} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : X ∩ Z = {a}) :
+private abbrev Matrix.reglueRow {α R : Type*} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : X ∩ Z = {a}) :
     Matrix ((X \ {a}).Elem ⊕ Unit) Y.Elem R :=
   A.dropRow a ⊟ ▬(A.interRow ha)
 
@@ -76,7 +76,7 @@ private def Matrix.reglueRow_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $A) => `($(A).$(Lean.mkIdent `reglueRow))
   | _ => throw ()
 
-private abbrev Matrix.reglueCol {α R : Type} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : Z ∩ Y = {a}) :
+private abbrev Matrix.reglueCol {α R : Type*} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : Z ∩ Y = {a}) :
     Matrix X.Elem (Unit ⊕ (Y \ {a}).Elem) R :=
   ▮(A.interCol ha) ◫ A.dropCol a
 
@@ -85,21 +85,21 @@ private def Matrix.reglueCol_unexpand : Lean.PrettyPrinter.Unexpander
   | `($_ $A) => `($(A).$(Lean.mkIdent `reglueCol))
   | _ => throw ()
 
-private lemma Matrix.reglueRow_eq {α R : Type} [CommRing R] {X Y Z : Set α} {A : Matrix X Y R} {a : α} (ha : X ∩ Z = {a}) :
+private lemma Matrix.reglueRow_eq {α R : Type*} [CommRing R] {X Y Z : Set α} {A : Matrix X Y R} {a : α} (ha : X ∩ Z = {a}) :
     A.reglueRow ha = A.submatrix (·.casesOn Set.diff_subset.elem ↓ha._ₗ) id := by
   aesop
 
-private lemma Matrix.reglueCol_eq {α R : Type} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : Z ∩ Y = {a}) :
+private lemma Matrix.reglueCol_eq {α R : Type*} {X Y Z : Set α} (A : Matrix X Y R) {a : α} (ha : Z ∩ Y = {a}) :
     A.reglueCol ha = A.submatrix id (·.casesOn ↓ha._ᵣ Set.diff_subset.elem) := by
   aesop
 
-private lemma Matrix.IsTotallyUnimodular.reglueRow {α R : Type} [CommRing R] {X Y Z : Set α} {A : Matrix X Y R}
+private lemma Matrix.IsTotallyUnimodular.reglueRow {α R : Type*} [CommRing R] {X Y Z : Set α} {A : Matrix X Y R}
     (hA : A.IsTotallyUnimodular) {a : α} (ha : X ∩ Z = {a}) :
     (A.reglueRow ha).IsTotallyUnimodular := by
   rw [A.reglueRow_eq ha]
   apply hA.submatrix
 
-private lemma Matrix.IsTotallyUnimodular.reglueCol {α R : Type} [CommRing R] {X Y Z : Set α} {A : Matrix X Y R}
+private lemma Matrix.IsTotallyUnimodular.reglueCol {α R : Type*} [CommRing R] {X Y Z : Set α} {A : Matrix X Y R}
     (hA : A.IsTotallyUnimodular) {a : α} (ha : Z ∩ Y = {a}) :
     (A.reglueCol ha).IsTotallyUnimodular := by
   rw [A.reglueCol_eq ha]
@@ -109,13 +109,13 @@ private lemma Matrix.IsTotallyUnimodular.reglueCol {α R : Type} [CommRing R] {X
 /-! ## Definition -/
 
 /-- `Matrix`-level 2-sum for matroids defined by their standard representation matrices; does not check legitimacy. -/
-def matrixSum2 {R : Type} [Semiring R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
+def matrixSum2 {R : Type*} [Semiring R] {Xₗ Yₗ Xᵣ Yᵣ : Type*}
     (Aₗ : Matrix Xₗ Yₗ R) (r : Yₗ → R) (Aᵣ : Matrix Xᵣ Yᵣ R) (c : Xᵣ → R) :
     Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) R :=
   ⊞ Aₗ 0 (c ⊗ r) Aᵣ
 
 /-- `StandardRepr`-level 2-sum of two matroids. Returns the result only if valid. -/
-noncomputable def standardReprSum2 {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {x y : α}
+noncomputable def standardReprSum2 {α : Type*} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {x y : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y}) (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :
     Option (StandardRepr α Z2) :=
   open scoped Classical in if
@@ -140,7 +140,7 @@ noncomputable def standardReprSum2 {α : Type} [DecidableEq α] {Sₗ Sᵣ : Sta
     none
 
 /-- Binary matroid `M` is a result of 2-summing `Mₗ` and `Mᵣ` in some way. -/
-def Matroid.Is2sumOf {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) : Prop :=
+def Matroid.Is2sumOf {α : Type*} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) : Prop :=
   ∃ S Sₗ Sᵣ : StandardRepr α Z2,
   ∃ x y : α,
   ∃ hXX : Sₗ.X ∩ Sᵣ.X = {x},
@@ -159,12 +159,12 @@ def Matroid.Is2sumOf {α : Type} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : 
 
 /-! All declarations in this section are private. -/
 
-private abbrev shortTableauPivotOtherRow {Y Y' R : Type} [DecidableEq Y'] [DivisionRing R]
+private abbrev shortTableauPivotOtherRow {Y Y' R : Type*} [DecidableEq Y'] [DivisionRing R]
     (p : Y → R) (r : Y' → R) (g : Y' → Y) (y' : Y') : Y' → R :=
   -- `p` is the pivot row; `r` is the other row; `g` is a map from the columns of `r` to the columns of `p`
   (▬(p ∘ g) ⊟ ▬r).shortTableauPivot ◩⟨⟩ y' ◪⟨⟩
 
-private lemma Matrix.shortTableauPivot_otherRow_eq {X Y Y' R : Type}
+private lemma Matrix.shortTableauPivot_otherRow_eq {X Y Y' R : Type*}
     [Field R] [DecidableEq X] [DecidableEq Y] [DecidableEq Y']
     (A : Matrix X Y R) (x : X) (y' : Y') {i : X} (hix : i ≠ x) {g : Y' → Y} (hg : g.Injective) :
     (A.shortTableauPivot x (g y')) i ∘ g = shortTableauPivotOtherRow (A x) (A i ∘ g) g y' := by
@@ -177,7 +177,7 @@ private lemma Matrix.shortTableauPivot_otherRow_eq {X Y Y' R : Type}
     simp only [hj', ↓reduceIte, ite_eq_right_iff]
     exact (False.elim <| hj' <| hg ·)
 
-private lemma Matrix.shortTableauPivot_outer {X Y X' Y' F : Type} [DecidableEq X] [DecidableEq Y] [DecidableEq Y'] [Field F]
+private lemma Matrix.shortTableauPivot_outer {X Y X' Y' F : Type*} [DecidableEq X] [DecidableEq Y] [DecidableEq Y'] [Field F]
     (A : Matrix X Y F) (x : X) (y' : Y') (f : X' → X) (g : Y' → Y) (hf : x ∉ f.range) (hg : g.Injective)
     (r : Y' → F) (c : X' → F) (hBfg : A.submatrix f g = (c ⊗ r)) :
     (A.shortTableauPivot x (g y')).submatrix f g = (c ⊗ shortTableauPivotOtherRow (A x) r g y') := by
@@ -190,7 +190,7 @@ private lemma Matrix.shortTableauPivot_outer {X Y X' Y' F : Type} [DecidableEq X
   <;> simp [shortTableauPivotOtherRow, Matrix.shortTableauPivot_eq, hj]
   <;> ring
 
-private lemma matrixSum2_shortTableauPivot {Xₗ Yₗ Xᵣ Yᵣ : Type}
+private lemma matrixSum2_shortTableauPivot {Xₗ Yₗ Xᵣ Yᵣ : Type*}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     (Aₗ : Matrix Xₗ Yₗ ℚ) (r : Yₗ → ℚ) (Aᵣ : Matrix Xᵣ Yᵣ ℚ) (c : Xᵣ → ℚ) {i : Xₗ} {j : Yₗ} :
     (matrixSum2 Aₗ r Aᵣ c).shortTableauPivot ◩i ◩j =
@@ -205,12 +205,12 @@ private lemma matrixSum2_shortTableauPivot {Xₗ Yₗ Xᵣ Yᵣ : Type}
     (matrixSum2 Aₗ r Aᵣ c).shortTableauPivot_submatrix_zero_external_row ◩i ◩j Sum.inr Sum.inr
       (by simp) (by simp) ↓rfl⟩
 
-private lemma Matrix.shortTableauPivot_adjoinRow_eq {X Y : Type} [DecidableEq X] [DecidableEq Y]
+private lemma Matrix.shortTableauPivot_adjoinRow_eq {X Y : Type*} [DecidableEq X] [DecidableEq Y]
     (A : Matrix X Y ℚ) (r : Y → ℚ) (x : X) (y : Y) (j : Y) :
     (▬A x ⊟ ▬r).shortTableauPivot (◩⟨⟩) y (◪⟨⟩) j = (A ⊟ ▬r).shortTableauPivot (◩x) y (◪⟨⟩) j := by
   by_cases hj : j = y <;> simp [hj, Matrix.shortTableauPivot, Matrix.longTableauPivot]
 
-private lemma Matrix.IsTotallyUnimodular.fromRows_pivot {α : Type} [DecidableEq α] {X Y : Set α}
+private lemma Matrix.IsTotallyUnimodular.fromRows_pivot {α : Type*} [DecidableEq α] {X Y : Set α}
     {A : Matrix X Y ℚ} {r : Y → ℚ} (hAr : (A ⊟ ▬r).IsTotallyUnimodular) {x : X} {y : Y} (hAxy : A x y ≠ 0) :
     ((A.shortTableauPivot x y) ⊟ ▬(shortTableauPivotOtherRow (A x) r id y)).IsTotallyUnimodular := by
   have hArxy : (A ⊟ ▬r) ◩x y ≠ 0 := hAxy
@@ -224,7 +224,7 @@ private lemma Matrix.IsTotallyUnimodular.fromRows_pivot {α : Type} [DecidableEq
 
 /-! All declarations in this section are private. -/
 
-private lemma Matrix.IsTotallyUnimodular.fromCols_pnz {X Y : Type} [DecidableEq Y] {A : Matrix X Y ℚ} {c : X → ℚ}
+private lemma Matrix.IsTotallyUnimodular.fromCols_pnz {X Y : Type*} [DecidableEq Y] {A : Matrix X Y ℚ} {c : X → ℚ}
     (hAc : (A ◫ ▮c).IsTotallyUnimodular) :
     (A ◫ ▮c ◫ ▮(-c) ◫ ▮0).IsTotallyUnimodular := by
   have hAcc : (A ◫ ▮c ◫ ▮c).IsTotallyUnimodular
@@ -233,7 +233,7 @@ private lemma Matrix.IsTotallyUnimodular.fromCols_pnz {X Y : Type} [DecidableEq 
   convert (hAcc.mul_cols (show ∀ j, (·.casesOn 1 (-1)) j ∈ SignType.cast.range by rintro (_|_) <;> simp)).fromCols_zero Unit
   ext _ (_|_) <;> simp
 
-private lemma Matrix.IsTotallyUnimodular.fromCols_outer {X Yᵣ Y' : Type} [DecidableEq Yᵣ]
+private lemma Matrix.IsTotallyUnimodular.fromCols_outer {X Yᵣ Y' : Type*} [DecidableEq Yᵣ]
     {A : Matrix X Yᵣ ℚ} {r : Y' → ℚ} {c : X → ℚ}
     (hAc : (A ◫ ▮c).IsTotallyUnimodular) (hr : ∀ j' : Y', r j' ∈ SignType.cast.range) :
     (A ◫ (c ⊗ r)).IsTotallyUnimodular := by
@@ -253,7 +253,7 @@ private lemma Matrix.IsTotallyUnimodular.fromCols_outer {X Yᵣ Y' : Type} [Deci
     exfalso
     cases s <;> simp_all
 
-private lemma matrixSum2_bottom_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type} [DecidableEq Yᵣ] [DecidableEq Yₗ]
+private lemma matrixSum2_bottom_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type*} [DecidableEq Yᵣ] [DecidableEq Yₗ]
     {Aₗ : Matrix Xₗ Yₗ ℚ} {r : Yₗ → ℚ} {Aᵣ : Matrix Xᵣ Yᵣ ℚ} {c : Xᵣ → ℚ}
     (hAr : (Aₗ ⊟ ▬r).IsTotallyUnimodular) (hAc : (▮c ◫ Aᵣ).IsTotallyUnimodular) :
     ((c ⊗ r) ◫ Aᵣ).IsTotallyUnimodular :=
@@ -262,7 +262,7 @@ private lemma matrixSum2_bottom_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type}
 
 /-! ## Proof of regularity of the 2-sum -/
 
-variable {α : Type}
+variable {α : Type*}
 
 private lemma matrixSum2_isPartiallyUnimodular_1 {Xₗ Yₗ Xᵣ Yᵣ : Set α}
     {Aₗ : Matrix Xₗ Yₗ ℚ} {r : Yₗ → ℚ} {Aᵣ : Matrix Xᵣ Yᵣ ℚ} {c : Xᵣ → ℚ}

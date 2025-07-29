@@ -7,7 +7,7 @@ import Seymour.Basic.Fin
 This file defines the support matrix and provides some API about them.
 -/
 
-variable {X Y R : Type} [Zero R] [DecidableEq R]
+variable {X Y R : Type*} [Zero R] [DecidableEq R]
 
 /-- Auxiliary `Z2`-valued matrix that has `1` on the position of all nonzero elements. -/
 @[simp]
@@ -18,7 +18,7 @@ lemma Matrix.support_transpose (A : Matrix X Y R) :
     A.support.transpose = A.transpose.support :=
   rfl
 
-lemma Matrix.support_submatrix (A : Matrix X Y R) {X' Y' : Type} (f : X' → X) (g : Y' → Y) :
+lemma Matrix.support_submatrix (A : Matrix X Y R) {X' Y' : Type*} (f : X' → X) (g : Y' → Y) :
     A.support.submatrix f g = (A.submatrix f g).support :=
   rfl
 

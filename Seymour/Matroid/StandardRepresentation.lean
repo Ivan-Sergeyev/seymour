@@ -17,7 +17,7 @@ open scoped Matrix Set.Notation
 /-! ## Definition and API -/
 
 /-- Standard matrix representation of a vector matroid. -/
-structure StandardRepr (α R : Type) [DecidableEq α] where
+structure StandardRepr (α R : Type*) [DecidableEq α] where
   /-- Row indices. -/
   X : Set α
   /-- Col indices. -/
@@ -31,7 +31,7 @@ structure StandardRepr (α R : Type) [DecidableEq α] where
   /-- The computer can determine whether certain element is a col. -/
   decmemY : ∀ a, Decidable (a ∈ Y)
 
-private abbrev mkStandardRepr {α R : Type} [DecidableEq α]
+private abbrev mkStandardRepr {α R : Type*} [DecidableEq α]
     {X : Set α} [hX : ∀ a, Decidable (a ∈ X)]
     {Y : Set α} [hY : ∀ a, Decidable (a ∈ Y)]
     (hXY : X ⫗ Y) (B : Matrix X Y R) :
@@ -41,8 +41,7 @@ private abbrev mkStandardRepr {α R : Type} [DecidableEq α]
 attribute [instance] StandardRepr.decmemX
 attribute [instance] StandardRepr.decmemY
 
-
-variable {α : Type}
+variable {α : Type*}
 
 lemma Matroid.IsBase.not_ssubset_indep {M : Matroid α} {G I : Set α} (hMG : M.IsBase G) (hMI : M.Indep I) : ¬(G ⊂ I) :=
   (M.isBase_iff_maximal_indep.→ hMG).not_ssuperset hMI
@@ -56,7 +55,7 @@ private def Set.equivFin_unexpand : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 
-variable [DecidableEq α] {R : Type}
+variable [DecidableEq α] {R : Type*}
 
 /-- Convert standard representation of a vector matroid to a full representation. -/
 def StandardRepr.toFull [Zero R] [One R] (S : StandardRepr α R) : Matrix S.X (S.X ∪ S.Y).Elem R :=
@@ -725,7 +724,7 @@ lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {X Y G : S
 
 omit R
 
-private lemma sum_support_image_subtype_eq_zero {X Y : Set α} {F : Type} [Field F] {B : Matrix Y X F} {D : Set X} {y : Y}
+private lemma sum_support_image_subtype_eq_zero {X Y : Set α} {F : Type*} [Field F] {B : Matrix Y X F} {D : Set X} {y : Y}
     [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (hXXY : X ⊆ X ∪ Y) (hYXY : Y ⊆ X ∪ Y) -- redundant but keep
     {l : (X ∪ Y).Elem →₀ F} (hl : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' D) (hly : l (hYXY.elem y) = 0)
     {i : (X ∪ Y).Elem} (hiX : i.val ∈ X) (hlBi : ∑ a ∈ l.support, l a • (1 ⊟ B) a.toSum ⟨i, hiX⟩ = 0) :
@@ -759,173 +758,154 @@ private lemma sum_support_image_subtype_eq_zero {X Y : Set α} {F : Type} [Field
     rfl
 
 set_option maxHeartbeats 1000000 in
-private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type} [Field F₁] [Field F₂] [DecidableEq F₁] [DecidableEq F₂]
+private lemma support_eq_support_of_same_matroid_aux_aux {F F₀ : Type*} [Field F] [Field F₀] [DecidableEq F] [DecidableEq F₀]
+    {X Y : Set α} {hXY : X ⫗ Y} {B : Matrix X Y F} {Bₒ : Matrix X Y F₀}
+    [hX : ∀ a, Decidable (a ∈ X)] [hY : ∀ a, Decidable (a ∈ Y)] [Fintype X]
+    (hSS : (mkStandardRepr hXY B).toMatroid = (mkStandardRepr hXY Bₒ).toMatroid) (y : Y) :
+    {x | Bᵀ y x ≠ 0} ⊆ {x | Bₒᵀ y x ≠ 0} := by
+  have hXXY : X ⊆ X ∪ Y := Set.subset_union_left
+  have hYXY : Y ⊆ X ∪ Y := Set.subset_union_right
+  have hSS' := congr_arg Matroid.Indep hSS
+  let D := { x : X | Bᵀ y x ≠ 0 }
+  let Dₒ := { x : X | Bₒᵀ y x ≠ 0 }
+  have hsy : (hYXY.elem y).toSum = ◪y := toSum_right (Disjoint.not_mem_of_mem_right hXY y.prop) ..
+  by_contra hD
+  rw [Set.not_subset_iff_exists_mem_not_mem] at hD
+  -- otherwise `y ᕃ Dₒ` is dependent in `Mₒ` but indep in `M`
+  have hMₒ : ¬ (StandardRepr.mk X Y hXY Bₒ hX hY).toMatroid.Indep (y.val ᕃ Dₒ)
+  · rw [StandardRepr.toMatroid_indep_iff, not_and]
+    intro hyDXY
+    rw [linearIndepOn_iff']
+    push_neg
+    refine ⟨hYXY.elem y ᕃ Dₒ.toFinset.map (Subtype.impEmbedding _ _ ↓(hXXY ·)), (·.toSum.casesOn (- Bₒᵀ y) 1), ?_, ?_,
+      ⟨hYXY.elem y, by simp, by dsimp only; rw [hsy]; simp⟩⟩
+    · rw [Finset.coe_insert, Set.insert_subset_iff]
+      exact ⟨by simp, by simp [Set.preimage, Set.setOf_or]⟩
+    · rw [Finset.sum_insert (by simpa [Subtype.impEmbedding] using (absurd · (Disjoint.not_mem_of_mem_right hXY y.prop)))]
+      ext x
+      rw [Pi.add_apply, Pi.smul_apply, Finset.sum_apply, Pi.zero_apply]
+      convert_to Bₒ x y + ∑ i : Dₒ.Elem, (- Bₒᵀ y i) • (1 : Matrix X X F₀) x i.val = 0 using 2
+      · convert_to ((1 : Matrix X X F₀) ◫ Bₒ) x ◪y = Bₒ x y
+        · dsimp only
+          rw [hsy]
+          simp_all only [Matrix.transpose_apply, smul_eq_mul, Pi.one_apply, Function.comp_apply, one_mul]
+        · rfl
+      · simp_rw [Dₒ, Pi.smul_apply, Pi.neg_apply, Finset.sum_map, Matrix.transpose_apply, Function.comp_apply]
+        simp only [Subtype.impEmbedding_apply_coe, Subtype.coe_prop, toSum_left]
+        apply Finset.sum_subtype
+        exact ↓(Set.mem_toFinset)
+      if hx : x ∈ Dₒ then
+        exact add_eq_zero_iff_eq_neg'.← (sum_elem_smul_matrix_row_of_mem (- Bₒᵀ y) hx)
+      else
+        convert_to 0 + 0 = (0 : F₀) using 2
+        · rwa [Set.mem_setOf_eq, Decidable.not_not] at hx
+        · exact sum_elem_smul_matrix_row_of_nmem (- Bₒᵀ y) hx
+        rw [add_zero]
+  have hM : (StandardRepr.mk X Y hXY B hX hY).toMatroid.Indep (y.val ᕃ Dₒ)
+  · obtain ⟨d, hd, hd₀⟩ := hD
+    simp_rw [StandardRepr.toMatroid_indep_iff_elem, Matrix.one_fromCols_transpose, Function.range, Dₒ]
+    have hDXY : Subtype.val '' Dₒ ⊆ X ∪ Y := (Subtype.coe_image_subset X Dₒ).trans hXXY
+    have hyXY : y.val ∈ X ∪ Y := hYXY y.property
+    have hyDXY : y.val ᕃ Subtype.val '' Dₒ ⊆ X ∪ Y := Set.insert_subset hyXY hDXY
+    use Set.insert_subset hyXY hDXY
+    rw [linearIndepOn_iff]
+    intro l hl hlB
+    have hl' : l.support.toSet ⊆ hyDXY.elem.range
+    · rwa [Finsupp.mem_supported] at hl
+    have hl'' : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' Dₒ :=
+      fun e he => (hyDXY.elem_range ▸ hl') he
+    if hly : l (hYXY.elem y) = 0 then
+      ext i
+      if hil : i ∈ l.support then
+        if hiX : i.val ∈ X then
+          have hlBiX := congr_fun hlB ⟨i.val, hiX⟩
+          rw [Finsupp.linearCombination_apply, Pi.zero_apply, Finsupp.sum, Finset.sum_apply] at hlBiX
+          simp_rw [Pi.smul_apply, Function.comp_apply] at hlBiX
+          have hlBi : ∑ x ∈ (l.support.image Subtype.val).subtype (· ∈ X), l (hXXY.elem x) • (1 : Matrix X X F) x ⟨i, hiX⟩ = 0
+          · simpa using sum_support_image_subtype_eq_zero hXXY hYXY hl'' hly hiX hlBiX
+          rwa [
+            ((l.support.image Subtype.val).subtype (· ∈ X)).sum_of_single_nonzero
+              (fun a : X.Elem => l (hXXY.elem a) • (1 : Matrix X X F) a ⟨i, hiX⟩)
+              ⟨i, hiX⟩ (by simp_all) ↓↓↓(by simp_all),
+            Matrix.one_apply_eq,
+            smul_eq_mul,
+            mul_one
+          ] at hlBi
+        else if hiY : i.val ∈ Y then
+          have hiy : i = hYXY.elem y
+          · cases hl'' i hil with
+            | inl hiy => exact SetCoe.ext hiy
+            | inr hiD => simp_all
+          rwa [hiy]
+        else
+          exfalso
+          exact i.property.casesOn hiX hiY
+      else
+        exact l.not_mem_support_iff.→ hil
+    else
+      exfalso
+      have hlBd := congr_fun hlB d
+      rw [Finsupp.linearCombination_apply] at hlBd
+      have hlBd' : l.sum (fun i a => a • Matrix.fromRows 1 Bᵀ i.toSum d) = 0
+      · simpa [Finsupp.sum] using hlBd
+      have untransposed : l.sum (fun i a => a • ((1 : Matrix X X F) ◫ B) d i.toSum) = 0
+      · rwa [←Matrix.transpose_transpose (1 ◫ B), Matrix.one_fromCols_transpose]
+      have hyl : hYXY.elem y ∈ l.support
+      · rwa [Finsupp.mem_support_iff]
+      have h0 : ∀ a ∈ l.support, a.val ≠ y.val → l a • ((1 : Matrix X X F) ◫ B) d a.toSum = 0
+      · intro a ha hay
+        have hal := hl'' a ha
+        if haX : a.val ∈ X then
+          convert_to l a • ((1 : Matrix X X F) ◫ B) d ◩⟨a.val, haX⟩ = 0
+          · simp [Subtype.toSum, haX]
+          rw [Matrix.fromCols_apply_inl, smul_eq_mul, mul_eq_zero]
+          right
+          apply Matrix.one_apply_ne
+          rintro rfl
+          apply hd
+          simp_all [Dₒ]
+        else if haY : a.val ∈ Y then
+          exfalso
+          cases hal with
+          | inl hay' => exact hay hay'
+          | inr haDₒ => simp_all
+        else
+          exfalso
+          exact a.property.casesOn haX haY
+      have hlyd : l (hYXY.elem y) • ((1 : Matrix X X F) ◫ B) d (hYXY.elem y).toSum ≠ 0
+      · intro contr
+        refine hly ((mul_eq_zero_iff_right ?_).→ contr)
+        simp_rw [Matrix.transpose_apply, Set.mem_setOf_eq] at hd
+        simp [hd, hXY.not_mem_of_mem_right y.property]
+      rw [Finsupp.sum, l.support.sum_of_single_nonzero (fun a : (X ∪ Y).Elem => l a • (1 ◫ B) d a.toSum) (hYXY.elem y) hyl]
+        at untransposed
+      · rw [untransposed] at hlyd
+        exact hlyd rfl
+      intro i hil hiy
+      apply h0 i hil
+      intro contr
+      apply hiy
+      exact SetCoe.ext contr
+  exact (hSS' ▸ hMₒ) hM
+
+private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type*} [Field F₁] [Field F₂] [DecidableEq F₁] [DecidableEq F₂]
     {X Y : Set α} {hXY : X ⫗ Y} {B₁ : Matrix X Y F₁} {B₂ : Matrix X Y F₂}
-    [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] [Fintype X]
+    [hX : ∀ a, Decidable (a ∈ X)] [hY : ∀ a, Decidable (a ∈ Y)] [Fintype X]
     (hSS : (mkStandardRepr hXY B₁).toMatroid = (mkStandardRepr hXY B₂).toMatroid) :
     B₁.support = B₂.support := by
   rw [←Matrix.transpose_inj]
   apply Matrix.ext_col
   intro y
-  have hXXY : X ⊆ X ∪ Y := Set.subset_union_left
-  have hYXY : Y ⊆ X ∪ Y := Set.subset_union_right
-  have hSS' := congr_arg Matroid.Indep hSS
-  let D₁ := { x : X | B₁ᵀ y x ≠ 0 }
-  let D₂ := { x : X | B₂ᵀ y x ≠ 0 }
-  suffices hDD : D₁ = D₂
+  suffices hDD : { x | B₁ᵀ y x ≠ 0 } = { x | B₂ᵀ y x ≠ 0 }
   · ext x
-    if hx₁ : B₁ᵀ y x = 0 then
-      have hx₂ : x ∉ D₂
-      · rw [←hDD]
-        simp_rw [D₁, Set.mem_setOf_eq, not_not]
-        exact hx₁
-      simp_all [D₂]
-    else
-      have hx₂ : x ∈ D₂
-      · rw [←hDD]
-        simp_rw [D₁, Set.mem_setOf_eq]
-        exact hx₁
-      simp_all [D₂]
+    repeat rw [Matrix.support, Matrix.transpose_apply, Matrix.of_apply]
+    simp_rw [Matrix.transpose_apply, Set.setOf_inj, funext_iff] at hDD
+    specialize hDD x
+    rw [ne_eq, ne_eq, propext_iff, not_iff_not, ←propext_iff] at hDD
+    simp_rw [hDD]
   apply Set.eq_of_subset_of_subset
-  on_goal 1 => let D := D₁; let Dₒ := D₂; let B := B₁; let Bₒ := B₂; let F := F₁; let F₀ := F₂
-  on_goal 2 => let D := D₂; let Dₒ := D₁; let B := B₂; let Bₒ := B₁; let F := F₂; let F₀ := F₁
-  all_goals
-  · by_contra hD
-    rw [Set.not_subset_iff_exists_mem_not_mem] at hD
-    -- otherwise `y ᕃ Dₒ` is dependent in `Mₒ` but indep in `M`
-    have hMₒ : ¬ (mkStandardRepr hXY Bₒ).toMatroid.Indep (y.val ᕃ Dₒ)
-    · rw [StandardRepr.toMatroid_indep_iff_elem, not_exists]
-      intro hDₒ
-      erw [not_linearIndependent_iff]
-      refine ⟨Finset.univ, (·.val.toSum.casesOn (- Bₒᵀ y) 1), ?_, ⟨hYXY.elem y, by simp_all⟩, Finset.mem_univ _, by
-        dsimp only
-        cases _ : (hYXY.elem y).toSum with
-        | inl => simp_all [Subtype.toSum, hXY.not_mem_of_mem_right y.property]
-        | inr => exact ne_zero_of_eq_one rfl⟩
-      ext x
-      simp only at x hDₒ
-      simp_rw [Function.comp_apply]
-      rw [Finset.sum_apply]
-      show ∑ i : hDₒ.elem.range.Elem, (i.val.toSum.casesOn (- Bₒᵀ y) 1 : F₀) • (1 ◫ Bₒ) x i.val.toSum = 0
-      suffices separated : Bₒ x y + ∑ i : Dₒ.Elem, (- Bₒᵀ y i) • (1 : Matrix X X F₀) x i.val = 0
-      · rw [Finset.sum_set_coe (f := (fun i : (X ∪ Y).Elem => (i.toSum.casesOn (- Bₒᵀ y) 1 : F₀) • (1 ◫ Bₒ) x i.toSum)),
-          Set.toFinset_range,
-          show Finset.univ.image hDₒ.elem = hYXY.elem y ᕃ Finset.map ⟨hXXY.elem, hXXY.elem_injective⟩ { x : X | Bₒᵀ y x ≠ 0 } by
-            aesop,
-          Finset.sum_insert (by
-            simp only [Finset.mem_filter, Finset.mem_univ, Finset.mem_map, exists_and_right, not_exists, not_not]
-            intro a ⟨_, contradictory⟩
-            have hay : a.val = y.val
-            · simpa using contradictory
-            have impossible : y.val ∈ X ∩ Y := ⟨hay ▸ a.property, y.property⟩
-            rw [hXY.inter_eq] at impossible
-            exact impossible)]
-        convert separated
-        · convert_to ((1 : Matrix X X F₀) ◫ Bₒ) x ◪y = Bₒ x y
-          · cases _ : (hYXY.elem y).toSum <;> simp_all [Subtype.toSum, hXY.not_mem_of_mem_right y.property]
-          rfl
-        · simp only [Finset.sum_map, Function.Embedding.coeFn_mk, HasSubset.Subset.elem, Subtype.coe_prop, toSum_left]
-          show
-            ∑ i ∈ Finset.univ.filter (fun x : X => Bₒ x y ≠ 0), (- Bₒᵀ y i) • (1 : Matrix X X F₀) x i =
-            ∑ i : { x : X // Bₒ x y ≠ 0 }, (- Bₒᵀ y i) • (1 : Matrix X X F₀) x i
-          apply Finset.sum_subtype
-          simp
-      if hx : x ∈ Dₒ then
-        exact add_eq_zero_iff_eq_neg'.← (sum_elem_smul_matrix_row_of_mem (- Bₒᵀ y) hx)
-      else
-        convert_to 0 + 0 = (0 : F₀) using 2
-        · simpa [Dₒ, D₁, D₂] using hx
-        · exact sum_elem_smul_matrix_row_of_nmem (- Bₒᵀ y) hx
-        simp
-    have hM : (mkStandardRepr hXY B).toMatroid.Indep (y.val ᕃ Dₒ)
-    · obtain ⟨d, hd, hd₀⟩ := hD
-      simp
-      have hDXY : Subtype.val '' Dₒ ⊆ X ∪ Y := (Subtype.coe_image_subset X Dₒ).trans hXXY
-      have hyXY : y.val ∈ X ∪ Y := hYXY y.property
-      have hyDXY : y.val ᕃ Subtype.val '' Dₒ ⊆ X ∪ Y := Set.insert_subset hyXY hDXY
-      use Set.insert_subset hyXY hDXY
-      rw [linearIndepOn_iff]
-      intro l hl hlB
-      have hl' : l.support.toSet ⊆ hyDXY.elem.range
-      · rwa [Finsupp.mem_supported] at hl
-      have hl'' : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' Dₒ := ↓((hyDXY.elem_range ▸ hl') ·)
-      if hly : l (hYXY.elem y) = 0 then
-        ext i
-        if hil : i ∈ l.support then
-          if hiX : i.val ∈ X then
-            have hlBiX := congr_fun hlB ⟨i.val, hiX⟩
-            rw [Finsupp.linearCombination_apply, Pi.zero_apply, Finsupp.sum, Finset.sum_apply] at hlBiX
-            simp_rw [Pi.smul_apply, Function.comp_apply] at hlBiX
-            have hlBi : ∑ x ∈ (l.support.image Subtype.val).subtype (· ∈ X), l (hXXY.elem x) • (1 : Matrix X X F) x ⟨i, hiX⟩ = 0
-            · simpa using sum_support_image_subtype_eq_zero hXXY hYXY hl'' hly hiX hlBiX
-            rwa [
-              ((l.support.image Subtype.val).subtype (· ∈ X)).sum_of_single_nonzero
-                (fun a : X.Elem => l (hXXY.elem a) • (1 : Matrix X X F) a ⟨i, hiX⟩)
-                ⟨i, hiX⟩ (by simp_all) ↓↓↓(by simp_all),
-              Matrix.one_apply_eq,
-              smul_eq_mul,
-              mul_one
-            ] at hlBi
-          else if hiY : i.val ∈ Y then
-            have hiy : i = hYXY.elem y
-            · cases hl'' i hil with
-              | inl hiy => exact SetCoe.ext hiy
-              | inr hiD => simp_all
-            rw [hiy]
-            exact hly
-          else
-            exfalso
-            exact i.property.casesOn hiX hiY
-        else
-          exact l.not_mem_support_iff.→ hil
-      else
-        exfalso
-        have hlBd := congr_fun hlB d
-        rw [Finsupp.linearCombination_apply] at hlBd
-        have hlBd' : l.sum (fun i a => a • Matrix.fromRows 1 Bᵀ i.toSum d) = 0
-        · simpa [Finsupp.sum] using hlBd
-        have untransposed : l.sum (fun i a => a • ((1 : Matrix X X F) ◫ B) d i.toSum) = 0
-        · rwa [←Matrix.transpose_transpose (1 ◫ B), Matrix.one_fromCols_transpose]
-        have hyl : hYXY.elem y ∈ l.support
-        · rwa [Finsupp.mem_support_iff]
-        have h0 : ∀ a ∈ l.support, a.val ≠ y.val → l a • ((1 : Matrix X X F) ◫ B) d a.toSum = 0
-        · intro a ha hay
-          have hal := hl'' a ha
-          if haX : a.val ∈ X then
-            convert_to l a • ((1 : Matrix X X F) ◫ B) d ◩⟨a.val, haX⟩ = 0
-            · simp [Subtype.toSum, haX]
-            simp_rw [Matrix.fromCols_apply_inl]
-            rw [smul_eq_mul, mul_eq_zero]
-            right
-            apply Matrix.one_apply_ne
-            intro had
-            rw [had] at hd
-            apply hd
-            aesop
-          else if haY : a.val ∈ Y then
-            exfalso
-            cases hal with
-            | inl hay' => exact hay hay'
-            | inr haDₒ => simp_all
-          else
-            exfalso
-            exact a.property.casesOn haX haY
-        have hlyd : l (hYXY.elem y) • ((1 : Matrix X X F) ◫ B) d (hYXY.elem y).toSum ≠ 0
-        · intro contr
-          refine hly ((mul_eq_zero_iff_right ?_).→ contr)
-          have := hXY.not_mem_of_mem_right y.property
-          simp_all [B, Dₒ, D₁, D₂]
-        rw [Finsupp.sum,
-          l.support.sum_of_single_nonzero (fun a : (X ∪ Y).Elem => l a • (1 ◫ B) d a.toSum) (hYXY.elem y) hyl]
-        at untransposed
-        · rw [untransposed] at hlyd
-          exact hlyd rfl
-        intro i hil hiy
-        apply h0 i hil
-        intro contr
-        apply hiy
-        exact SetCoe.ext contr
-    exact (hSS' ▸ hMₒ) hM
+  · exact support_eq_support_of_same_matroid_aux_aux hSS y
+  · exact support_eq_support_of_same_matroid_aux_aux hSS.symm y
 
 private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁ B₂ : Matrix X Y Z2}
     [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] [Fintype X]
@@ -944,9 +924,12 @@ lemma ext_standardRepr_of_same_matroid_same_X {S₁ S₂ : StandardRepr α Z2} [
   convert hSS
   cc
 
+universe u₁ u₂ v
+
 /-- If two standard representations of the same matroid have the same base, then the standard representation matrices have
     the same support. -/
-lemma support_eq_support_of_same_matroid_same_X {F₁ F₂ : Type} [Field F₁] [Field F₂] [DecidableEq F₁] [DecidableEq F₂]
+lemma support_eq_support_of_same_matroid_same_X {F₁ : Type u₁} {F₂ : Type u₂} {α : Type max u₁ u₂ v} [DecidableEq α]
+      [Field F₁] [Field F₂] [DecidableEq F₁] [DecidableEq F₂]
     {S₁ : StandardRepr α F₁} {S₂ : StandardRepr α F₂} [Fintype S₂.X]
     (hSS : S₁.toMatroid = S₂.toMatroid) (hXX : S₁.X = S₂.X) :
     let hYY : S₁.Y = S₂.Y := right_eq_right_of_union_eq_union hXX S₁.hXY S₂.hXY (congr_arg Matroid.E hSS)

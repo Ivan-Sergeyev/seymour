@@ -10,12 +10,12 @@ Here we study the 1-sum of matroids (starting with the 1-sum of matrices).
 /-! ## Definition -/
 
 /-- `Matrix`-level 1-sum for matroids defined by their standard representation matrices; does not check legitimacy. -/
-def matrixSum1 {R : Type} [Zero R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
+def matrixSum1 {R : Type*} [Zero R] {Xₗ Yₗ Xᵣ Yᵣ : Type*}
     (Aₗ : Matrix Xₗ Yₗ R) (Aᵣ : Matrix Xᵣ Yᵣ R) :
     Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) R :=
   ⊞ Aₗ 0 0 Aᵣ
 
-variable {α : Type} [DecidableEq α]
+variable {α : Type*} [DecidableEq α]
 
 /-- `StandardRepr`-level 1-sum of two matroids. Returns the result only if valid. -/
 noncomputable def standardReprSum1 {Sₗ Sᵣ : StandardRepr α Z2} (hXY : Sₗ.X ⫗ Sᵣ.Y) (hYX : Sₗ.Y ⫗ Sᵣ.X) :

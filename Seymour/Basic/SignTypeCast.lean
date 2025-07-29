@@ -13,7 +13,7 @@ lemma zero_iff_ratCast_zero_of_in_signTypeCastRange {a : ℚ} (ha : a ∈ SignTy
   · obtain ⟨s, rfl⟩ := ha
     cases s <;> simp_all
 
-variable {R : Type}
+variable {R : Type*}
 
 @[simp high]
 lemma zero_in_signTypeCastRange [NonAssocRing R] : (0 : R) ∈ SignType.cast.range :=

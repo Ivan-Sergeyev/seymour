@@ -9,7 +9,7 @@ import Seymour.Matrix.Signing
 These conversions are used in 1-sum, 2-sum, and 3-sum of standard representations.
 -/
 
-variable {α R : Type} {T₁ T₂ S₁ S₂ : Set α}
+variable {α R : Type*} {T₁ T₂ S₁ S₂ : Set α}
   [∀ a, Decidable (a ∈ T₁)]
   [∀ a, Decidable (a ∈ T₂)]
   [∀ a, Decidable (a ∈ S₁)]
