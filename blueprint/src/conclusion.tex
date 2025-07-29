@@ -2,14 +2,14 @@
 
 \begin{definition}
     \label{Matroid.IsGood}
-    \uses{Matroid.IsRegular,Matroid.Is1sumOf,Matroid.Is2sumOf,Matroid.Is3sumOf}
+    \uses{Matroid.IsRegular,Matroid.IsSum1of,Matroid.IsSum2of,Matroid.IsSum3of}
     \leanok
     Any graphic matroid is good.
     Any cographic matroid is good.
     Any matroid isomorphic to R10 is good.
-    Any 1-sum (in the sense of Definition~\ref{Matroid.Is1sumOf}) of good matroids is a good matroid.
-    Any 2-sum (in the sense of Definition~\ref{Matroid.Is2sumOf}) of good matroids is a good matroid.
-    Any 3-sum (in the sense of Definition~\ref{Matroid.Is3sumOf}) of good matroids is a good matroid.
+    Any 1-sum (in the sense of Definition~\ref{Matroid.IsSum1of}) of good matroids is a good matroid.
+    Any 2-sum (in the sense of Definition~\ref{Matroid.IsSum2of}) of good matroids is a good matroid.
+    Any 3-sum (in the sense of Definition~\ref{Matroid.IsSum3of}) of good matroids is a good matroid.
     TODO some dependencies are missing in the blueprint.
 \end{definition}
 
@@ -23,7 +23,7 @@
 \end{corollary}
 
 \begin{proof}
-    \uses{Matroid.Is1sumOf.isRegular,Matroid.Is2sumOf.isRegular,Matroid.Is3sumOf.isRegular}
+    \uses{Matroid.IsSum1of.isRegular,Matroid.IsSum2of.isRegular,Matroid.IsSum3of.isRegular}
     %\leanok
     Structural induction.
 \end{proof}

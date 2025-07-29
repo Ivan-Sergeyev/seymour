@@ -118,6 +118,12 @@ lemma StandardRepr.toMatroid_E [DivisionRing R] (S : StandardRepr α R) :
     S.toMatroid.E = S.X ∪ S.Y :=
   rfl
 
+@[simp]
+lemma StandardRepr.toMatroid_indep [DivisionRing R] (S : StandardRepr α R) :
+    S.toMatroid.Indep = (∃ hI : · ⊆ S.X ∪ S.Y, LinearIndepOn R ((1 ◫ S.B)ᵀ ∘ Subtype.toSum) hI.elem.range) := by
+  ext I
+  exact S.toFull_indep_iff_elem I
+
 lemma StandardRepr.toMatroid_indep_iff [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
     I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R ((1 ◫ S.B) · ∘ Subtype.toSum)ᵀ ((S.X ∪ S.Y) ↓∩ I) :=
@@ -132,12 +138,6 @@ lemma StandardRepr.toMatroid_indep_iff_submatrix [DivisionRing R] (S : StandardR
     S.toMatroid.Indep I ↔
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R ((1 ◫ S.B).submatrix id (Subtype.toSum ∘ hI.elem))ᵀ :=
   S.toFull.indepCols_iff_submatrix I
-
-@[simp]
-lemma StandardRepr.toMatroid_indep [DivisionRing R] (S : StandardRepr α R) :
-    S.toMatroid.Indep = (∃ hI : · ⊆ S.X ∪ S.Y, LinearIndepOn R ((1 ◫ S.B)ᵀ ∘ Subtype.toSum) hI.elem.range) := by
-  ext I
-  exact S.toFull_indep_iff_elem I
 
 /-- The set of all rows of a standard representation is a base in the resulting matroid. -/
 lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype S.X] :
@@ -728,8 +728,7 @@ private lemma sum_support_image_subtype_eq_zero {X Y : Set α} {F : Type*} [Fiel
     [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (hXXY : X ⊆ X ∪ Y) (hYXY : Y ⊆ X ∪ Y) -- redundant but keep
     {l : (X ∪ Y).Elem →₀ F} (hl : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' D) (hly : l (hYXY.elem y) = 0)
     {i : (X ∪ Y).Elem} (hiX : i.val ∈ X) (hlBi : ∑ a ∈ l.support, l a • (1 ⊟ B) a.toSum ⟨i, hiX⟩ = 0) :
-    ∑ a ∈ (l.support.image Subtype.val).subtype (· ∈ X),
-      l (hXXY.elem a) • (1 ⊟ B) (hXXY.elem a).toSum ⟨i, hiX⟩ = 0 := by
+    ∑ a ∈ (l.support.image Subtype.val).subtype (· ∈ X), l (hXXY.elem a) • (1 ⊟ B) (hXXY.elem a).toSum ⟨i, hiX⟩ = 0 := by
   rw [←Finset.sum_finset_coe] at hlBi
   convert hlBi
   apply Finset.sum_bij (⟨hXXY.elem ·, by simpa using ·⟩)
@@ -758,17 +757,17 @@ private lemma sum_support_image_subtype_eq_zero {X Y : Set α} {F : Type*} [Fiel
     rfl
 
 set_option maxHeartbeats 1000000 in
-private lemma support_eq_support_of_same_matroid_aux_aux {F F₀ : Type*} [Field F] [Field F₀] [DecidableEq F] [DecidableEq F₀]
+private lemma support_subset_support_of_same_matroid_aux {F F₀ : Type*} [DecidableEq F] [DecidableEq F₀] [Field F] [Field F₀]
     {X Y : Set α} {hXY : X ⫗ Y} {B : Matrix X Y F} {Bₒ : Matrix X Y F₀}
     [hX : ∀ a, Decidable (a ∈ X)] [hY : ∀ a, Decidable (a ∈ Y)] [Fintype X]
     (hSS : (mkStandardRepr hXY B).toMatroid = (mkStandardRepr hXY Bₒ).toMatroid) (y : Y) :
-    {x | Bᵀ y x ≠ 0} ⊆ {x | Bₒᵀ y x ≠ 0} := by
+    { x : X | Bᵀ y x ≠ 0 } ⊆ { x : X | Bₒᵀ y x ≠ 0 } := by
   have hXXY : X ⊆ X ∪ Y := Set.subset_union_left
   have hYXY : Y ⊆ X ∪ Y := Set.subset_union_right
   have hSS' := congr_arg Matroid.Indep hSS
   let D := { x : X | Bᵀ y x ≠ 0 }
   let Dₒ := { x : X | Bₒᵀ y x ≠ 0 }
-  have hsy : (hYXY.elem y).toSum = ◪y := toSum_right (Disjoint.not_mem_of_mem_right hXY y.prop) ..
+  have hyy : (hYXY.elem y).toSum = ◪y := toSum_right (hXY.not_mem_of_mem_right y.property) _
   by_contra hD
   rw [Set.not_subset_iff_exists_mem_not_mem] at hD
   -- otherwise `y ᕃ Dₒ` is dependent in `Mₒ` but indep in `M`
@@ -778,17 +777,17 @@ private lemma support_eq_support_of_same_matroid_aux_aux {F F₀ : Type*} [Field
     rw [linearIndepOn_iff']
     push_neg
     refine ⟨hYXY.elem y ᕃ Dₒ.toFinset.map (Subtype.impEmbedding _ _ ↓(hXXY ·)), (·.toSum.casesOn (- Bₒᵀ y) 1), ?_, ?_,
-      ⟨hYXY.elem y, by simp, by dsimp only; rw [hsy]; simp⟩⟩
+        ⟨hYXY.elem y, by simp, by simp only [hyy]; simp⟩⟩
     · rw [Finset.coe_insert, Set.insert_subset_iff]
       exact ⟨by simp, by simp [Set.preimage, Set.setOf_or]⟩
-    · rw [Finset.sum_insert (by simpa [Subtype.impEmbedding] using (absurd · (Disjoint.not_mem_of_mem_right hXY y.prop)))]
+    · rw [Finset.sum_insert (by simpa [Subtype.impEmbedding] using (fun _ => hXY.not_mem_of_mem_right y.property ·))]
       ext x
       rw [Pi.add_apply, Pi.smul_apply, Finset.sum_apply, Pi.zero_apply]
       convert_to Bₒ x y + ∑ i : Dₒ.Elem, (- Bₒᵀ y i) • (1 : Matrix X X F₀) x i.val = 0 using 2
       · convert_to ((1 : Matrix X X F₀) ◫ Bₒ) x ◪y = Bₒ x y
         · dsimp only
-          rw [hsy]
-          simp_all only [Matrix.transpose_apply, smul_eq_mul, Pi.one_apply, Function.comp_apply, one_mul]
+          rw [hyy]
+          simp only [*, Matrix.transpose_apply, Pi.one_apply, Function.comp_apply, smul_eq_mul, one_mul]
         · rfl
       · simp_rw [Dₒ, Pi.smul_apply, Pi.neg_apply, Finset.sum_map, Matrix.transpose_apply, Function.comp_apply]
         simp only [Subtype.impEmbedding_apply_coe, Subtype.coe_prop, toSum_left]
@@ -803,7 +802,7 @@ private lemma support_eq_support_of_same_matroid_aux_aux {F F₀ : Type*} [Field
         rw [add_zero]
   have hM : (StandardRepr.mk X Y hXY B hX hY).toMatroid.Indep (y.val ᕃ Dₒ)
   · obtain ⟨d, hd, hd₀⟩ := hD
-    simp_rw [StandardRepr.toMatroid_indep_iff_elem, Matrix.one_fromCols_transpose, Function.range, Dₒ]
+    simp_rw [StandardRepr.toMatroid_indep_iff_elem, Matrix.one_fromCols_transpose, Dₒ]
     have hDXY : Subtype.val '' Dₒ ⊆ X ∪ Y := (Subtype.coe_image_subset X Dₒ).trans hXXY
     have hyXY : y.val ∈ X ∪ Y := hYXY y.property
     have hyDXY : y.val ᕃ Subtype.val '' Dₒ ⊆ X ∪ Y := Set.insert_subset hyXY hDXY
@@ -873,12 +872,11 @@ private lemma support_eq_support_of_same_matroid_aux_aux {F F₀ : Type*} [Field
           exfalso
           exact a.property.casesOn haX haY
       have hlyd : l (hYXY.elem y) • ((1 : Matrix X X F) ◫ B) d (hYXY.elem y).toSum ≠ 0
-      · intro contr
-        refine hly ((mul_eq_zero_iff_right ?_).→ contr)
+      · refine (hly <| (mul_eq_zero_iff_right ?_).→ ·)
         simp_rw [Matrix.transpose_apply, Set.mem_setOf_eq] at hd
         simp [hd, hXY.not_mem_of_mem_right y.property]
       rw [Finsupp.sum, l.support.sum_of_single_nonzero (fun a : (X ∪ Y).Elem => l a • (1 ◫ B) d a.toSum) (hYXY.elem y) hyl]
-        at untransposed
+          at untransposed
       · rw [untransposed] at hlyd
         exact hlyd rfl
       intro i hil hiy
@@ -888,7 +886,7 @@ private lemma support_eq_support_of_same_matroid_aux_aux {F F₀ : Type*} [Field
       exact SetCoe.ext contr
   exact (hSS' ▸ hMₒ) hM
 
-private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type*} [Field F₁] [Field F₂] [DecidableEq F₁] [DecidableEq F₂]
+private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type*} [DecidableEq F₁] [DecidableEq F₂] [Field F₁] [Field F₂]
     {X Y : Set α} {hXY : X ⫗ Y} {B₁ : Matrix X Y F₁} {B₂ : Matrix X Y F₂}
     [hX : ∀ a, Decidable (a ∈ X)] [hY : ∀ a, Decidable (a ∈ Y)] [Fintype X]
     (hSS : (mkStandardRepr hXY B₁).toMatroid = (mkStandardRepr hXY B₂).toMatroid) :
@@ -896,23 +894,22 @@ private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type*} [Field 
   rw [←Matrix.transpose_inj]
   apply Matrix.ext_col
   intro y
-  suffices hDD : { x | B₁ᵀ y x ≠ 0 } = { x | B₂ᵀ y x ≠ 0 }
-  · ext x
-    repeat rw [Matrix.support, Matrix.transpose_apply, Matrix.of_apply]
-    simp_rw [Matrix.transpose_apply, Set.setOf_inj, funext_iff] at hDD
-    specialize hDD x
-    rw [ne_eq, ne_eq, propext_iff, not_iff_not, ←propext_iff] at hDD
-    simp_rw [hDD]
-  apply Set.eq_of_subset_of_subset
-  · exact support_eq_support_of_same_matroid_aux_aux hSS y
-  · exact support_eq_support_of_same_matroid_aux_aux hSS.symm y
+  have hBB : { x | B₁ᵀ y x ≠ 0 } = { x | B₂ᵀ y x ≠ 0 } :=
+    Set.eq_of_subset_of_subset
+      (support_subset_support_of_same_matroid_aux hSS y)
+      (support_subset_support_of_same_matroid_aux hSS.symm y)
+  ext x
+  iterate 2 rw [Matrix.support, Matrix.transpose_apply, Matrix.of_apply]
+  simp_rw [Matrix.transpose_apply, Set.setOf_inj, funext_iff] at hBB
+  specialize hBB x
+  rw [ne_eq, ne_eq, propext_iff, not_iff_not, ←propext_iff] at hBB
+  simp_rw [hBB]
 
 private lemma B_eq_B_of_same_matroid_same_X {X Y : Set α} {hXY : X ⫗ Y} {B₁ B₂ : Matrix X Y Z2}
     [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] [Fintype X]
     (hSS : (mkStandardRepr hXY B₁).toMatroid = (mkStandardRepr hXY B₂).toMatroid) :
-    B₁ = B₂ := by
-  rw [←B₁.support_Z2, ←B₂.support_Z2]
-  exact support_eq_support_of_same_matroid_aux hSS
+    B₁ = B₂ :=
+  B₁.support_Z2 ▸ B₂.support_Z2 ▸ support_eq_support_of_same_matroid_aux hSS
 
 /-- If two standard representations of the same binary matroid have the same base, they are identical. -/
 lemma ext_standardRepr_of_same_matroid_same_X {S₁ S₂ : StandardRepr α Z2} [Fintype S₁.X]
@@ -928,8 +925,8 @@ universe u₁ u₂ v
 
 /-- If two standard representations of the same matroid have the same base, then the standard representation matrices have
     the same support. -/
-lemma support_eq_support_of_same_matroid_same_X {F₁ : Type u₁} {F₂ : Type u₂} {α : Type max u₁ u₂ v} [DecidableEq α]
-      [Field F₁] [Field F₂] [DecidableEq F₁] [DecidableEq F₂]
+lemma support_eq_support_of_same_matroid_same_X {F₁ : Type u₁} {F₂ : Type u₂} {α : Type max u₁ u₂ v}
+      [DecidableEq α] [DecidableEq F₁] [DecidableEq F₂] [Field F₁] [Field F₂]
     {S₁ : StandardRepr α F₁} {S₂ : StandardRepr α F₂} [Fintype S₂.X]
     (hSS : S₁.toMatroid = S₂.toMatroid) (hXX : S₁.X = S₂.X) :
     let hYY : S₁.Y = S₂.Y := right_eq_right_of_union_eq_union hXX S₁.hXY S₂.hXY (congr_arg Matroid.E hSS)

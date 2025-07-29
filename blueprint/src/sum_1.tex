@@ -12,7 +12,7 @@
 \end{definition}
 
 \begin{definition}
-    \label{Matroid.Is1sumOf}
+    \label{Matroid.IsSum1of}
     \uses{Matroid,StandardRepr,standardReprSum1}
     % \lean{}
     \leanok
@@ -60,15 +60,15 @@
 \end{proof}
 
 \begin{theorem}
-    \label{Matroid.Is1sumOf.isRegular}
-    \uses{Matroid.Is1sumOf,Matroid.IsRegular}
+    \label{Matroid.IsSum1of.isRegular}
+    \uses{Matroid.IsSum1of,Matroid.IsRegular}
     % \lean{}
     \leanok
     Let $M$ be a $1$-sum of regular matroids $M_{\ell}$ and $M_{r}$. Then $M$ is also regular.
 \end{theorem}
 
 \begin{proof}
-    \uses{StandardRepr,Matroid.Is1sumOf,Matroid.IsRegular,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,Matrix.fromBlocks_isTotallyUnimodular,Matrix.IsTuSigningOf}
+    \uses{StandardRepr,Matroid.IsSum1of,Matroid.IsRegular,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,Matrix.fromBlocks_isTotallyUnimodular,Matrix.IsTuSigningOf}
     \leanok
-    Let $B_{\ell}$, $B_{r}$, and $B$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{Matroid.Is1sumOf}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Then $B' = B_{\ell}' \oplus_{1} B_{r}'$ is a TU signing of $B$. Indeed, $B'$ is TU by Lemma~\ref{Matrix.fromBlocks_isTotallyUnimodular}, and a direct calculation shows that $B'$ is a signing of $B$. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
+    Let $B_{\ell}$, $B_{r}$, and $B$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{Matroid.IsSum1of}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Then $B' = B_{\ell}' \oplus_{1} B_{r}'$ is a TU signing of $B$. Indeed, $B'$ is TU by Lemma~\ref{Matrix.fromBlocks_isTotallyUnimodular}, and a direct calculation shows that $B'$ is a signing of $B$. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
 \end{proof}

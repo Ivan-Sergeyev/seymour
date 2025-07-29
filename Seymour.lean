@@ -91,7 +91,7 @@ recall standardReprSum1 {α : Type*} [DecidableEq α] {Sₗ Sᵣ : StandardRepr 
     none
 
 -- how 1-sum of binary matroids is defined
-recall Matroid.Is1sumOf {α : Type*} [DecidableEq α] (M Mₗ Mᵣ : Matroid α) : Prop :=
+recall Matroid.IsSum1of {α : Type*} [DecidableEq α] (M Mₗ Mᵣ : Matroid α) : Prop :=
   ∃ S Sₗ Sᵣ : StandardRepr α Z2,
   ∃ hXY : Disjoint Sₗ.X Sᵣ.Y,
   ∃ hYX : Disjoint Sₗ.Y Sᵣ.X,
@@ -103,13 +103,13 @@ recall Matroid.Is1sumOf {α : Type*} [DecidableEq α] (M Mₗ Mᵣ : Matroid α)
   ∧ Sᵣ.toMatroid = Mᵣ
 
 -- [theorem] any 1-sum of regular matroids is a regular matroid
-recall Matroid.Is1sumOf.isRegular {α : Type*} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} :
-  M.Is1sumOf Mₗ Mᵣ → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
+recall Matroid.IsSum1of.isRegular {α : Type*} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} :
+  M.IsSum1of Mₗ Mᵣ → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
 /--
-info: 'Matroid.Is1sumOf.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: 'Matroid.IsSum1of.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
 -/
 #guard_msgs in
-#print axioms Matroid.Is1sumOf.isRegular
+#print axioms Matroid.IsSum1of.isRegular
 
 
 /-! ## The 2-sum -/
@@ -144,7 +144,7 @@ recall standardReprSum2 {α : Type*} [DecidableEq α] {Sₗ Sᵣ : StandardRepr 
     none
 
 -- how 2-sum of binary matroids is defined
-recall Matroid.Is2sumOf {α : Type*} [DecidableEq α] (M Mₗ Mᵣ : Matroid α) : Prop :=
+recall Matroid.IsSum2of {α : Type*} [DecidableEq α] (M Mₗ Mᵣ : Matroid α) : Prop :=
   ∃ S Sₗ Sᵣ : StandardRepr α Z2,
   ∃ x y : α,
   ∃ hXX : Sₗ.X ∩ Sᵣ.X = {x},
@@ -159,13 +159,13 @@ recall Matroid.Is2sumOf {α : Type*} [DecidableEq α] (M Mₗ Mᵣ : Matroid α)
   ∧ Sᵣ.toMatroid = Mᵣ
 
 -- [theorem] any 2-sum of regular matroids is a regular matroid
-recall Matroid.Is2sumOf.isRegular {α : Type*} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} :
-  M.Is2sumOf Mₗ Mᵣ → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
+recall Matroid.IsSum2of.isRegular {α : Type*} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} :
+  M.IsSum2of Mₗ Mᵣ → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
 /--
-info: 'Matroid.Is2sumOf.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: 'Matroid.IsSum2of.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
 -/
 #guard_msgs in
-#print axioms Matroid.Is2sumOf.isRegular
+#print axioms Matroid.IsSum2of.isRegular
 
 
 /-! ## The 3-sum -/
@@ -301,7 +301,7 @@ recall standardReprSum3 {α : Type*} [DecidableEq α] {Sₗ Sᵣ : StandardRepr 
     none
 
 -- how 3-sum of binary matroids is defined
-recall Matroid.Is3sumOf {α : Type*} [DecidableEq α] (M Mₗ Mᵣ : Matroid α) : Prop :=
+recall Matroid.IsSum3of {α : Type*} [DecidableEq α] (M Mₗ Mᵣ : Matroid α) : Prop :=
   ∃ S Sₗ Sᵣ : StandardRepr α Z2,
   ∃ x₀ x₁ x₂ y₀ y₁ y₂ : α,
   ∃ hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂},
@@ -316,10 +316,10 @@ recall Matroid.Is3sumOf {α : Type*} [DecidableEq α] (M Mₗ Mᵣ : Matroid α)
   ∧ Sᵣ.toMatroid = Mᵣ
 
 -- [theorem] any 3-sum of regular matroids is a regular matroid
-recall Matroid.Is3sumOf.isRegular {α : Type*} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} :
-  M.Is3sumOf Mₗ Mᵣ → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
+recall Matroid.IsSum3of.isRegular {α : Type*} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} :
+  M.IsSum3of Mₗ Mᵣ → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
 /--
-info: 'Matroid.Is3sumOf.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: 'Matroid.IsSum3of.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
 -/
 #guard_msgs in
-#print axioms Matroid.Is3sumOf.isRegular
+#print axioms Matroid.IsSum3of.isRegular

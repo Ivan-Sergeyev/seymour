@@ -140,7 +140,7 @@ noncomputable def standardReprSum2 {α : Type*} [DecidableEq α] {Sₗ Sᵣ : St
     none
 
 /-- Binary matroid `M` is a result of 2-summing `Mₗ` and `Mᵣ` in some way. -/
-def Matroid.Is2sumOf {α : Type*} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) : Prop :=
+def Matroid.IsSum2of {α : Type*} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ : Matroid α) : Prop :=
   ∃ S Sₗ Sᵣ : StandardRepr α Z2,
   ∃ x y : α,
   ∃ hXX : Sₗ.X ∩ Sᵣ.X = {x},
@@ -387,7 +387,7 @@ lemma standardReprSum2_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α
     (fun iₗ => (hSY ▸ j).toSum.casesOn (hBBₗ (Set.diff_subset.elem iₗ)) ↓abs_zero)
     (fun iᵣ => (hSY ▸ j).toSum.casesOn (abs_mul_eq_zmod_cast (hBBᵣ iᵣ hy._ᵣ) <| hBBₗ hx._ₗ ·) (hBBᵣ iᵣ <| Set.diff_subset.elem ·))
 
-lemma Matroid.Is2sumOf.E_eq (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hMMM : M.Is2sumOf Mₗ Mᵣ) :
+lemma Matroid.IsSum2of.E_eq (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hMMM : M.IsSum2of Mₗ Mᵣ) :
     M.E = Mₗ.E ∪ Mᵣ.E := by
   obtain ⟨S, _, _, _, _, _, _, _, _, hS, _, _, rfl, rfl, rfl⟩ := hMMM
   have hX := standardReprSum2_X_eq hS
@@ -397,8 +397,8 @@ lemma Matroid.Is2sumOf.E_eq (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hMMM : M.
 
 /-- Any 2-sum of regular matroids is a regular matroid.
     This is part two (of three) of the easy direction of the Seymour's theorem. -/
-theorem Matroid.Is2sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
-    (hMMM : M.Is2sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
+theorem Matroid.IsSum2of.isRegular {M Mₗ Mᵣ : Matroid α}
+    (hMMM : M.IsSum2of Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
   obtain ⟨S, _, _, _, _, _, _, _, _, hS, _, _, rfl, rfl, rfl⟩ := hMMM
   have : Finite S.X := standardReprSum2_X_eq hS ▸ Finite.Set.finite_union ..

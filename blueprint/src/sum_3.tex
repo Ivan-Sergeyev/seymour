@@ -105,7 +105,7 @@
 \end{definition}
 
 \begin{definition}
-    \label{Matroid.Is3sumOf}
+    \label{Matroid.IsSum3of}
     \uses{Matroid,StandardRepr,standardReprSum3}
     % \lean{}
     \leanok
@@ -598,15 +598,15 @@ For the sake of simplicity of notation, going forward we assume that the submatr
 \end{proof}
 
 \begin{theorem}
-    \label{Matroid.Is3sumOf.isRegular}
-    \uses{Matroid.Is3sumOf,Matroid.IsRegular,Matrix.isUnit_2x2}
+    \label{Matroid.IsSum3of.isRegular}
+    \uses{Matroid.IsSum3of,Matroid.IsRegular,Matrix.isUnit_2x2}
     % \lean{}
     \leanok
     Let $M$ be a $3$-sum of regular matroids $M_{\ell}$ and $M_{r}$. Then $M$ is also regular.
 \end{theorem}
 
 \begin{proof}
-    \uses{StandardRepr,Matroid.Is3sumOf,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,MatrixSum3.toCanonicalSigning,MatrixSum3.HasCanonicalSigning.toCanonicalSigning,MatrixSum3.IsCanonicalSigning.IsTotallyUnimodular}
+    \uses{StandardRepr,Matroid.IsSum3of,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,MatrixSum3.toCanonicalSigning,MatrixSum3.HasCanonicalSigning.toCanonicalSigning,MatrixSum3.IsCanonicalSigning.IsTotallyUnimodular}
     \leanok
-    Let $B_{\ell}$, $B_{r}$, and $B$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{Matroid.Is3sumOf}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings. Then the canonical signing $B''$ from Definition~\ref{MatrixSum3.toCanonicalSigning} is a TU signing of $B$. Indeed, $B''$ is a signing of $B$ by Lemma~\ref{MatrixSum3.HasCanonicalSigning.toCanonicalSigning}, and $B''$ is TU by Lemma~\ref{MatrixSum3.IsCanonicalSigning.IsTotallyUnimodular}. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
+    Let $B_{\ell}$, $B_{r}$, and $B$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{Matroid.IsSum3of}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings. Then the canonical signing $B''$ from Definition~\ref{MatrixSum3.toCanonicalSigning} is a TU signing of $B$. Indeed, $B''$ is a signing of $B$ by Lemma~\ref{MatrixSum3.HasCanonicalSigning.toCanonicalSigning}, and $B''$ is TU by Lemma~\ref{MatrixSum3.IsCanonicalSigning.IsTotallyUnimodular}. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
 \end{proof}

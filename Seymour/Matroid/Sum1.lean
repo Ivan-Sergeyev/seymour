@@ -41,7 +41,7 @@ noncomputable def standardReprSum1 {Sₗ Sᵣ : StandardRepr α Z2} (hXY : Sₗ.
     none
 
 /-- Binary matroid `M` is a result of 1-summing `Mₗ` and `Mᵣ` in some way. -/
-def Matroid.Is1sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) : Prop :=
+def Matroid.IsSum1of (M : Matroid α) (Mₗ Mᵣ : Matroid α) : Prop :=
   ∃ S Sₗ Sᵣ : StandardRepr α Z2,
   ∃ hXY : Sₗ.X ⫗ Sᵣ.Y,
   ∃ hYX : Sₗ.Y ⫗ Sᵣ.X,
@@ -81,7 +81,7 @@ lemma standardReprSum1_Y_eq {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : Sₗ.X ⫗
   obtain ⟨_, hSSS⟩ := hS
   exact congr_arg StandardRepr.Y hSSS.symm
 
-lemma Matroid.Is1sumOf.E_eq (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hMMM : M.Is1sumOf Mₗ Mᵣ) :
+lemma Matroid.IsSum1of.E_eq (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hMMM : M.IsSum1of Mₗ Mᵣ) :
     M.E = Mₗ.E ∪ Mᵣ.E := by
   obtain ⟨S, _, _, _, _, hS, _, _, rfl, rfl, rfl⟩ := hMMM
   have hX := standardReprSum1_X_eq hS
@@ -210,8 +210,8 @@ lemma standardReprSum1_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : S�
 
 /-- Any 1-sum of regular matroids is a regular matroid.
     This is part one (of three) of the easy direction of the Seymour's theorem. -/
-theorem Matroid.Is1sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
-    (hMMM : M.Is1sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
+theorem Matroid.IsSum1of.isRegular {M Mₗ Mᵣ : Matroid α}
+    (hMMM : M.IsSum1of Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
   obtain ⟨S, _, _, _, _, hS, _, _, rfl, rfl, rfl⟩ := hMMM
   have : Finite S.X := standardReprSum1_X_eq hS ▸ Finite.Set.finite_union ..

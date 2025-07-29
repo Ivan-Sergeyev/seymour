@@ -225,7 +225,7 @@ private lemma Matrix.IsTotallyUnimodular.toCanonicalSigning {X Y : Type*} [Decid
       simp_rw [hjy₀, ite_false, hjy₁, ite_false, hjy₂, ite_false]
       exact one_in_signTypeCastRange
   unfold Matrix.toCanonicalSigning
-  exact Q.entryProd_outerProd_eq_mul_col_mul_row _ _ ▸ (hQ.mul_rows hu).mul_cols hv
+  exact Q.entrywiseProduct_outerProduct_eq_mul_col_mul_row _ _ ▸ (hQ.mul_rows hu).mul_cols hv
 
 
 /-! ### Definition of re-signing in two special cases -/
@@ -3450,7 +3450,7 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
 /-! ### The 3-sum of matroids -/
 
 /-- Matroid `M` is a result of 3-summing `Mₗ` and `Mᵣ` in some way. -/
-def Matroid.Is3sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) : Prop :=
+def Matroid.IsSum3of (M : Matroid α) (Mₗ Mᵣ : Matroid α) : Prop :=
   ∃ S Sₗ Sᵣ : StandardRepr α Z2,
   ∃ x₀ x₁ x₂ y₀ y₁ y₂ : α,
   ∃ hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂},
@@ -3464,7 +3464,7 @@ def Matroid.Is3sumOf (M : Matroid α) (Mₗ Mᵣ : Matroid α) : Prop :=
   ∧ Sₗ.toMatroid = Mₗ
   ∧ Sᵣ.toMatroid = Mᵣ
 
-lemma Matroid.Is3sumOf.E_eq (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hMMM : M.Is3sumOf Mₗ Mᵣ) :
+lemma Matroid.IsSum3of.E_eq (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hMMM : M.IsSum3of Mₗ Mᵣ) :
     M.E = Mₗ.E ∪ Mᵣ.E := by
   obtain ⟨S, _, _, _, _, _, _, _, _, _, _, _, _, hS, _, _, rfl, rfl, rfl⟩ := hMMM
   have hX := standardReprSum3_X_eq hS
@@ -3474,8 +3474,8 @@ lemma Matroid.Is3sumOf.E_eq (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hMMM : M.
 
 /-- Any 3-sum of two regular matroids is a regular matroid.
     This is the final part of the easy direction of the Seymour's theorem. -/
-theorem Matroid.Is3sumOf.isRegular {M Mₗ Mᵣ : Matroid α}
-    (hMMM : M.Is3sumOf Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
+theorem Matroid.IsSum3of.isRegular {M Mₗ Mᵣ : Matroid α}
+    (hMMM : M.IsSum3of Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
   obtain ⟨S, _, _, _, _, _, _, _, _, _, _, _, _, hS, _, _, rfl, rfl, rfl⟩ := hMMM
   have : Finite S.X := standardReprSum3_X_eq hS ▸ Finite.Set.finite_union ..

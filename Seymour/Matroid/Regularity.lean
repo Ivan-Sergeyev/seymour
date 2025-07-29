@@ -162,7 +162,7 @@ private lemma Matrix.exists_finite_allColsIn {X Y R : Type*} [Fintype X] [Decida
     have hj : (A · j) ∈ C := by use j
     exact ⟨⟨hj.choose, by aesop⟩, hj.choose_spec.symm⟩
 
-private lemma Matrix.linearIndependent_if_LinearIndependent_subset_cols {X Y R : Type*} [Ring R]
+private lemma Matrix.linearIndependent_if_linearIndependent_subset_cols {X Y R : Type*} [Ring R]
     (A : Matrix X Y R) {Y' : Set Y} (hA : LinearIndependent R (A.submatrix id (fun y' : Y' => y'.val))) :
     LinearIndependent R A := by
   by_contra lin_dep
@@ -196,7 +196,7 @@ private lemma Matrix.linearIndependent_iff_allCols_submatrix_linearIndependent {
     ext i
     rw [congr_fun hy' i]
     simp
-  · exact A.linearIndependent_if_LinearIndependent_subset_cols
+  · exact A.linearIndependent_if_linearIndependent_subset_cols
 
 private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent_of_finite_of_finite
     {X Y : Type*} [DecidableEq X] [DecidableEq Y] [Fintype X] [Fintype Y] {A : Matrix X Y ℚ}
@@ -221,13 +221,13 @@ private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearInd
     rw [A.linearIndependent_iff_allCols_submatrix_linearIndependent hAY'] at lin_indep
     have := Set.Finite.fintype hY'
     rw [(hA.submatrix id Subtype.val).linearIndependent_iff_support_linearIndependent_of_finite_of_finite] at lin_indep
-    exact A.support.linearIndependent_if_LinearIndependent_subset_cols lin_indep
+    exact A.support.linearIndependent_if_linearIndependent_subset_cols lin_indep
   · obtain ⟨Y', hY', hAY'⟩ := A.support.exists_finite_allColsIn Finset.univ (Finset.mem_univ <| A.support · ·)
     rw [A.support.linearIndependent_iff_allCols_submatrix_linearIndependent hAY'] at lin_indep
     rw [Matrix.support_submatrix] at lin_indep
     have := Set.Finite.fintype hY'
     rw [←(hA.submatrix id Subtype.val).linearIndependent_iff_support_linearIndependent_of_finite_of_finite] at lin_indep
-    exact A.linearIndependent_if_LinearIndependent_subset_cols lin_indep
+    exact A.linearIndependent_if_linearIndependent_subset_cols lin_indep
 
 private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent
     {X Y : Type*} [DecidableEq X] [DecidableEq Y] {A : Matrix X Y ℚ}

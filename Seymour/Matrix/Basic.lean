@@ -47,11 +47,13 @@ lemma Matrix.det_int_coe [DecidableEq α] [Fintype α] (A : Matrix α α ℤ) (F
   else
     simp [Int.units_ne_iff_eq_neg.→ h1]
 
-lemma Matrix.entryProd_outerProd_eq_mul_col_mul_row {m n : Type*} [Semigroup α] (A : Matrix m n α) (c : m → α) (r : n → α) :
+lemma Matrix.entrywiseProduct_outerProduct_eq_mul_col_mul_row {m n : Type*} [Semigroup α]
+    (A : Matrix m n α) (c : m → α) (r : n → α) :
     A ⊡ c ⊗ r = Matrix.of (fun i : m => fun j : n => (A i j * c i) * r j) := by
   simp [mul_assoc]
 
-lemma Matrix.entryProd_outerProd_eq_mul_row_mul_col {m n : Type*} [CommSemigroup α] (A : Matrix m n α) (c : m → α) (r : n → α) :
+lemma Matrix.entrywiseProduct_outerProduct_eq_mul_row_mul_col {m n : Type*} [CommSemigroup α]
+    (A : Matrix m n α) (c : m → α) (r : n → α) :
     A ⊡ c ⊗ r = Matrix.of (fun i : m => fun j : n => (A i j * r j) * c i) := by
   ext
   simp only [Matrix.of_apply, smul_eq_mul]
