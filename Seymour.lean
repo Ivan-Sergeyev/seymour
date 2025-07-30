@@ -213,7 +213,7 @@ recall blocksToMatrixSum3 {Xₗ Yₗ Xᵣ Yᵣ R : Type*}
 
 recall MatrixSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ R : Type*} [CommRing R] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R) :
     Matrix ((Xₗ ⊕ Unit) ⊕ (Fin 2 ⊕ Xᵣ)) ((Yₗ ⊕ Fin 2) ⊕ (Unit ⊕ Yᵣ)) R :=
-  Matrix.fromBlocks S.Aₗ 0 S.D S.Aᵣ
+  Matrix.fromBlocks S.Aₗ 0 (Matrix.fromBlocks S.Dₗ S.D₀ₗ (S.Dᵣ * S.D₀ₗ⁻¹ * S.Dₗ) S.Dᵣ) S.Aᵣ
 
 recall Matrix.toBlockSummandₗ {α : Type*} {Xₗ Yₗ : Set α} {R : Type*} (Bₗ : Matrix Xₗ Yₗ R) (x₀ x₁ x₂ : Xₗ) (y₀ y₁ y₂ : Yₗ) :
     Matrix ((Xₗ.drop3 x₀ x₁ x₂ ⊕ Unit) ⊕ Fin 2) ((Yₗ.drop3 y₀ y₁ y₂ ⊕ Fin 2) ⊕ Unit) R :=
