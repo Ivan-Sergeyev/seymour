@@ -223,12 +223,6 @@ recall Matrix.toBlockSummandᵣ {α : Type*} {Xᵣ Yᵣ : Set α} {R : Type*} (B
     Matrix (Unit ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ x₁ x₂)) (Fin 2 ⊕ (Unit ⊕ Yᵣ.drop3 y₀ y₁ y₂)) R :=
   Bᵣ.submatrix (·.casesOn (fun _ => x₂) (·.casesOn ![x₀, x₁] undrop3)) (·.casesOn ![y₀, y₁] (·.casesOn (fun _ => y₂) undrop3))
 
--- how 3-sum of matrices is defined
-recall matrixSum3 {α : Type*} [DecidableEq α] (Sₗ Sᵣ : StandardRepr α Z2)
-    (x₀ₗ x₁ₗ x₂ₗ : Sₗ.X) (y₀ₗ y₁ₗ y₂ₗ : Sₗ.Y) (x₀ᵣ x₁ᵣ x₂ᵣ : Sᵣ.X) (y₀ᵣ y₁ᵣ y₂ᵣ : Sᵣ.Y) :
-    MatrixSum3 (Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ) (Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ) (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ) (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ) Z2 :=
-  blocksToMatrixSum3 (Sₗ.B.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ) (Sᵣ.B.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ)
-
 -- specialized matrix conversion for 3-sum
 recall Matrix.toMatrixDropUnionDrop {α : Type*} [DecidableEq α] {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type*}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
@@ -294,7 +288,10 @@ recall standardReprSum3 {α : Type*} [DecidableEq α] {Sₗ Sᵣ : StandardRepr 
         exact
           ⟨⟨Sₗ.hXY.disjoint_sdiff_left.disjoint_sdiff_right, hYX.symm.disjoint_sdiff_left.disjoint_sdiff_right⟩,
           ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right, Sᵣ.hXY.disjoint_sdiff_left.disjoint_sdiff_right⟩⟩,
-      (matrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).matrix.toMatrixDropUnionDrop,
+      (blocksToMatrixSum3
+          (Sₗ.B.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ)
+          (Sᵣ.B.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ)
+        ).matrix.toMatrixDropUnionDrop,
       inferInstance,
       inferInstance⟩
   else
