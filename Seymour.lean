@@ -116,9 +116,9 @@ info: 'Matroid.IsSum1of.isRegular' depends on axioms: [propext, Classical.choice
 
 -- how 2-sum of matrices is defined
 recall matrixSum2 {R : Type*} [Semiring R] {Xₗ Yₗ Xᵣ Yᵣ : Type*}
-    (Aₗ : Matrix Xₗ Yₗ R) (x : Yₗ → R) (Aᵣ : Matrix Xᵣ Yᵣ R) (y : Xᵣ → R) :
+    (Aₗ : Matrix Xₗ Yₗ R) (r : Yₗ → R) (Aᵣ : Matrix Xᵣ Yᵣ R) (c : Xᵣ → R) :
     Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) R :=
-  Matrix.fromBlocks Aₗ 0 (fun i j => y i * x j) Aᵣ
+  Matrix.fromBlocks Aₗ 0 (fun i j => c i * r j) Aᵣ
 
 -- how 2-sum of standard representations is defined
 recall standardReprSum2 {α : Type*} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {x y : α}
