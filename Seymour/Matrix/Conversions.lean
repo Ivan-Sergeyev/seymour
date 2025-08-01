@@ -9,7 +9,7 @@ import Seymour.Matrix.Signing
 These conversions are used in 1-sum, 2-sum, and 3-sum of standard representations.
 -/
 
-variable {α R : Type*} {T₁ T₂ S₁ S₂ : Set α}
+variable {α β R : Type*} {T₁ T₂ : Set α} {S₁ S₂ : Set β}
   [∀ a, Decidable (a ∈ T₁)]
   [∀ a, Decidable (a ∈ T₂)]
   [∀ a, Decidable (a ∈ S₁)]
@@ -35,7 +35,7 @@ lemma Matrix.IsSigningOf.toMatrixUnionUnion [LinearOrderedRing R]
     A.toMatrixUnionUnion.IsSigningOf U.toMatrixUnionUnion :=
   (hAU ·.toSum ·.toSum)
 
-variable {T S : Set α}
+variable {T : Set α} {S : Set β}
 
 /-- Convert a block matrix to a matrix over set unions named as single indexing sets. -/
 def Matrix.toMatrixElemElem (A : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) R) (hT : T = T₁ ∪ T₂) (hS : S = S₁ ∪ S₂) :
