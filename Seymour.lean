@@ -4,6 +4,7 @@ import Seymour.Results.HardDirection
 
 open scoped Matrix Set.Notation
 
+
 /-! ## Preliminaries -/
 
 -- what `Disjoint` means
@@ -55,7 +56,7 @@ recall Subtype.toSum {α : Type*} {X Y : Set α} [∀ a, Decidable (a ∈ X)] [�
 
 -- how matrix indexed by disjoint unions is converted to a matrix indexed by set unions
 recall Matrix.toMatrixUnionUnion {α β R : Type*} {T₁ T₂ : Set α} {S₁ S₂ : Set β}
-    [∀ a, Decidable (a ∈ T₁)] [∀ a, Decidable (a ∈ T₂)] [∀ a, Decidable (a ∈ S₁)] [∀ a, Decidable (a ∈ S₂)]
+    [∀ a, Decidable (a ∈ T₁)] [∀ a, Decidable (a ∈ T₂)] [∀ b, Decidable (b ∈ S₁)] [∀ b, Decidable (b ∈ S₂)]
     (A : Matrix (T₁.Elem ⊕ T₂.Elem) (S₁.Elem ⊕ S₂.Elem) R) :
     Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem R :=
   A.submatrix Subtype.toSum Subtype.toSum

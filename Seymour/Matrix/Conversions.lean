@@ -2,7 +2,6 @@ import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 import Seymour.Basic.Conversions
 import Seymour.Matrix.Signing
 
-
 /-!
 # Conversion between set-indexed block-like matrices and type-indexed block matrices
 
@@ -12,8 +11,8 @@ These conversions are used in 1-sum, 2-sum, and 3-sum of standard representation
 variable {α β R : Type*} {T₁ T₂ : Set α} {S₁ S₂ : Set β}
   [∀ a, Decidable (a ∈ T₁)]
   [∀ a, Decidable (a ∈ T₂)]
-  [∀ a, Decidable (a ∈ S₁)]
-  [∀ a, Decidable (a ∈ S₂)]
+  [∀ b, Decidable (b ∈ S₁)]
+  [∀ b, Decidable (b ∈ S₂)]
 
 /-- Convert a block matrix to a matrix over set unions. -/
 def Matrix.toMatrixUnionUnion (A : Matrix (T₁.Elem ⊕ T₂.Elem) (S₁.Elem ⊕ S₂.Elem) R) :
