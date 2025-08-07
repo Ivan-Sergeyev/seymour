@@ -140,6 +140,9 @@ lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype
     have heX : e ∉ S.X.toFinset := (Set.not_mem_of_mem_diff he <| Set.mem_toFinset.→ ·)
     simp [heX]
 
+lemma StandardRepr.toMatroid_rankFinite_of_finite_X [Field R] (S : StandardRepr α R) [Fintype S.X] :
+    S.toMatroid.RankFinite :=
+  ⟨S.X, S.toMatroid_isBase_X, S.X.toFinite⟩
 
 /-! ## Guaranteeing that a standard representation of desired properties exists -/
 
