@@ -47,14 +47,13 @@ lemma Matroid.IsBase.not_ssubset_indep {M : Matroid α} {G I : Set α} (hMG : M.
   (M.isBase_iff_maximal_indep.→ hMG).not_ssuperset hMI
 
 lemma Matroid.finite_base_of_finite_base (M : Matroid α) {G H : Set α} (hMG : M.IsBase G) (hMH : M.IsBase H) (hG : Finite G) :
-    Finite H := by
-  cases hH : H.encard with
-  | top =>
-    exfalso
-    rw [hMH.encard_eq_encard_of_isBase hMG] at hH
-    exact (ENat.card_eq_top.→ hH).not_finite hG
-  | coe =>
-    exact H.finite_of_encard_eq_coe hH
+    Finite H :=
+  hMG.finite_of_finite hG hMH
+
+lemma Matroid.finite_indep_of_finite_base (M : Matroid α) {G I : Set α} (hMG : M.IsBase G) (hMI : M.Indep I) (hG : Finite G) :
+    Finite I := by
+  have ⟨J, hMJ, hIJ⟩ := hMI.exists_isBase_superset
+  exact Set.Finite.subset (hMG.finite_of_finite hG hMJ) hIJ
 
 private noncomputable abbrev Set.equivFin (S : Set α) [Fintype S] : Fin #S ≃ S :=
   (Fintype.equivFin S.Elem).symm
@@ -132,27 +131,36 @@ lemma StandardRepr.toMatroid_indep_iff_submatrix [DivisionRing R] (S : StandardR
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndependent R ((1 ◫ S.B).submatrix id (Subtype.toSum ∘ hI.elem))ᵀ :=
   S.toFull.indepCols_iff_submatrix I
 
-/-- The set of all rows of a standard representation is a base in the resulting matroid. -/
+/-- The set of all rows of a standard representation is an independent set in the resulting matroid. -/
+lemma StandardRepr.toMatroid_indep_X [DivisionRing R] (S : StandardRepr α R) :
+    S.toMatroid.Indep S.X := by
+  rw [StandardRepr.toMatroid_indep_iff_submatrix]
+  use Set.subset_union_left
+  simp [Matrix.submatrix]
+  show @LinearIndependent S.X R _ 1ᵀ ..
+  rw [Matrix.transpose_one]
+  exact Matrix.one_linearIndependent
+
+/-- The finite set of all rows of a standard representation is a base in the resulting matroid. -/
 lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype S.X] :
     S.toMatroid.IsBase S.X := by
-  apply Matroid.Indep.isBase_of_forall_insert
-  · rw [StandardRepr.toMatroid_indep_iff_submatrix]
-    use Set.subset_union_left
-    simp [Matrix.submatrix]
-    show @LinearIndependent S.X R _ 1ᵀ ..
-    rw [Matrix.transpose_one]
-    exact Matrix.one_linearIndependent
-  · intro e he
-    rw [StandardRepr.toMatroid_indep_iff_submatrix]
-    push_neg
-    intro _
-    apply Matrix.not_linearIndependent_of_too_many_rows
-    have heX : e ∉ S.X.toFinset := (Set.not_mem_of_mem_diff he <| Set.mem_toFinset.→ ·)
-    simp [heX]
+  apply S.toMatroid_indep_X.isBase_of_forall_insert
+  intro e he
+  rw [StandardRepr.toMatroid_indep_iff_submatrix]
+  push_neg
+  intro _
+  apply Matrix.not_linearIndependent_of_too_many_rows
+  have heX : e ∉ S.X.toFinset := (Set.not_mem_of_mem_diff he <| Set.mem_toFinset.→ ·)
+  simp [heX]
 
 lemma StandardRepr.toMatroid_rankFinite_of_finite_X [Field R] (S : StandardRepr α R) [Fintype S.X] :
     S.toMatroid.RankFinite :=
   ⟨S.X, S.toMatroid_isBase_X, S.X.toFinite⟩
+
+lemma StandardRepr.finite_X_of_toMatroid_rankFinite [DivisionRing R] (S : StandardRepr α R) (hS : S.toMatroid.RankFinite) :
+    Finite S.X := by
+  obtain ⟨G, hSG, hG⟩ := hS
+  exact S.toMatroid.finite_indep_of_finite_base hSG S.toMatroid_indep_X hG
 
 
 /-! ## Guaranteeing that a standard representation of desired properties exists -/
@@ -321,17 +329,6 @@ lemma Matrix.exists_standardRepr [DivisionRing R] {X Y : Set α} (A : Matrix X Y
     ∃ S : StandardRepr α R, S.toMatroid = A.toMatroid := by
   peel A.exists_standardRepr_isBase A.toMatroid.exists_isBase.choose_spec with hS
   exact hS.right
-
-lemma StandardRepr.finite_X_of_toMatroid_rankFinite [Field R] (S : StandardRepr α R) (hS : S.toMatroid.RankFinite) :
-    Finite S.X := by
-  obtain ⟨G, hSG, hG⟩ := hS
-  obtain ⟨S', hXG, hSS'⟩ := S.toFull.exists_standardRepr_isBase hSG
-  have hSS : S'.toMatroid = S.toMatroid := hSS'
-  clear hSS'
-  have hSX : S.toMatroid.IsBase S.X
-  · rw [←hSS]
-    sorry -- I am genuinely confused. Does it hold?
-  exact S.toMatroid.finite_base_of_finite_base hSG hSX hG
 
 set_option maxHeartbeats 666666 in
 -- Implicit Gaussian elimination for the proof of the lemma below.
