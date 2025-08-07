@@ -46,6 +46,16 @@ variable {α : Type*}
 lemma Matroid.IsBase.not_ssubset_indep {M : Matroid α} {G I : Set α} (hMG : M.IsBase G) (hMI : M.Indep I) : ¬(G ⊂ I) :=
   (M.isBase_iff_maximal_indep.→ hMG).not_ssuperset hMI
 
+lemma Matroid.finite_base_of_finite_base (M : Matroid α) {G H : Set α} (hMG : M.IsBase G) (hMH : M.IsBase H) (hG : Finite G) :
+    Finite H := by
+  cases hH : H.encard with
+  | top =>
+    exfalso
+    rw [hMH.encard_eq_encard_of_isBase hMG] at hH
+    exact (ENat.card_eq_top.→ hH).not_finite hG
+  | coe =>
+    exact H.finite_of_encard_eq_coe hH
+
 private noncomputable abbrev Set.equivFin (S : Set α) [Fintype S] : Fin #S ≃ S :=
   (Fintype.equivFin S.Elem).symm
 
@@ -143,6 +153,7 @@ lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype
 lemma StandardRepr.toMatroid_rankFinite_of_finite_X [Field R] (S : StandardRepr α R) [Fintype S.X] :
     S.toMatroid.RankFinite :=
   ⟨S.X, S.toMatroid_isBase_X, S.X.toFinite⟩
+
 
 /-! ## Guaranteeing that a standard representation of desired properties exists -/
 
@@ -310,6 +321,17 @@ lemma Matrix.exists_standardRepr [DivisionRing R] {X Y : Set α} (A : Matrix X Y
     ∃ S : StandardRepr α R, S.toMatroid = A.toMatroid := by
   peel A.exists_standardRepr_isBase A.toMatroid.exists_isBase.choose_spec with hS
   exact hS.right
+
+lemma StandardRepr.finite_X_of_toMatroid_rankFinite [Field R] (S : StandardRepr α R) (hS : S.toMatroid.RankFinite) :
+    Finite S.X := by
+  obtain ⟨G, hSG, hG⟩ := hS
+  obtain ⟨S', hXG, hSS'⟩ := S.toFull.exists_standardRepr_isBase hSG
+  have hSS : S'.toMatroid = S.toMatroid := hSS'
+  clear hSS'
+  have hSX : S.toMatroid.IsBase S.X
+  · rw [←hSS]
+    sorry -- I am genuinely confused. Does it hold?
+  exact S.toMatroid.finite_base_of_finite_base hSG hSX hG
 
 set_option maxHeartbeats 666666 in
 -- Implicit Gaussian elimination for the proof of the lemma below.
