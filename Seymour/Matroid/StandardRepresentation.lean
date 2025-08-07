@@ -3,6 +3,7 @@ import Seymour.Matrix.SubmoduleBasis
 import Seymour.Matrix.LinearIndependence
 import Seymour.Matrix.Pivoting
 import Seymour.Matrix.Support
+import Seymour.Matroid.Basic
 import Seymour.Matroid.FromMatrix
 
 /-!
@@ -42,14 +43,6 @@ attribute [instance] StandardRepr.decmemX
 attribute [instance] StandardRepr.decmemY
 
 variable {α : Type*}
-
-lemma Matroid.IsBase.not_ssubset_indep {M : Matroid α} {G I : Set α} (hMG : M.IsBase G) (hMI : M.Indep I) : ¬(G ⊂ I) :=
-  (M.isBase_iff_maximal_indep.→ hMG).not_ssuperset hMI
-
-lemma Matroid.Indep.finite_of_finite_base {M : Matroid α} {G I : Set α} (hMI : M.Indep I) (hMG : M.IsBase G) (hG : Finite G) :
-    Finite I := by
-  have ⟨_, hM, hI⟩ := hMI.exists_isBase_superset
-  exact (hMG.finite_of_finite hG hM).subset hI
 
 private noncomputable abbrev Set.equivFin (S : Set α) [Fintype S] : Fin #S ≃ S :=
   (Fintype.equivFin S.Elem).symm
@@ -149,14 +142,18 @@ lemma StandardRepr.toMatroid_isBase_X [Field R] (S : StandardRepr α R) [Fintype
   have heX : e ∉ S.X.toFinset := (Set.not_mem_of_mem_diff he <| Set.mem_toFinset.→ ·)
   simp [heX]
 
-lemma StandardRepr.toMatroid_rankFinite_of_finite_X [Field R] (S : StandardRepr α R) [Fintype S.X] :
-    S.toMatroid.RankFinite :=
-  ⟨S.X, S.toMatroid_isBase_X, S.X.toFinite⟩
-
 lemma StandardRepr.finite_X_of_toMatroid_rankFinite [DivisionRing R] (S : StandardRepr α R) (hS : S.toMatroid.RankFinite) :
     Finite S.X := by
   obtain ⟨G, hSG, hG⟩ := hS
   exact S.toMatroid_indep_X.finite_of_finite_base hSG hG
+
+lemma StandardRepr.toMatroid_rankFinite_of_finite_X [Field R] (S : StandardRepr α R) [Fintype S.X] :
+    S.toMatroid.RankFinite :=
+  ⟨S.X, S.toMatroid_isBase_X, S.X.toFinite⟩
+
+lemma StandardRepr.toMatroid_rankFinite_iff_finite_X [Field R] (S : StandardRepr α R) :
+    S.toMatroid.RankFinite ↔ Finite S.X :=
+  ⟨S.finite_X_of_toMatroid_rankFinite, (have := Set.Finite.fintype ·; S.toMatroid_rankFinite_of_finite_X)⟩
 
 
 /-! ## Guaranteeing that a standard representation of desired properties exists -/
