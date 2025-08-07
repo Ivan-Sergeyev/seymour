@@ -46,14 +46,10 @@ variable {α : Type*}
 lemma Matroid.IsBase.not_ssubset_indep {M : Matroid α} {G I : Set α} (hMG : M.IsBase G) (hMI : M.Indep I) : ¬(G ⊂ I) :=
   (M.isBase_iff_maximal_indep.→ hMG).not_ssuperset hMI
 
-lemma Matroid.finite_base_of_finite_base (M : Matroid α) {G H : Set α} (hMG : M.IsBase G) (hMH : M.IsBase H) (hG : Finite G) :
-    Finite H :=
-  hMG.finite_of_finite hG hMH
-
-lemma Matroid.finite_indep_of_finite_base (M : Matroid α) {G I : Set α} (hMG : M.IsBase G) (hMI : M.Indep I) (hG : Finite G) :
+lemma Matroid.Indep.finite_of_finite_base {M : Matroid α} {G I : Set α} (hMI : M.Indep I) (hMG : M.IsBase G) (hG : Finite G) :
     Finite I := by
-  have ⟨J, hMJ, hIJ⟩ := hMI.exists_isBase_superset
-  exact Set.Finite.subset (hMG.finite_of_finite hG hMJ) hIJ
+  have ⟨_, hM, hI⟩ := hMI.exists_isBase_superset
+  exact (hMG.finite_of_finite hG hM).subset hI
 
 private noncomputable abbrev Set.equivFin (S : Set α) [Fintype S] : Fin #S ≃ S :=
   (Fintype.equivFin S.Elem).symm
@@ -160,7 +156,7 @@ lemma StandardRepr.toMatroid_rankFinite_of_finite_X [Field R] (S : StandardRepr 
 lemma StandardRepr.finite_X_of_toMatroid_rankFinite [DivisionRing R] (S : StandardRepr α R) (hS : S.toMatroid.RankFinite) :
     Finite S.X := by
   obtain ⟨G, hSG, hG⟩ := hS
-  exact S.toMatroid.finite_indep_of_finite_base hSG S.toMatroid_indep_X hG
+  exact S.toMatroid_indep_X.finite_of_finite_base hSG hG
 
 
 /-! ## Guaranteeing that a standard representation of desired properties exists -/
