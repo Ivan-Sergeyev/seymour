@@ -220,9 +220,6 @@ def Matrix.toMatroid [DivisionRing R] (A : Matrix X Y R) : Matroid α :=
 lemma Matrix.toMatroid_E [DivisionRing R] (A : Matrix X Y R) : A.toMatroid.E = Y :=
   rfl
 
-lemma Matrix.toMatroid_indep [DivisionRing R] (A : Matrix X Y R) : A.toMatroid.Indep = A.IndepCols :=
-  rfl
-
 lemma Matrix.toMatroid_indep_iff [DivisionRing R] (A : Matrix X Y R) (I : Set α) :
     A.toMatroid.Indep I ↔ I ⊆ Y ∧ LinearIndepOn R Aᵀ (Y ↓∩ I) := by
   rfl

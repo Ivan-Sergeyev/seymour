@@ -61,18 +61,6 @@ variable [DecidableEq α] {R : Type*}
 def StandardRepr.toFull [Zero R] [One R] (S : StandardRepr α R) : Matrix S.X (S.X ∪ S.Y).Elem R :=
   ((1 ◫ S.B) · ∘ Subtype.toSum)
 
-lemma StandardRepr.toFull_indep_iff [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
-    S.toFull.toMatroid.Indep I ↔
-    I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R ((1 ◫ S.B) · ∘ Subtype.toSum)ᵀ ((S.X ∪ S.Y) ↓∩ I) := by
-  rfl
-
-lemma StandardRepr.toFull_indep_iff_elem [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
-    S.toFull.toMatroid.Indep I ↔
-    ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R ((1 ◫ S.B) · ∘ Subtype.toSum)ᵀ hI.elem.range := by
-  rw [StandardRepr.toFull_indep_iff]
-  unfold HasSubset.Subset.elem
-  aesop
-
 attribute [local ext] StandardRepr in
 lemma standardRepr_eq_standardRepr_of_B_eq_B [DivisionRing R] {S₁ S₂ : StandardRepr α R}
     (hX : S₁.X = S₂.X) (hY : S₁.Y = S₂.Y) (hB : S₁.B = hX ▸ hY ▸ S₂.B) :
@@ -118,21 +106,16 @@ lemma StandardRepr.toMatroid_E [DivisionRing R] (S : StandardRepr α R) :
     S.toMatroid.E = S.X ∪ S.Y :=
   rfl
 
-@[simp]
-lemma StandardRepr.toMatroid_indep [DivisionRing R] (S : StandardRepr α R) :
-    S.toMatroid.Indep = (∃ hI : · ⊆ S.X ∪ S.Y, LinearIndepOn R ((1 ◫ S.B)ᵀ ∘ Subtype.toSum) hI.elem.range) := by
-  ext I
-  exact S.toFull_indep_iff_elem I
-
 lemma StandardRepr.toMatroid_indep_iff [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
-    I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R ((1 ◫ S.B) · ∘ Subtype.toSum)ᵀ ((S.X ∪ S.Y) ↓∩ I) :=
-  S.toFull_indep_iff I
+    I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R ((1 ◫ S.B) · ∘ Subtype.toSum)ᵀ ((S.X ∪ S.Y) ↓∩ I) := by
+  rfl
 
+@[simp]
 lemma StandardRepr.toMatroid_indep_iff_elem [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
     ∃ hI : I ⊆ S.X ∪ S.Y, LinearIndepOn R ((1 ◫ S.B)ᵀ ∘ Subtype.toSum) hI.elem.range :=
-  S.toFull_indep_iff_elem I
+  S.toFull.indepCols_iff_elem I
 
 lemma StandardRepr.toMatroid_indep_iff_submatrix [DivisionRing R] (S : StandardRepr α R) (I : Set α) :
     S.toMatroid.Indep I ↔
