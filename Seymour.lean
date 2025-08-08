@@ -97,15 +97,13 @@ recall Matroid.IsSum1of {α : Type*} [DecidableEq α] (M Mₗ Mᵣ : Matroid α)
   ∃ hXY : Disjoint Sₗ.X Sᵣ.Y,
   ∃ hYX : Disjoint Sₗ.Y Sᵣ.X,
   standardReprSum1 hXY hYX = some S
-  ∧ Finite Sₗ.X
-  ∧ Finite Sᵣ.X
   ∧ S.toMatroid = M
   ∧ Sₗ.toMatroid = Mₗ
   ∧ Sᵣ.toMatroid = Mᵣ
 
 -- [theorem] any 1-sum of regular matroids is a regular matroid
 recall Matroid.IsSum1of.isRegular {α : Type*} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} :
-  M.IsSum1of Mₗ Mᵣ → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
+  M.IsSum1of Mₗ Mᵣ → M.RankFinite → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
 /--
 info: 'Matroid.IsSum1of.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
 -/
@@ -153,15 +151,13 @@ recall Matroid.IsSum2of {α : Type*} [DecidableEq α] (M Mₗ Mᵣ : Matroid α)
   ∃ hXY : Disjoint Sₗ.X Sᵣ.Y,
   ∃ hYX : Disjoint Sₗ.Y Sᵣ.X,
   standardReprSum2 hXX hYY hXY hYX = some S
-  ∧ Finite Sₗ.X
-  ∧ Finite Sᵣ.X
   ∧ S.toMatroid = M
   ∧ Sₗ.toMatroid = Mₗ
   ∧ Sᵣ.toMatroid = Mᵣ
 
 -- [theorem] any 2-sum of regular matroids is a regular matroid
 recall Matroid.IsSum2of.isRegular {α : Type*} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} :
-  M.IsSum2of Mₗ Mᵣ → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
+  M.IsSum2of Mₗ Mᵣ → M.RankFinite → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
 /--
 info: 'Matroid.IsSum2of.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
 -/
@@ -307,15 +303,13 @@ recall Matroid.IsSum3of {α : Type*} [DecidableEq α] (M Mₗ Mᵣ : Matroid α)
   ∃ hXY : Disjoint Sₗ.X Sᵣ.Y,
   ∃ hYX : Disjoint Sₗ.Y Sᵣ.X,
   standardReprSum3 hXX hYY hXY hYX = some S
-  ∧ Finite Sₗ.X
-  ∧ Finite Sᵣ.X
   ∧ S.toMatroid = M
   ∧ Sₗ.toMatroid = Mₗ
   ∧ Sᵣ.toMatroid = Mᵣ
 
 -- [theorem] any 3-sum of regular matroids is a regular matroid
 recall Matroid.IsSum3of.isRegular {α : Type*} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} :
-  M.IsSum3of Mₗ Mᵣ → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
+  M.IsSum3of Mₗ Mᵣ → M.RankFinite → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
 /--
 info: 'Matroid.IsSum3of.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
 -/

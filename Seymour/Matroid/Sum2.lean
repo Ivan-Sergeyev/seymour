@@ -148,8 +148,6 @@ def Matroid.IsSum2of {α : Type*} [DecidableEq α] (M : Matroid α) (Mₗ Mᵣ :
   ∃ hXY : Sₗ.X ⫗ Sᵣ.Y,
   ∃ hYX : Sₗ.Y ⫗ Sᵣ.X,
   standardReprSum2 hXX hYY hXY hYX = some S
-  ∧ Finite Sₗ.X
-  ∧ Finite Sᵣ.X
   ∧ S.toMatroid = M
   ∧ Sₗ.toMatroid = Mₗ
   ∧ Sᵣ.toMatroid = Mᵣ
@@ -389,7 +387,7 @@ lemma standardReprSum2_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x y : α
 
 lemma Matroid.IsSum2of.E_eq (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hMMM : M.IsSum2of Mₗ Mᵣ) :
     M.E = Mₗ.E ∪ Mᵣ.E := by
-  obtain ⟨S, _, _, _, _, _, _, _, _, hS, _, _, rfl, rfl, rfl⟩ := hMMM
+  obtain ⟨S, _, _, _, _, _, _, _, _, hS, rfl, rfl, rfl⟩ := hMMM
   have hX := standardReprSum2_X_eq hS
   have hY := standardReprSum2_Y_eq hS
   simp only [StandardRepr.toMatroid_E]
@@ -398,9 +396,11 @@ lemma Matroid.IsSum2of.E_eq (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hMMM : M.
 /-- Any 2-sum of regular matroids is a regular matroid.
     This is part two (of three) of the easy direction of the Seymour's theorem. -/
 theorem Matroid.IsSum2of.isRegular {M Mₗ Mᵣ : Matroid α}
-    (hMMM : M.IsSum2of Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
+    (hMMM : M.IsSum2of Mₗ Mᵣ) (hM : M.RankFinite) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
-  obtain ⟨S, _, _, _, _, _, _, _, _, hS, _, _, rfl, rfl, rfl⟩ := hMMM
-  have : Finite S.X := standardReprSum2_X_eq hS ▸ Finite.Set.finite_union ..
+  obtain ⟨S, Sₗ, Sᵣ, _, _, _, _, _, _, hSSS, rfl, rfl, rfl⟩ := hMMM
+  have hX : Finite S.X := S.finite_X_of_toMatroid_rankFinite hM
+  obtain ⟨hXₗ, hXᵣ⟩ : Finite Sₗ.X ∧ Finite Sᵣ.X
+  · simpa [standardReprSum2_X_eq hSSS, Set.finite_coe_iff] using hX
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
-  exact standardReprSum2_hasTuSigning hMₗ hMᵣ hS
+  exact standardReprSum2_hasTuSigning hMₗ hMᵣ hSSS
