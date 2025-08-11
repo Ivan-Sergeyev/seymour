@@ -421,7 +421,7 @@ private lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular_aux [Field R
           show ∑ j ∈ hGY.elem '' G'', c j • A'ᵀ j x = 0
           have hG'' :
               (hGY.elem '' G'').toFinset =
-              hGY.elem (G.equivFin ⟨n, hnG⟩) ᕃ G'.toFinset.map ⟨hGY.elem, hGY.elem_injective⟩
+              hGY.elem (G.equivFin ⟨n, hnG⟩) ᕃ G'.toFinset.map hGY.embed
           · simp only [G'']
             clear * -
             aesop

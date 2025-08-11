@@ -103,28 +103,16 @@ lemma Disjoint.linearIndepOn_fromRows_elem_range_iff {Xₗ Xᵣ Y I : Set α}
   · intro hAA
     constructor
     <;> intro c hc hc0
-    · specialize
-        hAA ⟨
-          c.support.map ⟨hXₗ.elem, hXₗ.elem_injective⟩,
-          fun x : (Xₗ ∪ Xᵣ).Elem => if hx : x.val ∈ Xₗ then c ⟨x.val, hx⟩ else 0,
-          by aesop
-        ⟩ (
-          by sorry
-        ) (
-          by sorry
-        )
+    · specialize hAA
+        ⟨c.support.map hXₗ.embed, fun x : (Xₗ ∪ Xᵣ).Elem => if hx : x.val ∈ Xₗ then c ⟨x.val, hx⟩ else 0, by aesop⟩
+        (by sorry)
+        (by sorry)
       ext i
       simpa using congr_fun (congr_arg Finsupp.toFun hAA) (hXₗ.elem i)
-    · specialize
-        hAA ⟨
-          c.support.map ⟨hXᵣ.elem, hXᵣ.elem_injective⟩,
-          fun x : (Xₗ ∪ Xᵣ).Elem => if hx : x.val ∈ Xᵣ then c ⟨x.val, hx⟩ else 0,
-          by aesop
-        ⟩ (
-          by sorry
-        ) (
-          by sorry
-        )
+    · specialize hAA
+        ⟨c.support.map hXᵣ.embed, fun x : (Xₗ ∪ Xᵣ).Elem => if hx : x.val ∈ Xᵣ then c ⟨x.val, hx⟩ else 0, by aesop⟩
+        (by sorry)
+        (by sorry)
       ext i
       simpa using congr_fun (congr_arg Finsupp.toFun hAA) (hXᵣ.elem i)
   · intro ⟨hAₗ, hAᵣ⟩ c hc hc0
