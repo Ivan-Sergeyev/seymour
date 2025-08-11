@@ -46,8 +46,6 @@ def Matroid.IsSum1of (M : Matroid α) (Mₗ Mᵣ : Matroid α) : Prop :=
   ∃ hXY : Sₗ.X ⫗ Sᵣ.Y,
   ∃ hYX : Sₗ.Y ⫗ Sᵣ.X,
   standardReprSum1 hXY hYX = some S
-  ∧ Finite Sₗ.X
-  ∧ Finite Sᵣ.X
   ∧ S.toMatroid = M
   ∧ Sₗ.toMatroid = Mₗ
   ∧ Sᵣ.toMatroid = Mᵣ
@@ -83,7 +81,7 @@ lemma standardReprSum1_Y_eq {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : Sₗ.X ⫗
 
 lemma Matroid.IsSum1of.E_eq (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hMMM : M.IsSum1of Mₗ Mᵣ) :
     M.E = Mₗ.E ∪ Mᵣ.E := by
-  obtain ⟨S, _, _, _, _, hS, _, _, rfl, rfl, rfl⟩ := hMMM
+  obtain ⟨S, _, _, _, _, hS, rfl, rfl, rfl⟩ := hMMM
   have hX := standardReprSum1_X_eq hS
   have hY := standardReprSum1_Y_eq hS
   simp only [StandardRepr.toMatroid_E]
@@ -178,9 +176,11 @@ lemma standardReprSum1_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : S�
 /-- Any 1-sum of regular matroids is a regular matroid.
     This is part one (of three) of the easy direction of the Seymour's theorem. -/
 theorem Matroid.IsSum1of.isRegular {M Mₗ Mᵣ : Matroid α}
-    (hMMM : M.IsSum1of Mₗ Mᵣ) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
+    (hMMM : M.IsSum1of Mₗ Mᵣ) (hM : M.RankFinite) (hMₗ : Mₗ.IsRegular) (hMᵣ : Mᵣ.IsRegular) :
     M.IsRegular := by
-  obtain ⟨S, _, _, _, _, hS, _, _, rfl, rfl, rfl⟩ := hMMM
-  have : Finite S.X := standardReprSum1_X_eq hS ▸ Finite.Set.finite_union ..
+  obtain ⟨S, Sₗ, Sᵣ, _, _, hSSS, rfl, rfl, rfl⟩ := hMMM
+  have hX : Finite S.X := S.finite_X_of_toMatroid_rankFinite hM
+  obtain ⟨hXₗ, hXᵣ⟩ : Finite Sₗ.X ∧ Finite Sᵣ.X
+  · simpa [standardReprSum1_X_eq hSSS, Set.finite_coe_iff] using hX
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning] at hMₗ hMᵣ ⊢
-  exact standardReprSum1_hasTuSigning hMₗ hMᵣ hS
+  exact standardReprSum1_hasTuSigning hMₗ hMᵣ hSSS
