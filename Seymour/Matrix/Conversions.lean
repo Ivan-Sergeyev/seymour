@@ -19,6 +19,11 @@ def Matrix.toMatrixUnionUnion (A : Matrix (T₁.Elem ⊕ T₂.Elem) (S₁.Elem �
     Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem R :=
   ((A ∘ Subtype.toSum) · ∘ Subtype.toSum)
 
+/-- Transposing a converted matrix gives the same result as converting a transposed matrix. -/
+lemma Matrix.toMatrixUnionUnion_transpose (A : Matrix (T₁.Elem ⊕ T₂.Elem) (S₁.Elem ⊕ S₂.Elem) R) :
+    A.toMatrixUnionUnion.transpose = A.transpose.toMatrixUnionUnion :=
+  rfl
+
 /-- A totally unimodular block matrix stays totally unimodular after converting to a matrix over set unions. -/
 lemma Matrix.IsTotallyUnimodular.toMatrixUnionUnion [CommRing R] {A : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) R}
     (hA : A.IsTotallyUnimodular) :
