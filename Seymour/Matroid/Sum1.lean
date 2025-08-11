@@ -87,14 +87,102 @@ lemma Matroid.IsSum1of.E_eq (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hMMM : M.
   simp only [StandardRepr.toMatroid_E]
   tauto_set
 
-private lemma standardReprSum1_eq_disjointSum_partitioned {Xₗ Yₗ Xᵣ Yᵣ Iₗ Iᵣ Jₗ Jᵣ : Set α}
+set_option maxHeartbeats 333333 in
+open scoped Set.Notation in
+lemma Disjoint.linearIndepOn_fromRows_elem_range_iff {Xₗ Xᵣ Y I : Set α}
+    [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Y)]
+    (hXX : Xₗ ⫗ Xᵣ) (Aₗ : Matrix Xₗ Y Z2) (Aᵣ : Matrix Xᵣ Y Z2)
+    (hI : I ⊆ Xₗ ∪ Xᵣ) (hIXₗ : I ∩ Xₗ ⊆ Xₗ) (hIXᵣ : I ∩ Xᵣ ⊆ Xᵣ) :
+    LinearIndepOn Z2 (((Aₗ ⊟ Aᵣ) ∘ Subtype.toSum)) hI.elem.range ↔
+      LinearIndepOn Z2 Aₗ hIXₗ.elem.range ∧
+      LinearIndepOn Z2 Aᵣ hIXᵣ.elem.range := by
+  have hXₗ : Xₗ ⊆ (Xₗ ∪ Xᵣ) := Set.subset_union_left
+  have hXᵣ : Xᵣ ⊆ (Xₗ ∪ Xᵣ) := Set.subset_union_right
+  rw [linearIndepOn_iff, linearIndepOn_iff, linearIndepOn_iff]
+  constructor
+  · intro hAA
+    constructor
+    <;> intro c hc hc0
+    · specialize
+        hAA ⟨
+          c.support.map ⟨hXₗ.elem, hXₗ.elem_injective⟩,
+          fun x : (Xₗ ∪ Xᵣ).Elem => if hx : x.val ∈ Xₗ then c ⟨x.val, hx⟩ else 0,
+          by aesop
+        ⟩ (
+          by sorry
+        ) (
+          by sorry
+        )
+      ext i
+      simpa using congr_fun (congr_arg Finsupp.toFun hAA) (hXₗ.elem i)
+    · specialize
+        hAA ⟨
+          c.support.map ⟨hXᵣ.elem, hXᵣ.elem_injective⟩,
+          fun x : (Xₗ ∪ Xᵣ).Elem => if hx : x.val ∈ Xᵣ then c ⟨x.val, hx⟩ else 0,
+          by aesop
+        ⟩ (
+          by sorry
+        ) (
+          by sorry
+        )
+      ext i
+      simpa using congr_fun (congr_arg Finsupp.toFun hAA) (hXᵣ.elem i)
+  · intro ⟨hAₗ, hAᵣ⟩ c hc hc0
+    have : Fintype (Xₗ ↓∩ c.support.toSet) :=
+      ((c.support.finite_toSet.image Subtype.val).preimage'
+        ↓↓(Set.subsingleton_singleton.preimage Subtype.val_injective).finite).fintype
+    have : Fintype (Xᵣ ↓∩ c.support.toSet) :=
+      ((c.support.finite_toSet.image Subtype.val).preimage'
+        ↓↓(Set.subsingleton_singleton.preimage Subtype.val_injective).finite).fintype
+    specialize hAₗ ⟨(Xₗ ↓∩ c.support.toSet).toFinset, fun x : Xₗ => c (hXₗ.elem x), by aesop⟩ (by sorry) (by sorry)
+    specialize hAᵣ ⟨(Xᵣ ↓∩ c.support.toSet).toFinset, fun x : Xᵣ => c (hXᵣ.elem x), by aesop⟩ (by sorry) (by sorry)
+    ext i
+    if hiXₗ : i.val ∈ Xₗ then
+      exact congr_fun (congr_arg Finsupp.toFun hAₗ) ⟨i.val, hiXₗ⟩
+    else
+      have hiXᵣ : i.val ∈ Xᵣ
+      · sorry
+      exact congr_fun (congr_arg Finsupp.toFun hAᵣ) ⟨i.val, hiXᵣ⟩
+
+private lemma standardReprSum1_eq_disjointSum_untransposed_aux_aux {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
+    [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
+    (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) (Aₗ : Matrix Xₗ Yₗ Z2) (Aᵣ : Matrix Xᵣ Yᵣ Z2)
+    (hI : I ⊆ Xₗ ∪ Xᵣ) (hIXₗ : I ∩ Xₗ ⊆ Xₗ) (hIXᵣ : I ∩ Xᵣ ⊆ Xᵣ) :
+    LinearIndepOn Z2 (((⊞ Aₗ 0 0 Aᵣ).toMatrixUnionUnion)) hI.elem.range ↔
+      LinearIndepOn Z2 Aₗ hIXₗ.elem.range ∧
+      LinearIndepOn Z2 Aᵣ hIXᵣ.elem.range := by
+  have hIAₗ : LinearIndepOn Z2 Aₗ hIXₗ.elem.range ↔ LinearIndepOn Z2 (Aₗ ◫ (0 : Matrix Xₗ Yᵣ Z2)) hIXₗ.elem.range
+  · sorry
+  have hIAᵣ : LinearIndepOn Z2 Aᵣ hIXᵣ.elem.range ↔ LinearIndepOn Z2 ((0 : Matrix Xᵣ Yₗ Z2) ◫ Aᵣ) hIXᵣ.elem.range
+  · sorry
+  rw [hIAₗ, hIAᵣ]
+  have : ∀ a : α, Decidable (a ∈ Yₗ ∪ Yᵣ) := (Set.decidableUnion Yₗ Yᵣ ·)
+  convert
+    hXX.linearIndepOn_fromRows_elem_range_iff
+      (((Aₗ ◫ 0) : Matrix Xₗ (Yₗ ⊕ Yᵣ) Z2).submatrix id Subtype.toSum)
+      (((0 ◫ Aᵣ) : Matrix Xᵣ (Yₗ ⊕ Yᵣ) Z2).submatrix id Subtype.toSum)
+      hI hIXₗ hIXᵣ
+  · ext i j
+    cases hi : i.toSum with
+    | inl iₗ =>
+      cases hj : j.toSum with
+      | inl jₗ => sorry
+      | inr jᵣ => sorry
+    | inr iᵣ =>
+      cases hj : j.toSum with
+      | inl jₗ => sorry
+      | inr jᵣ => sorry
+  · sorry
+  · sorry
+
+private lemma standardReprSum1_eq_disjointSum_untransposed_aux {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     (hXY : Xₗ ⫗ Yᵣ) (hYX : Yₗ ⫗ Xᵣ) (Bₗ : Matrix Xₗ Yₗ Z2) (Bᵣ : Matrix Xᵣ Yᵣ Z2)
-    (hI : (Iₗ ∪ Iᵣ) ∪ (Jₗ ∪ Jᵣ) ⊆ (Yₗ ∪ Yᵣ) ∪ (Xₗ ∪ Xᵣ)) (hIₗ : Iₗ ∪ Jₗ ⊆ Yₗ ∪ Xₗ) (hIᵣ : Iᵣ ∪ Jᵣ ⊆ Yᵣ ∪ Xᵣ) :
-    LinearIndepOn Z2 ((1 ⊟ (⊞ Bₗ 0 0 Bᵣ).toMatrixUnionUnion) ∘ Subtype.toSum) hI.elem.range ↔
+    (hI : I ⊆ (Yₗ ∪ Xₗ) ∪ (Yᵣ ∪ Xᵣ)) (hIₗ : I ∩ (Yₗ ∪ Xₗ) ⊆ Yₗ ∪ Xₗ) (hIᵣ : I ∩ (Yᵣ ∪ Xᵣ) ⊆ Yᵣ ∪ Xᵣ) :
+    LinearIndepOn Z2 (((⊞ ((1 ⊟ Bₗ) ∘ Subtype.toSum) 0 0 ((1 ⊟ Bᵣ) ∘ Subtype.toSum)).toMatrixUnionUnion)) hI.elem.range ↔
       LinearIndepOn Z2 ((1 ⊟ Bₗ) ∘ Subtype.toSum) hIₗ.elem.range ∧
       LinearIndepOn Z2 ((1 ⊟ Bᵣ) ∘ Subtype.toSum) hIᵣ.elem.range := by
-  sorry
+  apply standardReprSum1_eq_disjointSum_untransposed_aux_aux sorry sorry
 
 private lemma standardReprSum1_eq_disjointSum_untransposed {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
@@ -103,14 +191,10 @@ private lemma standardReprSum1_eq_disjointSum_untransposed {Xₗ Yₗ Xᵣ Yᵣ 
     LinearIndepOn Z2 ((1 ⊟ (⊞ Bₗ 0 0 Bᵣ).toMatrixUnionUnion) ∘ Subtype.toSum) hI.elem.range ↔
       LinearIndepOn Z2 ((1 ⊟ Bₗ) ∘ Subtype.toSum) hIₗ.elem.range ∧
       LinearIndepOn Z2 ((1 ⊟ Bᵣ) ∘ Subtype.toSum) hIᵣ.elem.range := by
-  have hI' := hI
-  have hIₗ' := hIₗ
-  have hIᵣ' := hIᵣ
-  rw [←Set.left_eq_inter] at hI'
-  simp only [Set.inter_union_distrib_left] at hIₗ' hIᵣ' hI'
-  have hhIₗ' : hIₗ.elem.range = hIₗ'.elem.range := sorry
-  have hhIᵣ' : hIᵣ.elem.range = hIᵣ'.elem.range := sorry
-  convert standardReprSum1_eq_disjointSum_partitioned hXY hYX Bₗ Bᵣ (by rw [hI'] at hI; congr) hIₗ' hIᵣ'
+  have hI' : I ⊆ (Yₗ ∪ Xₗ) ∪ (Yᵣ ∪ Xᵣ)
+  · tauto_set
+  rw [←standardReprSum1_eq_disjointSum_untransposed_aux hXY hYX Bₗ Bᵣ hI' hIₗ hIᵣ]
+  sorry
 
 private lemma standardReprSum1_eq_disjointSum_aux_aux {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
@@ -152,6 +236,7 @@ lemma standardReprSum1_eq_disjointSum {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : 
       aesop
     simp_rw [hIEE]
     simp [show I ⊆ S.X ∪ S.Y from hIS]
+    -- TODO also disjointness from the `StandardRepr` structures will have to be propagated
     convert standardReprSum1_eq_disjointSum_aux hXXX hYYY hXY hYX Sₗ.B Sᵣ.B hIS Set.inter_subset_right Set.inter_subset_right
 
 lemma standardReprSum1_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
@@ -170,8 +255,8 @@ lemma standardReprSum1_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : S�
   intro i j
   simp only [Matrix.toMatrixElemElem_apply]
   exact (hSX ▸ i).toSum.casesOn
-    (fun iₗ => (hSY ▸ j).toSum.casesOn (hBBₗ iₗ) ↓abs_zero)
-    (fun iᵣ => (hSY ▸ j).toSum.casesOn ↓abs_zero (hBBᵣ iᵣ))
+    (fun iₗ : Sₗ.X => (hSY ▸ j).toSum.casesOn (hBBₗ iₗ) ↓abs_zero)
+    (fun iᵣ : Sᵣ.X => (hSY ▸ j).toSum.casesOn ↓abs_zero (hBBᵣ iᵣ))
 
 /-- Any 1-sum of regular matroids is a regular matroid.
     This is part one (of three) of the easy direction of the Seymour's theorem. -/
