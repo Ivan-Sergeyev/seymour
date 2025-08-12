@@ -8,6 +8,12 @@ This file provides lemmas about sets that are not present in Mathlib.
 
 variable {α : Type*}
 
+lemma Disjoint.ni_right_of_in_left {X Y : Set α} {a : α} (hXY : Disjoint X Y) (ha : a ∈ X) : a ∉ Y :=
+  (by simpa [hXY.inter_eq] using Set.mem_inter ha ·)
+
+lemma Disjoint.ni_left_of_in_right {X Y : Set α} {a : α} (hXY : Disjoint X Y) (ha : a ∈ Y) : a ∉ X :=
+  hXY.symm.ni_right_of_in_left ha
+
 lemma in_left_of_in_union_of_ni_right {X Y : Set α} {a : α} (haXY : a ∈ X ∪ Y) (haY : a ∉ Y) : a ∈ X := by
   tauto_set
 

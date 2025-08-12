@@ -125,32 +125,89 @@ private lemma standardReprSum1_eq_disjointSum_untransposed_aux {Xₗ Yₗ Xᵣ Y
   apply standardReprSum1_eq_disjointSum_untransposed_aux_aux
   simp [*]
 
+omit [DecidableEq α] in -- TODO generalize and move
+lemma nameme {X X' Y I : Set α} /-{Y : Type}-/ {A : Matrix X Y Z2} {A' : Matrix X' Y Z2}
+    (hXX : X = X') (hAA : A = hXX ▸ A') /-(hAA : HEq A A')-/ (hIX : I ⊆ X) (hIX' : I ⊆ X') :
+    LinearIndepOn Z2 A hIX.elem.range ↔ LinearIndepOn Z2 A' hIX'.elem.range := by
+  cc
+
+-- TODO prove and move
+lemma Matrix.one_eq_toMatrixUnionUnion {Zₗ Zᵣ : Set α} [∀ a, Decidable (a ∈ Zₗ)] [∀ a, Decidable (a ∈ Zᵣ)] :
+    (1 : Matrix (Zₗ ∪ Zᵣ).Elem (Zₗ ∪ Zᵣ).Elem Z2) = (⊞ 1 0 0 1).toMatrixUnionUnion := by
+  rw [Matrix.fromBlocks_one]
+  sorry
+
 private lemma standardReprSum1_eq_disjointSum_untransposed {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
-    (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) (hXY : Xₗ ⫗ Yᵣ) (hYX : Yₗ ⫗ Xᵣ) (Bₗ : Matrix Xₗ Yₗ Z2) (Bᵣ : Matrix Xᵣ Yᵣ Z2)
+    (hSₗ : Xₗ ⫗ Yₗ) (hSᵣ : Xᵣ ⫗ Yᵣ) (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) (hXY : Xₗ ⫗ Yᵣ) (hYX : Yₗ ⫗ Xᵣ)
+    (Bₗ : Matrix Xₗ Yₗ Z2) (Bᵣ : Matrix Xᵣ Yᵣ Z2)
     (hI : I ⊆ (Yₗ ∪ Yᵣ) ∪ (Xₗ ∪ Xᵣ)) (hIₗ : I ∩ (Yₗ ∪ Xₗ) ⊆ Yₗ ∪ Xₗ) (hIᵣ : I ∩ (Yᵣ ∪ Xᵣ) ⊆ Yᵣ ∪ Xᵣ) :
     LinearIndepOn Z2 ((1 ⊟ (⊞ Bₗ 0 0 Bᵣ).toMatrixUnionUnion) ∘ Subtype.toSum) hI.elem.range ↔
       LinearIndepOn Z2 ((1 ⊟ Bₗ) ∘ Subtype.toSum) hIₗ.elem.range ∧
       LinearIndepOn Z2 ((1 ⊟ Bᵣ) ∘ Subtype.toSum) hIᵣ.elem.range := by
-  have hI' : I ⊆ (Yₗ ∪ Xₗ) ∪ (Yᵣ ∪ Xᵣ) := Set.union_union_union_comm Yₗ Xₗ Yᵣ Xᵣ ▸ hI
+  have hYYXX := Set.union_union_union_comm Yₗ Yᵣ Xₗ Xᵣ
+  have hI' : I ⊆ (Yₗ ∪ Xₗ) ∪ (Yᵣ ∪ Xᵣ) := hYYXX ▸ hI
   rw [←standardReprSum1_eq_disjointSum_untransposed_aux hXX hYY hXY hYX Bₗ Bᵣ hI' hIₗ hIᵣ]
-  sorry
+  apply nameme hYYXX
+  show _ = (⊞ ((1 ⊟ Bₗ) ∘ Subtype.toSum) 0 0 ((1 ⊟ Bᵣ) ∘ Subtype.toSum)).toMatrixElemElem hYYXX rfl
+  ext i j
+  have hBBij :
+    ((1 ⊟ (⊞ Bₗ 0 0 Bᵣ).toMatrixUnionUnion) ∘ Subtype.toSum) i j =
+      (⊞ ((1 ⊟ Bₗ) ∘ Subtype.toSum) 0 0 ((1 ⊟ Bᵣ) ∘ Subtype.toSum)).toMatrixUnionUnion (hYYXX ▸ i) j
+  · cases hi : i.toSum with
+    | inl i₁ =>
+      rw [Matrix.one_eq_toMatrixUnionUnion]
+      cases hi₁ : i₁.toSum with
+      | inl iₗ =>
+        have hi' : (hYYXX ▸ i).toSum = ◩⟨iₗ, Set.mem_union_left Xₗ iₗ.property⟩
+        · rw [←toUnion_left]
+          have hi' : i.val ∈ Yₗ ∪ Xₗ
+          · sorry
+          have hi'' : (hYYXX ▸ i).val ∈ Yₗ ∪ Xₗ
+          · sorry
+          simp [hi'']
+          clear * - hi hi₁
+          have hiₗ : iₗ.val = i.val
+          · sorry
+          rw [hiₗ]
+          clear * -
+          sorry
+        cases hj : j.toSum <;> simp [*, Matrix.toMatrixUnionUnion, -Matrix.fromBlocks_one]
+      | inr iᵣ =>
+        have hi' : (hYYXX ▸ i).toSum = ◪⟨iᵣ, Set.mem_union_left Xᵣ iᵣ.property⟩
+        · sorry
+        cases hj : j.toSum <;> simp [*, Matrix.toMatrixUnionUnion, -Matrix.fromBlocks_one]
+    | inr i₂ =>
+      cases hi₂ : i₂.toSum with
+      | inl iₗ =>
+        have hi' : (hYYXX ▸ i).toSum = ◩⟨iₗ, Set.mem_union_right Yₗ iₗ.property⟩
+        · sorry
+        have hiₗ : iₗ.val ∉ Yₗ := hSₗ.ni_right_of_in_left iₗ.property
+        cases hj : j.toSum <;> simp [*, Matrix.toMatrixUnionUnion]
+      | inr iᵣ =>
+        have hi' : (hYYXX ▸ i).toSum = ◪⟨iᵣ, Set.mem_union_right Yᵣ iᵣ.property⟩
+        · sorry
+        have hiᵣ : iᵣ.val ∉ Yᵣ := hSᵣ.ni_right_of_in_left iᵣ.property
+        cases hj : j.toSum <;> simp [*, Matrix.toMatrixUnionUnion, -Matrix.fromBlocks_one]
+  rewrite [hBBij, Matrix.toMatrixElemElem_apply]
+  rfl
 
 private lemma standardReprSum1_eq_disjointSum_aux_aux {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
-    (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) (hXY : Xₗ ⫗ Yᵣ) (hYX : Yₗ ⫗ Xᵣ) (Bₗ : Matrix Xₗ Yₗ Z2) (Bᵣ : Matrix Xᵣ Yᵣ Z2)
+    (hSₗ : Xₗ ⫗ Yₗ) (hSᵣ : Xᵣ ⫗ Yᵣ) (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) (hXY : Xₗ ⫗ Yᵣ) (hYX : Yₗ ⫗ Xᵣ)
+    (Bₗ : Matrix Xₗ Yₗ Z2) (Bᵣ : Matrix Xᵣ Yᵣ Z2)
     (hI : I ⊆ (Xₗ ∪ Xᵣ) ∪ (Yₗ ∪ Yᵣ)) (hIₗ : I ∩ (Xₗ ∪ Yₗ) ⊆ Xₗ ∪ Yₗ) (hIᵣ : I ∩ (Xᵣ ∪ Yᵣ) ⊆ Xᵣ ∪ Yᵣ) :
     LinearIndepOn Z2 ((1 ⊟ (⊞ Bₗ 0 0 Bᵣ).toMatrixUnionUnion.transpose) ∘ Subtype.toSum) hI.elem.range ↔
       LinearIndepOn Z2 ((1 ⊟ Bₗ.transpose) ∘ Subtype.toSum) hIₗ.elem.range ∧
       LinearIndepOn Z2 ((1 ⊟ Bᵣ.transpose) ∘ Subtype.toSum) hIᵣ.elem.range :=
   (⊞ Bₗ 0 0 Bᵣ).toMatrixUnionUnion_transpose ▸
   Matrix.fromBlocks_transpose .. ▸
-  standardReprSum1_eq_disjointSum_untransposed hYY hXX hYX hXY Bₗ.transpose Bᵣ.transpose hI hIₗ hIᵣ
+  standardReprSum1_eq_disjointSum_untransposed hSₗ.symm hSᵣ.symm hYY hXX hYX hXY Bₗ.transpose Bᵣ.transpose hI hIₗ hIᵣ
 
 private lemma standardReprSum1_eq_disjointSum_aux {Xₗ Yₗ Xᵣ Yᵣ X Y I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
-    (hXXX : X = Xₗ ∪ Xᵣ) (hYYY : Y = Yₗ ∪ Yᵣ) (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) (hXY : Xₗ ⫗ Yᵣ) (hYX : Yₗ ⫗ Xᵣ)
-    (Bₗ : Matrix Xₗ Yₗ Z2) (Bᵣ : Matrix Xᵣ Yᵣ Z2)
+    (hSₗ : Xₗ ⫗ Yₗ) (hSᵣ : Xᵣ ⫗ Yᵣ) (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) (hXY : Xₗ ⫗ Yᵣ) (hYX : Yₗ ⫗ Xᵣ)
+    (hXXX : X = Xₗ ∪ Xᵣ) (hYYY : Y = Yₗ ∪ Yᵣ) (Bₗ : Matrix Xₗ Yₗ Z2) (Bᵣ : Matrix Xᵣ Yᵣ Z2)
     (hI : I ⊆ X ∪ Y) (hIₗ : I ∩ (Xₗ ∪ Yₗ) ⊆ Xₗ ∪ Yₗ) (hIᵣ : I ∩ (Xᵣ ∪ Yᵣ) ⊆ Xᵣ ∪ Yᵣ) :
     have : ∀ a : α, Decidable (a ∈ X) := hXXX ▸ (Set.decidableUnion Xₗ Xᵣ ·)
     have : ∀ a : α, Decidable (a ∈ Y) := hYYY ▸ (Set.decidableUnion Yₗ Yᵣ ·)
@@ -158,7 +215,7 @@ private lemma standardReprSum1_eq_disjointSum_aux {Xₗ Yₗ Xᵣ Yᵣ X Y I : S
       LinearIndepOn Z2 ((1 ⊟ Bₗ.transpose) ∘ Subtype.toSum) hIₗ.elem.range ∧
       LinearIndepOn Z2 ((1 ⊟ Bᵣ.transpose) ∘ Subtype.toSum) hIᵣ.elem.range := by
   subst hXXX hYYY
-  convert standardReprSum1_eq_disjointSum_aux_aux hXX hYY hXY hYX Bₗ Bᵣ hI hIₗ hIᵣ
+  convert standardReprSum1_eq_disjointSum_aux_aux hSₗ hSᵣ hXX hYY hXY hYX Bₗ Bᵣ hI hIₗ hIᵣ
 
 lemma standardReprSum1_eq_disjointSum {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hS : standardReprSum1 hXY hYX = some S) :
@@ -175,7 +232,7 @@ lemma standardReprSum1_eq_disjointSum {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : 
     · aesop
     simp_rw [hIEE]
     simp [show I ⊆ S.X ∪ S.Y from hIS]
-    convert standardReprSum1_eq_disjointSum_aux hXXX hYYY hS.left.left hS.left.right hXY hYX Sₗ.B Sᵣ.B hIS _ _
+    convert standardReprSum1_eq_disjointSum_aux Sₗ.hXY Sᵣ.hXY hS.left.left hS.left.right hXY hYX hXXX hYYY Sₗ.B Sᵣ.B hIS _ _
 
 /-- The 1-sum of matroids is a disjoint sum of those matroids. -/
 theorem Matroid.IsSum1of.eq_disjointSum {M Mₗ Mᵣ : Matroid α} (hMMM : M.IsSum1of Mₗ Mᵣ) :
