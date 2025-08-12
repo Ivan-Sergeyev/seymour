@@ -101,12 +101,6 @@ lemma Matroid.IsSum1of.disjoint_E {M Mₗ Mᵣ : Matroid α} (hMMM : M.IsSum1of 
 
 /-! ## Results -/
 
-/-- The sum of two matroids on disjoint ground sets of the same type is a matroid whose ground set is a union of the ground sets
-    of the summands, in which a subset of said ground set is independent iff its intersections with respective ground set are
-    independent in each matroid. -/
-abbrev Disjoint.matroidSum {Mₗ Mᵣ : Matroid α} (hEE : Mₗ.E ⫗ Mᵣ.E) : Matroid α :=
-  Matroid.disjointSum Mₗ Mᵣ hEE
-
 private lemma standardReprSum1_eq_disjointSum_untransposed_aux_aux {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     (hXX : Xₗ ⫗ Xᵣ) (Aₗ : Matrix Xₗ Yₗ Z2) (Aᵣ : Matrix Xᵣ Yᵣ Z2)
