@@ -51,7 +51,7 @@ def Matroid.IsSum1of (M : Matroid α) (Mₗ Mᵣ : Matroid α) : Prop :=
   ∧ Sᵣ.toMatroid = Mᵣ
 
 
-/-! ## Results -/
+/-! ## API -/
 
 lemma standardReprSum1_disjoint_X {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hS : standardReprSum1 hXY hYX = some S) :
@@ -79,13 +79,27 @@ lemma standardReprSum1_Y_eq {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : Sₗ.X ⫗
   obtain ⟨_, hSSS⟩ := hS
   exact congr_arg StandardRepr.Y hSSS.symm
 
-lemma Matroid.IsSum1of.E_eq (M : Matroid α) (Mₗ Mᵣ : Matroid α) (hMMM : M.IsSum1of Mₗ Mᵣ) :
+lemma Matroid.IsSum1of.E_eq {M Mₗ Mᵣ : Matroid α} (hMMM : M.IsSum1of Mₗ Mᵣ) :
     M.E = Mₗ.E ∪ Mᵣ.E := by
   obtain ⟨S, _, _, _, _, hS, rfl, rfl, rfl⟩ := hMMM
   have hX := standardReprSum1_X_eq hS
   have hY := standardReprSum1_Y_eq hS
   simp only [StandardRepr.toMatroid_E]
   tauto_set
+
+lemma standardReprSum1_disjoint_E {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
+    (hS : standardReprSum1 hXY hYX = some S) :
+    Sₗ.toMatroid.E ⫗ Sᵣ.toMatroid.E := by
+  simp
+  exact ⟨⟨standardReprSum1_disjoint_X hS, hYX⟩, ⟨hXY, standardReprSum1_disjoint_Y hS⟩⟩
+
+lemma Matroid.IsSum1of.disjoint_E {M Mₗ Mᵣ : Matroid α} (hMMM : M.IsSum1of Mₗ Mᵣ) :
+    Mₗ.E ⫗ Mᵣ.E := by
+  obtain ⟨S, _, _, _, _, hS, _, rfl, rfl⟩ := hMMM
+  exact standardReprSum1_disjoint_E hS
+
+
+/-! ## Results -/
 
 set_option maxHeartbeats 333333 in
 open scoped Set.Notation in
@@ -118,10 +132,12 @@ lemma Disjoint.linearIndepOn_fromRows_elem_range_iff {Xₗ Xᵣ Y I : Set α}
   · intro ⟨hAₗ, hAᵣ⟩ c hc hc0
     have : Fintype (Xₗ ↓∩ c.support.toSet) :=
       ((c.support.finite_toSet.image Subtype.val).preimage'
-        ↓↓(Set.subsingleton_singleton.preimage Subtype.val_injective).finite).fintype
+        ↓↓(Set.subsingleton_singleton.preimage Subtype.val_injective).finite
+      ).fintype
     have : Fintype (Xᵣ ↓∩ c.support.toSet) :=
       ((c.support.finite_toSet.image Subtype.val).preimage'
-        ↓↓(Set.subsingleton_singleton.preimage Subtype.val_injective).finite).fintype
+        ↓↓(Set.subsingleton_singleton.preimage Subtype.val_injective).finite
+      ).fintype
     specialize hAₗ ⟨(Xₗ ↓∩ c.support.toSet).toFinset, fun x : Xₗ => c (hXₗ.elem x), by aesop⟩ (by sorry) (by sorry)
     specialize hAᵣ ⟨(Xᵣ ↓∩ c.support.toSet).toFinset, fun x : Xᵣ => c (hXᵣ.elem x), by aesop⟩ (by sorry) (by sorry)
     ext i
@@ -209,9 +225,7 @@ private lemma standardReprSum1_eq_disjointSum_aux {Xₗ Yₗ Xᵣ Yᵣ X Y I : S
 
 lemma standardReprSum1_eq_disjointSum {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hS : standardReprSum1 hXY hYX = some S) :
-    S.toMatroid = Matroid.disjointSum Sₗ.toMatroid Sᵣ.toMatroid (by
-      simp [StandardRepr.toMatroid, StandardRepr.toFull, Set.disjoint_union_left, Set.disjoint_union_right]
-      exact ⟨⟨standardReprSum1_disjoint_X hS, hYX⟩, ⟨hXY, standardReprSum1_disjoint_Y hS⟩⟩) := by
+    S.toMatroid = Matroid.disjointSum Sₗ.toMatroid Sᵣ.toMatroid (standardReprSum1_disjoint_E hS) := by
   have hXXX := standardReprSum1_X_eq hS
   have hYYY := standardReprSum1_Y_eq hS
   ext I hIS
@@ -226,6 +240,11 @@ lemma standardReprSum1_eq_disjointSum {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : 
     simp [show I ⊆ S.X ∪ S.Y from hIS]
     -- TODO also disjointness from the `StandardRepr` structures will have to be propagated
     convert standardReprSum1_eq_disjointSum_aux hXXX hYYY hXY hYX Sₗ.B Sᵣ.B hIS Set.inter_subset_right Set.inter_subset_right
+
+theorem Matroid.IsSum1of.eq_disjointSum {M Mₗ Mᵣ : Matroid α} (hMMM : M.IsSum1of Mₗ Mᵣ) :
+    M = Matroid.disjointSum Mₗ Mᵣ hMMM.disjoint_E := by
+  obtain ⟨S, _, _, _, _, hS, rfl, rfl, rfl⟩ := hMMM
+  exact standardReprSum1_eq_disjointSum hS
 
 lemma standardReprSum1_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning)
