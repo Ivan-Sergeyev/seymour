@@ -101,52 +101,6 @@ lemma Matroid.IsSum1of.disjoint_E {M Mₗ Mᵣ : Matroid α} (hMMM : M.IsSum1of 
 
 /-! ## Results -/
 
-set_option maxHeartbeats 333333 in
-open scoped Set.Notation in
--- TODO should it be moved to Matrix/LinearIndependence.lean?
-lemma Disjoint.linearIndepOn_fromRows_elem_range_iff {Xₗ Xᵣ Y I : Set α}
-    [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Y)]
-    (hXX : Xₗ ⫗ Xᵣ) (Aₗ : Matrix Xₗ Y Z2) (Aᵣ : Matrix Xᵣ Y Z2)
-    (hI : I ⊆ Xₗ ∪ Xᵣ) (hIXₗ : I ∩ Xₗ ⊆ Xₗ) (hIXᵣ : I ∩ Xᵣ ⊆ Xᵣ) :
-    LinearIndepOn Z2 (((Aₗ ⊟ Aᵣ) ∘ Subtype.toSum)) hI.elem.range ↔
-      LinearIndepOn Z2 Aₗ hIXₗ.elem.range ∧
-      LinearIndepOn Z2 Aᵣ hIXᵣ.elem.range := by
-  have hXₗ : Xₗ ⊆ (Xₗ ∪ Xᵣ) := Set.subset_union_left
-  have hXᵣ : Xᵣ ⊆ (Xₗ ∪ Xᵣ) := Set.subset_union_right
-  rw [linearIndepOn_iff, linearIndepOn_iff, linearIndepOn_iff]
-  constructor
-  · intro hAA
-    constructor
-    <;> intro c hc hc0
-    · specialize hAA
-        ⟨c.support.map hXₗ.embed, fun x : (Xₗ ∪ Xᵣ).Elem => if hx : x.val ∈ Xₗ then c ⟨x.val, hx⟩ else 0, by aesop⟩
-        (by sorry)
-        (by sorry)
-      ext i
-      simpa using congr_fun (congr_arg Finsupp.toFun hAA) (hXₗ.elem i)
-    · specialize hAA
-        ⟨c.support.map hXᵣ.embed, fun x : (Xₗ ∪ Xᵣ).Elem => if hx : x.val ∈ Xᵣ then c ⟨x.val, hx⟩ else 0, by aesop⟩
-        (by sorry)
-        (by sorry)
-      ext i
-      simpa using congr_fun (congr_arg Finsupp.toFun hAA) (hXᵣ.elem i)
-  · intro ⟨hAₗ, hAᵣ⟩ c hc hc0
-    have : Fintype (Xₗ ↓∩ c.support.toSet) :=
-      ((c.support.finite_toSet.image Subtype.val).preimage'
-        ↓↓(Set.subsingleton_singleton.preimage Subtype.val_injective).finite
-      ).fintype
-    have : Fintype (Xᵣ ↓∩ c.support.toSet) :=
-      ((c.support.finite_toSet.image Subtype.val).preimage'
-        ↓↓(Set.subsingleton_singleton.preimage Subtype.val_injective).finite
-      ).fintype
-    specialize hAₗ ⟨(Xₗ ↓∩ c.support.toSet).toFinset, fun x : Xₗ => c (hXₗ.elem x), by aesop⟩ (by sorry) (by sorry)
-    specialize hAᵣ ⟨(Xᵣ ↓∩ c.support.toSet).toFinset, fun x : Xᵣ => c (hXᵣ.elem x), by aesop⟩ (by sorry) (by sorry)
-    ext i
-    if hiXₗ : i.val ∈ Xₗ then
-      exact congr_fun (congr_arg Finsupp.toFun hAₗ) ⟨i.val, hiXₗ⟩
-    else
-      exact congr_fun (congr_arg Finsupp.toFun hAᵣ) ⟨i.val, in_right_of_in_union_of_ni_left i.property hiXₗ⟩
-
 /-- The sum of two matroids on disjoint ground sets of the same type is a matroid whose ground set is a union of the ground sets
     of the summands, in which a subset of said ground set is independent iff its intersections with respective ground set are
     independent in each matroid. -/
@@ -165,16 +119,7 @@ private lemma standardReprSum1_eq_disjointSum_untransposed_aux_aux {Xₗ Yₗ X�
   have hIAᵣ : LinearIndepOn Z2 Aᵣ hIXᵣ.elem.range ↔ LinearIndepOn Z2 ((0 : Matrix Xᵣ Yₗ Z2) ◫ Aᵣ) hIXᵣ.elem.range
   · sorry
   rw [hIAₗ, hIAᵣ]
-  have : ∀ a : α, Decidable (a ∈ Yₗ ∪ Yᵣ) := (Set.decidableUnion Yₗ Yᵣ ·)
-  convert
-    hXX.linearIndepOn_fromRows_elem_range_iff
-      (((Aₗ ◫ 0) : Matrix Xₗ (Yₗ ⊕ Yᵣ) Z2).submatrix id Subtype.toSum)
-      (((0 ◫ Aᵣ) : Matrix Xᵣ (Yₗ ⊕ Yᵣ) Z2).submatrix id Subtype.toSum)
-      hI hIXₗ hIXᵣ
-  · ext i j
-    cases hi : i.toSum <;> cases hj : j.toSum <;> simp [*, Matrix.toMatrixUnionUnion]
-  · sorry
-  · sorry
+  sorry
 
 private lemma standardReprSum1_eq_disjointSum_untransposed_aux {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
