@@ -8,6 +8,12 @@ This file provides lemmas about sets that are not present in Mathlib.
 
 variable {α : Type*}
 
+lemma in_left_of_in_union_of_ni_right {X Y : Set α} {a : α} (haXY : a ∈ X ∪ Y) (haY : a ∉ Y) : a ∈ X := by
+  tauto_set
+
+lemma in_right_of_in_union_of_ni_left {X Y : Set α} {a : α} (haXY : a ∈ X ∪ Y) (haX : a ∉ X) : a ∈ Y := by
+  tauto_set
+
 lemma singleton_inter_in_left {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : a ∈ X :=
   Set.mem_of_mem_inter_left (ha.symm.subset rfl)
 

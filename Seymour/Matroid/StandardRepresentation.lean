@@ -828,15 +828,12 @@ private lemma support_subset_support_of_same_matroid_aux {F F₀ : Type*} [Decid
             smul_eq_mul,
             mul_one
           ] at hlBi
-        else if hiY : i.val ∈ Y then
+        else
           have hiy : i = hYXY.elem y
           · cases hl'' i hil with
             | inl hiy => exact SetCoe.ext hiy
             | inr hiD => simp_all
           rwa [hiy]
-        else
-          exfalso
-          exact i.property.casesOn hiX hiY
       else
         exact l.not_mem_support_iff.→ hil
     else
@@ -861,14 +858,11 @@ private lemma support_subset_support_of_same_matroid_aux {F F₀ : Type*} [Decid
           rintro rfl
           apply hd
           simp_all [Dₒ]
-        else if haY : a.val ∈ Y then
+        else
           exfalso
           cases hal with
           | inl hay' => exact hay hay'
           | inr haDₒ => simp_all
-        else
-          exfalso
-          exact a.property.casesOn haX haY
       have hlyd : l (hYXY.elem y) • ((1 : Matrix X X F) ◫ B) d (hYXY.elem y).toSum ≠ 0
       · refine (hly <| (mul_eq_zero_iff_right ?_).→ ·)
         simp_rw [Matrix.transpose_apply, Set.mem_setOf_eq] at hd

@@ -145,9 +145,7 @@ lemma Disjoint.linearIndepOn_fromRows_elem_range_iff {Xₗ Xᵣ Y I : Set α}
     if hiXₗ : i.val ∈ Xₗ then
       exact congr_fun (congr_arg Finsupp.toFun hAₗ) ⟨i.val, hiXₗ⟩
     else
-      have hiXᵣ : i.val ∈ Xᵣ
-      · sorry
-      exact congr_fun (congr_arg Finsupp.toFun hAᵣ) ⟨i.val, hiXᵣ⟩
+      exact congr_fun (congr_arg Finsupp.toFun hAᵣ) ⟨i.val, in_right_of_in_union_of_ni_left i.property hiXₗ⟩
 
 /-- The sum of two matroids on disjoint ground sets of the same type is a matroid whose ground set is a union of the ground sets
     of the summands, in which a subset of said ground set is independent iff its intersections with respective ground set are
