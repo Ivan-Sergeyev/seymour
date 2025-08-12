@@ -103,6 +103,7 @@ lemma Matroid.IsSum1of.disjoint_E {M Mₗ Mᵣ : Matroid α} (hMMM : M.IsSum1of 
 
 set_option maxHeartbeats 333333 in
 open scoped Set.Notation in
+-- TODO should it be moved to Matrix/LinearIndependence.lean?
 lemma Disjoint.linearIndepOn_fromRows_elem_range_iff {Xₗ Xᵣ Y I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Y)]
     (hXX : Xₗ ⫗ Xᵣ) (Aₗ : Matrix Xₗ Y Z2) (Aᵣ : Matrix Xᵣ Y Z2)
@@ -147,6 +148,12 @@ lemma Disjoint.linearIndepOn_fromRows_elem_range_iff {Xₗ Xᵣ Y I : Set α}
       have hiXᵣ : i.val ∈ Xᵣ
       · sorry
       exact congr_fun (congr_arg Finsupp.toFun hAᵣ) ⟨i.val, hiXᵣ⟩
+
+/-- The sum of two matroids on disjoint ground sets of the same type is a matroid whose ground set is a union of the ground sets
+    of the summands, in which a subset of said ground set is independent iff its intersections with respective ground set are
+    independent in each matroid. -/
+abbrev Disjoint.matroidSum {Mₗ Mᵣ : Matroid α} (hEE : Mₗ.E ⫗ Mᵣ.E) : Matroid α :=
+  Matroid.disjointSum Mₗ Mᵣ hEE
 
 private lemma standardReprSum1_eq_disjointSum_untransposed_aux_aux {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
@@ -225,7 +232,7 @@ private lemma standardReprSum1_eq_disjointSum_aux {Xₗ Yₗ Xᵣ Yᵣ X Y I : S
 
 lemma standardReprSum1_eq_disjointSum {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hS : standardReprSum1 hXY hYX = some S) :
-    S.toMatroid = Matroid.disjointSum Sₗ.toMatroid Sᵣ.toMatroid (standardReprSum1_disjoint_E hS) := by
+    S.toMatroid = (standardReprSum1_disjoint_E hS).matroidSum := by
   have hXXX := standardReprSum1_X_eq hS
   have hYYY := standardReprSum1_Y_eq hS
   ext I hIS
@@ -241,8 +248,9 @@ lemma standardReprSum1_eq_disjointSum {Sₗ Sᵣ S : StandardRepr α Z2} {hXY : 
     -- TODO also disjointness from the `StandardRepr` structures will have to be propagated
     convert standardReprSum1_eq_disjointSum_aux hXXX hYYY hXY hYX Sₗ.B Sᵣ.B hIS Set.inter_subset_right Set.inter_subset_right
 
+/-- The 1-sum of matroids is a disjoint sum of those matroids. -/
 theorem Matroid.IsSum1of.eq_disjointSum {M Mₗ Mᵣ : Matroid α} (hMMM : M.IsSum1of Mₗ Mᵣ) :
-    M = Matroid.disjointSum Mₗ Mᵣ hMMM.disjoint_E := by
+    M = hMMM.disjoint_E.matroidSum := by
   obtain ⟨S, _, _, _, _, hS, rfl, rfl, rfl⟩ := hMMM
   exact standardReprSum1_eq_disjointSum hS
 
