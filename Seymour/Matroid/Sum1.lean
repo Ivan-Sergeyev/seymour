@@ -155,7 +155,7 @@ abbrev Disjoint.matroidSum {Mₗ Mᵣ : Matroid α} (hEE : Mₗ.E ⫗ Mᵣ.E) : 
 
 private lemma standardReprSum1_eq_disjointSum_untransposed_aux_aux {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
-    (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) (Aₗ : Matrix Xₗ Yₗ Z2) (Aᵣ : Matrix Xᵣ Yᵣ Z2)
+    (hXX : Xₗ ⫗ Xᵣ) (Aₗ : Matrix Xₗ Yₗ Z2) (Aᵣ : Matrix Xᵣ Yᵣ Z2)
     (hI : I ⊆ Xₗ ∪ Xᵣ) (hIXₗ : I ∩ Xₗ ⊆ Xₗ) (hIXᵣ : I ∩ Xᵣ ⊆ Xᵣ) :
     LinearIndepOn Z2 (((⊞ Aₗ 0 0 Aᵣ).toMatrixUnionUnion)) hI.elem.range ↔
       LinearIndepOn Z2 Aₗ hIXₗ.elem.range ∧
@@ -172,15 +172,7 @@ private lemma standardReprSum1_eq_disjointSum_untransposed_aux_aux {Xₗ Yₗ X�
       (((0 ◫ Aᵣ) : Matrix Xᵣ (Yₗ ⊕ Yᵣ) Z2).submatrix id Subtype.toSum)
       hI hIXₗ hIXᵣ
   · ext i j
-    cases hi : i.toSum with
-    | inl iₗ =>
-      cases hj : j.toSum with
-      | inl jₗ => sorry
-      | inr jᵣ => sorry
-    | inr iᵣ =>
-      cases hj : j.toSum with
-      | inl jₗ => sorry
-      | inr jᵣ => sorry
+    cases hi : i.toSum <;> cases hj : j.toSum <;> simp [*, Matrix.toMatrixUnionUnion]
   · sorry
   · sorry
 
@@ -191,7 +183,7 @@ private lemma standardReprSum1_eq_disjointSum_untransposed_aux {Xₗ Yₗ Xᵣ Y
     LinearIndepOn Z2 (((⊞ ((1 ⊟ Bₗ) ∘ Subtype.toSum) 0 0 ((1 ⊟ Bᵣ) ∘ Subtype.toSum)).toMatrixUnionUnion)) hI.elem.range ↔
       LinearIndepOn Z2 ((1 ⊟ Bₗ) ∘ Subtype.toSum) hIₗ.elem.range ∧
       LinearIndepOn Z2 ((1 ⊟ Bᵣ) ∘ Subtype.toSum) hIᵣ.elem.range := by
-  apply standardReprSum1_eq_disjointSum_untransposed_aux_aux sorry sorry
+  apply standardReprSum1_eq_disjointSum_untransposed_aux_aux sorry
 
 private lemma standardReprSum1_eq_disjointSum_untransposed {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
