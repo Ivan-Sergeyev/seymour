@@ -127,9 +127,8 @@ noncomputable def standardReprSum2 {α : Type*} [DecidableEq α] {Sₗ Sᵣ : St
       -- col indices
       Sₗ.Y ∪ (Sᵣ.Y \ {y}),
       -- row and col indices are disjoint
-      by rw [union_disjoint_union_iff]
-         exact ⟨⟨Sₗ.hXY.disjoint_sdiff_left, hYX.symm⟩, ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right,
-            Sᵣ.hXY.disjoint_sdiff_right⟩⟩,
+      union_disjoint_union ⟨⟨Sₗ.hXY.disjoint_sdiff_left, hYX.symm⟩, ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right,
+          Sᵣ.hXY.disjoint_sdiff_right⟩⟩,
       -- standard representation matrix
       (matrixSum2 (Sₗ.B.dropRow x) (Sₗ.B.interRow hXX) (Sᵣ.B.dropCol y) (Sᵣ.B.interCol hYY)).toMatrixUnionUnion,
       -- decidability of row indices
