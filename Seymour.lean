@@ -83,7 +83,7 @@ recall standardReprSum1 {α : Type*} [DecidableEq α] {Sₗ Sᵣ : StandardRepr 
     some ⟨
       Sₗ.X ∪ Sᵣ.X,
       Sₗ.Y ∪ Sᵣ.Y,
-      by rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
+      by rw [union_disjoint_union_iff]
          exact ⟨⟨Sₗ.hXY, hYX.symm⟩, ⟨hXY, Sᵣ.hXY⟩⟩,
       (matrixSum1 Sₗ.B Sᵣ.B).toMatrixUnionUnion,
       inferInstance,
@@ -133,7 +133,7 @@ recall standardReprSum2 {α : Type*} [DecidableEq α] {Sₗ Sᵣ : StandardRepr 
     some ⟨
       (Sₗ.X \ {x}) ∪ Sᵣ.X,
       Sₗ.Y ∪ (Sᵣ.Y \ {y}),
-      by rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
+      by rw [union_disjoint_union_iff]
          exact ⟨⟨Sₗ.hXY.disjoint_sdiff_left, hYX.symm⟩, ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right,
             Sᵣ.hXY.disjoint_sdiff_right⟩⟩,
       (matrixSum2 Aₗ r Aᵣ c).toMatrixUnionUnion,
@@ -281,7 +281,7 @@ recall standardReprSum3 {α : Type*} [DecidableEq α] {Sₗ Sᵣ : StandardRepr 
       (Sₗ.X.drop2 x₀ₗ x₁ₗ) ∪ (Sᵣ.X.drop1 x₂ᵣ),
       (Sₗ.Y.drop1 y₂ₗ) ∪ (Sᵣ.Y.drop2 y₀ᵣ y₁ᵣ),
       by
-        rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
+        rw [union_disjoint_union_iff]
         exact
           ⟨⟨Sₗ.hXY.disjoint_sdiff_left.disjoint_sdiff_right, hYX.symm.disjoint_sdiff_left.disjoint_sdiff_right⟩,
           ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right, Sᵣ.hXY.disjoint_sdiff_left.disjoint_sdiff_right⟩⟩,

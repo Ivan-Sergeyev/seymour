@@ -31,6 +31,10 @@ lemma right_eq_right_of_union_eq_union {A₁ A₂ B₁ B₂ : Set α}
     B₁ = B₂ := by
   tauto_set
 
+lemma union_disjoint_union_iff (A₁ A₂ B₁ B₂ : Set α) :
+    (A₁ ∪ A₂) ⫗ (B₁ ∪ B₂) ↔ (A₁ ⫗ B₁ ∧ A₂ ⫗ B₁) ∧ (A₁ ⫗ B₂ ∧ A₂ ⫗ B₂) := by
+  rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
+
 lemma Subtype.subst_elem {X Y : Set α} (x : X) (hXY : X = Y) : (hXY ▸ x).val = x.val := by
   aesop
 
