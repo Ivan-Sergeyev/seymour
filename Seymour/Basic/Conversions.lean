@@ -56,14 +56,28 @@ lemma val_eq_val_of_toSum_eq_left [∀ a, Decidable (a ∈ X)] [∀ a, Decidable
     x.val = x'.val := by
   obtain ⟨x₀, hx₀⟩ := x
   obtain ⟨x₁, hx₁⟩ := x'
-  sorry
+  unfold Subtype.toSum at hxx
+  split at hxx
+  · simpa using hxx.symm
+  split at hxx
+  · simp at hxx
+  exfalso
+  generalize_proofs imposs at hxx
+  exact imposs
 
 lemma val_eq_val_of_toSum_eq_right [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] {y : Y} {y' : (X ∪ Y).Elem}
     (hyy : y'.toSum = ◪y) :
     y.val = y'.val := by
   obtain ⟨y₀, hy₀⟩ := y
   obtain ⟨y₁, hy₁⟩ := y'
-  sorry
+  unfold Subtype.toSum at hyy
+  split at hyy
+  · simp at hyy
+  split at hyy
+  · simpa using hyy.symm
+  exfalso
+  generalize_proofs imposs at hyy
+  exact imposs
 
 /-- Convert `X.Elem ⊕ Y.Elem` to `(X ∪ Y).Elem`. -/
 def Sum.toUnion (i : X.Elem ⊕ Y.Elem) : (X ∪ Y).Elem :=
