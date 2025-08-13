@@ -102,7 +102,7 @@ lemma Matroid.IsSum1of.disjoint_E {M Mₗ Mᵣ : Matroid α} (hMMM : M.IsSum1of 
 
 private lemma standardReprSum1_eq_disjointSum_untransposed_aux_aux {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
-    (hXX : Xₗ ⫗ Xᵣ) (Aₗ : Matrix Xₗ Yₗ Z2) (Aᵣ : Matrix Xᵣ Yᵣ Z2)
+    (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) (Aₗ : Matrix Xₗ Yₗ Z2) (Aᵣ : Matrix Xᵣ Yᵣ Z2)
     (hI : I ⊆ Xₗ ∪ Xᵣ) (hIXₗ : I ∩ Xₗ ⊆ Xₗ) (hIXᵣ : I ∩ Xᵣ ⊆ Xᵣ) :
     LinearIndepOn Z2 (((⊞ Aₗ 0 0 Aᵣ).toMatrixUnionUnion)) hI.elem.range ↔
       LinearIndepOn Z2 Aₗ hIXₗ.elem.range ∧
@@ -120,9 +120,8 @@ private lemma standardReprSum1_eq_disjointSum_untransposed_aux {Xₗ Yₗ Xᵣ Y
     (hI : I ⊆ (Yₗ ∪ Xₗ) ∪ (Yᵣ ∪ Xᵣ)) (hIₗ : I ∩ (Yₗ ∪ Xₗ) ⊆ Yₗ ∪ Xₗ) (hIᵣ : I ∩ (Yᵣ ∪ Xᵣ) ⊆ Yᵣ ∪ Xᵣ) :
     LinearIndepOn Z2 (((⊞ ((1 ⊟ Bₗ) ∘ Subtype.toSum) 0 0 ((1 ⊟ Bᵣ) ∘ Subtype.toSum)).toMatrixUnionUnion)) hI.elem.range ↔
       LinearIndepOn Z2 ((1 ⊟ Bₗ) ∘ Subtype.toSum) hIₗ.elem.range ∧
-      LinearIndepOn Z2 ((1 ⊟ Bᵣ) ∘ Subtype.toSum) hIᵣ.elem.range := by
-  apply standardReprSum1_eq_disjointSum_untransposed_aux_aux
-  simp [*]
+      LinearIndepOn Z2 ((1 ⊟ Bᵣ) ∘ Subtype.toSum) hIᵣ.elem.range :=
+  standardReprSum1_eq_disjointSum_untransposed_aux_aux (union_disjoint_union_aux hYY hXX hXY hYX) hYY _ _ hI hIₗ hIᵣ
 
 lemma Disjoint.matrix_one_eq_fromBlocks_toMatrixUnionUnion {R : Type*} [Zero R] [One R]
     {Zₗ Zᵣ : Set α} [∀ a, Decidable (a ∈ Zₗ)] [∀ a, Decidable (a ∈ Zᵣ)]
@@ -172,7 +171,6 @@ lemma Disjoint.matrix_one_eq_fromBlocks_toMatrixUnionUnion {R : Type*} [Zero R] 
         rw [hi, hj, Matrix.one_apply_ne hij,
           Matrix.one_apply_ne (hij <| by simpa using congr_arg Sum.toUnion <| hi.trans · |>.trans hj.symm)]
 
-set_option maxHeartbeats 666666 in
 private lemma standardReprSum1_eq_disjointSum_untransposed {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     (hSₗ : Xₗ ⫗ Yₗ) (hSᵣ : Xᵣ ⫗ Yᵣ) (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) (hXY : Xₗ ⫗ Yᵣ) (hYX : Yₗ ⫗ Xᵣ)
@@ -183,44 +181,51 @@ private lemma standardReprSum1_eq_disjointSum_untransposed {Xₗ Yₗ Xᵣ Yᵣ 
       LinearIndepOn Z2 ((1 ⊟ Bᵣ) ∘ Subtype.toSum) hIᵣ.elem.range := by
   have hYXYX : Yₗ ∪ Xₗ ⫗ Yᵣ ∪ Xᵣ :=
     union_disjoint_union_aux hYY hXX hXY hYX
-  have hYYXX : (Yₗ ∪ Yᵣ) ∪ (Xₗ ∪ Xᵣ) = (Yₗ ∪ Xₗ) ∪ (Yᵣ ∪ Xᵣ) :=
+  have hYYXXYXYX : (Yₗ ∪ Yᵣ) ∪ (Xₗ ∪ Xᵣ) = (Yₗ ∪ Xₗ) ∪ (Yᵣ ∪ Xᵣ) :=
     Set.union_union_union_comm Yₗ Yᵣ Xₗ Xᵣ
-  have hI' : I ⊆ (Yₗ ∪ Xₗ) ∪ (Yᵣ ∪ Xᵣ) := hYYXX ▸ hI
+  have hI' : I ⊆ (Yₗ ∪ Xₗ) ∪ (Yᵣ ∪ Xᵣ) := hYYXXYXYX ▸ hI
   rw [←standardReprSum1_eq_disjointSum_untransposed_aux hXX hYY hXY hYX Bₗ Bᵣ hI' hIₗ hIᵣ]
-  apply linearIndepOn_matrix_elem_range_iff_subst hYYXX
-  show _ = (⊞ ((1 ⊟ Bₗ) ∘ Subtype.toSum) 0 0 ((1 ⊟ Bᵣ) ∘ Subtype.toSum)).toMatrixElemElem hYYXX rfl
+  apply linearIndepOn_matrix_elem_range_iff_subst hYYXXYXYX
+  show _ = (⊞ ((1 ⊟ Bₗ) ∘ Subtype.toSum) 0 0 ((1 ⊟ Bᵣ) ∘ Subtype.toSum)).toMatrixElemElem hYYXXYXYX rfl
   ext i j
   have hBBij :
     ((1 ⊟ (⊞ Bₗ 0 0 Bᵣ).toMatrixUnionUnion) ∘ Subtype.toSum) i j =
-      (⊞ ((1 ⊟ Bₗ) ∘ Subtype.toSum) 0 0 ((1 ⊟ Bᵣ) ∘ Subtype.toSum)).toMatrixUnionUnion (hYYXX ▸ i) j
+      (⊞ ((1 ⊟ Bₗ) ∘ Subtype.toSum) 0 0 ((1 ⊟ Bᵣ) ∘ Subtype.toSum)).toMatrixUnionUnion (hYYXXYXYX ▸ i) j
   · cases hi : i.toSum with
     | inl i₁ =>
       rw [hYY.matrix_one_eq_fromBlocks_toMatrixUnionUnion]
       cases hi₁ : i₁.toSum with
       | inl iₗ =>
-        have hi' : (hYYXX ▸ i).toSum = ◩⟨iₗ, Set.mem_union_left Xₗ iₗ.property⟩
+        have hi' : (hYYXXYXYX ▸ i).toSum = ◩⟨iₗ, Set.mem_union_left Xₗ iₗ.property⟩
         · have hiₗ : iₗ.val = i.val := (val_eq_val_of_toSum_eq_left hi₁).trans (val_eq_val_of_toSum_eq_left hi)
-          have hi' : (hYYXX ▸ i).val = i.val := i.subst_elem hYYXX
+          have hi' : (hYYXXYXYX ▸ i).val = i.val := i.subst_elem hYYXXYXYX
           have hi'' : i.val ∈ Yₗ ∪ Xₗ := hiₗ ▸ Set.mem_union_left Xₗ iₗ.property
           simp [*]
         cases hj : j.toSum <;> simp [*, Matrix.toMatrixUnionUnion, -Matrix.fromBlocks_one]
       | inr iᵣ =>
-        have hi' : (hYYXX ▸ i).toSum = ◪⟨iᵣ, Set.mem_union_left Xᵣ iᵣ.property⟩
-        · sorry
+        have hi' : (hYYXXYXYX ▸ i).toSum = ◪⟨iᵣ, Set.mem_union_left Xᵣ iᵣ.property⟩
+        · have hiᵣ : iᵣ.val = i.val := (val_eq_val_of_toSum_eq_right hi₁).trans (val_eq_val_of_toSum_eq_left hi)
+          have hi' : (hYYXXYXYX ▸ i).val = i.val := i.subst_elem hYYXXYXYX
+          have hi'' : i.val ∈ Yᵣ ∪ Xᵣ := hiᵣ ▸ Set.mem_union_left Xᵣ iᵣ.property
+          have hi_' : i.val ∉ Yₗ ∪ Xₗ := hYXYX.ni_left_of_in_right hi''
+          simp [*]
         cases hj : j.toSum <;> simp [*, Matrix.toMatrixUnionUnion, -Matrix.fromBlocks_one]
     | inr i₂ =>
       cases hi₂ : i₂.toSum with
       | inl iₗ =>
-        have hi' : (hYYXX ▸ i).toSum = ◩⟨iₗ, Set.mem_union_right Yₗ iₗ.property⟩
-        · sorry
+        have hi' : (hYYXXYXYX ▸ i).toSum = ◩⟨iₗ, Set.mem_union_right Yₗ iₗ.property⟩
+        · have hiₗ : iₗ.val = i.val := (val_eq_val_of_toSum_eq_left hi₂).trans (val_eq_val_of_toSum_eq_right hi)
+          have hi' : (hYYXXYXYX ▸ i).val = i.val := i.subst_elem hYYXXYXYX
+          have hi'' : i.val ∈ Yₗ ∪ Xₗ := hiₗ ▸ Set.mem_union_right Yₗ iₗ.property
+          simp [*]
         have hiₗ : iₗ.val ∉ Yₗ := hSₗ.ni_right_of_in_left iₗ.property
         cases hj : j.toSum <;> simp [*, Matrix.toMatrixUnionUnion]
       | inr iᵣ =>
-        have hi' : (hYYXX ▸ i).toSum = ◪⟨iᵣ, Set.mem_union_right Yᵣ iᵣ.property⟩
+        have hi' : (hYYXXYXYX ▸ i).toSum = ◪⟨iᵣ, Set.mem_union_right Yᵣ iᵣ.property⟩
         · have hiᵣ : iᵣ.val = i.val := (val_eq_val_of_toSum_eq_right hi₂).trans (val_eq_val_of_toSum_eq_right hi)
-          have hi' : (hYYXX ▸ i).val = i.val := i.subst_elem hYYXX
-          have hi'' : i.val ∈ Yᵣ ∪ Xᵣ := hiᵣ ▸ Set.mem_union_right _ iᵣ.property
-          have hi''' : i.val ∉ Yₗ ∪ Xₗ := hYXYX.ni_left_of_in_right hi''
+          have hi' : (hYYXXYXYX ▸ i).val = i.val := i.subst_elem hYYXXYXYX
+          have hi'' : i.val ∈ Yᵣ ∪ Xᵣ := hiᵣ ▸ Set.mem_union_right Yᵣ iᵣ.property
+          have hi_' : i.val ∉ Yₗ ∪ Xₗ := hYXYX.ni_left_of_in_right hi''
           simp [*]
         have hiᵣ : iᵣ.val ∉ Yᵣ := hSᵣ.ni_right_of_in_left iᵣ.property
         cases hj : j.toSum <;> simp [*, Matrix.toMatrixUnionUnion]
