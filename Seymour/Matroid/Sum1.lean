@@ -135,7 +135,36 @@ lemma nameme {X X' Y I : Set α} /-{Y : Type}-/ {A : Matrix X Y Z2} {A' : Matrix
 lemma Matrix.one_eq_toMatrixUnionUnion {Zₗ Zᵣ : Set α} [∀ a, Decidable (a ∈ Zₗ)] [∀ a, Decidable (a ∈ Zᵣ)] :
     (1 : Matrix (Zₗ ∪ Zᵣ).Elem (Zₗ ∪ Zᵣ).Elem Z2) = (⊞ 1 0 0 1).toMatrixUnionUnion := by
   rw [Matrix.fromBlocks_one]
-  sorry
+  ext i j
+  cases hi : i.toSum with
+  | inl iₗ =>
+    cases hj : j.toSum with
+    | inl jₗ =>
+      have hii : iₗ.val = i.val := val_eq_val_of_toSum_eq_left hi
+      have hjj : jₗ.val = j.val := val_eq_val_of_toSum_eq_left hj
+      if hij : i = j then
+        simp only [Matrix.toMatrixUnionUnion, Function.comp_apply]
+        rw [hi, hj, hij, show iₗ = jₗ from Subtype.ext (hii ▸ hjj ▸ congr_arg Subtype.val hij)]
+        simp only [Matrix.one_apply_eq]
+      else
+        simp only [Matrix.toMatrixUnionUnion, Function.comp_apply]
+        rw [hi, hj, Matrix.one_apply_ne hij,
+          Matrix.one_apply_ne (hij <| by simpa using congr_arg Sum.toUnion <| hi.trans · |>.trans hj.symm)]
+    | inr jᵣ => sorry
+  | inr iᵣ =>
+    cases hj : j.toSum with
+    | inl jₗ => sorry
+    | inr jᵣ =>
+      have hii : iᵣ.val = i.val := val_eq_val_of_toSum_eq_right hi
+      have hjj : jᵣ.val = j.val := val_eq_val_of_toSum_eq_right hj
+      if hij : i = j then
+        simp only [Matrix.toMatrixUnionUnion, Function.comp_apply]
+        rw [hi, hj, hij, show iᵣ = jᵣ from Subtype.ext (hii ▸ hjj ▸ congr_arg Subtype.val hij)]
+        simp only [Matrix.one_apply_eq]
+      else
+        simp only [Matrix.toMatrixUnionUnion, Function.comp_apply]
+        rw [hi, hj, Matrix.one_apply_ne hij,
+          Matrix.one_apply_ne (hij <| by simpa using congr_arg Sum.toUnion <| hi.trans · |>.trans hj.symm)]
 
 private lemma standardReprSum1_eq_disjointSum_untransposed {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
@@ -160,18 +189,13 @@ private lemma standardReprSum1_eq_disjointSum_untransposed {Xₗ Yₗ Xᵣ Yᵣ 
       cases hi₁ : i₁.toSum with
       | inl iₗ =>
         have hi' : (hYYXX ▸ i).toSum = ◩⟨iₗ, Set.mem_union_left Xₗ iₗ.property⟩
-        · rw [←toUnion_left]
-          have hi' : i.val ∈ Yₗ ∪ Xₗ
+        · have hiₗ : iₗ.val = i.val := (val_eq_val_of_toSum_eq_left hi₁).trans (val_eq_val_of_toSum_eq_left hi)
+          have hi' : (hYYXX ▸ i).val = i.val
           · sorry
-          have hi'' : (hYYXX ▸ i).val ∈ Yₗ ∪ Xₗ
-          · sorry
-          simp [hi'']
-          clear * - hi hi₁
-          have hiₗ : iₗ.val = i.val
-          · sorry
-          rw [hiₗ]
-          clear * -
-          sorry
+          have hi'' : i.val ∈ Yₗ ∪ Xₗ
+          · rw [←hiₗ]
+            exact Set.mem_union_left Xₗ iₗ.property
+          simp [*]
         cases hj : j.toSum <;> simp [*, Matrix.toMatrixUnionUnion, -Matrix.fromBlocks_one]
       | inr iᵣ =>
         have hi' : (hYYXX ▸ i).toSum = ◪⟨iᵣ, Set.mem_union_left Xᵣ iᵣ.property⟩
@@ -188,7 +212,7 @@ private lemma standardReprSum1_eq_disjointSum_untransposed {Xₗ Yₗ Xᵣ Yᵣ 
         have hi' : (hYYXX ▸ i).toSum = ◪⟨iᵣ, Set.mem_union_right Yᵣ iᵣ.property⟩
         · sorry
         have hiᵣ : iᵣ.val ∉ Yᵣ := hSᵣ.ni_right_of_in_left iᵣ.property
-        cases hj : j.toSum <;> simp [*, Matrix.toMatrixUnionUnion, -Matrix.fromBlocks_one]
+        cases hj : j.toSum <;> simp [*, Matrix.toMatrixUnionUnion]
   rewrite [hBBij, Matrix.toMatrixElemElem_apply]
   rfl
 

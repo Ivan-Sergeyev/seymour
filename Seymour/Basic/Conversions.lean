@@ -51,6 +51,20 @@ lemma toSum_right [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] {y :
     y.toSum = ◪⟨y.val, hyY⟩ := by
   simp [Subtype.toSum, hyY, hyX]
 
+lemma val_eq_val_of_toSum_eq_left [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] {x : X} {x' : (X ∪ Y).Elem}
+    (hxx : x'.toSum = ◩x) :
+    x.val = x'.val := by
+  obtain ⟨x₀, hx₀⟩ := x
+  obtain ⟨x₁, hx₁⟩ := x'
+  sorry
+
+lemma val_eq_val_of_toSum_eq_right [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] {y : Y} {y' : (X ∪ Y).Elem}
+    (hyy : y'.toSum = ◪y) :
+    y.val = y'.val := by
+  obtain ⟨y₀, hy₀⟩ := y
+  obtain ⟨y₁, hy₁⟩ := y'
+  sorry
+
 /-- Convert `X.Elem ⊕ Y.Elem` to `(X ∪ Y).Elem`. -/
 def Sum.toUnion (i : X.Elem ⊕ Y.Elem) : (X ∪ Y).Elem :=
   i.casesOn Set.subset_union_left.elem Set.subset_union_right.elem
