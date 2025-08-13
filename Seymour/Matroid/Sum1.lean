@@ -29,7 +29,7 @@ noncomputable def standardReprSum1 {Sₗ Sᵣ : StandardRepr α Z2} (hXY : Sₗ.
       -- col indices
       Sₗ.Y ∪ Sᵣ.Y,
       -- row and col indices are disjoint
-      union_disjoint_union Sₗ.hXY Sᵣ.hXY hYX hXY,
+      union_disjoint_union Sₗ.hXY Sᵣ.hXY hXY hYX,
       -- standard representation matrix
       (matrixSum1 Sₗ.B Sᵣ.B).toMatrixUnionUnion,
       -- decidability of row indices

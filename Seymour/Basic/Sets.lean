@@ -40,7 +40,7 @@ lemma union_disjoint_union_aux {A B C D : Set α} (hAB : A ⫗ B) (hCD : C ⫗ D
   rw [union_disjoint_union_iff]
   exact ⟨⟨hAB, hCB⟩, ⟨hAD, hCD⟩⟩
 
-lemma union_disjoint_union {A B C D : Set α} (hAB : A ⫗ B) (hCD : C ⫗ D) (hBC : B ⫗ C) (hAD : A ⫗ D) :
+lemma union_disjoint_union {A B C D : Set α} (hAB : A ⫗ B) (hCD : C ⫗ D) (hAD : A ⫗ D) (hBC : B ⫗ C) :
     (A ∪ C) ⫗ (B ∪ D) :=
   union_disjoint_union_aux hAB hCD hBC.symm hAD
 
