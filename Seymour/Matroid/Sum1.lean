@@ -125,15 +125,10 @@ private lemma standardReprSum1_eq_disjointSum_untransposed_aux {Xₗ Yₗ Xᵣ Y
   apply standardReprSum1_eq_disjointSum_untransposed_aux_aux
   simp [*]
 
-omit [DecidableEq α] in -- TODO generalize and move
-lemma nameme {X X' Y I : Set α} /-{Y : Type}-/ {A : Matrix X Y Z2} {A' : Matrix X' Y Z2}
-    (hXX : X = X') (hAA : A = hXX ▸ A') /-(hAA : HEq A A')-/ (hIX : I ⊆ X) (hIX' : I ⊆ X') :
-    LinearIndepOn Z2 A hIX.elem.range ↔ LinearIndepOn Z2 A' hIX'.elem.range := by
-  cc
-
-lemma Disjoint.matrix_one_eq_fromBlocks_toMatrixUnionUnion {Zₗ Zᵣ : Set α} [∀ a, Decidable (a ∈ Zₗ)] [∀ a, Decidable (a ∈ Zᵣ)]
+lemma Disjoint.matrix_one_eq_fromBlocks_toMatrixUnionUnion {R : Type*} [Zero R] [One R]
+    {Zₗ Zᵣ : Set α} [∀ a, Decidable (a ∈ Zₗ)] [∀ a, Decidable (a ∈ Zᵣ)]
     (hZZ : Zₗ ⫗ Zᵣ) :
-    (1 : Matrix (Zₗ ∪ Zᵣ).Elem (Zₗ ∪ Zᵣ).Elem Z2) = (⊞ 1 0 0 1).toMatrixUnionUnion := by
+    (1 : Matrix (Zₗ ∪ Zᵣ).Elem (Zₗ ∪ Zᵣ).Elem R) = (⊞ 1 0 0 1).toMatrixUnionUnion := by
   rw [Matrix.fromBlocks_one]
   ext i j
   cases hi : i.toSum with
@@ -189,7 +184,7 @@ private lemma standardReprSum1_eq_disjointSum_untransposed {Xₗ Yₗ Xᵣ Yᵣ 
   have hYYXX := Set.union_union_union_comm Yₗ Yᵣ Xₗ Xᵣ
   have hI' : I ⊆ (Yₗ ∪ Xₗ) ∪ (Yᵣ ∪ Xᵣ) := hYYXX ▸ hI
   rw [←standardReprSum1_eq_disjointSum_untransposed_aux hXX hYY hXY hYX Bₗ Bᵣ hI' hIₗ hIᵣ]
-  apply nameme hYYXX
+  apply linearIndepOn_matrix_elem_range_iff_subst hYYXX
   show _ = (⊞ ((1 ⊟ Bₗ) ∘ Subtype.toSum) 0 0 ((1 ⊟ Bᵣ) ∘ Subtype.toSum)).toMatrixElemElem hYYXX rfl
   ext i j
   have hBBij :

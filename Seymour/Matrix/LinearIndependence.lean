@@ -1,4 +1,5 @@
 import Mathlib.Data.Matrix.Rank
+import Seymour.Basic.Conversions
 import Seymour.Basic.SubmoduleSpans
 import Seymour.Matrix.Basic
 
@@ -85,9 +86,10 @@ private lemma linearIndepOn_col_le_of_span_row_le {m₁ m₂ : Type*} [CommRing 
   have hi : A₁ i ∈ Submodule.span R A₂.range := hR (Submodule.subset_span (Set.mem_range_self _))
   simp_rw [Finsupp.mem_span_range_iff_exists_finsupp, Finsupp.sum] at hi
   obtain ⟨c, hc⟩ := hi
-  have hrw (i' : m₂) : ∑ x ∈ l.support, l x * A₂ i' x = 0
-  · simpa [Finsupp.linearCombination, Finsupp.sum] using congr_fun hl0 i'
-  suffices : ∑ x ∈ l.support, l x * ∑ x_1 ∈ c.support, c x_1 * A₂ x_1 x = 0
+  have hrw : ∀ i' : m₂, ∑ x ∈ l.support, l x * A₂ i' x = 0
+  · intro i'
+    simpa [Finsupp.linearCombination, Finsupp.sum] using congr_fun hl0 i'
+  suffices : ∑ x ∈ l.support, l x * ∑ y ∈ c.support, c y * A₂ y x = 0
   · simpa [Finsupp.linearCombination, Finsupp.sum, colFun_apply, ←hc]
   simp_rw [Finset.mul_sum, Finset.sum_comm (s := l.support), mul_left_comm (a := l _), ←Finset.mul_sum]
   simp [hrw]
@@ -135,7 +137,22 @@ private lemma IsRowBasis.encard_eq [Field R] {s : Set m} {A : Matrix m n R} (hA 
 end Matrix
 
 
-open scoped Matrix
+section open scoped Set.Notation
+
+variable {α : Type*} {X X' Y I : Set α} {R : Type} [Semiring R] {A : Matrix X Y R} {A' : Matrix X' Y R}
+
+lemma linearIndepOn_matrix_elem_range_iff_subst (hXX : X = X') (hIX : I ⊆ X) (hAA : A = hXX ▸ A') :
+    have hIX' : I ⊆ X' := hXX ▸ hIX
+    LinearIndepOn R A hIX.elem.range ↔ LinearIndepOn R A' hIX'.elem.range := by
+  cc
+
+lemma linearIndepOn_matrix_inter_iff_subst (hXX : X = X') (hAA : A = hXX ▸ A') :
+    LinearIndepOn R A (X ↓∩ I) ↔ LinearIndepOn R A' (X' ↓∩ I) := by
+  subst hXX hAA
+  rfl
+
+end
+
 
 /-- The identity matrix has linearly independent rows. -/
 lemma Matrix.one_linearIndependent {α R : Type*} [DecidableEq α] [Ring R] : LinearIndependent R (1 : Matrix α α R) := by
@@ -191,8 +208,8 @@ lemma Matrix.linearIndependent_iff_exists_submatrix_unit (A : Matrix X Y F) :
     LinearIndependent F A ↔ ∃ f : X → Y, IsUnit (A.submatrix id f) := by
   constructor
   · intro hA
-    have hXA : #X = Aᵀ.rank := (A.rank_transpose.trans hA.rank_matrix).symm
-    obtain ⟨f, hf⟩ := Aᵀ.exists_submatrix_rank
+    have hXA : #X = A.transpose.rank := (A.rank_transpose.trans hA.rank_matrix).symm
+    obtain ⟨f, hf⟩ := A.transpose.exists_submatrix_rank
     use f ∘ Fintype.equivFinOfCardEq hXA
     have hX : #X = (A.submatrix id (f ∘ Fintype.equivFinOfCardEq hXA)).rank
     · rw [←Matrix.transpose_submatrix, Matrix.rank_transpose] at hf
