@@ -31,6 +31,9 @@ lemma right_eq_right_of_union_eq_union {A₁ A₂ B₁ B₂ : Set α}
     B₁ = B₂ := by
   tauto_set
 
+lemma Subtype.subst_elem {X Y : Set α} (x : X) (hXY : X = Y) : (hXY ▸ x).val = x.val := by
+  aesop
+
 lemma eq_toFinset_of_toSet_eq {s : Finset α} {S : Set α} [Fintype S] (hsS : s.toSet = S) : s = S.toFinset := by
   aesop
 

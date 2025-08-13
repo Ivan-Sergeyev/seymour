@@ -173,6 +173,7 @@ lemma Disjoint.matrix_one_eq_fromBlocks_toMatrixUnionUnion {R : Type*} [Zero R] 
         rw [hi, hj, Matrix.one_apply_ne hij,
           Matrix.one_apply_ne (hij <| by simpa using congr_arg Sum.toUnion <| hi.trans · |>.trans hj.symm)]
 
+set_option maxHeartbeats 666666 in
 private lemma standardReprSum1_eq_disjointSum_untransposed {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     (hSₗ : Xₗ ⫗ Yₗ) (hSᵣ : Xᵣ ⫗ Yᵣ) (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) (hXY : Xₗ ⫗ Yᵣ) (hYX : Yₗ ⫗ Xᵣ)
@@ -181,7 +182,10 @@ private lemma standardReprSum1_eq_disjointSum_untransposed {Xₗ Yₗ Xᵣ Yᵣ 
     LinearIndepOn Z2 ((1 ⊟ (⊞ Bₗ 0 0 Bᵣ).toMatrixUnionUnion) ∘ Subtype.toSum) hI.elem.range ↔
       LinearIndepOn Z2 ((1 ⊟ Bₗ) ∘ Subtype.toSum) hIₗ.elem.range ∧
       LinearIndepOn Z2 ((1 ⊟ Bᵣ) ∘ Subtype.toSum) hIᵣ.elem.range := by
-  have hYYXX := Set.union_union_union_comm Yₗ Yᵣ Xₗ Xᵣ
+  have hYXYX : Yₗ ∪ Xₗ ⫗ Yᵣ ∪ Xᵣ
+  · rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
+    exact ⟨⟨hYY, hXY⟩, ⟨hYX, hXX⟩⟩
+  have hYYXX : (Yₗ ∪ Yᵣ) ∪ (Xₗ ∪ Xᵣ) = (Yₗ ∪ Xₗ) ∪ (Yᵣ ∪ Xᵣ) := Set.union_union_union_comm Yₗ Yᵣ Xₗ Xᵣ
   have hI' : I ⊆ (Yₗ ∪ Xₗ) ∪ (Yᵣ ∪ Xᵣ) := hYYXX ▸ hI
   rw [←standardReprSum1_eq_disjointSum_untransposed_aux hXX hYY hXY hYX Bₗ Bᵣ hI' hIₗ hIᵣ]
   apply linearIndepOn_matrix_elem_range_iff_subst hYYXX
@@ -197,11 +201,8 @@ private lemma standardReprSum1_eq_disjointSum_untransposed {Xₗ Yₗ Xᵣ Yᵣ 
       | inl iₗ =>
         have hi' : (hYYXX ▸ i).toSum = ◩⟨iₗ, Set.mem_union_left Xₗ iₗ.property⟩
         · have hiₗ : iₗ.val = i.val := (val_eq_val_of_toSum_eq_left hi₁).trans (val_eq_val_of_toSum_eq_left hi)
-          have hi' : (hYYXX ▸ i).val = i.val
-          · sorry
-          have hi'' : i.val ∈ Yₗ ∪ Xₗ
-          · rw [←hiₗ]
-            exact Set.mem_union_left Xₗ iₗ.property
+          have hi' : (hYYXX ▸ i).val = i.val := i.subst_elem hYYXX
+          have hi'' : i.val ∈ Yₗ ∪ Xₗ := hiₗ ▸ Set.mem_union_left Xₗ iₗ.property
           simp [*]
         cases hj : j.toSum <;> simp [*, Matrix.toMatrixUnionUnion, -Matrix.fromBlocks_one]
       | inr iᵣ =>
@@ -217,7 +218,11 @@ private lemma standardReprSum1_eq_disjointSum_untransposed {Xₗ Yₗ Xᵣ Yᵣ 
         cases hj : j.toSum <;> simp [*, Matrix.toMatrixUnionUnion]
       | inr iᵣ =>
         have hi' : (hYYXX ▸ i).toSum = ◪⟨iᵣ, Set.mem_union_right Yᵣ iᵣ.property⟩
-        · sorry
+        · have hiᵣ : iᵣ.val = i.val := (val_eq_val_of_toSum_eq_right hi₂).trans (val_eq_val_of_toSum_eq_right hi)
+          have hi' : (hYYXX ▸ i).val = i.val := i.subst_elem hYYXX
+          have hi'' : i.val ∈ Yᵣ ∪ Xᵣ := hiᵣ ▸ Set.mem_union_right _ iᵣ.property
+          have hi''' : i.val ∉ Yₗ ∪ Xₗ := hYXYX.ni_left_of_in_right hi''
+          simp [*]
         have hiᵣ : iᵣ.val ∉ Yᵣ := hSᵣ.ni_right_of_in_left iᵣ.property
         cases hj : j.toSum <;> simp [*, Matrix.toMatrixUnionUnion]
   rewrite [hBBij, Matrix.toMatrixElemElem_apply]
