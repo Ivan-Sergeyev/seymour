@@ -83,7 +83,7 @@ recall standardReprSum1 {α : Type*} [DecidableEq α] {Sₗ Sᵣ : StandardRepr 
     some ⟨
       Sₗ.X ∪ Sᵣ.X,
       Sₗ.Y ∪ Sᵣ.Y,
-      union_disjoint_union ⟨⟨Sₗ.hXY, hYX.symm⟩, ⟨hXY, Sᵣ.hXY⟩⟩,
+      union_disjoint_union Sₗ.hXY Sᵣ.hXY hYX.symm hXY,
       (matrixSum1 Sₗ.B Sᵣ.B).toMatrixUnionUnion,
       inferInstance,
       inferInstance⟩
@@ -132,8 +132,11 @@ recall standardReprSum2 {α : Type*} [DecidableEq α] {Sₗ Sᵣ : StandardRepr 
     some ⟨
       (Sₗ.X \ {x}) ∪ Sᵣ.X,
       Sₗ.Y ∪ (Sᵣ.Y \ {y}),
-      union_disjoint_union ⟨⟨Sₗ.hXY.disjoint_sdiff_left, hYX.symm⟩, ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right,
-          Sᵣ.hXY.disjoint_sdiff_right⟩⟩,
+      union_disjoint_union
+        Sₗ.hXY.disjoint_sdiff_left
+        Sᵣ.hXY.disjoint_sdiff_right
+        hYX.symm
+        hXY.disjoint_sdiff_left.disjoint_sdiff_right,
       (matrixSum2 Aₗ r Aᵣ c).toMatrixUnionUnion,
       inferInstance,
       inferInstance⟩
@@ -279,8 +282,10 @@ recall standardReprSum3 {α : Type*} [DecidableEq α] {Sₗ Sᵣ : StandardRepr 
       (Sₗ.X.drop2 x₀ₗ x₁ₗ) ∪ (Sᵣ.X.drop1 x₂ᵣ),
       (Sₗ.Y.drop1 y₂ₗ) ∪ (Sᵣ.Y.drop2 y₀ᵣ y₁ᵣ),
       union_disjoint_union
-        ⟨⟨Sₗ.hXY.disjoint_sdiff_left.disjoint_sdiff_right, hYX.symm.disjoint_sdiff_left.disjoint_sdiff_right⟩,
-        ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right, Sᵣ.hXY.disjoint_sdiff_left.disjoint_sdiff_right⟩⟩,
+        Sₗ.hXY.disjoint_sdiff_left.disjoint_sdiff_right
+        Sᵣ.hXY.disjoint_sdiff_left.disjoint_sdiff_right
+        hYX.symm.disjoint_sdiff_left.disjoint_sdiff_right
+        hXY.disjoint_sdiff_left.disjoint_sdiff_right,
       (blocksToMatrixSum3
           (Sₗ.B.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ)
           (Sᵣ.B.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ)

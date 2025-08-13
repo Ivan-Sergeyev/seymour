@@ -29,7 +29,7 @@ noncomputable def standardReprSum1 {Sₗ Sᵣ : StandardRepr α Z2} (hXY : Sₗ.
       -- col indices
       Sₗ.Y ∪ Sᵣ.Y,
       -- row and col indices are disjoint
-      union_disjoint_union ⟨⟨Sₗ.hXY, hYX.symm⟩, ⟨hXY, Sᵣ.hXY⟩⟩,
+      union_disjoint_union Sₗ.hXY Sᵣ.hXY hYX.symm hXY,
       -- standard representation matrix
       (matrixSum1 Sₗ.B Sᵣ.B).toMatrixUnionUnion,
       -- decidability of row indices
@@ -182,7 +182,7 @@ private lemma standardReprSum1_eq_disjointSum_untransposed {Xₗ Yₗ Xᵣ Yᵣ 
       LinearIndepOn Z2 ((1 ⊟ Bₗ) ∘ Subtype.toSum) hIₗ.elem.range ∧
       LinearIndepOn Z2 ((1 ⊟ Bᵣ) ∘ Subtype.toSum) hIᵣ.elem.range := by
   have hYXYX : Yₗ ∪ Xₗ ⫗ Yᵣ ∪ Xᵣ :=
-    union_disjoint_union ⟨⟨hYY, hXY⟩, ⟨hYX, hXX⟩⟩
+    union_disjoint_union hYY hXX hXY hYX
   have hYYXX : (Yₗ ∪ Yᵣ) ∪ (Xₗ ∪ Xᵣ) = (Yₗ ∪ Xₗ) ∪ (Yᵣ ∪ Xᵣ) :=
     Set.union_union_union_comm Yₗ Yᵣ Xₗ Xᵣ
   have hI' : I ⊆ (Yₗ ∪ Xₗ) ∪ (Yᵣ ∪ Xᵣ) := hYYXX ▸ hI
