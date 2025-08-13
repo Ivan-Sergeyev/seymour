@@ -35,10 +35,14 @@ lemma union_disjoint_union_iff (A₁ A₂ B₁ B₂ : Set α) :
     (A₁ ∪ A₂) ⫗ (B₁ ∪ B₂) ↔ (A₁ ⫗ B₁ ∧ A₂ ⫗ B₁) ∧ (A₁ ⫗ B₂ ∧ A₂ ⫗ B₂) := by
   rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
 
-lemma union_disjoint_union {A B C D : Set α} (hAC : A ⫗ C) (hBD : B ⫗ D) (hBC : B ⫗ C) (hAD : A ⫗ D) :
-    (A ∪ B) ⫗ (C ∪ D) := by
+lemma union_disjoint_union_aux {A B C D : Set α} (hAB : A ⫗ B) (hCD : C ⫗ D) (hCB : C ⫗ B) (hAD : A ⫗ D) :
+    (A ∪ C) ⫗ (B ∪ D) := by
   rw [union_disjoint_union_iff]
-  exact ⟨⟨hAC, hBC⟩, ⟨hAD, hBD⟩⟩
+  exact ⟨⟨hAB, hCB⟩, ⟨hAD, hCD⟩⟩
+
+lemma union_disjoint_union {A B C D : Set α} (hAB : A ⫗ B) (hCD : C ⫗ D) (hBC : B ⫗ C) (hAD : A ⫗ D) :
+    (A ∪ C) ⫗ (B ∪ D) :=
+  union_disjoint_union_aux hAB hCD hBC.symm hAD
 
 lemma Subtype.subst_elem {X Y : Set α} (x : X) (hXY : X = Y) : (hXY ▸ x).val = x.val := by
   aesop

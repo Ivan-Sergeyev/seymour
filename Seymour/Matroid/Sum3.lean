@@ -2147,7 +2147,7 @@ noncomputable def standardReprSum3 {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x
       union_disjoint_union
         Sₗ.hXY.disjoint_sdiff_left.disjoint_sdiff_right
         Sᵣ.hXY.disjoint_sdiff_left.disjoint_sdiff_right
-        hYX.symm.disjoint_sdiff_left.disjoint_sdiff_right
+        hYX.disjoint_sdiff_left.disjoint_sdiff_right
         hXY.disjoint_sdiff_left.disjoint_sdiff_right,
       -- standard representation matrix
       (blocksToMatrixSum3

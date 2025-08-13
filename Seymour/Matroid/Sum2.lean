@@ -130,7 +130,7 @@ noncomputable def standardReprSum2 {α : Type*} [DecidableEq α] {Sₗ Sᵣ : St
       union_disjoint_union
         Sₗ.hXY.disjoint_sdiff_left
         Sᵣ.hXY.disjoint_sdiff_right
-        hYX.symm
+        hYX
         hXY.disjoint_sdiff_left.disjoint_sdiff_right,
       -- standard representation matrix
       (matrixSum2 (Sₗ.B.dropRow x) (Sₗ.B.interRow hXX) (Sᵣ.B.dropCol y) (Sᵣ.B.interCol hYY)).toMatrixUnionUnion,
