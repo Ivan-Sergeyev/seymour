@@ -107,10 +107,50 @@ private lemma standardReprSum1_eq_disjointSum_untransposed_aux_aux {Xₗ Yₗ X�
     LinearIndepOn Z2 (((⊞ Aₗ 0 0 Aᵣ).toMatrixUnionUnion)) hI.elem.range ↔
       LinearIndepOn Z2 Aₗ hIXₗ.elem.range ∧
       LinearIndepOn Z2 Aᵣ hIXᵣ.elem.range := by
-  have hIAₗ : LinearIndepOn Z2 Aₗ hIXₗ.elem.range ↔ LinearIndepOn Z2 (Aₗ ◫ (0 : Matrix Xₗ Yᵣ Z2)) hIXₗ.elem.range
-  · sorry
-  have hIAᵣ : LinearIndepOn Z2 Aᵣ hIXᵣ.elem.range ↔ LinearIndepOn Z2 ((0 : Matrix Xᵣ Yₗ Z2) ◫ Aᵣ) hIXᵣ.elem.range
-  · sorry
+  have hIAₗ : LinearIndepOn Z2 Aₗ hIXₗ.elem.range ↔ LinearIndepOn Z2 (Aₗ ◫ (0 : Matrix Xₗ Yᵣ Z2)) hIXₗ.elem.range := by
+    simp only [linearIndepOn_iff']
+    constructor
+    <;> intros h t g ht hg_zero i hi
+    · apply h
+      apply ht
+      ext y
+      have h := congrArg (fun v => v (Sum.inl y)) hg_zero
+      simpa [Finset.sum_apply, Pi.smul_apply] using h
+      exact hi
+    · apply h
+      apply ht
+      ext j
+      cases j with
+      | inl y =>
+        have h := congrArg (fun v => v y) hg_zero
+        simpa [Finset.sum_apply, Pi.smul_apply] using h
+      | inr y =>
+        have : (∑ i in t, g i • (Aₗ ◫ (0 : Matrix (↑Xₗ) (↑Yᵣ) Z2)) i (Sum.inr y)) = ∑ i in t, 0 := by
+            aesop
+        aesop
+      simp_all only [Set.inter_subset_right, Subtype.forall]
+  have hIAᵣ : LinearIndepOn Z2 Aᵣ hIXᵣ.elem.range ↔ LinearIndepOn Z2 ((0 : Matrix Xᵣ Yₗ Z2) ◫ Aᵣ) hIXᵣ.elem.range := by
+    simp only [linearIndepOn_iff']
+    constructor
+    <;> intros h t g ht hg_zero i hi
+    · apply h
+      apply ht
+      ext y
+      have h := congrArg (fun v => v (Sum.inr y)) hg_zero
+      simpa [Finset.sum_apply, Pi.smul_apply] using h
+      exact hi
+    · apply h
+      apply ht
+      ext j
+      cases j with
+      | inl y =>
+        have : (∑ i ∈ t, g i • ((0 : Matrix (↑Xᵣ) (↑Yₗ) Z2) ◫ Aᵣ) i (Sum.inl y)) = ∑ i in t, 0 := by
+            aesop
+        aesop
+      | inr y =>
+        have h := congrArg (fun v => v y) hg_zero
+        simpa [Finset.sum_apply, Pi.smul_apply] using h
+      simp_all only [Subtype.forall]
   rw [hIAₗ, hIAᵣ]
   sorry
 
