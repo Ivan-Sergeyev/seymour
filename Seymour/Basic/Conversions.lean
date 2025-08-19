@@ -13,6 +13,9 @@ variable {α : Type*} {X Y : Set α}
 def HasSubset.Subset.elem (hXY : X ⊆ Y) (x : X.Elem) : Y.Elem :=
   ⟨x.val, hXY x.property⟩
 
+lemma HasSubset.Subset.elem_range (hXY : X ⊆ Y) : hXY.elem.range = { a : Y.Elem | a.val ∈ X } := by
+  aesop
+
 lemma HasSubset.Subset.elem_injective (hXY : X ⊆ Y) : hXY.elem.Injective := by
   intro x y hxy
   ext
@@ -21,12 +24,6 @@ lemma HasSubset.Subset.elem_injective (hXY : X ⊆ Y) : hXY.elem.Injective := by
 /-- Given `X ⊆ Y` provide an embedding (i.e., bundled injective function) from `X` into `Y`. -/
 abbrev HasSubset.Subset.embed (hXY : X ⊆ Y) : X.Elem ↪ Y.Elem :=
   ⟨hXY.elem, hXY.elem_injective⟩
-
-lemma HasSubset.Subset.elem_range (hXY : X ⊆ Y) : hXY.elem.range = { a : Y.Elem | a.val ∈ X } := by
-  aesop
-
-lemma HasSubset.Subset.embed_range (hXY : X ⊆ Y) : hXY.embed.toFun.range = { a : Y.Elem | a.val ∈ X } :=
-  hXY.elem_range
 
 /-- Convert `(X ∪ Y).Elem` to `X.Elem ⊕ Y.Elem`. -/
 def Subtype.toSum [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) : X.Elem ⊕ Y.Elem :=
