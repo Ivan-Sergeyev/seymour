@@ -100,6 +100,7 @@ lemma Matroid.IsSum1of.disjoint_E {M Mₗ Mᵣ : Matroid α} (hMMM : M.IsSum1of 
 
 /-! ## Results -/
 
+set_option maxHeartbeats 333333 in
 private lemma standardReprSum1_eq_disjointSum_untransposed_aux_aux {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) (Aₗ : Matrix Xₗ Yₗ Z2) (Aᵣ : Matrix Xᵣ Yᵣ Z2)
@@ -152,7 +153,23 @@ private lemma standardReprSum1_eq_disjointSum_untransposed_aux_aux {Xₗ Yₗ X�
         simpa [Finset.sum_apply, Pi.smul_apply] using h
       simp_all only [Subtype.forall]
   rw [hIAₗ, hIAᵣ]
-  sorry
+  simp only [linearIndepOn_iff']
+  have hXₗ : Xₗ ⊆ Xₗ ∪ Xᵣ := Set.subset_union_left
+  have hXᵣ : Xᵣ ⊆ Xₗ ∪ Xᵣ := Set.subset_union_right
+  have hYₗ : Yₗ ⊆ Yₗ ∪ Yᵣ := Set.subset_union_left
+  have hYᵣ : Yᵣ ⊆ Yₗ ∪ Yᵣ := Set.subset_union_right
+  constructor
+  · sorry
+  · intro ⟨h0Xₗ, h0Xᵣ⟩ s c hs hsc0 i hi
+    specialize h0Xₗ (s.filterMap (fun x : (Xₗ ∪ Xᵣ).Elem => if hx : x.val ∈ Xₗ then some ⟨x.val, hx⟩ else none) (by aesop))
+    specialize h0Xᵣ (s.filterMap (fun x : (Xₗ ∪ Xᵣ).Elem => if hx : x.val ∈ Xᵣ then some ⟨x.val, hx⟩ else none) (by aesop))
+    specialize h0Xₗ (c ∘ hXₗ.elem) sorry sorry
+    specialize h0Xᵣ (c ∘ hXᵣ.elem) sorry sorry
+    if hiXₗ : i.val ∈ Xₗ then
+      exact h0Xₗ ⟨i, hiXₗ⟩ (by simp [hi, hiXₗ])
+    else
+      have hiXᵣ : i.val ∈ Xᵣ := in_right_of_in_union_of_ni_left i.property hiXₗ
+      exact h0Xᵣ ⟨i, hiXᵣ⟩ (by simp [hi, hiXᵣ])
 
 private lemma standardReprSum1_eq_disjointSum_untransposed_aux {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
