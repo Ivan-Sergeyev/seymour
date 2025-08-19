@@ -101,14 +101,15 @@ lemma Matroid.IsSum1of.disjoint_E {M Mₗ Mᵣ : Matroid α} (hMMM : M.IsSum1of 
 /-! ## Results -/
 
 set_option maxHeartbeats 666666 in
-private lemma standardReprSum1_eq_disjointSum_untransposed_aux_aux {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
+omit [DecidableEq α] in
+private lemma linearIndepOn_toMatrixUnionUnion_elem_range_iff {Xₗ Yₗ Xᵣ Yᵣ I : Set α} {R : Type*} [Ring R]
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
-    (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) (Aₗ : Matrix Xₗ Yₗ Z2) (Aᵣ : Matrix Xᵣ Yᵣ Z2)
+    (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) (Aₗ : Matrix Xₗ Yₗ R) (Aᵣ : Matrix Xᵣ Yᵣ R)
     (hI : I ⊆ Xₗ ∪ Xᵣ) (hIXₗ : I ∩ Xₗ ⊆ Xₗ) (hIXᵣ : I ∩ Xᵣ ⊆ Xᵣ) :
-    LinearIndepOn Z2 (((⊞ Aₗ 0 0 Aᵣ).toMatrixUnionUnion)) hI.elem.range ↔
-      LinearIndepOn Z2 Aₗ hIXₗ.elem.range ∧
-      LinearIndepOn Z2 Aᵣ hIXᵣ.elem.range := by
-  have hIAₗ : LinearIndepOn Z2 Aₗ hIXₗ.elem.range ↔ LinearIndepOn Z2 (Aₗ ◫ (0 : Matrix Xₗ Yᵣ Z2)) hIXₗ.elem.range
+    LinearIndepOn R (((⊞ Aₗ 0 0 Aᵣ).toMatrixUnionUnion)) hI.elem.range ↔
+      LinearIndepOn R Aₗ hIXₗ.elem.range ∧
+      LinearIndepOn R Aᵣ hIXᵣ.elem.range := by
+  have hIAₗ : LinearIndepOn R Aₗ hIXₗ.elem.range ↔ LinearIndepOn R (Aₗ ◫ (0 : Matrix Xₗ Yᵣ R)) hIXₗ.elem.range
   · simp only [linearIndepOn_iff']
     constructor
     <;> intros h0 t g ht hgt0 i hi
@@ -125,7 +126,7 @@ private lemma standardReprSum1_eq_disjointSum_untransposed_aux_aux {Xₗ Yₗ X�
         | inl jₗ =>
           simpa [Finset.sum_apply, Pi.smul_apply] using congr_fun hgt0 jₗ
       · simpa using hi
-  have hIAᵣ : LinearIndepOn Z2 Aᵣ hIXᵣ.elem.range ↔ LinearIndepOn Z2 ((0 : Matrix Xᵣ Yₗ Z2) ◫ Aᵣ) hIXᵣ.elem.range
+  have hIAᵣ : LinearIndepOn R Aᵣ hIXᵣ.elem.range ↔ LinearIndepOn R ((0 : Matrix Xᵣ Yₗ R) ◫ Aᵣ) hIXᵣ.elem.range
   · simp only [linearIndepOn_iff']
     constructor
     <;> intros h0 t g ht hgt0 i hi
@@ -221,14 +222,14 @@ private lemma standardReprSum1_eq_disjointSum_untransposed_aux_aux {Xₗ Yₗ X�
           convert hsc0jᵣ
           exact Finset.sum_bij (↓⟨hXᵣ.elem ·, by simp_all⟩) (by simp) (by simp) (by aesop) (by simp)
 
-private lemma standardReprSum1_eq_disjointSum_untransposed_aux {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
+private lemma standardReprSum1_eq_disjointSum_untransposed_aux {Xₗ Yₗ Xᵣ Yᵣ I : Set α} {R : Type*} [Ring R]
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
-    (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) (hXY : Xₗ ⫗ Yᵣ) (hYX : Yₗ ⫗ Xᵣ) (Bₗ : Matrix Xₗ Yₗ Z2) (Bᵣ : Matrix Xᵣ Yᵣ Z2)
+    (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) (hXY : Xₗ ⫗ Yᵣ) (hYX : Yₗ ⫗ Xᵣ) (Bₗ : Matrix Xₗ Yₗ R) (Bᵣ : Matrix Xᵣ Yᵣ R)
     (hI : I ⊆ (Yₗ ∪ Xₗ) ∪ (Yᵣ ∪ Xᵣ)) (hIₗ : I ∩ (Yₗ ∪ Xₗ) ⊆ Yₗ ∪ Xₗ) (hIᵣ : I ∩ (Yᵣ ∪ Xᵣ) ⊆ Yᵣ ∪ Xᵣ) :
-    LinearIndepOn Z2 (((⊞ ((1 ⊟ Bₗ) ∘ Subtype.toSum) 0 0 ((1 ⊟ Bᵣ) ∘ Subtype.toSum)).toMatrixUnionUnion)) hI.elem.range ↔
-      LinearIndepOn Z2 ((1 ⊟ Bₗ) ∘ Subtype.toSum) hIₗ.elem.range ∧
-      LinearIndepOn Z2 ((1 ⊟ Bᵣ) ∘ Subtype.toSum) hIᵣ.elem.range :=
-  standardReprSum1_eq_disjointSum_untransposed_aux_aux (union_disjoint_union_aux hYY hXX hXY hYX) hYY _ _ hI hIₗ hIᵣ
+    LinearIndepOn R (((⊞ ((1 ⊟ Bₗ) ∘ Subtype.toSum) 0 0 ((1 ⊟ Bᵣ) ∘ Subtype.toSum)).toMatrixUnionUnion)) hI.elem.range ↔
+      LinearIndepOn R ((1 ⊟ Bₗ) ∘ Subtype.toSum) hIₗ.elem.range ∧
+      LinearIndepOn R ((1 ⊟ Bᵣ) ∘ Subtype.toSum) hIᵣ.elem.range :=
+  linearIndepOn_toMatrixUnionUnion_elem_range_iff (union_disjoint_union_aux hYY hXX hXY hYX) hYY _ _ hI hIₗ hIᵣ
 
 lemma Disjoint.matrix_one_eq_fromBlocks_toMatrixUnionUnion {R : Type*} [Zero R] [One R]
     {Zₗ Zᵣ : Set α} [∀ a, Decidable (a ∈ Zₗ)] [∀ a, Decidable (a ∈ Zᵣ)]
@@ -278,14 +279,14 @@ lemma Disjoint.matrix_one_eq_fromBlocks_toMatrixUnionUnion {R : Type*} [Zero R] 
         rw [hi, hj, Matrix.one_apply_ne hij,
           Matrix.one_apply_ne (hij <| by simpa using congr_arg Sum.toUnion <| hi.trans · |>.trans hj.symm)]
 
-private lemma standardReprSum1_eq_disjointSum_untransposed {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
+private lemma standardReprSum1_eq_disjointSum_untransposed {Xₗ Yₗ Xᵣ Yᵣ I : Set α} {R : Type} [Ring R]
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     (hSₗ : Xₗ ⫗ Yₗ) (hSᵣ : Xᵣ ⫗ Yᵣ) (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) (hXY : Xₗ ⫗ Yᵣ) (hYX : Yₗ ⫗ Xᵣ)
-    (Bₗ : Matrix Xₗ Yₗ Z2) (Bᵣ : Matrix Xᵣ Yᵣ Z2)
+    (Bₗ : Matrix Xₗ Yₗ R) (Bᵣ : Matrix Xᵣ Yᵣ R)
     (hI : I ⊆ (Yₗ ∪ Yᵣ) ∪ (Xₗ ∪ Xᵣ)) (hIₗ : I ∩ (Yₗ ∪ Xₗ) ⊆ Yₗ ∪ Xₗ) (hIᵣ : I ∩ (Yᵣ ∪ Xᵣ) ⊆ Yᵣ ∪ Xᵣ) :
-    LinearIndepOn Z2 ((1 ⊟ (⊞ Bₗ 0 0 Bᵣ).toMatrixUnionUnion) ∘ Subtype.toSum) hI.elem.range ↔
-      LinearIndepOn Z2 ((1 ⊟ Bₗ) ∘ Subtype.toSum) hIₗ.elem.range ∧
-      LinearIndepOn Z2 ((1 ⊟ Bᵣ) ∘ Subtype.toSum) hIᵣ.elem.range := by
+    LinearIndepOn R ((1 ⊟ (⊞ Bₗ 0 0 Bᵣ).toMatrixUnionUnion) ∘ Subtype.toSum) hI.elem.range ↔
+      LinearIndepOn R ((1 ⊟ Bₗ) ∘ Subtype.toSum) hIₗ.elem.range ∧
+      LinearIndepOn R ((1 ⊟ Bᵣ) ∘ Subtype.toSum) hIᵣ.elem.range := by
   have hYXYX : Yₗ ∪ Xₗ ⫗ Yᵣ ∪ Xᵣ :=
     union_disjoint_union_aux hYY hXX hXY hYX
   have hYYXXYXYX : (Yₗ ∪ Yᵣ) ∪ (Xₗ ∪ Xᵣ) = (Yₗ ∪ Xₗ) ∪ (Yᵣ ∪ Xᵣ) :=
@@ -339,28 +340,28 @@ private lemma standardReprSum1_eq_disjointSum_untransposed {Xₗ Yₗ Xᵣ Yᵣ 
   rewrite [hBBij, Matrix.toMatrixElemElem_apply]
   rfl
 
-private lemma standardReprSum1_eq_disjointSum_aux_aux {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
+private lemma standardReprSum1_eq_disjointSum_aux_aux {Xₗ Yₗ Xᵣ Yᵣ I : Set α} {R : Type} [Ring R]
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     (hSₗ : Xₗ ⫗ Yₗ) (hSᵣ : Xᵣ ⫗ Yᵣ) (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) (hXY : Xₗ ⫗ Yᵣ) (hYX : Yₗ ⫗ Xᵣ)
-    (Bₗ : Matrix Xₗ Yₗ Z2) (Bᵣ : Matrix Xᵣ Yᵣ Z2)
+    (Bₗ : Matrix Xₗ Yₗ R) (Bᵣ : Matrix Xᵣ Yᵣ R)
     (hI : I ⊆ (Xₗ ∪ Xᵣ) ∪ (Yₗ ∪ Yᵣ)) (hIₗ : I ∩ (Xₗ ∪ Yₗ) ⊆ Xₗ ∪ Yₗ) (hIᵣ : I ∩ (Xᵣ ∪ Yᵣ) ⊆ Xᵣ ∪ Yᵣ) :
-    LinearIndepOn Z2 ((1 ⊟ (⊞ Bₗ 0 0 Bᵣ).toMatrixUnionUnion.transpose) ∘ Subtype.toSum) hI.elem.range ↔
-      LinearIndepOn Z2 ((1 ⊟ Bₗ.transpose) ∘ Subtype.toSum) hIₗ.elem.range ∧
-      LinearIndepOn Z2 ((1 ⊟ Bᵣ.transpose) ∘ Subtype.toSum) hIᵣ.elem.range :=
+    LinearIndepOn R ((1 ⊟ (⊞ Bₗ 0 0 Bᵣ).toMatrixUnionUnion.transpose) ∘ Subtype.toSum) hI.elem.range ↔
+      LinearIndepOn R ((1 ⊟ Bₗ.transpose) ∘ Subtype.toSum) hIₗ.elem.range ∧
+      LinearIndepOn R ((1 ⊟ Bᵣ.transpose) ∘ Subtype.toSum) hIᵣ.elem.range :=
   (⊞ Bₗ 0 0 Bᵣ).toMatrixUnionUnion_transpose ▸
   Matrix.fromBlocks_transpose .. ▸
   standardReprSum1_eq_disjointSum_untransposed hSₗ.symm hSᵣ.symm hYY hXX hYX hXY Bₗ.transpose Bᵣ.transpose hI hIₗ hIᵣ
 
-private lemma standardReprSum1_eq_disjointSum_aux {Xₗ Yₗ Xᵣ Yᵣ X Y I : Set α}
+private lemma standardReprSum1_eq_disjointSum_aux {Xₗ Yₗ Xᵣ Yᵣ X Y I : Set α} {R : Type} [Ring R]
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     (hSₗ : Xₗ ⫗ Yₗ) (hSᵣ : Xᵣ ⫗ Yᵣ) (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) (hXY : Xₗ ⫗ Yᵣ) (hYX : Yₗ ⫗ Xᵣ)
-    (hXXX : X = Xₗ ∪ Xᵣ) (hYYY : Y = Yₗ ∪ Yᵣ) (Bₗ : Matrix Xₗ Yₗ Z2) (Bᵣ : Matrix Xᵣ Yᵣ Z2)
+    (hXXX : X = Xₗ ∪ Xᵣ) (hYYY : Y = Yₗ ∪ Yᵣ) (Bₗ : Matrix Xₗ Yₗ R) (Bᵣ : Matrix Xᵣ Yᵣ R)
     (hI : I ⊆ X ∪ Y) (hIₗ : I ∩ (Xₗ ∪ Yₗ) ⊆ Xₗ ∪ Yₗ) (hIᵣ : I ∩ (Xᵣ ∪ Yᵣ) ⊆ Xᵣ ∪ Yᵣ) :
     have : ∀ a : α, Decidable (a ∈ X) := hXXX ▸ (Set.decidableUnion Xₗ Xᵣ ·)
     have : ∀ a : α, Decidable (a ∈ Y) := hYYY ▸ (Set.decidableUnion Yₗ Yᵣ ·)
-    LinearIndepOn Z2 ((1 ⊟ ((⊞ Bₗ 0 0 Bᵣ).toMatrixElemElem hXXX hYYY).transpose) ∘ Subtype.toSum) hI.elem.range ↔
-      LinearIndepOn Z2 ((1 ⊟ Bₗ.transpose) ∘ Subtype.toSum) hIₗ.elem.range ∧
-      LinearIndepOn Z2 ((1 ⊟ Bᵣ.transpose) ∘ Subtype.toSum) hIᵣ.elem.range := by
+    LinearIndepOn R ((1 ⊟ ((⊞ Bₗ 0 0 Bᵣ).toMatrixElemElem hXXX hYYY).transpose) ∘ Subtype.toSum) hI.elem.range ↔
+      LinearIndepOn R ((1 ⊟ Bₗ.transpose) ∘ Subtype.toSum) hIₗ.elem.range ∧
+      LinearIndepOn R ((1 ⊟ Bᵣ.transpose) ∘ Subtype.toSum) hIᵣ.elem.range := by
   subst hXXX hYYY
   convert standardReprSum1_eq_disjointSum_aux_aux hSₗ hSᵣ hXX hYY hXY hYX Bₗ Bᵣ hI hIₗ hIᵣ
 
