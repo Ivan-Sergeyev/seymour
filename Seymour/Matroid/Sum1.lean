@@ -152,31 +152,35 @@ private lemma standardReprSum1_eq_disjointSum_untransposed_aux_aux {Xₗ Yₗ X�
         have h := congrArg (fun v => v y) hg_zero
         simpa [Finset.sum_apply, Pi.smul_apply] using h
       simp_all only [Subtype.forall]
-  rw [hIAₗ, hIAᵣ]
+  --rw [hIAₗ, hIAᵣ]
   simp only [linearIndepOn_iff']
   have hXₗ : Xₗ ⊆ Xₗ ∪ Xᵣ := Set.subset_union_left
   have hXᵣ : Xᵣ ⊆ Xₗ ∪ Xᵣ := Set.subset_union_right
   have hYₗ : Yₗ ⊆ Yₗ ∪ Yᵣ := Set.subset_union_left
   have hYᵣ : Yᵣ ⊆ Yₗ ∪ Yᵣ := Set.subset_union_right
   constructor
-  · sorry
+  · intro h0
+    constructor
+    <;> intro s c hs hsc0 i hi
+    · specialize h0 (s.map hXₗ.embed) (fun x : (Xₗ ∪ Xᵣ).Elem => if hx : x.val ∈ Xₗ then c ⟨x.val, hx⟩ else 0)
+      specialize h0 sorry sorry (hXₗ.elem i) (by simpa using hi)
+      simpa using h0
+    · specialize h0 (s.map hXᵣ.embed) (fun x : (Xₗ ∪ Xᵣ).Elem => if hx : x.val ∈ Xᵣ then c ⟨x.val, hx⟩ else 0)
+      specialize h0 sorry sorry (hXᵣ.elem i) (by simpa using hi)
+      simpa using h0
   · intro ⟨h0Xₗ, h0Xᵣ⟩ s c hs hsc0 i hi
     specialize h0Xₗ (s.filterMap (fun x : (Xₗ ∪ Xᵣ).Elem => if hx : x.val ∈ Xₗ then some ⟨x.val, hx⟩ else none) (by aesop))
     specialize h0Xᵣ (s.filterMap (fun x : (Xₗ ∪ Xᵣ).Elem => if hx : x.val ∈ Xᵣ then some ⟨x.val, hx⟩ else none) (by aesop))
-    specialize h0Xₗ (c ∘ hXₗ.elem) (by
-      intro ⟨x, hxXₗ⟩ hxs
-      simp at hxs
-      use ⟨x, by simpa using hs hxs, hxXₗ⟩
-      rfl) (by
-      ext j
-      rw [Pi.zero_apply, Finset.sum_apply]
-      simp_rw [Pi.smul_apply]
-      cases j with
-      | inl jₗ =>
-        simp_rw [Matrix.fromCols_apply_inl]
-        have hsc0jₗ := congr_fun hsc0 (hYₗ.elem jₗ)
-        rw [Pi.zero_apply, Finset.sum_apply] at hsc0jₗ
-        have hXXjₗ : ∀ x : (Xₗ ∪ Xᵣ).Elem, (⊞ Aₗ 0 0 Aᵣ) x.toSum ◩jₗ = if hx : x.val ∈ Xₗ then Aₗ ⟨x.val, hx⟩ jₗ else 0
+    if hiXₗ : i.val ∈ Xₗ then
+      refine h0Xₗ (c ∘ hXₗ.elem) ?_ ?_ ⟨i, hiXₗ⟩ (by simp [hi, hiXₗ])
+      · intro ⟨x, hxXₗ⟩ hxs
+        simp at hxs
+        use ⟨x, by simpa using hs hxs, hxXₗ⟩
+        rfl
+      · ext j
+        have hsc0jₗ := congr_fun hsc0 (hYₗ.elem j)
+        rw [Pi.zero_apply, Finset.sum_apply] at hsc0jₗ ⊢
+        have hXXjₗ : ∀ x : (Xₗ ∪ Xᵣ).Elem, (⊞ Aₗ 0 0 Aᵣ) x.toSum ◩j = if hx : x.val ∈ Xₗ then Aₗ ⟨x.val, hx⟩ j else 0
         · intro x
           if hx : x.val ∈ Xₗ then
             simp [hx]
@@ -185,13 +189,11 @@ private lemma standardReprSum1_eq_disjointSum_untransposed_aux_aux {Xₗ Yₗ X�
         simp [Matrix.toMatrixUnionUnion, hXXjₗ, Finset.sum_dite] at hsc0jₗ
         convert hsc0jₗ
         exact Finset.sum_bij (↓⟨hXₗ.elem ·, by simp_all⟩) (by simp) (by simp) (by aesop) (by simp)
-      | inr => simp)
-    specialize h0Xᵣ (c ∘ hXᵣ.elem) sorry sorry
-    if hiXₗ : i.val ∈ Xₗ then
-      exact h0Xₗ ⟨i, hiXₗ⟩ (by simp [hi, hiXₗ])
     else
       have hiXᵣ : i.val ∈ Xᵣ := in_right_of_in_union_of_ni_left i.property hiXₗ
-      exact h0Xᵣ ⟨i, hiXᵣ⟩ (by simp [hi, hiXᵣ])
+      refine h0Xᵣ (c ∘ hXᵣ.elem) ?_ ?_ ⟨i, hiXᵣ⟩ (by simp [hi, hiXᵣ])
+      · sorry
+      · sorry
 
 private lemma standardReprSum1_eq_disjointSum_untransposed_aux {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
