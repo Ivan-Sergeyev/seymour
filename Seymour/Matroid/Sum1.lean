@@ -100,7 +100,7 @@ lemma Matroid.IsSum1of.disjoint_E {M Mₗ Mᵣ : Matroid α} (hMMM : M.IsSum1of 
 
 /-! ## Results -/
 
-set_option maxHeartbeats 333333 in
+set_option maxHeartbeats 666666 in
 private lemma standardReprSum1_eq_disjointSum_untransposed_aux_aux {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     (hXX : Xₗ ⫗ Xᵣ) (hYY : Yₗ ⫗ Yᵣ) (Aₗ : Matrix Xₗ Yₗ Z2) (Aᵣ : Matrix Xᵣ Yᵣ Z2)
@@ -163,7 +163,29 @@ private lemma standardReprSum1_eq_disjointSum_untransposed_aux_aux {Xₗ Yₗ X�
   · intro ⟨h0Xₗ, h0Xᵣ⟩ s c hs hsc0 i hi
     specialize h0Xₗ (s.filterMap (fun x : (Xₗ ∪ Xᵣ).Elem => if hx : x.val ∈ Xₗ then some ⟨x.val, hx⟩ else none) (by aesop))
     specialize h0Xᵣ (s.filterMap (fun x : (Xₗ ∪ Xᵣ).Elem => if hx : x.val ∈ Xᵣ then some ⟨x.val, hx⟩ else none) (by aesop))
-    specialize h0Xₗ (c ∘ hXₗ.elem) sorry sorry
+    specialize h0Xₗ (c ∘ hXₗ.elem) (by
+      intro ⟨x, hxXₗ⟩ hxs
+      simp at hxs
+      use ⟨x, by simpa using hs hxs, hxXₗ⟩
+      rfl) (by
+      ext j
+      rw [Pi.zero_apply, Finset.sum_apply]
+      simp_rw [Pi.smul_apply]
+      cases j with
+      | inl jₗ =>
+        simp_rw [Matrix.fromCols_apply_inl]
+        have hsc0jₗ := congr_fun hsc0 (hYₗ.elem jₗ)
+        rw [Pi.zero_apply, Finset.sum_apply] at hsc0jₗ
+        have hXXjₗ : ∀ x : (Xₗ ∪ Xᵣ).Elem, (⊞ Aₗ 0 0 Aᵣ) x.toSum ◩jₗ = if hx : x.val ∈ Xₗ then Aₗ ⟨x.val, hx⟩ jₗ else 0
+        · intro x
+          if hx : x.val ∈ Xₗ then
+            simp [hx]
+          else
+            simp [hx, in_right_of_in_union_of_ni_left x.property]
+        simp [Matrix.toMatrixUnionUnion, hXXjₗ, Finset.sum_dite] at hsc0jₗ
+        convert hsc0jₗ
+        exact Finset.sum_bij (↓⟨hXₗ.elem ·, by simp_all⟩) (by simp) (by simp) (by aesop) (by simp)
+      | inr => simp)
     specialize h0Xᵣ (c ∘ hXᵣ.elem) sorry sorry
     if hiXₗ : i.val ∈ Xₗ then
       exact h0Xₗ ⟨i, hiXₗ⟩ (by simp [hi, hiXₗ])
