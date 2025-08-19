@@ -8,7 +8,7 @@ You can find the blueprint of our formalization on the [GitHub Pages site](https
 
 ## How to Get Involved
 
-If you want to contribute to our project, be sure to review the [contribution guidelines](CONTRIBUTING.md). We use [GitHub Issues](https://github.com/Ivan-Sergeyev/seymour/issues) for tracking tasks, and the issues we think could be a good fit for newcomers are labeled with `good first issue`. Feel free to reach out on [Zulip](https://leanprover.zulipchat.com/#narrow/channel/498634-Seymour) in case you have questions.
+In case you want to contribute to our project, you can read the [contribution guidelines](CONTRIBUTING.md). We use [GitHub Issues](https://github.com/Ivan-Sergeyev/seymour/issues) for tracking tasks, and the issues we think could be a good fit for newcomers are labeled with `good first issue`. Feel free to reach out on [Zulip](https://leanprover.zulipchat.com/#narrow/channel/498634-Seymour) in case you have questions.
 
 ## Timeline
 
