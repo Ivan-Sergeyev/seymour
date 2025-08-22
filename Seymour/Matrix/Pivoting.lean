@@ -427,9 +427,9 @@ private lemma Fin.reindexFun_bijective {n : ℕ} (i : Fin n.succ) : i.reindexFun
       | inr bₙ =>
         simpa using hab,
     (by
-      if hic : i = · then
+      if hi : i = · then
         use ◩0
-        simpa using hic
+        simpa using hi
       else
         aesop)⟩
 
