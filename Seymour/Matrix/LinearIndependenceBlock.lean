@@ -57,6 +57,34 @@ lemma Disjoint.matrix_one_eq_fromBlocks_toMatrixUnionUnion [DecidableEq α] [Zer
         rw [hi, hj, Matrix.one_apply_ne hij,
           Matrix.one_apply_ne (hij <| by simpa using congr_arg Sum.toUnion <| hi.trans · |>.trans hj.symm)]
 
+lemma Matrix.linearIndepOn_iff_fromCols_zero [Ring R] {X Y I : Set α} (A : Matrix X Y R) (hIX : I ∩ X ⊆ X) (Y₀ : Set α)  :
+    LinearIndepOn R A hIX.elem.range ↔ LinearIndepOn R (A ◫ (0 : Matrix X Y₀ R)) hIX.elem.range := by
+  simp only [linearIndepOn_iff']
+  constructor
+  <;> intros h0 s c hs hsc0 x hx
+  · apply h0
+    · apply hs
+    · ext y
+      simpa using congr_fun hsc0 ◩y
+    · exact hx
+  · apply h0
+    · apply hs
+    · ext j
+      cases j with
+      | inr => simp
+      | inl jₗ =>
+        simpa [Finset.sum_apply, Pi.smul_apply] using congr_fun hsc0 jₗ
+    · simpa using hx
+
+lemma Matrix.linearIndepOn_iff_zero_fromCols [Ring R] {X Y I : Set α} (A : Matrix X Y R) (hIX : I ∩ X ⊆ X) (Y₀ : Set α)  :
+    LinearIndepOn R A hIX.elem.range ↔ LinearIndepOn R ((0 : Matrix X Y₀ R) ◫ A) hIX.elem.range := by
+  rw [A.linearIndepOn_iff_fromCols_zero hIX Y₀]
+  constructor
+  <;> [let l : (Y₀ ⊕ Y → R) →ₗ[R] (Y ⊕ Y₀ → R) := ⟨⟨(· <| Sum.swap ·), ↓↓rfl⟩, ↓↓rfl⟩;
+       let l : (Y ⊕ Y₀ → R) →ₗ[R] (Y₀ ⊕ Y → R) := ⟨⟨(· <| Sum.swap ·), ↓↓rfl⟩, ↓↓rfl⟩]
+  <;> convert LinearIndepOn.of_comp l
+  <;> aesop
+
 set_option maxHeartbeats 666666 in
 lemma linearIndepOn_toMatrixUnionUnion_elem_range_iff [Ring R] {Xₗ Yₗ Xᵣ Yᵣ I : Set α}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
@@ -65,41 +93,7 @@ lemma linearIndepOn_toMatrixUnionUnion_elem_range_iff [Ring R] {Xₗ Yₗ Xᵣ Y
     LinearIndepOn R (((⊞ Aₗ 0 0 Aᵣ).toMatrixUnionUnion)) hI.elem.range ↔
       LinearIndepOn R Aₗ hIXₗ.elem.range ∧
       LinearIndepOn R Aᵣ hIXᵣ.elem.range := by
-  have hIAₗ : LinearIndepOn R Aₗ hIXₗ.elem.range ↔ LinearIndepOn R (Aₗ ◫ (0 : Matrix Xₗ Yᵣ R)) hIXₗ.elem.range
-  · simp only [linearIndepOn_iff']
-    constructor
-    <;> intros h0 t g ht hgt0 i hi
-    · apply h0
-      · apply ht
-      · ext y
-        simpa using congr_fun hgt0 ◩y
-      · exact hi
-    · apply h0
-      · apply ht
-      · ext j
-        cases j with
-        | inr => simp
-        | inl jₗ =>
-          simpa [Finset.sum_apply, Pi.smul_apply] using congr_fun hgt0 jₗ
-      · simpa using hi
-  have hIAᵣ : LinearIndepOn R Aᵣ hIXᵣ.elem.range ↔ LinearIndepOn R ((0 : Matrix Xᵣ Yₗ R) ◫ Aᵣ) hIXᵣ.elem.range
-  · simp only [linearIndepOn_iff']
-    constructor
-    <;> intros h0 t g ht hgt0 i hi
-    · apply h0
-      · apply ht
-      · ext y
-        simpa using congr_fun hgt0 ◪y
-      · exact hi
-    · apply h0
-      · apply ht
-      · ext j
-        cases j with
-        | inl => simp
-        | inr jᵣ =>
-          simpa [Finset.sum_apply, Pi.smul_apply] using congr_fun hgt0 jᵣ
-      · simpa using hi
-  rw [hIAₗ, hIAᵣ]
+  rw [Aₗ.linearIndepOn_iff_fromCols_zero hIXₗ Yᵣ, Aᵣ.linearIndepOn_iff_zero_fromCols hIXᵣ Yₗ]
   simp only [linearIndepOn_iff']
   have hXₗ : Xₗ ⊆ Xₗ ∪ Xᵣ := Set.subset_union_left
   have hXᵣ : Xᵣ ⊆ Xₗ ∪ Xᵣ := Set.subset_union_right
