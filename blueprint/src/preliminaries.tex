@@ -218,7 +218,16 @@
 \begin{definition}
     \label{Matroid}
     \leanok
-    \todo[inline]{Add definition of matroids}
+    A matroid $M$ is a pair $(E, \mathcal{I})$ where $E$ is a (possibly infinite) set and $\mathcal I \in 2^E$ is such that:
+    \begin{enumerate}[label = (\roman*)]
+        \item $\varnothing \in \mathcal I$
+        \item If $I \in \mathcal I$ and $J \subseteq I$, then $I \in \mathcal I$.
+        \item If $I \in \mathcal I$ is not maximal (with respect to set inclusion) and $B \in \mathcal I$ is maximal, 
+            then there exists an $x \in B \setminus I$ such that $I \cup \{x\} \in \mathcal{I}$. 
+        \item If $X \subseteq E$ and $I \subseteq X$ is such that $I \in \mathcal I$, then there exists an $J \in \mathcal I$ with $I \subseteq J \subseteq X$
+            that is maximal with respect to set inclusion.
+    \end{enumerate}
+    We call $E$ the grounnd set of $M$ and $\mathcal{I}$ the collection of independent sets in $M$.
 \end{definition}
 
 \begin{definition}
