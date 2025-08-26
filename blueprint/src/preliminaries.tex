@@ -15,7 +15,11 @@
     \label{Matrix.det}
     \uses{Matrix}
     \leanok
-    Let $A$ be a square matrix over a commutative ring. Determinant of $A$ is the sum over all permutations, sign of the permutation times the product of ... . \todo{complete definition}.
+    Let $A$ be a square matrix over a commutative ring whose rows and colummns are indexed by the integers $\{1,\ldots,n\}$. 
+    The determinant of $A$ is the sum over all permutations $\sigma \in S_n$, of the sign of the permutation times the product of the the elements in the $i$-th
+    row and $\sigma(i)$-th column for each $i \in \{1,\ldots,n\}$. In other words
+    $$ \det A = \sum_{\sigma \in S_n} \left( \operatorname{sgn}(\sigma) \prod_{i = 1}^n a_{i, \sigma(i)} \right)$$
+    where $a_{i,j} \in R$ is the element element of $A$ corresponding to the $i$-th row and the $j$-th column.
 \end{definition}
 
 \begin{definition}
