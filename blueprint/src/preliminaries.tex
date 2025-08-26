@@ -214,7 +214,16 @@
 \begin{definition}
     \label{Matroid}
     \leanok
-    \todo[inline]{Add definition of matroids}
+    A matroid $M$ is a pair $(Y, \mathcal{I})$ where $Y$ is a set and $\mathcal I \in 2^Y$ is such that:
+    \begin{enumerate}[label = (\roman*)
+        \item $\varnothing \in \mathcal I$
+        \item If $E \in \mathcal I$ and $F \subseteq E$, then $F \in \mathcal I$.
+        \item If $I \in \mathcal I$ is not maximal (with respect to set inclusion) and $I' \in \mathcal I$ is maximal, 
+            then there exists an $x \in I' \setminus I$ such that $I \cup \{x\} \in \mathcal{I}$. 
+        \item If $X \subseteq E$ and $I \subseteq X$ is such that $I \in \mathcal I$, then there exists an $I' \in \mathcal I$ with $I \subseteq I' \subseteq X$
+            that is maximal with respect to set inclusion.
+    \end{enumerate}
+    We call $Y$ the grounnd set of $M$ and $\mathcal{I}$ the collection of independent sets in $M$.
 \end{definition}
 
 \begin{definition}
