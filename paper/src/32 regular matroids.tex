@@ -1,0 +1,57 @@
+\section{Regular Matroids}
+\label{sec:regular_matroid}
+
+Regular matroids are perhaps the most important definition in this formalization due to how central it is to the main result we are verifying.
+A regular matroid is one which could be constructed from a rational totally unimodular matrix.
+
+\begin{leancode}
+def Matroid.IsRegular {α : Type*}
+    (M : Matroid α) : Prop :=
+  ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, 
+    A.IsTotallyUnimodular ∧ A.toMatroid = M
+\end{leancode} 
+
+Let $U$ be a $\mathbb{Z}_n$-valued matrix, and $A$ be a matrix whose values are from some linearly ordered ring, then $A$ is said to be a \emph{signing} of $U$ if they have the same values up to a sign. We also define \texttt{Matrix.IsTuSigningOf} for when $A$ is rational and totally unimodular, and $U$ is binary. We say $U$ has a \emph{totally unimodular signing} when such $A$ exists, which is defined in \texttt{Matrix.HasTuSigning}.
+
+\begin{leancode}
+def Matrix.IsSigningOf {X Y R : Type*}
+    [LinearOrderedRing R] {n : ℕ}
+    (A : Matrix X Y R) (U : Matrix X Y (ZMod n)) :
+    Prop :=
+  ∀ i : X, ∀ j : Y, |A i j| = (U i j).val
+\end{leancode}
+
+\begin{leancode}
+def Matrix.IsTuSigningOf {X Y : Type*} 
+    (A : Matrix X Y ℚ) (U : Matrix X Y Z2) :
+    Prop :=
+  A.IsTotallyUnimodular ∧ A.IsSigningOf U
+\end{leancode}
+
+\begin{leancode}
+def Matrix.HasTuSigning {X Y : Type*} 
+    (U : Matrix X Y Z2) : Prop :=
+  ∃ A : Matrix X Y ℚ, A.IsTuSigningOf U
+\end{leancode}
+
+Of the definitions above, only \texttt{Matroid.IsRegular} is a part of the trusted code.
+
+There are two main lemmas concerning regular matroids in the regularity file. First, every regular matroid is binary. 
+
+\begin{leancode}
+lemma Matroid.IsRegular.isBinary
+    {α : Type*} [DecidableEq α]
+    {M : Matroid α} (hM : M.IsRegular) :
+  ∃ X : Set α, ∃ Y : Set α, ∃ A : Matrix X Y Z2, 
+    A.toMatroid = M
+\end{leancode}
+
+The second result is as follows: given a standard representation over $\mathbb{Z}_2$, its matrix has a totally unimodular signing if and only if the matroid obtained from the representation is regular.
+
+\begin{leancode}
+lemma StandardRepr.toMatroid_isRegular_iff_hasTuSigning 
+    {α : Type*} [DecidableEq α]
+    (S : StandardRepr α Z2) [Finite S.X] :
+  S.toMatroid.IsRegular ↔ S.B.HasTuSigning
+\end{leancode} 
+

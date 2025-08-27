@@ -1,0 +1,7 @@
+\subsection{Types and Subsets}
+
+In our project, we often have the following terms in the context:
+\begin{leancode}
+(α : Type) (E : Set α) (I : Set α) (hIE : I ⊆ E)
+\end{leancode}
+Depending on the situation, there are three ways we may treat the set \texttt{I}. First, it may be viewed as a set of elements of type \texttt{α}, its original type, so we simply write \texttt{I}. Second, we may need to re-type \texttt{I} as a set of elements of the type \texttt{E.Elem}. Then we write \texttt{E ↓∩ I} using notation from Mathlib. Finally, \texttt{I} may be used as a set of elements of the type \texttt{I.Elem}. In this case, we write \texttt{Set.univ} of the correct type, which is usually inferred from the context.
