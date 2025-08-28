@@ -49,8 +49,6 @@
 % Environments for lean4 code; use lexer from Python script located in project root
 \newenvironment{leancode}{\VerbatimEnvironment\begin{minted}[custom lexer]{lean4.py:Lean4Lexer}}{\end{minted}}
 \newcommand{\leaninline}[1]{\mintinline[custom lexer]{lean4.py:Lean4Lexer}{#1}}
-% TODO do we want Type and Prop to be this bold? It can be changed in lean4.py
-% Also, having numbers in light green doesn't look good IMO.
 \usemintedstyle{friendly}  % {lovelace} is also good; more here https://pygments.org/styles/
 
 % Unicode symbols used in lean code
@@ -97,4 +95,5 @@
 \newunicodechar{ℚ}{\ensuremath{\mathbb{Q}}}
 \newunicodechar{⁻}{\ensuremath{{}^{-}}}
 
-\renewcommand{\.}{\hspace{0.1em}}
+% emdash with custom spacing
+\newcommand{\EmDash}{\hspace{0.1em}---\hspace{0.1em}}

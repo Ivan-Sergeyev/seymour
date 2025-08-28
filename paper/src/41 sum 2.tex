@@ -1,40 +1,8 @@
 \section{The 2-Sum}
 
-\begin{comment}
-Consider standard representation matrices $B_{\ell}$ of type $\mathbb{Z}_{2}^{X_{\ell} \times Y_{\ell}}$
-and $B_{r}$ of type $\mathbb{Z}_{2}^{X_{r} \times Y_{r}}$ where
-$X_{\ell} \cap X_{r} = \{x\}$ for some element $x$,
-$Y_{\ell} \cap Y_{r} = \{y\}$ for some element $y$,
-and all other pairs of sets are disjoint.
-If we have
-\[
-    B_{\ell} = \begin{NiceArray}{cc}[hvlines,right-margin=0.5em,left-margin=0.1em]
-        \Block[draw]{2-2}{A_{\ell}} & \phantom{1} \\
-        \phantom{1} & \phantom{1} \\
-        \Block[draw]{1-2}{r} & \\
-    \end{NiceArray}
-    , \quad
-    B_{r} = \begin{NiceArray}{ccc}[hvlines,right-margin=0.5em,left-margin=0.1em]
-        \Block[draw]{2-1}{c} & \Block[draw]{2-2}{A_{r}} & \phantom{1} \\
-        & \phantom{1} & \phantom{1} \\
-    \end{NiceArray}
-\]
-where $r \ne 0$ and $c \ne 0$, then their 2-sum is
-\[
-    B = \begin{NiceArray}{cccc}[hvlines,right-margin=0.5em,left-margin=0.1em]
-        \Block[draw]{2-2}{A_{\ell}} & \phantom{1} & \Block[draw]{2-2}{0} & \phantom{1} \\
-        \phantom{1} & \phantom{1} & \phantom{1} & \phantom{1} \\
-        \Block[draw]{2-2}{c \otimes r} & \phantom{1} & \Block[draw]{2-2}{A_{r}} & \phantom{1} \\
-        \phantom{1} & \phantom{1} & \phantom{1} & \phantom{1} \\
-    \end{NiceArray}
-\]
-where $\otimes$ denotes the outer product of vectors.
-\end{comment}
-
 The definition on 2-sum is also implemented on the three levels.
 
-% \subsection{Implementation for Matrices}
-
+% Implementation for Matrices
 \begin{leancode}
 def matrixSum2 {R : Type*} [Semiring R]
     {Xₗ Yₗ Xᵣ Yᵣ : Type*}
@@ -60,9 +28,7 @@ The same matrix in a picture:
     \end{NiceArray}
 \]
 
-
-% \subsection{Implementation for Standard Representations}
-
+% Implementation for Standard Representations
 \begin{leancode}
 noncomputable def standardReprSum2
     {α : Type*} [DecidableEq α]
@@ -72,10 +38,12 @@ noncomputable def standardReprSum2
     (hXY : Disjoint Sₗ.X Sᵣ.Y)
     (hYX : Disjoint Sₗ.Y Sᵣ.X) :
     Option (StandardRepr α Z2) :=
-  let Aₗ := Sₗ.B.submatrix Set.diff_subset.elem id
-  let Aᵣ := Sᵣ.B.submatrix id Set.diff_subset.elem
-  let r := Sₗ.B ⟨x, sorry⟩
-  let c := (Sᵣ.B · ⟨y, sorry⟩)
+  let Aₗ : Matrix (Sₗ.X \ {x}) Sₗ.Y Z2 :=
+    Sₗ.B.submatrix Set.diff_subset.elem id
+  let Aᵣ : Matrix Sᵣ.X (Sᵣ.Y \ {y}) Z2 :=
+    Sᵣ.B.submatrix id Set.diff_subset.elem
+  let r : Sₗ.Y.Elem → Z2 := Sₗ.B ⟨x, sorry⟩
+  let c : Sᵣ.X.Elem → Z2 := (Sᵣ.B · ⟨y, sorry⟩)
   open scoped Classical in if
     r ≠ 0 ∧ c ≠ 0
   then
@@ -92,7 +60,7 @@ noncomputable def standardReprSum2
 The \texttt{StandardRepr} level is more complicated.
 We first need to slice the last row of the matrix \texttt{Sₗ.B}
 and the first column of the matrix \texttt{Sᵣ.B} as the two
-separate vectors, naming the two remaining matrices
+separate vectors (\texttt{r} and \texttt{c}), naming the two remaining matrices
 \texttt{Aₗ} and \texttt{Aᵣ} respectively.
 To identify the special row and the special column
 (remember that matrices do not have rows and columns ordered,
@@ -119,12 +87,10 @@ Now we know the arguments to be given to the \texttt{Matrix} level.
 Again, we convert the output matrix from being indexed by \texttt{Sum} to
 being index by set unions, we provide a proof that the resulting
 standard representation has row indices and column indices disjoint,
-and we check whether the operation is valid\.---\.this time,
+and we check whether the operation is valid\EmDash this time,
 the condition is that neither \texttt{r} nor \texttt{c} is a zero vector.
 
-
-% \subsection{Implementation for Matroids}
-
+% Implementation for Matroids
 \begin{leancode}
 def Matroid.IsSum2of {α : Type*} [DecidableEq α]
     (M : Matroid α) (Mₗ Mᵣ : Matroid α) :
@@ -140,5 +106,4 @@ def Matroid.IsSum2of {α : Type*} [DecidableEq α]
   ∧ Sₗ.toMatroid = Mₗ
   ∧ Sᵣ.toMatroid = Mᵣ
 \end{leancode}
-This is again a predicate\.---\.when $M$ is
-a 2-sum of $M_{\ell}$ and $M_{r}$.
+This is again a predicate\EmDash when $M$ is a 2-sum of $M_{\ell}$ and $M_{r}$.

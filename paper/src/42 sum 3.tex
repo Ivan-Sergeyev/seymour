@@ -1,10 +1,11 @@
 \section{The 3-Sum}
 
-% The implementation of 3-sum follows the same outline as for 1-sum and 2-sum, though it is more complex, as the definition of 3-sum is more involved.
+\begin{comment}
+The implementation of 3-sum follows the same outline as for 1-sum and 2-sum, though it is more complex, as the definition of 3-sum is more involved.    
+\end{comment}
 
-% \subsection{Theoretical Definition}
-
-Mathematically, 3-sums are defined as follows. Let $X_{\ell}$, $Y_{\ell}$, $X_{r}$, and $Y_{r}$ be sets with the following properties:
+% Theoretical Definition
+The 3-sum of binary matroids is defined as follows. Let $X_{\ell}$, $Y_{\ell}$, $X_{r}$, and $Y_{r}$ be sets with the following properties:
 \begin{itemize}
     \item $X_{\ell} \cap X_{r} = \{x_{2}, x_{1}, x_{0}\}$ for some distinct $x_{0}$, $x_{1}$, and $x_{2}$;
     \item $Y_{\ell} \cap Y_{r} = \{y_{0}, y_{1}, y_{2}\}$ for some distinct $y_{0}$, $y_{1}$, and $y_{2}$;
@@ -54,13 +55,10 @@ $
     \end{NiceArray} \in \mathbb{Z}_{2}^{\{x_{2}, x_{1}, x_{0}\} \times \{y_{0}, y_{1}, y_{2}\}}
 $,
 and the indexing is kept consistent between $B_{\ell}$, $B_{r}$, and $B$.
-
 Consequently, a matroid $M$ is a 3-sum of matroids $M_{\ell}$ and $M_{r}$ if they admit standard representations over $\mathbb{Z}_{2}$ with matrices $B$, $B_{\ell}$, and $B_{r}$ of the form above.
 
-
-% \subsection{Auxiliary API}
-
-In our implementation, we introduce the following additional abbreviations for removing one, two, and three elements from a set, as well as a definition for re-typing an element of a set with three elements removed as an element of the original set:
+% Auxiliary notation
+In our implementation, we frequently deal with sets with one, two, or three elements removed. To make our code more compact, we added abbreviations for removing one, two, and three elements from a set, as well as a definition for re-typing an element of a set with three elements removed as an element of the original set:
 \begin{leancode}
 abbrev Set.drop1 {α : Type*} (Z : Set α)
     (z₀ : Z) : Set α :=
@@ -81,14 +79,13 @@ def undrop3 {α : Type*} {Z : Set α}
     {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z₁ z₂) : Z :=
   ⟨i.val, i.property.left⟩
 \end{leancode}
-This helps simplify future definitions by bundling elements together with sets they belong to and shortening notation for sets with one, two, or three elements removed, which frequently appear in constructions related to 3-sums.
 
-
-% \subsection{Implementation for Matrices}
-
-Next, to define the 3-sum of matrices, we introduce a structure comprising the blocks of the summands:
+% Implementation for Matrices
+Now, to define the 3-sum of matrices, we introduce a structure comprising the blocks of the summands:
 % Martin : I'd be happy to vertically align the fields with the double space as it was
 % if it actually aligned and didn't make the spaces wider than those zero subscripts
+% Ivan: what if we could switch to a true monospace font in leancode snippets?
+% Ivan: Martin is right: this is actually about how symbols like \texttt{ₗ} are defined, and it's not worth the effort to hunt for unicode glyphs to make these work
 \begin{leancode}
 structure MatrixSum3 (Xₗ Yₗ Xᵣ Yᵣ R : Type*) where
   Aₗ : Matrix (Xₗ ⊕ Unit) (Yₗ ⊕ Fin 2) R
@@ -98,26 +95,24 @@ structure MatrixSum3 (Xₗ Yₗ Xᵣ Yᵣ R : Type*) where
   Dᵣ : Matrix Xᵣ (Fin 2) R
   Aᵣ : Matrix (Fin 2 ⊕ Xᵣ) (Unit ⊕ Yᵣ) R
 \end{leancode}
-It is then straightforward to define the bottom-left block of the 3-sum and the 3-sum itself:
-\begin{leancode}
-noncomputable abbrev MatrixSum3.D
-    {Xₗ Yₗ Xᵣ Yᵣ R : Type*} [CommRing R]
-    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R) :
-    Matrix (Fin 2 ⊕ Xᵣ) (Yₗ ⊕ Fin 2) R :=
-  Matrix.fromBlocks
-    S.Dₗ S.D₀ₗ (S.Dᵣ * S.D₀ₗ⁻¹ * S.Dₗ) S.Dᵣ
-\end{leancode}
+Here \texttt{D₀ₗ} and \texttt{D₀ᵣ} refer to block $D_{0}$ in $B_{\ell}$ and $B_{r}$, respectively.
+It is then straightforward to define the resulting 3-sum matrix:
 \begin{leancode}
 noncomputable def MatrixSum3.matrix
     {Xₗ Yₗ Xᵣ Yᵣ R : Type*} [CommRing R]
     (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R) :
-    Matrix ((Xₗ ⊕ Unit) ⊕ (Fin 2 ⊕ Xᵣ))
-           ((Yₗ ⊕ Fin 2) ⊕ (Unit ⊕ Yᵣ)) R :=
-  Matrix.fromBlocks S.Aₗ 0 S.D S.Aᵣ
+    Matrix
+      ((Xₗ ⊕ Unit) ⊕ (Fin 2 ⊕ Xᵣ))
+      ((Yₗ ⊕ Fin 2) ⊕ (Unit ⊕ Yᵣ))
+      R :=
+  Matrix.fromBlocks S.Aₗ 0
+    (Matrix.fromBlocks S.Dₗ S.D₀ₗ
+      (S.Dᵣ * S.D₀ₗ⁻¹ * S.Dₗ) S.Dᵣ
+    ) S.Aᵣ
 \end{leancode}
-Introducing these definitions creates an abstraction layer that allows us to work with the data required to construct a 3-sum of matrices without the need to manually obtain it from the summand matrices each time. Moreover, this drastically simplifies the implementation of statements of results that feature additional assumptions on the summands. Otherwise, before the additional conditions and the final result can be stated, one has to extract the blocks with numerous \texttt{let} statements, and these \texttt{let} statements have to be repeated at the start of the proof as well. In contrast, using the structure \texttt{MatrixSum3} allows us to immediately state the necessary hypotheses on the blocks of the summands without having to deal with the inner workings of obtaining them first.
+Introducing these definitions creates an abstraction layer that allows us to work with the blocks used to construct a 3-sum of matrices without the need to manually obtain them from the summands each time. Moreover, this drastically simplifies the implementation of results that require additional assumptions on the summands. Without these definitions, one has to repeatedly extract the blocks from the summands before the additional assumptions or the final result can be stated and in the proof as well, which is extremely cumbersome.
 
-To construct the matrix-level 3-sum, it is convenient to use the following definition:
+To further facilitate our implementation of the 3-sum, we pack the inner workings of obtaining the blocks from the summands into the following definition:
 \begin{leancode}
 def blocksToMatrixSum3 {Xₗ Yₗ Xᵣ Yᵣ R : Type*}
     (Bₗ : Matrix ((Xₗ ⊕ Unit) ⊕ Fin 2)
@@ -132,7 +127,7 @@ def blocksToMatrixSum3 {Xₗ Yₗ Xᵣ Yᵣ R : Type*}
   Dᵣ := Bᵣ.toBlocks₂₁.toRows₂
   Aᵣ := Bᵣ.toBlocks₂₂
 \end{leancode}
-Here the rows and columns of summands are re-indexed to separate out the 1- and 2-element sets $\{x_{2}\}$, $\{x_{1}, x_{0}\}$, $\{y_{0}\}$, and $\{y_{1}, y_{2}\}$. The re-indexing of summands is done via:
+This definition is particularly compact thanks to us changing the types of dimensions of $B_{\ell}$ and $B_{r}$. The corresponding transformation of dimensions of $B_{\ell}$ is then implemented as
 \begin{leancode}
 def Matrix.toBlockSummandₗ {α R : Type*}
     {Xₗ Yₗ : Set α} (Bₗ : Matrix Xₗ Yₗ R)
@@ -145,43 +140,10 @@ def Matrix.toBlockSummandₗ {α R : Type*}
     (·.casesOn (·.casesOn undrop3 ↓x₂) ![x₀, x₁])
     (·.casesOn (·.casesOn undrop3 ![y₀, y₁]) ↓y₂)
 \end{leancode}
-\begin{leancode}
-def Matrix.toBlockSummandᵣ {α R : Type*}
-    {Xᵣ Yᵣ : Set α} (Bᵣ : Matrix Xᵣ Yᵣ R)
-    (x₀ x₁ x₂ : Xᵣ) (y₀ y₁ y₂ : Yᵣ) :
-    Matrix
-      (Unit ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ x₁ x₂))
-      (Fin 2 ⊕ (Unit ⊕ Yᵣ.drop3 y₀ y₁ y₂))
-      R :=
-  Bᵣ.submatrix
-    (·.casesOn ↓x₂ (·.casesOn ![x₀, x₁] undrop3))
-    (·.casesOn ![y₀, y₁] (·.casesOn ↓y₂ undrop3))
-\end{leancode}
-\begin{comment}
-For example, \texttt{MatrixSum3} can thus be constructed from two standard representations as follows:
-\begin{leancode}
-abbrev matrixSum3aux {α : Type*} [DecidableEq α]
-    (Sₗ Sᵣ : StandardRepr α Z2)
-    (x₀ₗ x₁ₗ x₂ₗ : Sₗ.X) (y₀ₗ y₁ₗ y₂ₗ : Sₗ.Y)
-    (x₀ᵣ x₁ᵣ x₂ᵣ : Sᵣ.X) (y₀ᵣ y₁ᵣ y₂ᵣ : Sᵣ.Y) :
-    MatrixSum3 (Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ)
-      (Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ)
-      (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ)
-      (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ) Z2 :=
-  blocksToMatrixSum3
-    (Sₗ.B.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ)
-    (Sᵣ.B.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ)
-\end{leancode}
-Similar to \texttt{MatrixSum3}, this simplifies the upcoming definitions by hiding the inner workings of the construction inside the definitions, and thus allows us to work with higher-level objects in the implementation. Although \texttt{matrixSum3aux} does not appear in the implementation of the definition of the 3-sum on the level of standard representations, it is frequently used as a compact equivalent representation in proofs of technical lemmas.
+We re-index $B_{r}$ analogously via \texttt{Matrix.toBlockSummandᵣ}.
 
-\todo[inline]{@Martin note that \texttt{matrixSum3aux} is no longer part of the definition of 3-sum for standard representations}
-Thanks for inlining it! I think now we can remove it from the paper.
-\end{comment}
-
-
-% \subsection{Implementation for Standard Representations}
-
-To define 3-sums of standard representations, we additionally need to re-index the matrix-level 3-sum obtained from \texttt{MatrixSum3.matrix}. We achieve this by introducing a conversion function:
+% Implementation for Standard Representations
+Now, to implement 3-sums of standard representations, we perform one last reindexing to transform the dimensions of \texttt{MatrixSum3.matrix} into unions of sets via
 \begin{leancode}
 def Matrix.toMatrixDropUnionDrop {α : Type*}
     [DecidableEq α] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
@@ -201,32 +163,7 @@ def Matrix.toMatrixDropUnionDrop {α : Type*}
     Matrix
       (Xₗ.drop2 x₀ₗ x₁ₗ ∪ Xᵣ.drop1 x₂ᵣ).Elem
       (Yₗ.drop1 y₂ₗ ∪ Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem
-      R :=
-  A.submatrix
-    (fun i : (Xₗ.drop2 x₀ₗ x₁ₗ ∪ Xᵣ.drop1 x₂ᵣ).Elem =>
-      if hi₂ₗ : i.val = x₂ₗ then
-        Sum.inl (Sum.inr 0) else
-      if hiXₗ : i.val ∈ Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ then
-        Sum.inl (Sum.inl ⟨i, hiXₗ⟩) else
-      if hi₀ᵣ : i.val = x₀ᵣ then
-        Sum.inr (Sum.inl 0) else
-      if hi₁ᵣ : i.val = x₁ᵣ then
-        Sum.inr (Sum.inl 1) else
-      if hiXᵣ : i.val ∈ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ then
-        Sum.inr (Sum.inr ⟨i, hiXᵣ⟩) else
-      False.elim sorry)
-    (fun j : (Yₗ.drop1 y₂ₗ ∪ Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem =>
-      if hj₀ₗ : j.val = y₀ₗ then
-        Sum.inl (Sum.inr 0) else
-      if hj₁ₗ : j.val = y₁ₗ then
-        Sum.inl (Sum.inr 1) else
-      if hjYₗ : j.val ∈ Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ then
-        Sum.inl (Sum.inl ⟨j, hjYₗ⟩) else
-      if hj₂ᵣ : j.val = y₂ᵣ then
-        Sum.inr (Sum.inl 0) else
-      if hjYᵣ : j.val ∈ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
-        Sum.inr (Sum.inr ⟨j, hjYᵣ⟩) else
-      False.elim sorry)
+      R := /- implementation omitted -/
 \end{leancode}
 This allows us to define the 3-sum of standard representations as follows:
 \begin{leancode}
@@ -261,14 +198,14 @@ noncomputable def standardReprSum3 {α : Type*}
     ∧ Sₗ.B x₁ₗ y₂ₗ = 1
     ∧ Sₗ.B x₂ₗ y₀ₗ = 1
     ∧ Sₗ.B x₂ₗ y₁ₗ = 1
-    ∧ (∀ x : α, ∀ hx : x ∈ Sₗ.X, x ≠ x₀ ∧ x ≠ x₁ →
-        Sₗ.B ⟨x, hx⟩ y₂ₗ = 0)
+    ∧ (∀ x : α, ∀ hx : x ∈ Sₗ.X, x ≠ x₀ ∧ x ≠ x₁
+        → Sₗ.B ⟨x, hx⟩ y₂ₗ = 0)
     ∧ Sᵣ.B x₀ᵣ y₂ᵣ = 1
     ∧ Sᵣ.B x₁ᵣ y₂ᵣ = 1
     ∧ Sᵣ.B x₂ᵣ y₀ᵣ = 1
     ∧ Sᵣ.B x₂ᵣ y₁ᵣ = 1
-    ∧ (∀ y : α, ∀ hy : y ∈ Sᵣ.Y, y ≠ y₀ ∧ y ≠ y₁ →
-        Sᵣ.B x₂ᵣ ⟨y, hy⟩ = 0)
+    ∧ (∀ y : α, ∀ hy : y ∈ Sᵣ.Y, y ≠ y₀ ∧ y ≠ y₁
+        → Sᵣ.B x₂ᵣ ⟨y, hy⟩ = 0)
   then
     some ⟨
       (Sₗ.X.drop2 x₀ₗ x₁ₗ) ∪ (Sᵣ.X.drop1 x₂ᵣ),
@@ -291,22 +228,5 @@ The resulting definition has similar advantages to its analogs for the 1- and 2-
 \end{itemize}
 
 
-% \subsection{Implementation for Matroids}
-
-Finally, on the matroid level, the predicate for a matroid $M$ to be a 3-sum of matroids $M_{\ell}$ and $M_{r}$ is given by
-\begin{leancode}
-def Matroid.IsSum3of {α : Type*} [DecidableEq α]
-    (M : Matroid α) (Mₗ Mᵣ : Matroid α) :
-    Prop :=
-  ∃ S Sₗ Sᵣ : StandardRepr α Z2,
-  ∃ x₀ x₁ x₂ y₀ y₁ y₂ : α,
-  ∃ hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂},
-  ∃ hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂},
-  ∃ hXY : Disjoint Sₗ.X Sᵣ.Y,
-  ∃ hYX : Disjoint Sₗ.Y Sᵣ.X,
-  standardReprSum3 hXX hYY hXY hYX = some S
-  ∧ S.toMatroid = M
-  ∧ Sₗ.toMatroid = Mₗ
-  ∧ Sᵣ.toMatroid = Mᵣ
-\end{leancode}
-This definition is similar to the 1- and the 2-sum analogs, ensuring consistency.
+% Implementation for Matroids
+Finally, the matroid-level predicate \texttt{Matroid.IsSum3of} is defined similarly to those for 1- and 2-sums by substituting in \texttt{standardReprSum3}, ensuring consistency.

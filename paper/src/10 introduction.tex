@@ -1,7 +1,7 @@
 \section{Introduction}
 
 % \subsection{Context}
-Seymour's regular matroid decomposition theorem is a hallmark structural result in matroid theory \cite{Oxley2011,Truemper2016,Geelen2005}.\todo{@Ivan: add more references to theory papers} It states that, on the one hand, any 1-, 2-, and 3-sum of two regular matroids is regular, and on the other hand, any regular matroid can be decomposed into matroids that are graphic, cographic, or isomorphic to $R_{10}$ by repeated 1-, 2-, and 3-sum decompositions.
+Seymour's regular matroid decomposition theorem is a hallmark structural result in matroid theory \cite{Oxley2011,Truemper2016,Geelen2005,Kingan2015}. It states that, on the one hand, any 1-, 2-, and 3-sum of two regular matroids is regular, and on the other hand, any regular matroid can be decomposed into matroids that are graphic, cographic, or isomorphic to $R_{10}$ by repeated 1-, 2-, and 3-sum decompositions.
 % idea for another sentence: It was originally proved by Seymour in <reference>, its proof was more recently presented in <references>, and alternative proofs of parts of the theorem were given by <references>.
 
 % \subsection{Motivation}
@@ -34,12 +34,16 @@ While working on our project, we leveraged the LeanBlueprint\footnote{\url{https
 
 We use Lean version 4.18.0 and we import Mathlib library revision aa936c3 (dated 2025-04-01).
 
-\todo[inline]{@Ivan: review the paragraph below}
+% Previous version
+\begin{comment}
 This paper contains many code snippets.
 We tried to make them faithful with respect to the content of the repository.
 However, sometimes we made omissions for brevity.
 In particular, whenever a definition contains a proof, the proof is replaced
 by the keyword \texttt{sorry} in the paper, but the repository contains a proof.
+\end{comment}
+
+The code snippets in this paper are faithful to the content of the repository, though we made some omissions for the sake of brevity. In particular, proofs inside definitions were replaced by the \leaninline{sorry} keyword in the paper, while the repository contains the complete implementation.
 
 % \todo[inline]{@anyone: maybe add git commit hash of version from the paper? "In this paper we specifically refer to the version with git hash [something]."}
 % Martin: I suggest using a release tag instead. Or, to stay on the safer side, a release branch instead.

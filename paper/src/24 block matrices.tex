@@ -1,21 +1,19 @@
 \subsection{Block Matrices}
 
-In this project, we frequently construct matrices by composing them from blocks using the following API from Mathlib:
+In this project, we often construct matrices by composing them from blocks using the following Mathlib definitions:
 \begin{itemize}
-    \item \texttt{Matrix.fromRows A₁ A₂} to construct
+    \item \texttt{Matrix.fromRows A₁ A₂} constructs
     $\begin{NiceArray}{c}[hvlines]
-       A_1 \\
-       A_2
+       A_{1} \\
+       A_{2}
     \end{NiceArray}$.
-    \item \texttt{Matrix.fromCols A₁ A₂} to construct
+    \item \texttt{Matrix.fromCols A₁ A₂} constructs
     $\begin{NiceArray}{cc}[hvlines]
-       A_1 & A_2
+       A_{1} & A_{2}
     \end{NiceArray}$.
-    \item \texttt{Matrix.fromBlocks A₁₁ A₁₂ A₂₁ A₂₂} to construct\newline
+    \item \texttt{Matrix.fromBlocks A₁₁ A₁₂ A₂₁ A₂₂} constructs\newline
     $\begin{NiceArray}{cc}[hvlines]
        A_{11} & A_{12} \\
        A_{21} & A_{22}
     \end{NiceArray}$.
 \end{itemize}
-
-% @Ivan: think of a better verb/form instead of ``to construct''. m.b.: creating?

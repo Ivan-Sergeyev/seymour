@@ -1,15 +1,6 @@
 \section{The 1-Sum}
 
-All matroid sums are defined on three levels:
-\begin{enumerate}
-    \item \texttt{Matrix} level
-    \item \texttt{StandardRepr} level
-    \item \texttt{Prop} level
-\end{enumerate}
-The \texttt{Matrix} level and \texttt{StandardRepr} level are specific to matroid \emph{compositions}
-(and will have to be defined distinctly for matroid \emph{decompositions}).
-The \texttt{Prop} level is direction-agnostic.
-Let us review the distribution of responsibilities between the three levels.
+All matroid sums are defined on three levels: the \texttt{Matrix} level, the \texttt{StandardRepr} level, and the \texttt{Prop} (matroid) level. Let us review the distribution of responsibilities between the three levels.
 \begin{leancode}
 def matrixSum1 {R : Type*} [Zero R]
     {Xₗ Yₗ Xᵣ Yᵣ : Type*}
@@ -24,11 +15,7 @@ The same matrix in a picture:
         0 & A_{r} \\
     \end{NiceArray}
 \]
-The \texttt{Matrix} level is purely type-theoretical and it defines what will be the
-standard representation matrix of the output matroid. In case of the 1-sum,
-it is so easy that it could be inlined, but we keep it as a separate definition
-for consistency with the 2-sum and 3-sum, whose matrix constructions are
-more elaborate, as we will see in the next sections.
+The \texttt{Matrix} level defines the standard representation matrix of the output matroid as a matrix indexed by \texttt{Sum} of indexing types. This definition is so  straightforward that it would be natural to inline it into the subsequent definition. However, we retained it as a separate declaration for consistency with the 2- and 3-sums, whose matrix constructions are more elaborate.
 \begin{leancode}
 noncomputable def standardReprSum1
     {α : Type*} [DecidableEq α]
@@ -49,14 +36,14 @@ noncomputable def standardReprSum1
   else
     none
 \end{leancode}
-The \texttt{StandardRepr} level builds on top of the \texttt{Matrix} level;
-it converts the output matrix from being indexed by \texttt{Sum} to
+The \texttt{StandardRepr} level builds on top of the \texttt{Matrix} level.
+It converts the output matrix from being indexed by \texttt{Sum} to
 being index by set unions, it provides a proof that the resulting
 standard representation again has row indices and column indices disjoint,
-and it checks whether the operation is valid\.---\.if the preconditions
+and it checks whether the operation is valid\EmDash if the preconditions
 are not met, it outputs \texttt{none} instead of \texttt{some} standard representation.
 \begin{leancode}
-def Matroid.Is1sumOf {α : Type*} [DecidableEq α]
+def Matroid.IsSum1of {α : Type*} [DecidableEq α]
     (M : Matroid α) (Mₗ Mᵣ : Matroid α) :
     Prop :=
   ∃ S Sₗ Sᵣ : StandardRepr α Z2,
@@ -69,7 +56,7 @@ def Matroid.Is1sumOf {α : Type*} [DecidableEq α]
 \end{leancode}
 The \texttt{Prop} level builds on top of the standard representation level but
 talks about matroids, the combinatorial objects. On the \texttt{Prop} level, we
-do not define a function; instead, we define a predicate\.---\.when $M$ is
+do not define a function; instead, we define a predicate\EmDash when $M$ is
 a 1-sum of $M_{\ell}$ and $M_{r}$.
 
 In addition to basic API about the 1-sum, we also provide

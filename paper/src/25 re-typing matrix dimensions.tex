@@ -1,6 +1,6 @@
 \section{Re-typing Matrix Dimensions}
 
-When constructing matroids, we often need to convert a block matrix whose blocks are indexed by disjoint sets into a matrix indexed by unions of those index sets. Although the contents of the matrix do not change, both its dimensions change their type from a \texttt{Sum} of sets to a \texttt{Set} union of those sets. To this end, we implemented
+When constructing matroids, we often need to convert a block matrix whose blocks are indexed by disjoint sets into a matrix indexed by unions of those index sets. Although the contents of the matrix stay the same, both its dimensions change their type from a \texttt{Sum} of sets to a \texttt{Set} union of those sets. To this end, we implemented
 \begin{leancode}
 def Subtype.toSum {α : Type*} {X Y : Set α}
     [∀ a, Decidable (a ∈ X)]
