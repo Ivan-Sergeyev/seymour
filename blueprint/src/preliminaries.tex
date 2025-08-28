@@ -15,11 +15,13 @@
     \label{Matrix.det}
     \uses{Matrix}
     \leanok
-    Let $A$ be a square matrix over a commutative ring whose rows and colummns are indexed by the integers $\{1,\ldots,n\}$. 
-    The determinant of $A$ is the sum over all permutations $\sigma \in S_n$, of the sign of the permutation times the product of the the elements in the $i$-th
-    row and $\sigma(i)$-th column for each $i \in \{1,\ldots,n\}$. In other words
-    $$ \det A = \sum_{\sigma \in S_n} \left( \operatorname{sgn}(\sigma) \prod_{i = 1}^n a_{i, \sigma(i)} \right)$$
-    where $a_{i,j} \in R$ is the element element of $A$ corresponding to the $i$-th row and the $j$-th column.
+    Let $A$ be a square matrix over a commutative ring whose rows and colummns are indexed by the integers $\{1, \dots, n\}$.
+    The determinant of $A$ is
+    \[
+        \det A = \sum_{\sigma \in S_{n}} \left( \operatorname{sgn}(\sigma) \prod_{i = 1}^{n} a_{i, \sigma(i)} \right),
+    \]
+    where the sum is computed over all permutations $\sigma \in S_{n}$, $\operatorname{sgn}(\sigma)$ denotes the sign of permutation $\sigma$,
+    and $a_{i,j} \in R$ is the element element of $A$ corresponding to the $i$-th row and the $j$-th column.
 \end{definition}
 
 \begin{definition}
@@ -219,11 +221,11 @@
     \label{Matroid}
     \leanok
     A matroid $M$ is a pair $(E, \mathcal{I})$ where $E$ is a (possibly infinite) set and $\mathcal I \in 2^E$ is such that:
-    \begin{enumerate}[label = (\roman*)]
-        \item $\varnothing \in \mathcal I$
+    \begin{enumerate}
+        \item $\emptyset \in \mathcal I$
         \item If $I \in \mathcal I$ and $J \subseteq I$, then $I \in \mathcal I$.
-        \item If $I \in \mathcal I$ is not maximal (with respect to set inclusion) and $B \in \mathcal I$ is maximal, 
-            then there exists an $x \in B \setminus I$ such that $I \cup \{x\} \in \mathcal{I}$. 
+        \item If $I \in \mathcal I$ is not maximal (with respect to set inclusion) and $B \in \mathcal I$ is maximal,
+            then there exists an $x \in B \setminus I$ such that $I \cup \{x\} \in \mathcal{I}$.
         \item If $X \subseteq E$ and $I \subseteq X$ is such that $I \in \mathcal I$, then there exists an $J \in \mathcal I$ with $I \subseteq J \subseteq X$
             that is maximal with respect to set inclusion.
     \end{enumerate}
