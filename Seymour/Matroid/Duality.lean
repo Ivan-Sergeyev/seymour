@@ -32,16 +32,113 @@ lemma StandardRepr.dual_indices_union_eq [DivisionRing R] (S : StandardRepr α R
 lemma StandardRepr.dual_ground [DivisionRing R] (S : StandardRepr α R) : S✶.toMatroid.E = S.toMatroid.E :=
   S.dual_indices_union_eq
 
-lemma StandardRepr.toMatroid_dual_eq [DivisionRing R] (S : StandardRepr α R) :
-    S.toMatroid✶ = S✶.toMatroid := by
-  /-
-  * follow proof of Theorem 2.2.8 in section "2.2 Duals of representable matroids" in James Oxley's Matroid Theory book
-    - feel free to check the context
-    - feel free to adapt the proof to make it more convenient to implement (ranks in Lean are notoriously inconvenient)
-  * assume finiteness and propagate where necessary
-    - reason: see section "2.6 Representability and thin independence" in "Axioms for infinite matroids" paper
-  -/
+open scoped Matrix Set.Notation
+
+universe um in
+lemma HELPER_rank_ge_rank_of_submatrix {n : Type*} {n₀ : Type*} {m m₀ : Type um} [Field R] [Fintype n₀] [Fintype n] (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) : (A.submatrix r c).rank ≤ A.rank := by
+  simp only [← Matrix.cRank_toNat_eq_rank]
+  apply Cardinal.toNat_le_toNat
+  · exact Matrix.cRank_submatrix_le A r c
+  · have h1 : A.cRank ≤ ↑(Fintype.card n) := by
+      exact Matrix.cRank_le_card_width A
+    have h2 : (↑(Fintype.card n) : Cardinal) < Cardinal.aleph0 := Cardinal.nat_lt_aleph0 (Fintype.card n)
+    exact lt_of_le_of_lt h1 h2
+
+lemma HELPER_rank_of_StandRepr_is_X [Field R] (S : StandardRepr α R) 
+  [Matroid.RankFinite S.toMatroid] [Fintype S.X] [Fintype S.Y] [Fintype ↑(S.X ∪ S.Y)] [Fintype (↑S.X ⊕ ↑S.Y)]
+  : S.toFull.rank = Fintype.card S.X := by
+  apply ge_antisymm
+  · rw [← Matrix.rank_one (n := S.X) (R := R)]
+    change Matrix.rank 1 ≤ ((Matrix.reindex (Equiv.refl S.X) S.hXY.equivSumUnion) (1 ◫ S.B)).rank
+    rw [Matrix.rank_reindex]
+    exact HELPER_rank_ge_rank_of_submatrix (A := 1 ◫ S.B) (r := id) (c := Sum.inl)
+  · exact Matrix.rank_le_card_height _
+
+lemma HELPER_separate_card {X Y : Set α} [Fintype X] [Fintype Y] (disjoint: X ⫗ Y) : #↑(X ∪ Y) = #X + #Y := by
+  rw [← Set.toFinset_card X, ← Set.toFinset_card Y, ← Set.toFinset_card (X ∪ Y)]
+  rw [Set.toFinset_union, Finset.card_union_eq_card_add_card.mpr]
+  rw [Set.disjoint_toFinset]
+  exact disjoint
+
+theorem StandardRepr.textbook_general 
+   [Field R] 
+  (S : StandardRepr α R)
+  [Fintype S.X] [Fintype S.Y]
+    (h_null_basis : LinearIndependent R (S✶.toFull) ∧ 
+      Submodule.span R (Set.range (S✶.dual_indices_union_eq ▸ S✶.toFull)) = LinearMap.ker S.toFull.mulVecLin
+    )
+  [Matroid.RankFinite S.toMatroid]
+  (B : Set α)
+  : S.toMatroid.IsBase B ↔ S✶.toMatroid.IsBase ((S.X ∪ S.Y) \ B) := by
   sorry
+
+/-
+  Now, this is the statement of the theorem we usually see in textbooks.
+
+  There are two proofs we can go for:
+  1. Textbook "Matroid Theory" (Oxley)
+     Section "2.2 Duals of representable matroids", Theorem 2.2.8.
+  2. Textbook "Matroids: A Geometric Introduction" (Gordon & McNulty)
+     Section "6.1.3 Duality and the Rank–Nullity Theorem", Lemma 6.8 AND Exercise 10 [that asks us to prove Theorem 6.6].
+
+  The proof in the Gordon & McNulty textbook is much more wordy, but seems easier to formalise in Lean.
+
+  `StandardRepr.textbook` below corresponds to the proof of Theorem 6.6.
+  `StandardRepr.textbook_general` corresponds to the proof of Theorem 6.8.
+  `StandardRepr.textbook_general` is more general than what we need, and we use it to prove `StandardRepr.textbook`.
+-/
+theorem StandardRepr.textbook [Field R] (S : StandardRepr α R) 
+  [Matroid.RankFinite S.toMatroid] (B : Set α) [Fintype S.X] [Fintype S.Y] [ Fintype (↑S.X ⊕ ↑S.Y)]:
+  S.toMatroid.IsBase B ↔ S✶.toMatroid.IsBase ((S.X ∪ S.Y) \ B) := by
+  let ourMatrix := S.toFull.mulVecLin
+  -- Step 1: Find rank of nullspace
+  have dimension_of_nullspace_is_Y : Module.finrank R (LinearMap.ker ourMatrix) = #S.Y := by
+    -- 1. Find matrix rank
+    have range_dim : Module.finrank R (LinearMap.range ourMatrix) = #S.X := HELPER_rank_of_StandRepr_is_X S
+    -- 2. Find width
+    have domain_dim : Module.finrank R (↑(S.X ∪ S.Y) → R) = #↑(S.X ∪ S.Y) := Module.finrank_fintype_fun_eq_card R
+    -- 3. Apply rank-nullity: range_dim + ker_dim = domain_dim
+    have rank_nullity_theorem := LinearMap.finrank_range_add_finrank_ker ourMatrix
+    rw [domain_dim, range_dim] at rank_nullity_theorem
+    -- 4. Just do some algebra
+    linarith [HELPER_separate_card S.hXY]
+
+  -- Step 2: Show each row of A* is in N(A) [not finished]
+  have basic_ortho : ∀ j : S.X, ∀ i : S.Y, (1 : R) * (-S.Bᵀ i j) + S.B j i = 0 := by
+    intro j i
+    simp
+
+  sorry
+
+/-
+  This is the ground work leading to the theorem present in textbooks.
+  No matter what proof we go for (Oxley or Gordon), we need this preparatory work.
+  Should be refactored.
+-/
+lemma StandardRepr.toMatroid_dual_eq [Field R] (S : StandardRepr α R) [Matroid.RankFinite S.toMatroid] :
+    S.toMatroid✶ = S✶.toMatroid := by
+  apply Matroid.ext_isBase
+  · ext I
+    rw [Matroid.dual_ground, StandardRepr.dual_ground]
+  intros B B_is_in_ground
+  have equiv := Set.diff_diff_cancel_left B_is_in_ground
+  -- These can be filled in later
+  have finite_1 : Fintype ↑S.X := by sorry
+  have finite_2 : Fintype ↑S.Y := by sorry
+  constructor
+
+  intro isBase
+  rw [← equiv]
+
+  apply (StandardRepr.textbook S ((S.X ∪ S.Y) \ B)).mp
+  apply Matroid.IsBase.compl_isBase_of_dual
+  exact isBase
+
+  intro isBase
+  rw [← equiv] at isBase ⊢
+  apply Matroid.IsBase.compl_isBase_dual
+  apply (StandardRepr.textbook S ((S.X ∪ S.Y) \ B)).mpr
+  exact isBase
 
 lemma StandardRepr.is_TU_iff [DecidableEq α] (S : StandardRepr α ℚ) :
     S.toFull.IsTotallyUnimodular ↔ S.B.IsTotallyUnimodular := by
