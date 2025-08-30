@@ -43,12 +43,34 @@ lemma StandardRepr.toMatroid_dual_eq [DivisionRing R] (S : StandardRepr α R) :
   -/
   sorry
 
-lemma Matroid.IsRegular.dual {M : Matroid α} (hM : M.IsRegular) :
+lemma StandardRepr.is_TU_iff [DecidableEq α] (S : StandardRepr α ℚ) :
+    S.toFull.IsTotallyUnimodular ↔ S.B.IsTotallyUnimodular := by
+  constructor
+  · intro h_toFull_TU
+    have h_block_TU : ((1 : Matrix S.X S.X ℚ) ◫ S.B).IsTotallyUnimodular := by
+      let h_equiv_symm := S.hXY.equivSumUnion.symm
+      exact (Matrix.reindex_isTotallyUnimodular (1 ◫ S.B) (Equiv.refl ↑S.X) h_equiv_symm.symm).→ h_toFull_TU
+    exact (Matrix.one_fromCols_isTotallyUnimodular_iff S.B).→ h_block_TU
+  · intro h_B_TU
+    have h_block_TU : ((1 : Matrix S.X S.X ℚ) ◫ S.B).IsTotallyUnimodular := by
+      rw [Matrix.one_fromCols_isTotallyUnimodular_iff]
+      exact h_B_TU
+    exact Matrix.IsTotallyUnimodular.submatrix _ _ h_block_TU
+
+lemma Matroid.IsRegular.dual {M : Matroid α} [Matroid.RankFinite M] (hM : M.IsRegular)  :
     M✶.IsRegular := by
-  /-
-  proof outline:
-  * take full representation of `M`
-  * convert to standard representation using `Matrix.exists_standardRepr_isBase_isTotallyUnimodular`
-  * apply `StandardRepr.toMatroid_dual_eq`
-  -/
-  sorry
+  obtain ⟨X, Y, A, A_TU, eq_1⟩ := hM
+  have exists_TU : ∃ S : StandardRepr α ℚ, S.toMatroid = A.toMatroid ∧ S.B.IsTotallyUnimodular := by
+    let ⟨G, G_base⟩ := M.exists_isBase
+    have hAG_base : A.toMatroid.IsBase G := by simp only [eq_1, G_base]
+    have finite : Fintype G := (IsBase.finite G_base).fintype
+    have ⟨S, a, b, c⟩ := A.exists_standardRepr_isBase_isTotallyUnimodular hAG_base A_TU
+    exact ⟨S, b, c⟩
+  obtain ⟨S, eq_2, S_TU⟩ := exists_TU 
+  have finite : S.toMatroid.RankFinite := by rwa [eq_2, eq_1]
+  rw [← eq_1, ← eq_2, StandardRepr.toMatroid_dual_eq S]
+  use S✶.X, S✶.X ∪ S✶.Y, S✶.toFull
+  refine ⟨?_, by rfl⟩
+  rw [StandardRepr.is_TU_iff]
+  apply Matrix.IsTotallyUnimodular.neg
+  exact Matrix.IsTotallyUnimodular.transpose S_TU
