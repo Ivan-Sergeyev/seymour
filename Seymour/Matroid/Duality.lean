@@ -90,25 +90,56 @@ theorem StandardRepr.textbook_general
 theorem StandardRepr.textbook [Field R] (S : StandardRepr α R) 
   [Matroid.RankFinite S.toMatroid] (B : Set α) [Fintype S.X] [Fintype S.Y] [ Fintype (↑S.X ⊕ ↑S.Y)]:
   S.toMatroid.IsBase B ↔ S✶.toMatroid.IsBase ((S.X ∪ S.Y) \ B) := by
+  -- Can be prettified later
+  have : Fintype ↑(S✶.X ∪ S✶.Y) := by rw [StandardRepr.dual_indices_union_eq]; infer_instance
+  have : Fintype ↑(S✶✶.X ∪ S✶✶.Y) := by simp [StandardRepr.dual]; infer_instance
+  have : Fintype S✶.X := by simp [StandardRepr.dual]; infer_instance
+  have : Fintype S✶.Y := by simp [StandardRepr.dual]; infer_instance
   let ourMatrix := S.toFull.mulVecLin
-  -- Step 1: Find rank of nullspace
-  have dimension_of_nullspace_is_Y : Module.finrank R (LinearMap.ker ourMatrix) = #S.Y := by
-    -- 1. Find matrix rank
-    have range_dim : Module.finrank R (LinearMap.range ourMatrix) = #S.X := HELPER_rank_of_StandRepr_is_X S
-    -- 2. Find width
-    have domain_dim : Module.finrank R (↑(S.X ∪ S.Y) → R) = #↑(S.X ∪ S.Y) := Module.finrank_fintype_fun_eq_card R
-    -- 3. Apply rank-nullity: range_dim + ker_dim = domain_dim
-    have rank_nullity_theorem := LinearMap.finrank_range_add_finrank_ker ourMatrix
-    rw [domain_dim, range_dim] at rank_nullity_theorem
-    -- 4. Just do some algebra
-    linarith [HELPER_separate_card S.hXY]
 
-  -- Step 2: Show each row of A* is in N(A) [not finished]
-  have basic_ortho : ∀ j : S.X, ∀ i : S.Y, (1 : R) * (-S.Bᵀ i j) + S.B j i = 0 := by
-    intro j i
-    simp
+  -- Step 1: apply StandardRepr.textbook_general
+  apply StandardRepr.textbook_general
 
-  sorry
+  -- Step 2: find rank of S✶ is S.Y, and rows of S✶ are linearly independent (we will need this for both subgoals of step 3)
+  have rank_of_dual_is_Y : S✶.toFull.rank = #S.Y := by
+    have dual_X_eq_Y : S✶.X = S.Y := by simp [StandardRepr.dual]
+    have rank_eq_card_dual_X : S✶.toFull.rank = #S✶.X := by
+      apply ge_antisymm
+      · rw [← Matrix.rank_one (n := S✶.X) (R := R)]
+        change Matrix.rank (1 : Matrix S✶.X S✶.X R) ≤ ((Matrix.reindex (Equiv.refl S✶.X) S✶.hXY.equivSumUnion) (1 ◫ S✶.B)).rank
+        rw [Matrix.rank_reindex]
+        exact HELPER_rank_ge_rank_of_submatrix (A := 1 ◫ S✶.B) (r := id) (c := Sum.inl)
+      · exact Matrix.rank_le_card_height _
+    simp [dual_X_eq_Y, rank_eq_card_dual_X]
+  have rows_of_dual_are_linearly_independent : LinearIndependent (ι := ↑S✶.X) R S✶.toFull := by
+    refine (linearIndependent_iff_card_eq_finrank_span (K := R) (b := S✶.toFull)).2 ?_
+    have h_span : Module.finrank R (Submodule.span R (Set.range (S✶.toFull))) = S✶.toFull.rank := Eq.symm (Matrix.rank_eq_finrank_span_row S✶.toFull)
+    have h_rows : S✶.toFull.rank = Fintype.card S✶.X := by
+      have hXeqY : Fintype.card S✶.X = Fintype.card S.Y := Fintype.card_congr' rfl
+      simpa [hXeqY]
+    exact (h_span.trans h_rows).symm
+
+  -- Step 3: Show that the rows of S✶ form a basis of nullspace of S
+  constructor
+  · -- Linear independence of S✶.toFull
+    exact rows_of_dual_are_linearly_independent
+  · -- Span of S✶'s rows = nullspace of S
+    -- Step 4: Show that the rank of S's nullspace is #S.Y
+    have dimension_of_nullspace_is_Y : Module.finrank R (LinearMap.ker ourMatrix) = #S.Y := by
+      -- 1. Find matrix rank
+      have range_dim : Module.finrank R (LinearMap.range ourMatrix) = #S.X := HELPER_rank_of_StandRepr_is_X S
+      -- 2. Find width
+      have domain_dim : Module.finrank R (↑(S.X ∪ S.Y) → R) = #↑(S.X ∪ S.Y) := Module.finrank_fintype_fun_eq_card R
+      -- 3. Apply rank-nullity: range_dim + ker_dim = domain_dim
+      have rank_nullity_theorem := LinearMap.finrank_range_add_finrank_ker ourMatrix
+      rw [domain_dim, range_dim] at rank_nullity_theorem
+      -- 4. Just do some algebra
+      linarith [HELPER_separate_card S.hXY]
+
+    -- Step 5: Show that each row of S✶ is in nullspace of S [not finished]
+
+    -- Step 6: Since #S.Y rows of the dual are linearly independent (`rows_of_dual_are_linearly_independent`) + they live in a nullspace of S (`step 5`) + that nullspace has rank #S.Y (`dimension_of_nullspace_is_Y`), they span this space
+    sorry
 
 /-
   This is the ground work leading to the theorem present in textbooks.
@@ -165,6 +196,8 @@ lemma Matroid.IsRegular.dual {M : Matroid α} [Matroid.RankFinite M] (hM : M.IsR
     exact ⟨S, b, c⟩
   obtain ⟨S, eq_2, S_TU⟩ := exists_TU 
   have finite : S.toMatroid.RankFinite := by rwa [eq_2, eq_1]
+  have : Fintype S.X := sorry
+  have : Fintype S.Y := sorry
   rw [← eq_1, ← eq_2, StandardRepr.toMatroid_dual_eq S]
   use S✶.X, S✶.X ∪ S✶.Y, S✶.toFull
   refine ⟨?_, by rfl⟩
