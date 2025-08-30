@@ -1,0 +1,41 @@
+% CPP template
+% \documentclass[sigplan,10pt,anonymous,review]{acmart} % for anonymous review version
+\documentclass[sigplan,10pt]{acmart} % for public version
+\settopmatter{printfolios=true,printccs=false,printacmref=false}
+
+% \citestyle{acmauthoryear}
+
+\input{src/00 preamble}
+\input{src/01 publication info}
+
+\begin{document}
+\input{src/02 ccs concepts}
+\input{src/05 abstract}
+\maketitle
+
+\input{src/10 introduction}
+\input{src/15 theory underpinning the formalization}
+\input{src/20 preliminaries}
+\input{src/30 vector matroids}
+\input{src/31 standard representation}
+\input{src/32 regular matroids}
+\input{src/40 sum 1}
+\input{src/41 sum 2}
+\input{src/42 sum 3}
+\input{src/50 proof of regularity}
+\input{src/80 related work}
+\input{src/90 conclusion}
+\input{src/99 acknowledgments}
+% \balance % added to first column on last page due to bug in acmart (https://tex.stackexchange.com/questions/504955/package-balance-warning-in-acmart)
+
+\bibliography{bibliography.bib}
+\bibliographystyle{ACM-Reference-Format}
+
+\appendix
+\input{src/A1 suggestions for Lean}
+\input{src/A2 suggestions for Mathlib}
+\input{src/A3 suggestions for Aesop}
+
+\todo[inline]{@Martin (WIP) refactor code snippets in the paper to contain as little custom notation as possible (use custom notation only when it clearly makes presentation better) and align it with the presentation file whereëver possible}
+
+\end{document}

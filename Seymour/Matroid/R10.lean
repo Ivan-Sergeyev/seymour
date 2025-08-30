@@ -4,7 +4,7 @@ import Seymour.Matroid.Graphic
 /-!
 # Matroid R10
 
-This file studies the R10 matroid.
+Here we study the R10 matroid.
 -/
 
 def matrixR10auxZ2 : Matrix (Fin 5) (Fin 5) Z2 :=

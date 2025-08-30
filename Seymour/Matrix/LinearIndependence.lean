@@ -1,4 +1,5 @@
 import Mathlib.Data.Matrix.Rank
+import Seymour.Basic.Conversions
 import Seymour.Basic.SubmoduleSpans
 import Seymour.Matrix.Basic
 
@@ -8,7 +9,7 @@ import Seymour.Matrix.Basic
 This file provides lemmas about linear independence in the context of matrices that are not present in Mathlib.
 -/
 
-lemma Matrix.linearIndependent_iff_fromCols_zero {X Y R : Type} [Ring R] (A : Matrix X Y R) (Y₀ : Type) :
+lemma Matrix.linearIndependent_iff_fromCols_zero {X Y R : Type*} [Ring R] (A : Matrix X Y R) (Y₀ : Type*) :
     LinearIndependent R A ↔ LinearIndependent R (A ◫ (0 : Matrix X Y₀ R)) := by
   simp only [linearIndependent_iff']
   constructor
@@ -18,17 +19,17 @@ lemma Matrix.linearIndependent_iff_fromCols_zero {X Y R : Type} [Ring R] (A : Ma
   · simpa using congr_fun hscA ◩j
   · exact j.casesOn (by simpa using congr_fun hscA ·) (by simp)
 
-private lemma LinearIndepOn.exists_maximal {ι R O : Type} [DivisionRing R] [AddCommGroup O] [Module R O] {t : Set ι}
+private lemma LinearIndepOn.exists_maximal {ι R O : Type*} [DivisionRing R] [AddCommGroup O] [Module R O] {t : Set ι}
     {v : ι → O} {s₀ : Set ι} (hRv : LinearIndepOn R v s₀) (ht : s₀ ⊆ t) :
     ∃ s : Set ι, s₀ ⊆ s ∧ Maximal (fun r : Set ι => r ⊆ t ∧ LinearIndepOn R v r) s :=
   zorn_subset_nonempty { r : Set ι | r ⊆ t ∧ LinearIndepOn R v r }
-    (fun c hcss cchain _ => ⟨⋃₀ c, ⟨Set.sUnion_subset ↓(hcss ·|>.left),
-      linearIndepOn_sUnion_of_directed cchain.directedOn ↓(hcss ·|>.right)⟩,
+    (fun c hcss hc _ => ⟨⋃₀ c, ⟨Set.sUnion_subset ↓(hcss ·|>.left),
+      linearIndepOn_sUnion_of_directed hc.directedOn ↓(hcss ·|>.right)⟩,
       ↓Set.subset_sUnion_of_mem⟩) s₀ ⟨ht, hRv⟩
 
 namespace Matrix
 
-variable {m n R : Type}
+variable {m n R : Type*}
 
 private def rowFun (A : Matrix m n R) (i : m) : n → R := A i
 
@@ -38,7 +39,7 @@ private lemma colFun_apply (A : Matrix m n R) (i : m) (j : n) : A.colFun j i = A
 
 private lemma transpose_rowFun (A : Matrix m n R) : Aᵀ.rowFun = A.colFun := rfl
 
-private lemma range_submatrix_left {α l : Type} (A : Matrix m n α) (f : l → m) :
+private lemma range_submatrix_left {α l : Type*} (A : Matrix m n α) (f : l → m) :
     (A.submatrix f id).rowFun.range = A.rowFun '' f.range := by
   ext
   simp only [Set.mem_range, Set.mem_image, exists_exists_eq_and]
@@ -46,12 +47,12 @@ private lemma range_submatrix_left {α l : Type} (A : Matrix m n α) (f : l → 
 
 /-- For `A : Matrix m n R` and `s : Set m`
     `A.IsRowBasis R s` means that `s` indexes an `R`-basis for the row space of `A`. -/
-private def IsRowBasis (R : Type) [Semiring R] (A : Matrix m n R) (s : Set m) : Prop :=
+private def IsRowBasis (R : Type*) [Semiring R] (A : Matrix m n R) (s : Set m) : Prop :=
   Maximal (LinearIndepOn R A.rowFun ·) s
 
 /-- For `A : Matrix m n R` and `t : Set n`
     `A.IsColBasis R t` means that `t` indexes an `R`-basis for the column space of `A`. -/
-private def IsColBasis (R : Type) [Semiring R] (A : Matrix m n R) (t : Set n) : Prop :=
+private def IsColBasis (R : Type*) [Semiring R] (A : Matrix m n R) (t : Set n) : Prop :=
   Aᵀ.IsRowBasis R t
 
 private lemma IsRowBasis.span_eq [DivisionRing R] {s : Set m} {A : Matrix m n R} (hs : A.IsRowBasis R s) :
@@ -67,17 +68,17 @@ private lemma IsColBasis.encard_eq [DivisionRing R] {t : Set n} {A : Matrix m n 
     t.encard = A.eRank := by
   simpa using congr_arg Cardinal.toENat hA.basis.mk_eq_rank
 
-private lemma exists_isRowBasis {R : Type} [DivisionRing R] (A : Matrix m n R) :
+private lemma exists_isRowBasis {R : Type*} [DivisionRing R] (A : Matrix m n R) :
     ∃ s : Set m, A.IsRowBasis R s := by
   obtain ⟨s, -, hs⟩ := (linearIndepOn_empty R A).exists_maximal (Set.subset_univ _)
   exact ⟨s, by simpa using hs⟩
 
-private lemma exists_isColBasis (R : Type) [DivisionRing R] (A : Matrix m n R) : ∃ s : Set n, A.IsColBasis R s :=
+private lemma exists_isColBasis (R : Type*) [DivisionRing R] (A : Matrix m n R) : ∃ s : Set n, A.IsColBasis R s :=
   Aᵀ.exists_isRowBasis
 
 /-- If the row space of `A₁` is a subspace of the row space of `A₂`, then independence of
     a set of columns of `A₁` implies independence in `A₂`. -/
-private lemma linearIndepOn_col_le_of_span_row_le {m₁ m₂ : Type} [CommRing R] {A₁ : Matrix m₁ n R}
+private lemma linearIndepOn_col_le_of_span_row_le {m₁ m₂ : Type*} [CommRing R] {A₁ : Matrix m₁ n R}
     {A₂ : Matrix m₂ n R} (hR : Submodule.span R A₁.rowFun.range ≤ Submodule.span R A₂.rowFun.range) :
     LinearIndepOn R A₁.colFun ≤ LinearIndepOn R A₂.colFun := by
   refine fun t ht => linearIndepOn_iff.← fun l hl hl0 => linearIndepOn_iff.→ ht l hl ?_
@@ -85,21 +86,22 @@ private lemma linearIndepOn_col_le_of_span_row_le {m₁ m₂ : Type} [CommRing R
   have hi : A₁ i ∈ Submodule.span R A₂.range := hR (Submodule.subset_span (Set.mem_range_self _))
   simp_rw [Finsupp.mem_span_range_iff_exists_finsupp, Finsupp.sum] at hi
   obtain ⟨c, hc⟩ := hi
-  have hrw (i' : m₂) : ∑ x ∈ l.support, l x * A₂ i' x = 0
-  · simpa [Finsupp.linearCombination, Finsupp.sum] using congr_fun hl0 i'
-  suffices : ∑ x ∈ l.support, l x * ∑ x_1 ∈ c.support, c x_1 * A₂ x_1 x = 0
+  have hrw : ∀ i' : m₂, ∑ x ∈ l.support, l x * A₂ i' x = 0
+  · intro i'
+    simpa [Finsupp.linearCombination, Finsupp.sum] using congr_fun hl0 i'
+  suffices : ∑ x ∈ l.support, l x * ∑ y ∈ c.support, c y * A₂ y x = 0
   · simpa [Finsupp.linearCombination, Finsupp.sum, colFun_apply, ←hc]
   simp_rw [Finset.mul_sum, Finset.sum_comm (s := l.support), mul_left_comm (a := l _), ←Finset.mul_sum]
   simp [hrw]
 
 /-- Two matrices with the same row space have the same linearly independent sets of columns. -/
-private lemma linearIndepOn_col_eq_of_span_row_eq {m₁ m₂ : Type} [CommRing R] {A₁ : Matrix m₁ n R}
+private lemma linearIndepOn_col_eq_of_span_row_eq {m₁ m₂ : Type*} [CommRing R] {A₁ : Matrix m₁ n R}
     {A₂ : Matrix m₂ n R} (hA : Submodule.span R A₁.rowFun.range = Submodule.span R A₂.rowFun.range) :
     LinearIndepOn R A₁.colFun = LinearIndepOn R A₂.colFun :=
   (linearIndepOn_col_le_of_span_row_le hA.le).antisymm
     (linearIndepOn_col_le_of_span_row_le hA.symm.le)
 
-private lemma isColBasis_iff_of_span_row_eq {m₁ m₂ : Type} [CommRing R] {A₁ : Matrix m₁ n R}
+private lemma isColBasis_iff_of_span_row_eq {m₁ m₂ : Type*} [CommRing R] {A₁ : Matrix m₁ n R}
     {A₂ : Matrix m₂ n R} (hA : Submodule.span R A₁.rowFun.range = Submodule.span R A₂.rowFun.range) (t : Set n) :
     A₁.IsColBasis R t ↔ A₂.IsColBasis R t := by
   rw [IsColBasis, IsRowBasis, transpose_rowFun, linearIndepOn_col_eq_of_span_row_eq hA,
@@ -135,14 +137,37 @@ private lemma IsRowBasis.encard_eq [Field R] {s : Set m} {A : Matrix m n R} (hA 
 end Matrix
 
 
-open scoped Matrix
+section open scoped Set.Notation
+
+variable {α : Type*} {X X' Y I : Set α} {R : Type} [Semiring R] {A : Matrix X Y R} {A' : Matrix X' Y R}
+
+lemma linearIndepOn_matrix_elem_range_iff_subst (hXX : X = X') (hIX : I ⊆ X) (hAA : A = hXX ▸ A') :
+    have hIX' : I ⊆ X' := hXX ▸ hIX
+    LinearIndepOn R A hIX.elem.range ↔ LinearIndepOn R A' hIX'.elem.range := by
+  cc
+
+lemma linearIndepOn_matrix_inter_iff_subst (hXX : X = X') (hAA : A = hXX ▸ A') :
+    LinearIndepOn R A (X ↓∩ I) ↔ LinearIndepOn R A' (X' ↓∩ I) := by
+  subst hXX hAA
+  rfl
+
+end
+
+
+/-- The identity matrix has linearly independent rows. -/
+lemma Matrix.one_linearIndependent {α R : Type*} [DecidableEq α] [Ring R] : LinearIndependent R (1 : Matrix α α R) := by
+  -- Riccardo Brasca proved:
+  rw [linearIndependent_iff]
+  intro l hl
+  ext j
+  simpa [Finsupp.linearCombination_apply, Pi.zero_apply, Finsupp.sum_apply', Matrix.one_apply] using congr_fun hl j
 
 /-- Every invertible matrix has linearly independent rows (unapplied version). -/
-lemma IsUnit.linearIndependent_matrix {α R : Type} [DecidableEq α] [Fintype α] [Ring R] {A : Matrix α α R} (hA : IsUnit A) :
+lemma IsUnit.linearIndependent_matrix {α R : Type*} [DecidableEq α] [Fintype α] [Ring R] {A : Matrix α α R} (hA : IsUnit A) :
     LinearIndependent R A :=
   A.linearIndependent_rows_of_isUnit hA
 
-variable {X Y F : Type} [Fintype X] [Fintype Y] [Field F]
+variable {X Y F : Type*} [Fintype X] [Fintype Y] [Field F]
 
 lemma Matrix.not_linearIndependent_of_rank_lt (A : Matrix X Y F) (hA : A.rank < #X) :
     ¬ LinearIndependent F A :=
@@ -183,8 +208,8 @@ lemma Matrix.linearIndependent_iff_exists_submatrix_unit (A : Matrix X Y F) :
     LinearIndependent F A ↔ ∃ f : X → Y, IsUnit (A.submatrix id f) := by
   constructor
   · intro hA
-    have hXA : #X = Aᵀ.rank := (A.rank_transpose.trans hA.rank_matrix).symm
-    obtain ⟨f, hf⟩ := Aᵀ.exists_submatrix_rank
+    have hXA : #X = A.transpose.rank := (A.rank_transpose.trans hA.rank_matrix).symm
+    obtain ⟨f, hf⟩ := A.transpose.exists_submatrix_rank
     use f ∘ Fintype.equivFinOfCardEq hXA
     have hX : #X = (A.submatrix id (f ∘ Fintype.equivFinOfCardEq hXA)).rank
     · rw [←Matrix.transpose_submatrix, Matrix.rank_transpose] at hf

@@ -56,7 +56,7 @@ lemma filter_length_card {n : ℕ} (s : Finset (Fin n)) : ((List.finRange n).fil
   have := ((List.finRange n).filter (· ∈ s)).toFinset_card_of_nodup (List.Nodup.filter _ (List.nodup_finRange n))
   simp_all
 
-def Matrix.squareSetSubmatrix {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ)
+private def Matrix.squareSetSubmatrix {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ)
     {X : Finset (Fin m)} {Y : Finset (Fin n)} (hXY : X.card = Y.card) :
     Matrix (Fin X.card) (Fin X.card) ℚ :=
   A.submatrix
@@ -68,18 +68,14 @@ def Matrix.testTotallyUnimodularFast {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ
   ∀ (X : Finset (Fin m)) (Y : Finset (Fin n)) (hXY : X.card = Y.card),
     (A.squareSetSubmatrix hXY).det ∈ SignType.cast.range
 
-lemma Matrix.abs_det_reindex_self_self {m n : Type} [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
-    {R : Type} [LinearOrderedCommRing R] (A : Matrix m m R) (e₁ e₂ : m ≃ n) :
-    |(A.reindex e₁ e₂).det| = |A.det| :=
-  A.abs_det_submatrix_equiv_equiv e₁.symm e₂.symm
-
-lemma range_eq_range_iff_exists_comp_equiv {α β γ : Type} {f : α → γ} {g : β → γ} (hf : f.Injective) (hg : g.Injective) :
+private lemma range_eq_range_iff_exists_comp_equiv {α β γ : Type*} {f : α → γ} {g : β → γ}
+    (hf : f.Injective) (hg : g.Injective) :
     f.range = g.range ↔ ∃ e : α ≃ β, f = g ∘ e := by
   constructor
   · classical
     intro hfg
     have hf' := fun (a : α) =>
-      show ∃ (b : β), g b = f a by
+      show ∃ b : β, g b = f a by
       simp_rw [Set.range, Set.ext_iff] at hfg
       exact (hfg (f a)).→ (by simp)
     have hg' := fun (b : β) =>
@@ -96,12 +92,11 @@ lemma range_eq_range_iff_exists_comp_equiv {α β γ : Type} {f : α → γ} {g 
         exact hf ha₂,
       by
         rw [Function.surjective_iff_hasRightInverse]
-        use (fun b => (hg' b).choose)
+        use (hg' ·|>.choose)
         intro b
-        have hgf := (hf' ((fun b => (hg' b).choose) b)).choose_spec
+        have hgf := (hf' ((hg' ·|>.choose) b)).choose_spec
         simp only [(hg' b).choose_spec] at hgf ⊢
-        apply hg
-        exact hgf⟩
+        exact hg hgf⟩
     simp only [Function.comp_def, Equiv.ofBijective_apply]
     ext a
     exact (hf' a).choose_spec.symm
@@ -115,7 +110,7 @@ lemma range_eq_range_iff_exists_comp_equiv {α β γ : Type} {f : α → γ} {g 
     · use e.symm w
       rw [Equiv.apply_symm_apply]
 
-lemma range_of_list_get {α : Type} [DecidableEq α] {n : ℕ} {s : List α} (hn : n = s.length) :
+lemma range_of_list_get {α : Type*} [DecidableEq α] {n : ℕ} {s : List α} (hn : n = s.length) :
     (fun x : Fin n => s[x]).range = s.toFinset := by
   ext a
   simp_rw [Function.range, Fin.getElem_fin, List.coe_toFinset, Set.mem_range, Set.mem_setOf_eq]
@@ -126,7 +121,7 @@ lemma range_of_list_get {α : Type} [DecidableEq α] {n : ℕ} {s : List α} (hn
   · have ⟨i, hi, _⟩ := List.getElem_of_mem ha
     use ⟨i, hn ▸ hi⟩
 
-lemma Matrix.submatrix_eq_submatrix_reindex {r c n o p q α : Type}
+lemma Matrix.submatrix_eq_submatrix_reindex {r c n o p q α : Type*}
     [DecidableEq r] [Fintype r] [DecidableEq c] [Fintype c] [DecidableEq n] [Fintype n]
     [DecidableEq o] [Fintype o] [DecidableEq p] [Fintype p] [DecidableEq q] [Fintype q]
     {f₁ : n → r} {g₁ : o → c} {f₂ : p → r} {g₂ : q → c}
@@ -166,5 +161,5 @@ lemma Matrix.isTotallyUnimodular_of_testTotallyUnimodularFast {m n : ℕ} (A : M
     )
   have hAfg := hA f.range.toFinset g.range.toFinset hfg
   rw [Matrix.squareSetSubmatrix, hee, in_signTypeCastRange_iff_abs ((A.submatrix f g).reindex e₁ e₂).det] at hAfg
-  rw [←(A.submatrix f g).abs_det_reindex_self_self e₁ e₂]
+  rw [←(A.submatrix f g).abs_det_submatrix_equiv_equiv e₁.symm e₂.symm]
   exact hAfg

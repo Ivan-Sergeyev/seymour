@@ -1,0 +1,99 @@
+\usepackage{nicematrix} % for typesetting complicated matrices
+\usepackage{comment} % for long comments
+\usepackage{bbm} % for \mathbbm{1}
+\usepackage{minted} % for inserting code
+\usepackage{enumitem} % for making enumerated lists
+
+% todos
+\setlength{\marginparwidth}{2cm}
+\usepackage{todonotes} % for todos
+
+% Use ACM reference format
+\settopmatter{printacmref=true}
+
+% Fix for minted 2.9, following https://docs.lean-lang.org/lean4/doc/syntax_highlight_in_latex.html
+\makeatletter
+\ifwindows
+  \renewcommand{\minted@optlistcl@quote}[2]{%
+    \ifstrempty{#2}{\detokenize{#1}}{\detokenize{#1="#2"}}}
+\else
+  \renewcommand{\minted@optlistcl@quote}[2]{%
+    \ifstrempty{#2}{\detokenize{#1}}{\detokenize{#1='#2'}}}
+\fi
+% Similar to \minted@def@optcl@switch
+\newcommand{\minted@def@optcl@novalue}[2]{%
+  \define@booleankey{minted@opt@g}{#1}%
+    {\minted@addto@optlistcl{\minted@optlistcl@g}{#2}{}%
+     \@namedef{minted@opt@g:#1}{true}}
+    {\@namedef{minted@opt@g:#1}{false}}
+  \define@booleankey{minted@opt@g@i}{#1}%
+    {\minted@addto@optlistcl{\minted@optlistcl@g@i}{#2}{}%
+     \@namedef{minted@opt@g@i:#1}{true}}
+    {\@namedef{minted@opt@g@i:#1}{false}}
+  \define@booleankey{minted@opt@lang}{#1}%
+    {\minted@addto@optlistcl@lang{minted@optlistcl@lang\minted@lang}{#2}{}%
+     \@namedef{minted@opt@lang\minted@lang:#1}{true}}
+    {\@namedef{minted@opt@lang\minted@lang:#1}{false}}
+  \define@booleankey{minted@opt@lang@i}{#1}%
+    {\minted@addto@optlistcl@lang{minted@optlistcl@lang\minted@lang @i}{#2}{}%
+     \@namedef{minted@opt@lang\minted@lang @i:#1}{true}}
+    {\@namedef{minted@opt@lang\minted@lang @i:#1}{false}}
+  \define@booleankey{minted@opt@cmd}{#1}%
+      {\minted@addto@optlistcl{\minted@optlistcl@cmd}{#2}{}%
+        \@namedef{minted@opt@cmd:#1}{true}}
+      {\@namedef{minted@opt@cmd:#1}{false}}
+}
+\minted@def@optcl@novalue{custom lexer}{-x}
+\makeatother
+
+% Environments for lean4 code; use lexer from Python script located in project root
+\newenvironment{leancode}{\VerbatimEnvironment\begin{minted}[custom lexer]{lean4.py:Lean4Lexer}}{\end{minted}}
+\newcommand{\leaninline}[1]{\mintinline[custom lexer]{lean4.py:Lean4Lexer}{#1}}
+\usemintedstyle{friendly}  % {lovelace} is also good; more here https://pygments.org/styles/
+
+% Unicode symbols used in lean code
+\usepackage{newunicodechar}
+\newunicodechar{α}{\ensuremath{\alpha}}
+\newunicodechar{β}{\ensuremath{\beta}}
+\newunicodechar{ι}{\ensuremath{\iota}}
+\newunicodechar{₀}{\ensuremath{{}_0}}
+\newunicodechar{₁}{\ensuremath{{}_1}}
+\newunicodechar{₂}{\ensuremath{{}_2}}
+\newunicodechar{₃}{\ensuremath{{}_3}}
+\newunicodechar{ₗ}{\ensuremath{{}_\ell\hspace{0.1mm}}}
+\newunicodechar{ᵣ}{\ensuremath{{}_r}}
+\newunicodechar{∀}{\ensuremath{\forall}}
+\newunicodechar{∃}{\ensuremath{\exists}}
+\newunicodechar{¬}{\ensuremath{\neg}}
+\newunicodechar{∧}{\ensuremath{\wedge}}
+\newunicodechar{∨}{\ensuremath{\vee}}
+\newunicodechar{∪}{\ensuremath{\cup}}
+\newunicodechar{∩}{\ensuremath{\cap}}
+\newunicodechar{↔}{\ensuremath{\leftrightarrow}}
+\newunicodechar{←}{\ensuremath{\leftarrow}}
+\newunicodechar{→}{\ensuremath{\rightarrow}}
+\newunicodechar{↦}{\ensuremath{\mapsto}}
+\newunicodechar{↓}{\ensuremath{\downarrow}}
+\newunicodechar{▸}{\ensuremath{\blacktriangleright}}
+\newunicodechar{·}{\ensuremath{\cdot}}
+\newunicodechar{•}{\ensuremath{\bullet}}
+\newunicodechar{∘}{\ensuremath{\circ}}
+\newunicodechar{⊕}{\ensuremath{\oplus}}
+\newunicodechar{∈}{\ensuremath{\in}}
+\newunicodechar{⊆}{\ensuremath{\subseteq}}
+\newunicodechar{≤}{\ensuremath{\le}}
+\newunicodechar{≠}{\ensuremath{\ne}}
+\newunicodechar{≃}{\ensuremath{\simeq}}
+\newunicodechar{⫗}{\ensuremath{\supset\!\subset}}
+\newunicodechar{ᵀ}{\ensuremath{{}^\top}}
+\newunicodechar{∅}{\ensuremath{\varnothing}}
+\newunicodechar{⟨}{\ensuremath{\langle}}
+\newunicodechar{⟩}{\ensuremath{\rangle}}
+\newunicodechar{⦃}{} % we don't want to print
+\newunicodechar{⦄}{} % we don't want to print
+\newunicodechar{ℕ}{\ensuremath{\mathbb{N}}}
+\newunicodechar{ℚ}{\ensuremath{\mathbb{Q}}}
+\newunicodechar{⁻}{\ensuremath{{}^{-}}}
+
+% emdash with custom spacing
+\newcommand{\EmDash}{\hspace{0.1em}---\hspace{0.1em}}

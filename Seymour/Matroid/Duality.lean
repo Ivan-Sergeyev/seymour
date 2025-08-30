@@ -8,7 +8,7 @@ Here we study the duals of matroids given by their standard representation.
 
 open scoped Matrix
 
-variable {α R : Type} [DecidableEq α]
+variable {α R : Type*} [DecidableEq α]
 
 /-- The dual of standard representation (transpose the matrix and flip its signs). -/
 def StandardRepr.dual [DivisionRing R] (S : StandardRepr α R) : StandardRepr α R where

@@ -1,4 +1,4 @@
-import Seymour.HardDirection
+import Seymour.Results.HardDirection
 
 /-! # Formally verified summary of the Seymour project -/
 
@@ -16,25 +16,26 @@ example {X X' Y Y' R : Type*} (A : Matrix X Y R) (f : X' → X) (g : Y' → Y) (
   (A.submatrix f g) i j = A (f i) (g j) := rfl
 
 -- what is vector matroid
-recall Matrix.toMatroid_indep_iff {α R : Type} {X Y : Set α} [DivisionRing R] (A : Matrix X Y R) (I : Set α) :
+recall Matrix.toMatroid_indep_iff {α R : Type*} {X Y : Set α} [DivisionRing R] (A : Matrix X Y R) (I : Set α) :
   A.toMatroid.Indep I ↔ I ⊆ Y ∧ LinearIndepOn R Aᵀ (Y ↓∩ I)
 
 -- how standard representation is defined
-recall StandardRepr.X {α R : Type} [DecidableEq α] : StandardRepr α R → Set α
-recall StandardRepr.Y {α R : Type} [DecidableEq α] : StandardRepr α R → Set α
-recall StandardRepr.B {α R : Type} [DecidableEq α] (S : StandardRepr α R) : Matrix S.X S.Y R
-recall StandardRepr.hXY {α R : Type} [DecidableEq α] (S : StandardRepr α R) : Disjoint S.X S.Y
-recall StandardRepr.decmemX {α R : Type} [DecidableEq α] (S : StandardRepr α R) : ∀ a, Decidable (a ∈ S.X)
-recall StandardRepr.decmemY {α R : Type} [DecidableEq α] (S : StandardRepr α R) : ∀ a, Decidable (a ∈ S.Y)
+recall StandardRepr.X {α R : Type*} [DecidableEq α] : StandardRepr α R → Set α
+recall StandardRepr.Y {α R : Type*} [DecidableEq α] : StandardRepr α R → Set α
+recall StandardRepr.B {α R : Type*} [DecidableEq α] (S : StandardRepr α R) : Matrix S.X S.Y R
+recall StandardRepr.hXY {α R : Type*} [DecidableEq α] (S : StandardRepr α R) : Disjoint S.X S.Y
+recall StandardRepr.decmemX {α R : Type*} [DecidableEq α] (S : StandardRepr α R) : ∀ a, Decidable (a ∈ S.X)
+recall StandardRepr.decmemY {α R : Type*} [DecidableEq α] (S : StandardRepr α R) : ∀ a, Decidable (a ∈ S.Y)
 /--
-info: StandardRepr.mk {α R : Type} [DecidableEq α] (X Y : Set α) (hXY : X ⫗ Y) (B : Matrix (↑X) (↑Y) R)
-  (decmemX : (a : α) → Decidable (a ∈ X)) (decmemY : (a : α) → Decidable (a ∈ Y)) : StandardRepr α R
+info: StandardRepr.mk.{u_1, u_2} {α : Type u_1} {R : Type u_2} [DecidableEq α] (X Y : Set α) (hXY : X ⫗ Y)
+  (B : Matrix (↑X) (↑Y) R) (decmemX : (a : α) → Decidable (a ∈ X)) (decmemY : (a : α) → Decidable (a ∈ Y)) :
+  StandardRepr α R
 -/
 #guard_msgs in
 #check StandardRepr.mk
 
 -- what is the matroid constructed from given standard representation
-recall StandardRepr.toMatroid_indep_iff {α : Type} [DecidableEq α] {R : Type} [DivisionRing R]
+recall StandardRepr.toMatroid_indep_iff {α : Type*} [DecidableEq α] {R : Type*} [DivisionRing R]
     (S : StandardRepr α R) (I : Set α) :
   S.toMatroid.Indep I ↔ I ⊆ S.X ∪ S.Y ∧ LinearIndepOn R ((Matrix.fromCols 1 S.B).submatrix id Subtype.toSum)ᵀ ((S.X ∪ S.Y) ↓∩ I)
 
@@ -43,19 +44,19 @@ recall Matrix.IsTotallyUnimodular {X Y R : Type*} [CommRing R] (A : Matrix X Y R
   ∀ k : ℕ, ∀ f : Fin k → X, ∀ g : Fin k → Y, f.Injective → g.Injective → (A.submatrix f g).det ∈ Set.range SignType.cast
 
 -- how regular matroid is defined
-recall Matroid.IsRegular {α : Type} (M : Matroid α) : Prop :=
+recall Matroid.IsRegular {α : Type*} (M : Matroid α) : Prop :=
   ∃ X Y : Set α, ∃ A : Matrix X Y ℚ, A.IsTotallyUnimodular ∧ A.toMatroid = M
 
 -- how an element of set union is converted to disjoint union
-recall Subtype.toSum {α : Type} {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) :
+recall Subtype.toSum {α : Type*} {X Y : Set α} [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) :
     X.Elem ⊕ Y.Elem :=
   if hiX : i.val ∈ X then Sum.inl ⟨i, hiX⟩ else
   if hiY : i.val ∈ Y then Sum.inr ⟨i, hiY⟩ else
   (i.property.elim hiX hiY).elim
 
 -- how matrix indexed by disjoint unions is converted to a matrix indexed by set unions
-recall Matrix.toMatrixUnionUnion {α R : Type} {T₁ T₂ S₁ S₂ : Set α}
-    [∀ a, Decidable (a ∈ T₁)] [∀ a, Decidable (a ∈ T₂)] [∀ a, Decidable (a ∈ S₁)] [∀ a, Decidable (a ∈ S₂)]
+recall Matrix.toMatrixUnionUnion {α β R : Type*} {T₁ T₂ : Set α} {S₁ S₂ : Set β}
+    [∀ a, Decidable (a ∈ T₁)] [∀ a, Decidable (a ∈ T₂)] [∀ b, Decidable (b ∈ S₁)] [∀ b, Decidable (b ∈ S₂)]
     (A : Matrix (T₁.Elem ⊕ T₂.Elem) (S₁.Elem ⊕ S₂.Elem) R) :
     Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem R :=
   A.submatrix Subtype.toSum Subtype.toSum
@@ -67,13 +68,13 @@ recall Z2 := Fin 2
 /-! ## The 1-sum -/
 
 -- how 1-sum of matrices is defined
-recall matrixSum1 {R : Type} [Zero R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
+recall matrixSum1 {R : Type*} [Zero R] {Xₗ Yₗ Xᵣ Yᵣ : Type*}
     (Aₗ : Matrix Xₗ Yₗ R) (Aᵣ : Matrix Xᵣ Yᵣ R) :
     Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) R :=
   Matrix.fromBlocks Aₗ 0 0 Aᵣ
 
 -- how 1-sum of standard representations is defined
-recall standardReprSum1 {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2}
+recall standardReprSum1 {α : Type*} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2}
     (hXY : Disjoint Sₗ.X Sᵣ.Y) (hYX : Disjoint Sₗ.Y Sᵣ.X) :
     Option (StandardRepr α Z2) :=
   open scoped Classical in if
@@ -82,8 +83,7 @@ recall standardReprSum1 {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr �
     some ⟨
       Sₗ.X ∪ Sᵣ.X,
       Sₗ.Y ∪ Sᵣ.Y,
-      by rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
-         exact ⟨⟨Sₗ.hXY, hYX.symm⟩, ⟨hXY, Sᵣ.hXY⟩⟩,
+      union_disjoint_union Sₗ.hXY Sᵣ.hXY hXY hYX,
       (matrixSum1 Sₗ.B Sᵣ.B).toMatrixUnionUnion,
       inferInstance,
       inferInstance⟩
@@ -91,37 +91,35 @@ recall standardReprSum1 {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr �
     none
 
 -- how 1-sum of binary matroids is defined
-recall Matroid.Is1sumOf {α : Type} [DecidableEq α] (M Mₗ Mᵣ : Matroid α) : Prop :=
+recall Matroid.IsSum1of {α : Type*} [DecidableEq α] (M Mₗ Mᵣ : Matroid α) : Prop :=
   ∃ S Sₗ Sᵣ : StandardRepr α Z2,
   ∃ hXY : Disjoint Sₗ.X Sᵣ.Y,
   ∃ hYX : Disjoint Sₗ.Y Sᵣ.X,
   standardReprSum1 hXY hYX = some S
-  ∧ Finite Sₗ.X
-  ∧ Finite Sᵣ.X
   ∧ S.toMatroid = M
   ∧ Sₗ.toMatroid = Mₗ
   ∧ Sᵣ.toMatroid = Mᵣ
 
 -- [theorem] any 1-sum of regular matroids is a regular matroid
-recall Matroid.Is1sumOf.isRegular {α : Type} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} :
-  M.Is1sumOf Mₗ Mᵣ → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
+recall Matroid.IsSum1of.isRegular {α : Type*} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} :
+  M.IsSum1of Mₗ Mᵣ → M.RankFinite → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
 /--
-info: 'Matroid.Is1sumOf.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: 'Matroid.IsSum1of.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
 -/
 #guard_msgs in
-#print axioms Matroid.Is1sumOf.isRegular
+#print axioms Matroid.IsSum1of.isRegular
 
 
 /-! ## The 2-sum -/
 
 -- how 2-sum of matrices is defined
-recall matrixSum2 {R : Type} [Semiring R] {Xₗ Yₗ Xᵣ Yᵣ : Type}
-    (Aₗ : Matrix Xₗ Yₗ R) (x : Yₗ → R) (Aᵣ : Matrix Xᵣ Yᵣ R) (y : Xᵣ → R) :
+recall matrixSum2 {R : Type*} [Semiring R] {Xₗ Yₗ Xᵣ Yᵣ : Type*}
+    (Aₗ : Matrix Xₗ Yₗ R) (r : Yₗ → R) (Aᵣ : Matrix Xᵣ Yᵣ R) (c : Xᵣ → R) :
     Matrix (Xₗ ⊕ Xᵣ) (Yₗ ⊕ Yᵣ) R :=
-  Matrix.fromBlocks Aₗ 0 (fun i j => y i * x j) Aᵣ
+  Matrix.fromBlocks Aₗ 0 (fun i j => c i * r j) Aᵣ
 
 -- how 2-sum of standard representations is defined
-recall standardReprSum2 {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {x y : α}
+recall standardReprSum2 {α : Type*} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {x y : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y}) (hXY : Disjoint Sₗ.X Sᵣ.Y) (hYX : Disjoint Sₗ.Y Sᵣ.X) :
     Option (StandardRepr α Z2) :=
   let Aₗ : Matrix (Sₗ.X \ {x}).Elem Sₗ.Y.Elem Z2 := Sₗ.B.submatrix Set.diff_subset.elem id -- the top submatrix of `Bₗ`
@@ -134,9 +132,11 @@ recall standardReprSum2 {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr �
     some ⟨
       (Sₗ.X \ {x}) ∪ Sᵣ.X,
       Sₗ.Y ∪ (Sᵣ.Y \ {y}),
-      by rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
-         exact ⟨⟨Sₗ.hXY.disjoint_sdiff_left, hYX.symm⟩, ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right,
-            Sᵣ.hXY.disjoint_sdiff_right⟩⟩,
+      union_disjoint_union
+        Sₗ.hXY.disjoint_sdiff_left
+        Sᵣ.hXY.disjoint_sdiff_right
+        hXY.disjoint_sdiff_left.disjoint_sdiff_right
+        hYX,
       (matrixSum2 Aₗ r Aᵣ c).toMatrixUnionUnion,
       inferInstance,
       inferInstance⟩
@@ -144,7 +144,7 @@ recall standardReprSum2 {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr �
     none
 
 -- how 2-sum of binary matroids is defined
-recall Matroid.Is2sumOf {α : Type} [DecidableEq α] (M Mₗ Mᵣ : Matroid α) : Prop :=
+recall Matroid.IsSum2of {α : Type*} [DecidableEq α] (M Mₗ Mᵣ : Matroid α) : Prop :=
   ∃ S Sₗ Sᵣ : StandardRepr α Z2,
   ∃ x y : α,
   ∃ hXX : Sₗ.X ∩ Sᵣ.X = {x},
@@ -152,55 +152,53 @@ recall Matroid.Is2sumOf {α : Type} [DecidableEq α] (M Mₗ Mᵣ : Matroid α) 
   ∃ hXY : Disjoint Sₗ.X Sᵣ.Y,
   ∃ hYX : Disjoint Sₗ.Y Sᵣ.X,
   standardReprSum2 hXX hYY hXY hYX = some S
-  ∧ Finite Sₗ.X
-  ∧ Finite Sᵣ.X
   ∧ S.toMatroid = M
   ∧ Sₗ.toMatroid = Mₗ
   ∧ Sᵣ.toMatroid = Mᵣ
 
 -- [theorem] any 2-sum of regular matroids is a regular matroid
-recall Matroid.Is2sumOf.isRegular {α : Type} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} :
-  M.Is2sumOf Mₗ Mᵣ → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
+recall Matroid.IsSum2of.isRegular {α : Type*} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} :
+  M.IsSum2of Mₗ Mᵣ → M.RankFinite → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
 /--
-info: 'Matroid.Is2sumOf.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: 'Matroid.IsSum2of.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
 -/
 #guard_msgs in
-#print axioms Matroid.Is2sumOf.isRegular
+#print axioms Matroid.IsSum2of.isRegular
 
 
 /-! ## The 3-sum -/
 
 -- how Mathlib handles invertibility
-recall isUnit_iff_exists_and_exists {T : Type _} [Monoid T] {a : T} :
+recall isUnit_iff_exists_and_exists {T : Type*} [Monoid T] {a : T} :
   IsUnit a ↔ (∃ b : T, a * b = 1) ∧ (∃ c : T, c * a = 1)
 
-recall Set.drop1 {α : Type} (Z : Set α) (z₀ : Z) : Set α :=
+recall Set.drop1 {α : Type*} (Z : Set α) (z₀ : Z) : Set α :=
   Z \ {z₀.val}
 
-recall Set.drop2 {α : Type} (Z : Set α) (z₀ z₁ : Z) : Set α :=
+recall Set.drop2 {α : Type*} (Z : Set α) (z₀ z₁ : Z) : Set α :=
   Z \ {z₀.val, z₁.val}
 
-recall Set.drop3 {α : Type} (Z : Set α) (z₀ z₁ z₂ : Z) : Set α :=
+recall Set.drop3 {α : Type*} (Z : Set α) (z₀ z₁ z₂ : Z) : Set α :=
   Z \ {z₀.val, z₁.val, z₂.val}
 
-recall undrop3 {α : Type} {Z : Set α} {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z₁ z₂) : Z :=
+recall undrop3 {α : Type*} {Z : Set α} {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z₁ z₂) : Z :=
   ⟨i.val, i.property.left⟩
 
-recall MatrixSum3.Aₗ  {Xₗ Yₗ Xᵣ Yᵣ R : Type} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix (Xₗ ⊕ Unit) (Yₗ ⊕ Fin 2) R
-recall MatrixSum3.Dₗ  {Xₗ Yₗ Xᵣ Yᵣ R : Type} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix (Fin 2) Yₗ R
-recall MatrixSum3.D₀ₗ {Xₗ Yₗ Xᵣ Yᵣ R : Type} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix (Fin 2) (Fin 2) R
-recall MatrixSum3.D₀ᵣ {Xₗ Yₗ Xᵣ Yᵣ R : Type} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix (Fin 2) (Fin 2) R
-recall MatrixSum3.Dᵣ  {Xₗ Yₗ Xᵣ Yᵣ R : Type} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix Xᵣ (Fin 2) R
-recall MatrixSum3.Aᵣ  {Xₗ Yₗ Xᵣ Yᵣ R : Type} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix (Fin 2 ⊕ Xᵣ) (Unit ⊕ Yᵣ) R
+recall MatrixSum3.Aₗ  {Xₗ Yₗ Xᵣ Yᵣ R : Type*} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix (Xₗ ⊕ Unit) (Yₗ ⊕ Fin 2) R
+recall MatrixSum3.Dₗ  {Xₗ Yₗ Xᵣ Yᵣ R : Type*} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix (Fin 2) Yₗ R
+recall MatrixSum3.D₀ₗ {Xₗ Yₗ Xᵣ Yᵣ R : Type*} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix (Fin 2) (Fin 2) R
+recall MatrixSum3.D₀ᵣ {Xₗ Yₗ Xᵣ Yᵣ R : Type*} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix (Fin 2) (Fin 2) R
+recall MatrixSum3.Dᵣ  {Xₗ Yₗ Xᵣ Yᵣ R : Type*} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix Xᵣ (Fin 2) R
+recall MatrixSum3.Aᵣ  {Xₗ Yₗ Xᵣ Yᵣ R : Type*} : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R → Matrix (Fin 2 ⊕ Xᵣ) (Unit ⊕ Yᵣ) R
 /--
-info: MatrixSum3.mk {Xₗ Yₗ Xᵣ Yᵣ R : Type} (Aₗ : Matrix (Xₗ ⊕ Unit) (Yₗ ⊕ Fin 2) R) (Dₗ : Matrix (Fin 2) Yₗ R)
-  (D₀ₗ D₀ᵣ : Matrix (Fin 2) (Fin 2) R) (Dᵣ : Matrix Xᵣ (Fin 2) R) (Aᵣ : Matrix (Fin 2 ⊕ Xᵣ) (Unit ⊕ Yᵣ) R) :
-  MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R
+info: MatrixSum3.mk.{u_1, u_2, u_3, u_4, u_5} {Xₗ : Type u_1} {Yₗ : Type u_2} {Xᵣ : Type u_3} {Yᵣ : Type u_4} {R : Type u_5}
+  (Aₗ : Matrix (Xₗ ⊕ Unit) (Yₗ ⊕ Fin 2) R) (Dₗ : Matrix (Fin 2) Yₗ R) (D₀ₗ D₀ᵣ : Matrix (Fin 2) (Fin 2) R)
+  (Dᵣ : Matrix Xᵣ (Fin 2) R) (Aᵣ : Matrix (Fin 2 ⊕ Xᵣ) (Unit ⊕ Yᵣ) R) : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R
 -/
 #guard_msgs in
 #check MatrixSum3.mk
 
-recall blocksToMatrixSum3 {Xₗ Yₗ Xᵣ Yᵣ R : Type}
+recall blocksToMatrixSum3 {Xₗ Yₗ Xᵣ Yᵣ R : Type*}
     (Bₗ : Matrix ((Xₗ ⊕ Unit) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Unit) R)
     (Bᵣ : Matrix (Unit ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Unit ⊕ Yᵣ)) R) :
     MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R where
@@ -211,26 +209,20 @@ recall blocksToMatrixSum3 {Xₗ Yₗ Xᵣ Yᵣ R : Type}
   Dᵣ  := Bᵣ.toBlocks₂₁.toRows₂
   Aᵣ  := Bᵣ.toBlocks₂₂
 
-recall MatrixSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ R : Type} [CommRing R] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R) :
+recall MatrixSum3.matrix {Xₗ Yₗ Xᵣ Yᵣ R : Type*} [CommRing R] (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R) :
     Matrix ((Xₗ ⊕ Unit) ⊕ (Fin 2 ⊕ Xᵣ)) ((Yₗ ⊕ Fin 2) ⊕ (Unit ⊕ Yᵣ)) R :=
-  Matrix.fromBlocks S.Aₗ 0 S.D S.Aᵣ
+  Matrix.fromBlocks S.Aₗ 0 (Matrix.fromBlocks S.Dₗ S.D₀ₗ (S.Dᵣ * S.D₀ₗ⁻¹ * S.Dₗ) S.Dᵣ) S.Aᵣ
 
-recall Matrix.toBlockSummandₗ {α : Type} {Xₗ Yₗ : Set α} {R : Type} (Bₗ : Matrix Xₗ Yₗ R) (x₀ x₁ x₂ : Xₗ) (y₀ y₁ y₂ : Yₗ) :
+recall Matrix.toBlockSummandₗ {α : Type*} {Xₗ Yₗ : Set α} {R : Type*} (Bₗ : Matrix Xₗ Yₗ R) (x₀ x₁ x₂ : Xₗ) (y₀ y₁ y₂ : Yₗ) :
     Matrix ((Xₗ.drop3 x₀ x₁ x₂ ⊕ Unit) ⊕ Fin 2) ((Yₗ.drop3 y₀ y₁ y₂ ⊕ Fin 2) ⊕ Unit) R :=
   Bₗ.submatrix (·.casesOn (·.casesOn undrop3 (fun _ => x₂)) ![x₀, x₁]) (·.casesOn (·.casesOn undrop3 ![y₀, y₁]) (fun _ => y₂))
 
-recall Matrix.toBlockSummandᵣ {α : Type} {Xᵣ Yᵣ : Set α} {R : Type} (Bᵣ : Matrix Xᵣ Yᵣ R) (x₀ x₁ x₂ : Xᵣ) (y₀ y₁ y₂ : Yᵣ) :
+recall Matrix.toBlockSummandᵣ {α : Type*} {Xᵣ Yᵣ : Set α} {R : Type*} (Bᵣ : Matrix Xᵣ Yᵣ R) (x₀ x₁ x₂ : Xᵣ) (y₀ y₁ y₂ : Yᵣ) :
     Matrix (Unit ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ x₁ x₂)) (Fin 2 ⊕ (Unit ⊕ Yᵣ.drop3 y₀ y₁ y₂)) R :=
   Bᵣ.submatrix (·.casesOn (fun _ => x₂) (·.casesOn ![x₀, x₁] undrop3)) (·.casesOn ![y₀, y₁] (·.casesOn (fun _ => y₂) undrop3))
 
--- how 3-sum of matrices is defined
-recall matrixSum3 {α : Type} [DecidableEq α] (Sₗ Sᵣ : StandardRepr α Z2)
-    (x₀ₗ x₁ₗ x₂ₗ : Sₗ.X) (y₀ₗ y₁ₗ y₂ₗ : Sₗ.Y) (x₀ᵣ x₁ᵣ x₂ᵣ : Sᵣ.X) (y₀ᵣ y₁ᵣ y₂ᵣ : Sᵣ.Y) :
-    MatrixSum3 (Sₗ.X.drop3 x₀ₗ x₁ₗ x₂ₗ) (Sₗ.Y.drop3 y₀ₗ y₁ₗ y₂ₗ) (Sᵣ.X.drop3 x₀ᵣ x₁ᵣ x₂ᵣ) (Sᵣ.Y.drop3 y₀ᵣ y₁ᵣ y₂ᵣ) Z2 :=
-  blocksToMatrixSum3 (Sₗ.B.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ) (Sᵣ.B.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ)
-
 -- specialized matrix conversion for 3-sum
-recall Matrix.toMatrixDropUnionDrop {α : Type} [DecidableEq α] {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type}
+recall Matrix.toMatrixDropUnionDrop {α : Type*} [DecidableEq α] {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type*}
     [∀ a, Decidable (a ∈ Xₗ)] [∀ a, Decidable (a ∈ Yₗ)] [∀ a, Decidable (a ∈ Xᵣ)] [∀ a, Decidable (a ∈ Yᵣ)]
     {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {y₀ₗ y₁ₗ y₂ₗ : Yₗ} {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
     (A : Matrix
@@ -255,7 +247,7 @@ recall Matrix.toMatrixDropUnionDrop {α : Type} [DecidableEq α] {Xₗ Yₗ Xᵣ
       False.elim (j.property.elim (by intro; simp_all) (by intro; simp_all)))
 
 -- how 3-sum of standard representations is defined
-recall standardReprSum3 {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+recall standardReprSum3 {α : Type*} [DecidableEq α] {Sₗ Sᵣ : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}) (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂})
     (hXY : Disjoint Sₗ.X Sᵣ.Y) (hYX : Disjoint Sₗ.Y Sᵣ.X) :
     Option (StandardRepr α Z2) :=
@@ -289,19 +281,22 @@ recall standardReprSum3 {α : Type} [DecidableEq α] {Sₗ Sᵣ : StandardRepr �
     some ⟨
       (Sₗ.X.drop2 x₀ₗ x₁ₗ) ∪ (Sᵣ.X.drop1 x₂ᵣ),
       (Sₗ.Y.drop1 y₂ₗ) ∪ (Sᵣ.Y.drop2 y₀ᵣ y₁ᵣ),
-      by
-        rw [Set.disjoint_union_right, Set.disjoint_union_left, Set.disjoint_union_left]
-        exact
-          ⟨⟨Sₗ.hXY.disjoint_sdiff_left.disjoint_sdiff_right, hYX.symm.disjoint_sdiff_left.disjoint_sdiff_right⟩,
-          ⟨hXY.disjoint_sdiff_left.disjoint_sdiff_right, Sᵣ.hXY.disjoint_sdiff_left.disjoint_sdiff_right⟩⟩,
-      (matrixSum3 Sₗ Sᵣ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ).matrix.toMatrixDropUnionDrop,
+      union_disjoint_union
+        Sₗ.hXY.disjoint_sdiff_left.disjoint_sdiff_right
+        Sᵣ.hXY.disjoint_sdiff_left.disjoint_sdiff_right
+        hXY.disjoint_sdiff_left.disjoint_sdiff_right
+        hYX.disjoint_sdiff_left.disjoint_sdiff_right,
+      (blocksToMatrixSum3
+          (Sₗ.B.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ)
+          (Sᵣ.B.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ)
+        ).matrix.toMatrixDropUnionDrop,
       inferInstance,
       inferInstance⟩
   else
     none
 
 -- how 3-sum of binary matroids is defined
-recall Matroid.Is3sumOf {α : Type} [DecidableEq α] (M Mₗ Mᵣ : Matroid α) : Prop :=
+recall Matroid.IsSum3of {α : Type*} [DecidableEq α] (M Mₗ Mᵣ : Matroid α) : Prop :=
   ∃ S Sₗ Sᵣ : StandardRepr α Z2,
   ∃ x₀ x₁ x₂ y₀ y₁ y₂ : α,
   ∃ hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂},
@@ -309,17 +304,15 @@ recall Matroid.Is3sumOf {α : Type} [DecidableEq α] (M Mₗ Mᵣ : Matroid α) 
   ∃ hXY : Disjoint Sₗ.X Sᵣ.Y,
   ∃ hYX : Disjoint Sₗ.Y Sᵣ.X,
   standardReprSum3 hXX hYY hXY hYX = some S
-  ∧ Finite Sₗ.X
-  ∧ Finite Sᵣ.X
   ∧ S.toMatroid = M
   ∧ Sₗ.toMatroid = Mₗ
   ∧ Sᵣ.toMatroid = Mᵣ
 
 -- [theorem] any 3-sum of regular matroids is a regular matroid
-recall Matroid.Is3sumOf.isRegular {α : Type} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} :
-  M.Is3sumOf Mₗ Mᵣ → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
+recall Matroid.IsSum3of.isRegular {α : Type*} [DecidableEq α] {M Mₗ Mᵣ : Matroid α} :
+  M.IsSum3of Mₗ Mᵣ → M.RankFinite → Mₗ.IsRegular → Mᵣ.IsRegular → M.IsRegular
 /--
-info: 'Matroid.Is3sumOf.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: 'Matroid.IsSum3of.isRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
 -/
 #guard_msgs in
-#print axioms Matroid.Is3sumOf.isRegular
+#print axioms Matroid.IsSum3of.isRegular

@@ -15,7 +15,7 @@
 \end{definition}
 
 \begin{definition}
-    \label{Matroid.Is2sumOf}
+    \label{Matroid.IsSum2of}
     \uses{Matroid,StandardRepr,standardReprSum2}
     % \lean{}
     \leanok
@@ -78,15 +78,15 @@
 \end{proof}
 
 \begin{theorem}
-    \label{Matroid.Is2sumOf.isRegular}
-    \uses{Matroid.IsRegular,Matroid.Is2sumOf}
+    \label{Matroid.IsSum2of.isRegular}
+    \uses{Matroid.IsRegular,Matroid.IsSum2of}
     % \lean{}
     \leanok
     Let $M$ be a $2$-sum of regular matroids $M_{\ell}$ and $M_{r}$. Then $M$ is also regular.
 \end{theorem}
 
 \begin{proof}
-    \uses{StandardRepr,Matroid.Is2sumOf,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,standardReprSum2_isTotallyUnimodular,Matrix.IsTuSigningOf}
+    \uses{StandardRepr,Matroid.IsSum2of,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,standardReprSum2_isTotallyUnimodular,Matrix.IsTuSigningOf}
     \leanok
-    Let $B_{\ell}$, $B_{r}$, and $B$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{Matroid.Is2sumOf}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Then $B' = B_{\ell}' \oplus_{2, x, y} B_{r}'$ is a TU signing of $B$. Indeed, $B'$ is TU by Lemma~\ref{standardReprSum2_isTotallyUnimodular}, and a direct calculation verifies that $B'$ is a signing of $B$. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
+    Let $B_{\ell}$, $B_{r}$, and $B$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{Matroid.IsSum2of}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings $B_{\ell}'$ and $B_{r}'$, respectively. Then $B' = B_{\ell}' \oplus_{2, x, y} B_{r}'$ is a TU signing of $B$. Indeed, $B'$ is TU by Lemma~\ref{standardReprSum2_isTotallyUnimodular}, and a direct calculation verifies that $B'$ is a signing of $B$. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
 \end{proof}

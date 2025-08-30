@@ -6,20 +6,24 @@ import Seymour.Basic.Basic
 These conversions are frequently used throughout the project.
 -/
 
-variable {α : Type} {X Y : Set α}
+variable {α : Type*} {X Y : Set α}
 
 /-- Given `X ⊆ Y` cast an element of `X` as an element of `Y`. -/
 @[simp low]
 def HasSubset.Subset.elem (hXY : X ⊆ Y) (x : X.Elem) : Y.Elem :=
   ⟨x.val, hXY x.property⟩
 
+lemma HasSubset.Subset.elem_range (hXY : X ⊆ Y) : hXY.elem.range = { a : Y.Elem | a.val ∈ X } := by
+  aesop
+
 lemma HasSubset.Subset.elem_injective (hXY : X ⊆ Y) : hXY.elem.Injective := by
   intro x y hxy
   ext
   simpa using hxy
 
-lemma HasSubset.Subset.elem_range (hXY : X ⊆ Y) : hXY.elem.range = { a : Y.Elem | a.val ∈ X } := by
-  aesop
+/-- Given `X ⊆ Y` provide an embedding (i.e., bundled injective function) from `X` into `Y`. -/
+abbrev HasSubset.Subset.embed (hXY : X ⊆ Y) : X.Elem ↪ Y.Elem :=
+  ⟨hXY.elem, hXY.elem_injective⟩
 
 /-- Convert `(X ∪ Y).Elem` to `X.Elem ⊕ Y.Elem`. -/
 def Subtype.toSum [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] (i : (X ∪ Y).Elem) : X.Elem ⊕ Y.Elem :=
@@ -43,6 +47,34 @@ lemma toSum_right [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] {y :
     (hyX : y.val ∉ X) (hyY : y.val ∈ Y) :
     y.toSum = ◪⟨y.val, hyY⟩ := by
   simp [Subtype.toSum, hyY, hyX]
+
+lemma val_eq_val_of_toSum_eq_left [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] {x : X} {x' : (X ∪ Y).Elem}
+    (hxx : x'.toSum = ◩x) :
+    x.val = x'.val := by
+  obtain ⟨x₀, hx₀⟩ := x
+  obtain ⟨x₁, hx₁⟩ := x'
+  unfold Subtype.toSum at hxx
+  split at hxx
+  · simpa using hxx.symm
+  split at hxx
+  · simp at hxx
+  exfalso
+  generalize_proofs imposs at hxx
+  exact imposs
+
+lemma val_eq_val_of_toSum_eq_right [∀ a, Decidable (a ∈ X)] [∀ a, Decidable (a ∈ Y)] {y : Y} {y' : (X ∪ Y).Elem}
+    (hyy : y'.toSum = ◪y) :
+    y.val = y'.val := by
+  obtain ⟨y₀, hy₀⟩ := y
+  obtain ⟨y₁, hy₁⟩ := y'
+  unfold Subtype.toSum at hyy
+  split at hyy
+  · simp at hyy
+  split at hyy
+  · simpa using hyy.symm
+  exfalso
+  generalize_proofs imposs at hyy
+  exact imposs
 
 /-- Convert `X.Elem ⊕ Y.Elem` to `(X ∪ Y).Elem`. -/
 def Sum.toUnion (i : X.Elem ⊕ Y.Elem) : (X ∪ Y).Elem :=

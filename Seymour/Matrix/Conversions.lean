@@ -2,23 +2,27 @@ import Mathlib.LinearAlgebra.Matrix.Determinant.TotallyUnimodular
 import Seymour.Basic.Conversions
 import Seymour.Matrix.Signing
 
-
 /-!
 # Conversion between set-indexed block-like matrices and type-indexed block matrices
 
 These conversions are used in 1-sum, 2-sum, and 3-sum of standard representations.
 -/
 
-variable {α R : Type} {T₁ T₂ S₁ S₂ : Set α}
+variable {α β R : Type*} {T₁ T₂ : Set α} {S₁ S₂ : Set β}
   [∀ a, Decidable (a ∈ T₁)]
   [∀ a, Decidable (a ∈ T₂)]
-  [∀ a, Decidable (a ∈ S₁)]
-  [∀ a, Decidable (a ∈ S₂)]
+  [∀ b, Decidable (b ∈ S₁)]
+  [∀ b, Decidable (b ∈ S₂)]
 
 /-- Convert a block matrix to a matrix over set unions. -/
 def Matrix.toMatrixUnionUnion (A : Matrix (T₁.Elem ⊕ T₂.Elem) (S₁.Elem ⊕ S₂.Elem) R) :
     Matrix (T₁ ∪ T₂).Elem (S₁ ∪ S₂).Elem R :=
   ((A ∘ Subtype.toSum) · ∘ Subtype.toSum)
+
+/-- Transposing a converted matrix gives the same result as converting a transposed matrix. -/
+lemma Matrix.toMatrixUnionUnion_transpose (A : Matrix (T₁.Elem ⊕ T₂.Elem) (S₁.Elem ⊕ S₂.Elem) R) :
+    A.toMatrixUnionUnion.transpose = A.transpose.toMatrixUnionUnion :=
+  rfl
 
 /-- A totally unimodular block matrix stays totally unimodular after converting to a matrix over set unions. -/
 lemma Matrix.IsTotallyUnimodular.toMatrixUnionUnion [CommRing R] {A : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) R}
@@ -35,7 +39,7 @@ lemma Matrix.IsSigningOf.toMatrixUnionUnion [LinearOrderedRing R]
     A.toMatrixUnionUnion.IsSigningOf U.toMatrixUnionUnion :=
   (hAU ·.toSum ·.toSum)
 
-variable {T S : Set α}
+variable {T : Set α} {S : Set β}
 
 /-- Convert a block matrix to a matrix over set unions named as single indexing sets. -/
 def Matrix.toMatrixElemElem (A : Matrix (T₁ ⊕ T₂) (S₁ ⊕ S₂) R) (hT : T = T₁ ∪ T₂) (hS : S = S₁ ∪ S₂) :

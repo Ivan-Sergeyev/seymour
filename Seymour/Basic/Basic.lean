@@ -64,15 +64,20 @@ notation:64 "▬"r:81 => Matrix.replicateRow Unit r
 notation:64 "▮"c:81 => Matrix.replicateCol Unit c
 
 /-- Outer product of two vectors (the column vector comes on left; the row vector comes on right). -/
-infix:67 " ⊗ " => fun {X Y α : Type} [Mul α] =>
-  (fun c : X → α => fun r : Y → α => Matrix.of (fun i : X => fun j : Y => c i * r j))
+abbrev outerProduct {X Y α : Type*} [Mul α] (c : X → α) (r : Y → α) := Matrix.of (fun i : X => fun j : Y => c i * r j)
+
+@[inherit_doc]
+infix:67 " ⊗ " => outerProduct
 
 /-- Element-wise product of two matrices (rarely used). -/
-infixr:66 " ⊡ " => fun {X Y α β : Type} [SMul α β] =>
-  (fun A : Matrix X Y α => fun B : Matrix X Y β => Matrix.of (fun i : X => fun j : Y => A i j • B i j))
+abbrev entrywiseProduct {X Y α β : Type*} [SMul α β] (A : Matrix X Y α) (B : Matrix X Y β) :=
+  Matrix.of (fun i : X => fun j : Y => A i j • B i j)
+
+@[inherit_doc]
+infixr:66 " ⊡ " => entrywiseProduct
 
 /-- The set of possible outputs of a function. -/
-abbrev Function.range {α ι : Type} (f : ι → α) : Set α := Set.range f
+abbrev Function.range {α ι : Type*} (f : ι → α) : Set α := Set.range f
 
 @[app_unexpander Function.range]
 def Function.range_unexpand : Lean.PrettyPrinter.Unexpander
@@ -85,9 +90,12 @@ def Function.support_unexpand : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 
-/-! ## Basic lemmas -/
+/-! ## Basic stuff -/
 
-variable {α : Type}
+variable {α : Type*}
+
+lemma Function.range_eq {ι : Type} (f : ι → α) : f.range = { a : α | ∃ i : ι, f i = a } :=
+  rfl
 
 lemma dite_of_true {P : Prop} [Decidable P] (p : P) {f : P → α} {a : α} : (if hp : P then f hp else a) = f p := by
   simp [p]
@@ -95,10 +103,17 @@ lemma dite_of_true {P : Prop} [Decidable P] (p : P) {f : P → α} {a : α} : (i
 lemma dite_of_false {P : Prop} [Decidable P] (p : ¬P) {f : P → α} {a : α} : (if hp : P then f hp else a) = a := by
   simp [p]
 
-lemma Function.range_eq {ι : Type} (f : ι → α) : f.range = { a : α | ∃ i : ι, f i = a } :=
-  rfl
+abbrev Equiv.leftCongr {ι₁ ι₂ : Type*} (e : ι₁ ≃ ι₂) : ι₁ ⊕ α ≃ ι₂ ⊕ α :=
+  Equiv.sumCongr e (Equiv.refl α)
 
-lemma Finset.sum_of_single_nonzero {ι : Type} (s : Finset ι) [AddCommMonoid α] (f : ι → α) (a : ι) (ha : a ∈ s)
+abbrev Equiv.rightCongr {ι₁ ι₂ : Type*} (e : ι₁ ≃ ι₂) : α ⊕ ι₁ ≃ α ⊕ ι₂ :=
+  Equiv.sumCongr (Equiv.refl α) e
+
+@[simp]
+lemma Equiv.image_symm_apply {β : Type*} {X : Set α} (e : α ≃ β) (x : X) : (e.image X).symm ⟨e x.val, by simp⟩ = x :=
+  (e.image X).symm_apply_eq.← rfl
+
+lemma Finset.sum_of_single_nonzero {ι : Type*} (s : Finset ι) [AddCommMonoid α] (f : ι → α) (a : ι) (ha : a ∈ s)
     (hf : ∀ i ∈ s, i ≠ a → f i = 0) :
     s.sum f = f a := by
   rw [←Finset.sum_subset (s.singleton_subset_iff.← ha)]
@@ -107,12 +122,12 @@ lemma Finset.sum_of_single_nonzero {ι : Type} (s : Finset ι) [AddCommMonoid α
   apply hf x hxs
   rwa [Finset.not_mem_singleton] at hxa
 
-lemma fintype_sum_of_single_nonzero {ι : Type} [Fintype ι] [AddCommMonoid α] (f : ι → α) (a : ι)
+lemma fintype_sum_of_single_nonzero {ι : Type*} [Fintype ι] [AddCommMonoid α] (f : ι → α) (a : ι)
     (hf : ∀ i : ι, i ≠ a → f i = 0) :
     Finset.univ.sum f = f a :=
   Finset.univ.sum_of_single_nonzero f a (Finset.mem_univ a) (by simpa using hf)
 
-lemma sum_elem_of_single_nonzero {ι : Type} [AddCommMonoid α] {f : ι → α} {S : Set ι} [Fintype S] {a : ι} (haS : a ∈ S)
+lemma sum_elem_of_single_nonzero {ι : Type*} [AddCommMonoid α] {f : ι → α} {S : Set ι} [Fintype S] {a : ι} (haS : a ∈ S)
     (hf : ∀ i : ι, i ≠ a → f i = 0) :
     ∑ i : S.Elem, f i = f a := by
   apply fintype_sum_of_single_nonzero (fun s : S.Elem => f s.val) ⟨a, haS⟩

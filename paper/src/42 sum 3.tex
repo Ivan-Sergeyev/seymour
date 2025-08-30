@@ -1,0 +1,232 @@
+\section{The 3-Sum}
+
+\begin{comment}
+The implementation of 3-sum follows the same outline as for 1-sum and 2-sum, though it is more complex, as the definition of 3-sum is more involved.    
+\end{comment}
+
+% Theoretical Definition
+The 3-sum of binary matroids is defined as follows. Let $X_{\ell}$, $Y_{\ell}$, $X_{r}$, and $Y_{r}$ be sets with the following properties:
+\begin{itemize}
+    \item $X_{\ell} \cap X_{r} = \{x_{2}, x_{1}, x_{0}\}$ for some distinct $x_{0}$, $x_{1}$, and $x_{2}$;
+    \item $Y_{\ell} \cap Y_{r} = \{y_{0}, y_{1}, y_{2}\}$ for some distinct $y_{0}$, $y_{1}$, and $y_{2}$;
+    \item $X_{\ell} \cap Y_{\ell} = X_{\ell} \cap Y_{r} = \emptyset$; and
+    \item $X_{r} \cap Y_{\ell} = X_{r} \cap Y_{r} = \emptyset$.
+\end{itemize}
+Let $B_{\ell} \in \mathbb{Z}_{2}^{X_{\ell} \times Y_{\ell}}$ and $B_{r} \in \mathbb{Z}_{2}^{X_{r} \times Y_{r}}$ be matrices of the form
+\[
+    B_{\ell} = \begin{NiceArray}{ccccc}[hvlines,right-margin=0.5em,left-margin=0.1em]
+        \Block[draw]{4-4}{A_{\ell}} & & & & \Block[draw]{4-1}{0} \\
+        \\
+        \\
+        & & \Block[draw]{1-1}{1} & \Block[draw]{1-1}{1} & \Block[draw]{1-1}{0} \\
+        \Block[draw]{2-2}{D_{\ell}} & & \Block[draw]{2-2}{D_{0}} & & \Block[draw]{1-1}{1} \\
+         & & & & \Block[draw]{1-1}{1} \\
+    \end{NiceArray}
+    , \quad
+    B_{r} = \begin{NiceArray}{cccccc}[hvlines,right-margin=0.5em,left-margin=0.1em]
+        \Block[draw]{1-1}{1} & \Block[draw]{1-1}{1} & \Block[draw]{1-1}{0} \Block[draw]{1-4}{0} & & & \\
+        \Block[draw]{2-2}{D_{0}} & & \Block[draw]{1-1}{1} \Block[draw]{4-4}{A_{r}} \\
+         & & \Block[draw]{1-1}{1} \\
+        \Block[draw]{2-2}{D_{r}} \\
+        \\
+    \end{NiceArray}
+\]
+where $D_{0}$ is invertible. Then their 3-sum $B = B_{\ell} \oplus_{3} B_{r}$ is
+\[
+    B = \begin{NiceArray}{cccccccc}[hvlines,right-margin=0.5em,left-margin=0.1em]
+        \Block[draw]{4-4}{A_{\ell}} & & & & \Block[draw]{4-4}{0} & & & \\
+        \\
+        \\
+        & & \Block[draw]{1-1}{1} & \Block[draw]{1-1}{1} & \Block[draw]{1-1}{0} \\
+        \Block[draw]{2-2}{D_{\ell}} & & \Block[draw]{2-2}{D_{0}} & & \Block[draw]{1-1}{1} \Block[draw]{4-4}{A_{r}} \\
+         & & & & \Block[draw]{1-1}{1} \\
+        \Block[draw]{2-2}{D_{\ell r}} & & \Block[draw]{2-2}{D_{r}} \\
+        \\
+    \end{NiceArray}
+    , \hspace{0.5em}
+    D_{\ell r} = D_{r} \cdot (D_{0})^{-1} \cdot D_{\ell}.
+\]
+Here $D_{0} \in \mathbb{Z}_{2}^{\{x_{1}, x_{0}\} \times \{y_{0}, y_{1}\}}$,
+$
+    \begin{NiceArray}{ccc}[hvlines]
+        1 & 1 & 0 \\
+        \Block[draw]{2-2}{D_{0}} & & 1 \\
+        & & 1 \\
+    \end{NiceArray} \in \mathbb{Z}_{2}^{\{x_{2}, x_{1}, x_{0}\} \times \{y_{0}, y_{1}, y_{2}\}}
+$,
+and the indexing is kept consistent between $B_{\ell}$, $B_{r}$, and $B$.
+Consequently, a matroid $M$ is a 3-sum of matroids $M_{\ell}$ and $M_{r}$ if they admit standard representations over $\mathbb{Z}_{2}$ with matrices $B$, $B_{\ell}$, and $B_{r}$ of the form above.
+
+% Auxiliary notation
+In our implementation, we frequently deal with sets with one, two, or three elements removed. To make our code more compact, we added abbreviations for removing one, two, and three elements from a set, as well as a definition for re-typing an element of a set with three elements removed as an element of the original set:
+\begin{leancode}
+abbrev Set.drop1 {α : Type*} (Z : Set α)
+    (z₀ : Z) : Set α :=
+  Z \ {z₀.val}
+\end{leancode}
+\begin{leancode}
+abbrev Set.drop2 {α : Type*} (Z : Set α)
+    (z₀ z₁ : Z) : Set α :=
+  Z \ {z₀.val, z₁.val}
+\end{leancode}
+\begin{leancode}
+abbrev Set.drop3 {α : Type*} (Z : Set α)
+    (z₀ z₁ z₂ : Z) : Set α :=
+  Z \ {z₀.val, z₁.val, z₂.val}
+\end{leancode}
+\begin{leancode}
+def undrop3 {α : Type*} {Z : Set α}
+    {z₀ z₁ z₂ : Z} (i : Z.drop3 z₀ z₁ z₂) : Z :=
+  ⟨i.val, i.property.left⟩
+\end{leancode}
+
+% Implementation for Matrices
+Now, to define the 3-sum of matrices, we introduce a structure comprising the blocks of the summands:
+% Martin : I'd be happy to vertically align the fields with the double space as it was
+% if it actually aligned and didn't make the spaces wider than those zero subscripts
+% Ivan: what if we could switch to a true monospace font in leancode snippets?
+% Ivan: Martin is right: this is actually about how symbols like \texttt{ₗ} are defined, and it's not worth the effort to hunt for unicode glyphs to make these work
+\begin{leancode}
+structure MatrixSum3 (Xₗ Yₗ Xᵣ Yᵣ R : Type*) where
+  Aₗ : Matrix (Xₗ ⊕ Unit) (Yₗ ⊕ Fin 2) R
+  Dₗ : Matrix (Fin 2) Yₗ R
+  D₀ₗ : Matrix (Fin 2) (Fin 2) R
+  D₀ᵣ : Matrix (Fin 2) (Fin 2) R
+  Dᵣ : Matrix Xᵣ (Fin 2) R
+  Aᵣ : Matrix (Fin 2 ⊕ Xᵣ) (Unit ⊕ Yᵣ) R
+\end{leancode}
+Here \texttt{D₀ₗ} and \texttt{D₀ᵣ} refer to block $D_{0}$ in $B_{\ell}$ and $B_{r}$, respectively.
+It is then straightforward to define the resulting 3-sum matrix:
+\begin{leancode}
+noncomputable def MatrixSum3.matrix
+    {Xₗ Yₗ Xᵣ Yᵣ R : Type*} [CommRing R]
+    (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R) :
+    Matrix
+      ((Xₗ ⊕ Unit) ⊕ (Fin 2 ⊕ Xᵣ))
+      ((Yₗ ⊕ Fin 2) ⊕ (Unit ⊕ Yᵣ))
+      R :=
+  Matrix.fromBlocks S.Aₗ 0
+    (Matrix.fromBlocks S.Dₗ S.D₀ₗ
+      (S.Dᵣ * S.D₀ₗ⁻¹ * S.Dₗ) S.Dᵣ
+    ) S.Aᵣ
+\end{leancode}
+Introducing these definitions creates an abstraction layer that allows us to work with the blocks used to construct a 3-sum of matrices without the need to manually obtain them from the summands each time. Moreover, this drastically simplifies the implementation of results that require additional assumptions on the summands. Without these definitions, one has to repeatedly extract the blocks from the summands before the additional assumptions or the final result can be stated and in the proof as well, which is extremely cumbersome.
+
+To further facilitate our implementation of the 3-sum, we pack the inner workings of obtaining the blocks from the summands into the following definition:
+\begin{leancode}
+def blocksToMatrixSum3 {Xₗ Yₗ Xᵣ Yᵣ R : Type*}
+    (Bₗ : Matrix ((Xₗ ⊕ Unit) ⊕ Fin 2)
+                 ((Yₗ ⊕ Fin 2) ⊕ Unit) R)
+    (Bᵣ : Matrix (Unit ⊕ (Fin 2 ⊕ Xᵣ))
+                 (Fin 2 ⊕ (Unit ⊕ Yᵣ)) R) :
+    MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ R where
+  Aₗ := Bₗ.toBlocks₁₁
+  Dₗ := Bₗ.toBlocks₂₁.toCols₁
+  D₀ₗ := Bₗ.toBlocks₂₁.toCols₂
+  D₀ᵣ := Bᵣ.toBlocks₂₁.toRows₁
+  Dᵣ := Bᵣ.toBlocks₂₁.toRows₂
+  Aᵣ := Bᵣ.toBlocks₂₂
+\end{leancode}
+This definition is particularly compact thanks to us changing the types of dimensions of $B_{\ell}$ and $B_{r}$. The corresponding transformation of dimensions of $B_{\ell}$ is then implemented as
+\begin{leancode}
+def Matrix.toBlockSummandₗ {α R : Type*}
+    {Xₗ Yₗ : Set α} (Bₗ : Matrix Xₗ Yₗ R)
+    (x₀ x₁ x₂ : Xₗ) (y₀ y₁ y₂ : Yₗ) :
+    Matrix
+      ((Xₗ.drop3 x₀ x₁ x₂ ⊕ Unit) ⊕ Fin 2)
+      ((Yₗ.drop3 y₀ y₁ y₂ ⊕ Fin 2) ⊕ Unit)
+      R :=
+  Bₗ.submatrix
+    (·.casesOn (·.casesOn undrop3 ↓x₂) ![x₀, x₁])
+    (·.casesOn (·.casesOn undrop3 ![y₀, y₁]) ↓y₂)
+\end{leancode}
+We re-index $B_{r}$ analogously via \texttt{Matrix.toBlockSummandᵣ}.
+
+% Implementation for Standard Representations
+Now, to implement 3-sums of standard representations, we perform one last reindexing to transform the dimensions of \texttt{MatrixSum3.matrix} into unions of sets via
+\begin{leancode}
+def Matrix.toMatrixDropUnionDrop {α : Type*}
+    [DecidableEq α] {Xₗ Yₗ Xᵣ Yᵣ : Set α}
+    {R : Type*}
+    [∀ a, Decidable (a ∈ Xₗ)]
+    [∀ a, Decidable (a ∈ Yₗ)]
+    [∀ a, Decidable (a ∈ Xᵣ)]
+    [∀ a, Decidable (a ∈ Yᵣ)]
+    {x₀ₗ x₁ₗ x₂ₗ : Xₗ} {y₀ₗ y₁ₗ y₂ₗ : Yₗ}
+    {x₀ᵣ x₁ᵣ x₂ᵣ : Xᵣ} {y₀ᵣ y₁ᵣ y₂ᵣ : Yᵣ}
+    (A : Matrix
+      ((Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ ⊕ Unit)
+      ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ))
+      ((Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ ⊕ Fin 2)
+      ⊕ (Unit ⊕ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ))
+      R) :
+    Matrix
+      (Xₗ.drop2 x₀ₗ x₁ₗ ∪ Xᵣ.drop1 x₂ᵣ).Elem
+      (Yₗ.drop1 y₂ₗ ∪ Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem
+      R := /- implementation omitted -/
+\end{leancode}
+This allows us to define the 3-sum of standard representations as follows:
+\begin{leancode}
+noncomputable def standardReprSum3 {α : Type*}
+    [DecidableEq α]
+    {Sₗ Sᵣ : StandardRepr α Z2}
+    {x₀ x₁ x₂ y₀ y₁ y₂ : α}
+    (hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂})
+    (hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂})
+    (hXY : Disjoint Sₗ.X Sᵣ.Y)
+    (hYX : Disjoint Sₗ.Y Sᵣ.X) :
+    Option (StandardRepr α Z2) :=
+  let x₀ₗ : Sₗ.X := ⟨x₀, sorry⟩
+  let x₁ₗ : Sₗ.X := ⟨x₁, sorry⟩
+  let x₂ₗ : Sₗ.X := ⟨x₂, sorry⟩
+  let y₀ₗ : Sₗ.Y := ⟨y₀, sorry⟩
+  let y₁ₗ : Sₗ.Y := ⟨y₁, sorry⟩
+  let y₂ₗ : Sₗ.Y := ⟨y₂, sorry⟩
+  let x₀ᵣ : Sᵣ.X := ⟨x₀, sorry⟩
+  let x₁ᵣ : Sᵣ.X := ⟨x₁, sorry⟩
+  let x₂ᵣ : Sᵣ.X := ⟨x₂, sorry⟩
+  let y₀ᵣ : Sᵣ.Y := ⟨y₀, sorry⟩
+  let y₁ᵣ : Sᵣ.Y := ⟨y₁, sorry⟩
+  let y₂ᵣ : Sᵣ.Y := ⟨y₂, sorry⟩
+  open scoped Classical in if
+    ((x₀ ≠ x₁ ∧ x₀ ≠ x₂ ∧ x₁ ≠ x₂) ∧
+     (y₀ ≠ y₁ ∧ y₀ ≠ y₂ ∧ y₁ ≠ y₂))
+    ∧ Sₗ.B.submatrix ![x₀ₗ, x₁ₗ] ![y₀ₗ, y₁ₗ] =
+      Sᵣ.B.submatrix ![x₀ᵣ, x₁ᵣ] ![y₀ᵣ, y₁ᵣ]
+    ∧ IsUnit (Sₗ.B.submatrix ![x₀ₗ, x₁ₗ] ![y₀ₗ, y₁ₗ])
+    ∧ Sₗ.B x₀ₗ y₂ₗ = 1
+    ∧ Sₗ.B x₁ₗ y₂ₗ = 1
+    ∧ Sₗ.B x₂ₗ y₀ₗ = 1
+    ∧ Sₗ.B x₂ₗ y₁ₗ = 1
+    ∧ (∀ x : α, ∀ hx : x ∈ Sₗ.X, x ≠ x₀ ∧ x ≠ x₁
+        → Sₗ.B ⟨x, hx⟩ y₂ₗ = 0)
+    ∧ Sᵣ.B x₀ᵣ y₂ᵣ = 1
+    ∧ Sᵣ.B x₁ᵣ y₂ᵣ = 1
+    ∧ Sᵣ.B x₂ᵣ y₀ᵣ = 1
+    ∧ Sᵣ.B x₂ᵣ y₁ᵣ = 1
+    ∧ (∀ y : α, ∀ hy : y ∈ Sᵣ.Y, y ≠ y₀ ∧ y ≠ y₁
+        → Sᵣ.B x₂ᵣ ⟨y, hy⟩ = 0)
+  then
+    some ⟨
+      (Sₗ.X.drop2 x₀ₗ x₁ₗ) ∪ (Sᵣ.X.drop1 x₂ᵣ),
+      (Sₗ.Y.drop1 y₂ₗ) ∪ (Sᵣ.Y.drop2 y₀ᵣ y₁ᵣ),
+      sorry,
+      (blocksToMatrixSum3
+        (Sₗ.B.toBlockSummandₗ x₀ₗ x₁ₗ x₂ₗ y₀ₗ y₁ₗ y₂ₗ)
+        (Sᵣ.B.toBlockSummandᵣ x₀ᵣ x₁ᵣ x₂ᵣ y₀ᵣ y₁ᵣ y₂ᵣ)
+      ).matrix.toMatrixDropUnionDrop,
+      inferInstance,
+      inferInstance⟩
+  else
+    none
+\end{leancode}
+The resulting definition has similar advantages to its analogs for the 1- and 2-sum:
+\begin{itemize}
+    \item The data required to construct the 3-sum together with all intermediate objects and assumptions appear as named arguments.
+    \item Conditions that are not needed to carry out the construction but necessary for the result to be valid are anonymous and appear in the \texttt{if} statement.
+    \item The result is given by an \texttt{Option}, which evaluates to \texttt{some} standard representation if the produced 3-sum is valid, or \texttt{none} otherwise.
+\end{itemize}
+
+
+% Implementation for Matroids
+Finally, the matroid-level predicate \texttt{Matroid.IsSum3of} is defined similarly to those for 1- and 2-sums by substituting in \texttt{standardReprSum3}, ensuring consistency.
