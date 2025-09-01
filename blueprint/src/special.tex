@@ -23,11 +23,16 @@
 \end{definition}
 
 \begin{definition}
+    \label{Matroid.dualIndepMatroid}
+    \leanok
+    Let $M = (E, \mathcal{I})$ be a matroid and $B \in \mathcal I$ be a base of $M$. We define the dual of $M$ as $M^* = (E, \mathcal{I}^*)$ where $\mathcal{I}^* = \left\{ I \in \mathcal I  \ | \ I \cap B = \varnothing \right\}.$
+\end{definition}
+
+\begin{definition}
     \label{StandardRepr.dual}
     \uses{StandardRepr}
     \leanok
-    Let $M$ be a vector matroid with standard representation $S$. We define the dual of $M$, denoted $M^*$, to be the vector matroid with standard representation $-S^\intercal$.
-    TODO do we define StandardRepr.dual or Matroid.dual here?!
+    Let $M$ be a vector matroid with standard representation $S$. The Standard Representation Dual of $M$ is the vector matroid with standard representation $-S^\intercal$.
 \end{definition}
 
 \begin{definition}
@@ -41,16 +46,16 @@
     \label{matroidR10}
     \uses{StandardRepr}
     \leanok
-    The matroid represented by the standard representation matrix
-    \[\begin{bmatrix}
-        1 & 1 & 0 & 0 & 1 \\
-        1 & 1 & 1 & 0 & 0 \\
-        0 & 1 & 1 & 1 & 0 \\
-        0 & 0 & 1 & 1 & 1 \\
-        1 & 1 & 1 & 1 & 1 \\
-    \end{bmatrix}\]
-    over $\mathbb{Z}_2$ is called $R_{10}.$
-\end{definition}
+    The matroid represented by the matrix
+        \[A = \begin{bmatrix}
+            1 & 0 & 0 & 1 & 1 \\
+            1 & 1 & 0 & 0 & 1 \\
+            0 & 1 & 1 & 0 & 1 \\
+            0 & 0 & 1 & 1 & 1 \\
+            1 & 1 & 1 & 1 & 1 \\
+        \end{bmatrix}\]
+        over $\mathbb{Z}_2$ is called $R_{10}.$
+    \end{definition}
 
 \begin{theorem}
     \label{matroidR10.isRegular}
