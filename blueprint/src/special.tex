@@ -52,12 +52,23 @@
     over $\mathbb{Z}_2$ is called $R_{10}.$
 \end{definition}
 
-\begin{lemma}
+\begin{theorem}
     \label{matroidR10.isRegular}
     \uses{matroidR10,Matroid.IsRegular}
     \leanok
     The matroid $R_{10}$ is regular.
-\end{lemma}
+\end{theorem}
+
+\begin{proof}
+    See Lean implementation.
+\end{proof}
+
+\begin{theorem}
+    \label{Matroid.IsGraphic.isRegular}
+    \uses{Matroid.IsGraphic,Matroid.IsRegular}
+    \leanok
+    Every graphic matroid is regular.
+\end{theorem}
 
 \begin{proof}
     See Lean implementation.
