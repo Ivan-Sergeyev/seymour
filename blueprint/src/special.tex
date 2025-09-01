@@ -1,0 +1,77 @@
+\chapter{Special Matroids}
+
+\begin{definition}
+    \label{Matrix.IsGraphic}
+    \uses{Matrix}
+    \leanok
+    Let $A \in \mathbb{Q}^{X \times Y}$ be a matrix. If for all $j \in Y$, one has that $a_{i,j} = 0$ for all $i \in X$, or that there exists $i_1,i_2 \in X$ such that
+    \[
+    a_{i,j} = \begin{cases}
+        1 & \text{ if $i = i_1$} \\
+        -1 & \text{ if $i = i_2$} \\
+        0 & \text{ otherwise},
+    \end{cases}
+    \]
+    then we call $A$ a node-incidence matrix for a (directed) graph whose nodes are indexed by $X$ and whose edges are indexed by $Y$.
+\end{definition}
+
+\begin{definition}
+    \label{Matroid.IsGraphic}
+    \uses{VectorMatroid,Matrix.IsGraphic}
+    \leanok
+    We say that a matroid is graphic if it can be represented by a node-incidence matrix.
+\end{definition}
+
+\begin{definition}
+    \label{StandardRepr.dual}
+    \uses{StandardRepr}
+    \leanok
+    Let $M$ be a vector matroid with standard representation $S$. We define the dual of $M$, denoted $M^*$, to be the vector matroid with standard representation $-S^\intercal$.
+    TODO do we define StandardRepr.dual or Matroid.dual here?!
+\end{definition}
+
+\begin{definition}
+    \label{Matroid.IsCographic}
+    \uses{Matroid.IsGraphic,StandardRepr.dual}
+    \leanok
+    We say a matroid is co-graphic if its dual is graphic.
+\end{definition}
+
+\begin{definition}
+    \label{matroidR10}
+    \uses{StandardRepr}
+    \leanok
+    The matroid represented by the standard representation matrix
+    \[\begin{bmatrix}
+        1 & 1 & 0 & 0 & 1 \\
+        1 & 1 & 1 & 0 & 0 \\
+        0 & 1 & 1 & 1 & 0 \\
+        0 & 0 & 1 & 1 & 1 \\
+        1 & 1 & 1 & 1 & 1 \\
+    \end{bmatrix}\]
+    over $\mathbb{Z}_2$ is called $R_{10}.$
+\end{definition}
+
+\begin{theorem}
+    \label{matroidR10.isRegular}
+    \uses{matroidR10,Matroid.IsRegular}
+    \leanok
+    The matroid $R_{10}$ is regular.
+\end{theorem}
+
+\begin{proof}
+    \leanok
+    See Lean implementation.
+\end{proof}
+
+\begin{theorem}
+    \label{Matroid.IsGraphic.isRegular}
+    \uses{Matroid.IsGraphic,Matroid.IsRegular}
+    \leanok
+    Every graphic matroid is regular.
+\end{theorem}
+
+\begin{proof}
+    \leanok
+    See Lean implementation.
+\end{proof}
