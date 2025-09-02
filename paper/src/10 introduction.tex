@@ -22,7 +22,7 @@ Our project makes the following contributions:
     \item Formalized definition and selected properties of totally unimodular matrices, some of which were added to Mathlib.
     \item Implemented definitions and formally proved selected results about vector matroids, their standard representations, regular matroids, and 1-, 2-, and 3-sums of matrices and vector matroids given by their standard representations.
     \item Implemented a formally verified proof of the composition direction of Seymour's theorem, i.e., that any 1-, 2-, and 3-sum of two regular matroids is regular, in the case where the matroids may have infinite ground sets and have finite rank.
-    \item Stated the decomposition direction of Seymour's theorem, i.e., that any regular matroid can be decomposed into matroids that are graphic, cographic, or isomorphic to $R_{10}$ by repeated 1-, 2-, and 3-sum decompositions, also for matroids of finite rank.
+    \item Stated the decomposition direction of Seymour's theorem, i.e., that any regular matroid of finite rank can be decomposed into matroids that are graphic, cographic, or isomorphic to $R_{10}$ by repeated 1-, 2-, and 3-sum decompositions.
 \end{itemize}
 
 % \subsection{Implementation}
@@ -34,20 +34,4 @@ While working on our project, we leveraged the LeanBlueprint\footnote{\url{https
 
 We use Lean version 4.18.0 and we import Mathlib library revision aa936c3 (dated 2025-04-01).
 
-% Previous version
-\begin{comment}
-This paper contains many code snippets.
-We tried to make them faithful with respect to the content of the repository.
-However, sometimes we made omissions for brevity.
-In particular, whenever a definition contains a proof, the proof is replaced
-by the keyword \texttt{sorry} in the paper, but the repository contains a proof.
-\end{comment}
-
-The code snippets in this paper are faithful to the content of the repository, though we made some omissions for the sake of brevity. In particular, proofs inside definitions were replaced by the \leaninline{sorry} keyword in the paper, while the repository contains the complete implementation.
-
-% \todo[inline]{@anyone: maybe add git commit hash of version from the paper? "In this paper we specifically refer to the version with git hash [something]."}
-% Martin: I suggest using a release tag instead. Or, to stay on the safer side, a release branch instead.
-
-% \subsection{Organization of the Paper}
-% \todo[inline]{@anyone: maybe add roadmap once the structure of the paper (section names and ordering) has been fixed}
-% Martin: Sure, why not.
+We made the code snippets in this paper as faithful to the content of the repository as possible, though we made some omissions. In particular, proofs inside definitions were replaced by the \leaninline{sorry} keyword in the paper, while the repository contains the complete implementation.
