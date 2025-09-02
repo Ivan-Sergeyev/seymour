@@ -76,5 +76,5 @@ lemma finset_of_cardinality_between [Fintype α] [Fintype β] {n : ℕ}
     have : s.card = 0
     · rw [Finset.card_eq_zero]
       rw [nonempty_subtype, not_exists] at hs'
-      exact Finset.eq_empty_of_forall_not_mem hs'
+      exact Finset.eq_empty_of_forall_notMem hs'
     omega

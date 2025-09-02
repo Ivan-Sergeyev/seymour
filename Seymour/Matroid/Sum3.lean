@@ -347,6 +347,7 @@ private lemma Matrix.HasTuCanonicalSigning₀.toCanonicalSigning_submatrix3x3 {X
     <;> simp only [mul_one, mul_neg, neg_zero, neg_neg, *]
     <;> simp [*] at hd
 
+set_option maxHeartbeats 333333 in
 /-- Re-signing a TU matrix in the second special case transforms the 3×3 submatrix to its canonically signed version. -/
 private lemma Matrix.HasTuCanonicalSigning₁.toCanonicalSigning_submatrix3x3 {X Y : Type*} [DecidableEq X] [DecidableEq Y]
     {Q : Matrix X Y ℚ} {x₀ x₁ x₂ : X} {y₀ y₁ y₂ : Y} (hQ : Q.HasTuCanonicalSigning₁ x₀ x₁ x₂ y₀ y₁ y₂) :

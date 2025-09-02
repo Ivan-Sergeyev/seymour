@@ -577,7 +577,7 @@ private lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular_aux [Field R
       else
         simpa [hij, hgjgn, hxj] using A'.longTableauPivot_elem_in_pivot_col_eq_zero hij (hxj ▸ hx)
 
-set_option maxHeartbeats 333333 in
+set_option maxHeartbeats 1000000 in
 /-- Every vector matroid whose full representation matrix is totally unimodular has a standard representation whose rows are
     a given base and the standard representation matrix is totally unimodular.
     Unlike `Matrix.exists_standardRepr_isBase` this lemma does not allow infinite `G` and does not allow `R` to have
@@ -660,12 +660,20 @@ lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {X Y G : S
             simp at hifz
             simp [hifz, g] at hi
           simpa [hiz] using hfA' ⟨i, hiX⟩ (Fintype.equivFin G ⟨z.val, hzG⟩)
-      have hjc : ⟨j, hjY⟩ ∉ c.support := Finsupp.not_mem_support_iff.← hcj
+      have hjc : ⟨j, hjY⟩ ∉ c.support := Finsupp.notMem_support_iff.← hcj
       ext a
       rw [Finsupp.coe_zero, Pi.zero_apply]
       by_contra hca
       have haj : a.val ≠ j := (by apply hca; subst ·; exact hcj)
-      have haG : a.val ∈ G := Set.mem_of_mem_insert_of_ne (by have := hc (Finsupp.mem_support_iff.← hca); aesop) haj
+      have haG : a.val ∈ G := Set.mem_of_mem_insert_of_ne (by
+        -- TODO cleanup
+        have hc' := hc (Finsupp.mem_support_iff.← hca)
+        simp_all [g, g', g'', ξ]
+        obtain ⟨_, _⟩ := a
+        obtain ⟨_, _, _⟩ := hc'
+        simp_all only [Subtype.mk.injEq, g, g', g'']
+        simp_all only [false_or, g, g', g'']
+        ) haj
       have hca0 := congr_fun hc0 (g ⟨a.val, haG⟩)
       simp only [Finset.sum_apply, smul_eq_mul, Pi.smul_apply, Pi.zero_apply] at hca0
       rw [c.support.sum_of_single_nonzero _ a] at hca0
@@ -685,7 +693,16 @@ lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {X Y G : S
           convert hcj
         else
           right
-          have hzG : z.val ∈ G := Set.mem_of_mem_insert_of_ne (by have := hc hzc; aesop) hzj
+          have hzG : z.val ∈ G := Set.mem_of_mem_insert_of_ne (by
+            -- TODO cleanup
+            have hc' := hc hzc
+            simp_all [g, g', ξ, g'']
+            obtain ⟨_, _⟩ := a
+            obtain ⟨_, _⟩ := z
+            obtain ⟨_, _, _⟩ := hc'
+            simp_all only [Subtype.mk.injEq, g, g', ξ, g'']
+            simp_all only [false_or, g, g', ξ, g'']
+            ) hzj
           specialize hfA' (g ⟨a.val, haG⟩) (Fintype.equivFin G ⟨z.val, hzG⟩)
           have haz : g ⟨a.val, haG⟩ ≠ f (Fintype.equivFin G ⟨z.val, hzG⟩) := (by
             apply hza
@@ -765,9 +782,9 @@ private lemma support_subset_support_of_same_matroid_aux {F F₀ : Type*} [Decid
   have hSS' := congr_arg Matroid.Indep hSS
   let D := { x : X | Bᵀ y x ≠ 0 }
   let Dₒ := { x : X | Bₒᵀ y x ≠ 0 }
-  have hyy : (hYXY.elem y).toSum = ◪y := toSum_right (hXY.not_mem_of_mem_right y.property) _
+  have hyy : (hYXY.elem y).toSum = ◪y := toSum_right (hXY.notMem_of_mem_right y.property) _
   by_contra hD
-  rw [Set.not_subset_iff_exists_mem_not_mem] at hD
+  rw [Set.not_subset_iff_exists_mem_notMem] at hD
   -- otherwise `y ᕃ Dₒ` is dependent in `Mₒ` but indep in `M`
   have hMₒ : ¬ (StandardRepr.mk X Y hXY Bₒ hX hY).toMatroid.Indep (y.val ᕃ Dₒ)
   · rw [StandardRepr.toMatroid_indep_iff, not_and]
@@ -778,7 +795,7 @@ private lemma support_subset_support_of_same_matroid_aux {F F₀ : Type*} [Decid
         ⟨hYXY.elem y, by simp, by simp only [hyy]; simp⟩⟩
     · rw [Finset.coe_insert, Set.insert_subset_iff]
       exact ⟨by simp, by simp [Set.preimage, Set.setOf_or]⟩
-    · rw [Finset.sum_insert (by simpa [Subtype.impEmbedding] using (fun _ => hXY.not_mem_of_mem_right y.property ·))]
+    · rw [Finset.sum_insert (by simpa [Subtype.impEmbedding] using (fun _ => hXY.notMem_of_mem_right y.property ·))]
       ext x
       rw [Pi.add_apply, Pi.smul_apply, Finset.sum_apply, Pi.zero_apply]
       convert_to Bₒ x y + ∑ i : Dₒ.Elem, (- Bₒᵀ y i) • (1 : Matrix X X F₀) x i.val = 0 using 2
@@ -835,7 +852,7 @@ private lemma support_subset_support_of_same_matroid_aux {F F₀ : Type*} [Decid
             | inr hiD => simp_all
           rwa [hiy]
       else
-        exact l.not_mem_support_iff.→ hil
+        exact l.notMem_support_iff.→ hil
     else
       exfalso
       have hlBd := congr_fun hlB d
@@ -866,7 +883,7 @@ private lemma support_subset_support_of_same_matroid_aux {F F₀ : Type*} [Decid
       have hlyd : l (hYXY.elem y) • ((1 : Matrix X X F) ◫ B) d (hYXY.elem y).toSum ≠ 0
       · refine (hly <| (mul_eq_zero_iff_right ?_).→ ·)
         simp_rw [Matrix.transpose_apply, Set.mem_setOf_eq] at hd
-        simp [hd, hXY.not_mem_of_mem_right y.property]
+        simp [hd, hXY.notMem_of_mem_right y.property]
       rw [Finsupp.sum, l.support.sum_of_single_nonzero (fun a : (X ∪ Y).Elem => l a • (1 ◫ B) d a.toSum) (hYXY.elem y) hyl]
           at untransposed
       · rw [untransposed] at hlyd

@@ -119,7 +119,7 @@ lemma Finset.sum_of_single_nonzero {ι : Type*} (s : Finset ι) [AddCommMonoid �
   · simp
   intro x hxs hxa
   apply hf x hxs
-  rwa [Finset.not_mem_singleton] at hxa
+  rwa [Finset.notMem_singleton] at hxa
 
 lemma fintype_sum_of_single_nonzero {ι : Type*} [Fintype ι] [AddCommMonoid α] (f : ι → α) (a : ι)
     (hf : ∀ i : ι, i ≠ a → f i = 0) :

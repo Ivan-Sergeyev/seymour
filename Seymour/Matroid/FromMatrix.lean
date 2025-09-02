@@ -282,7 +282,7 @@ lemma Matrix.toMatroid_isFinitary [DivisionRing R] (A : Matrix X Y R) : A.toMatr
   simp
   wlog hIY : I ⊆ A.toMatroid.E
   · exfalso
-    rw [Set.not_subset_iff_exists_mem_not_mem] at hIY
+    rw [Set.not_subset_iff_exists_mem_notMem] at hIY
     obtain ⟨x, hx, hxE⟩ := hIY
     exact hxE ((hI _ (Set.singleton_subset_iff.← hx) (Set.finite_singleton x)).subset_ground rfl)
   use hIY

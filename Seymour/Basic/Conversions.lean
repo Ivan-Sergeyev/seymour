@@ -132,4 +132,4 @@ lemma equivSumUnion_symm_apply_left (hXY : X ⫗ Y) {x : (X ∪ Y).Elem} (hx : x
 @[simp]
 lemma equivSumUnion_symm_apply_right (hXY : X ⫗ Y) {y : (X ∪ Y).Elem} (hy : y.val ∈ Y) :
     hXY.equivSumUnion.symm y = ◪⟨y.val, hy⟩ :=
-  toSum_right (hXY.symm.not_mem_of_mem_left hy) hy
+  toSum_right (hXY.symm.notMem_of_mem_left hy) hy
