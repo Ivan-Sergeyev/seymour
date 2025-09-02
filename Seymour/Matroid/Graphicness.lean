@@ -25,7 +25,7 @@ lemma IsIncidenceMatrixColumn.eq_if_mem {m : Type*} [DecidableEq m] {v : m → �
   refine Or.imp_right (fun hv => ?_) hv
   peel hv with i₁ i₂ hii
   refine ⟨hii.left, ?_⟩
-  simp only [List.toFinset_cons, List.toFinset_nil, LawfulSingleton.insert_emptyc_eq, Finset.mem_insert, Finset.mem_singleton]
+  simp only [List.toFinset_cons, List.toFinset_nil, LawfulSingleton.insert_empty_eq, Finset.mem_insert, Finset.mem_singleton]
   ext i
   by_cases i = i₁
   · simp_all
@@ -54,7 +54,7 @@ lemma IsIncidenceMatrixColumn.sum_zero {m : Type*} [Fintype m] [DecidableEq m] {
   | inl => simp_all
   | inr hv =>
     rw [hv.choose_spec.choose_spec.right, Finset.sum_ite_mem, Finset.univ_inter,
-      List.toFinset_cons, List.toFinset_cons, List.toFinset_nil, LawfulSingleton.insert_emptyc_eq,
+      List.toFinset_cons, List.toFinset_cons, List.toFinset_nil, LawfulSingleton.insert_empty_eq,
       Finset.sum_insert (by simpa using hv.choose_spec.choose_spec.left), Finset.sum_singleton]
     simp_rw [ne_eq, ite_true, hv.choose_spec.choose_spec.left.symm, ite_false, add_neg_cancel]
 

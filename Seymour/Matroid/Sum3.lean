@@ -1899,13 +1899,13 @@ def Matrix.toBlockSummandᵣ {Xᵣ Yᵣ : Set α} {R : Type*} (Bᵣ : Matrix X�
     Matrix (Unit ⊕ (Fin 2 ⊕ Xᵣ.drop3 x₀ x₁ x₂)) (Fin 2 ⊕ (Unit ⊕ Yᵣ.drop3 y₀ y₁ y₂)) R :=
   Bᵣ.submatrix (·.casesOn ↓x₂ (·.casesOn ![x₀, x₁] undrop3)) (·.casesOn ![y₀, y₁] (·.casesOn ↓y₂ undrop3))
 
-private lemma Matrix.IsSigningOf.toBlockSummandₗ {Xₗ Yₗ : Set α} {R : Type*} [LinearOrderedRing R]
+private lemma Matrix.IsSigningOf.toBlockSummandₗ {Xₗ Yₗ : Set α} {R : Type*} [Ring R] [LinearOrder R]
     {Bₗ : Matrix Xₗ Yₗ R} {n : ℕ} {Aₗ : Matrix Xₗ Yₗ (ZMod n)}
     (hBAₗ : Bₗ.IsSigningOf Aₗ) (x₀ x₁ x₂ : Xₗ) (y₀ y₁ y₂ : Yₗ) :
     (Bₗ.toBlockSummandₗ x₀ x₁ x₂ y₀ y₁ y₂).IsSigningOf (Aₗ.toBlockSummandₗ x₀ x₁ x₂ y₀ y₁ y₂) :=
   hBAₗ.submatrix _ _
 
-private lemma Matrix.IsSigningOf.toBlockSummandᵣ {Xᵣ Yᵣ : Set α} {R : Type*} [LinearOrderedRing R]
+private lemma Matrix.IsSigningOf.toBlockSummandᵣ {Xᵣ Yᵣ : Set α} {R : Type*} [Ring R] [LinearOrder R]
     {Bᵣ : Matrix Xᵣ Yᵣ R} {n : ℕ} {Aᵣ : Matrix Xᵣ Yᵣ (ZMod n)}
     (hBAᵣ : Bᵣ.IsSigningOf Aᵣ) (x₀ x₁ x₂ : Xᵣ) (y₀ y₁ y₂ : Yᵣ) :
     (Bᵣ.toBlockSummandᵣ x₀ x₁ x₂ y₀ y₁ y₂).IsSigningOf (Aᵣ.toBlockSummandᵣ x₀ x₁ x₂ y₀ y₁ y₂) :=

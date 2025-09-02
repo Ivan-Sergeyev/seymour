@@ -8,9 +8,9 @@ pp.structureInstances = false
 pp.numericProj.prod = false
 
 [[require]]
-name = "linters"
-git = "https://github.com/madvorak/leanters"
-rev = "main"
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "v4.19.0"
 
 [[require]]
 name = "checkdecls"

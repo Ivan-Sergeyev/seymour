@@ -6,7 +6,7 @@ import Seymour.Basic.Basic
 This file describes when a matrix is a signing of another matrix.
 -/
 
-variable {X Y R : Type*} [LinearOrderedRing R] {n : ℕ}
+variable {X Y R : Type*} [Ring R] [LinearOrder R] {n : ℕ}
 
 /-- `LinearOrderedRing`-valued matrix `A` is a signing of `U` (matrix of the same size but different type) iff `A` has
     the same entries as `U` on respective positions up to signs. -/

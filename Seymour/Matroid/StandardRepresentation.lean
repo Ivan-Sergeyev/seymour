@@ -484,7 +484,7 @@ private lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular_aux [Field R
                 exact (hzj ▸ hz) (hxj ▸ hx)
               else
                 exact smul_eq_zero_of_right _ (hgja ▸ (by simpa [hxj] using hfA' x j))
-        · simp only [Finsupp.ofSupportFinite, ne_eq, id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int]
+        · simp only [Finsupp.ofSupportFinite, ne_eq, id_eq, Int.reduceNeg, Int.cast_ofNat_Int]
           intro hc0
           rw [Finsupp.ext_iff] at hc0
           specialize hc0 (hGY.elem (G.equivFin ⟨n, hnG⟩))

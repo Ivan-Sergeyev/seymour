@@ -1,7 +1,6 @@
 import Mathlib.Data.Matrix.ColumnRowPartitioned
 import Mathlib.Data.Matrix.RowCol
 import Mathlib.Tactic
-import Linters
 
 /-!
 # Basics

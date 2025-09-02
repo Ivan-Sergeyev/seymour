@@ -423,7 +423,7 @@ private lemma Fin.reindexFun_bijective {n : ℕ} (i : Fin n.succ) : i.reindexFun
       | inl b₁ =>
         exfalso
         apply i.succAbove_ne aₙ
-        simpa using hab
+        simp at hab
       | inr bₙ =>
         simpa using hab,
     (by
@@ -510,8 +510,8 @@ private noncomputable instance invertible_matrix_fin1_of_ne_zero [Field F] {A : 
     rw [i.eq_zero, j.eq_zero]
     simp [IsUnit.inv_mul_cancel (IsUnit.mk0 _ hA0.out)])
 
-private lemma shortTableauPivot_submatrix_succAbove_succAbove_det_abs_eq_div [LinearOrderedField F] {k : ℕ}
-    {A : Matrix (Fin k.succ) (Fin k.succ) F} {x y : Fin k.succ} (hAxy : A x y ≠ 0) :
+private lemma shortTableauPivot_submatrix_succAbove_succAbove_det_abs_eq_div [Field F] [LinearOrder F] [IsStrictOrderedRing F]
+    {k : ℕ} {A : Matrix (Fin k.succ) (Fin k.succ) F} {x y : Fin k.succ} (hAxy : A x y ≠ 0) :
     |((A.shortTableauPivot x y).submatrix x.succAbove y.succAbove).det| = |A.det| / |A x y| := by
   have : NeZero (A.block₁₁ x y 0 0) := ⟨by simpa⟩
   rw [
@@ -521,13 +521,13 @@ private lemma shortTableauPivot_submatrix_succAbove_succAbove_det_abs_eq_div [Li
   nth_rw 5 [A.succAboveAt_block x y]
   exact (Matrix.abs_det_submatrix_equiv_equiv ..).symm
 
-lemma shortTableauPivot_submatrix_det_abs_eq_div [LinearOrderedField F] {k : ℕ}
+lemma shortTableauPivot_submatrix_det_abs_eq_div [Field F] [LinearOrder F] [IsStrictOrderedRing F]  {k : ℕ}
     {A : Matrix (Fin k.succ) (Fin k.succ) F} {x y : Fin k.succ} (hAxy : A x y ≠ 0) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ,
       |((A.shortTableauPivot x y).submatrix f g).det| = |A.det| / |A x y| :=
   ⟨x.succAbove, y.succAbove, shortTableauPivot_submatrix_succAbove_succAbove_det_abs_eq_div hAxy⟩
 
-lemma Matrix.abs_det_eq_shortTableauPivot_submatrix_abs_det [LinearOrderedField F] {k : ℕ}
+lemma Matrix.abs_det_eq_shortTableauPivot_submatrix_abs_det [Field F] [LinearOrder F] [IsStrictOrderedRing F]  {k : ℕ}
     (A : Matrix (Fin k.succ) (Fin k.succ) F) {i j : Fin k.succ} (hAij : A i j = 1 ∨ A i j = -1) :
     ∃ f : Fin k → Fin k.succ, ∃ g : Fin k → Fin k.succ,
       |A.det| = |((A.shortTableauPivot i j).submatrix f g).det| := by

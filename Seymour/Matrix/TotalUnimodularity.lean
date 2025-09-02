@@ -243,7 +243,7 @@ In the comments bellow, we will use the following shorthands:
 ` | ` denotes `Equiv.sumCongr`
 `|S|` denotes `#S` for any `{S : Type*} [Fintype S]`
 -/
-variable [LinearOrderedCommRing R] [DecidableEq X₁] [DecidableEq X₂]
+variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] [DecidableEq X₁] [DecidableEq X₂]
 
 /-- `Matrix.fromBlocks_isTotallyUnimodular` square case. -/
 private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_isTotallyUnimodular_of_card_eq

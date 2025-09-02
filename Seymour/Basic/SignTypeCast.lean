@@ -70,7 +70,7 @@ lemma in_signTypeCastRange_of_neg [NonAssocRing R] {a : R}
   rw [neg_eq_neg_one_mul] at ha
   exact in_signTypeCastRange_of_neg_one_mul ha
 
-lemma in_signTypeCastRange_iff_abs [LinearOrderedCommRing R] (a : R) :
+lemma in_signTypeCastRange_iff_abs [Ring R] [LinearOrder R] [IsStrictOrderedRing R] (a : R) :
     a ∈ SignType.cast.range ↔ |a| ∈ SignType.cast.range := by
   constructor
   · rintro ⟨(-|-|-), rfl⟩ <;> simp
