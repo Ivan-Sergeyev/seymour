@@ -1,5 +1,5 @@
-import Mathlib.LinearAlgebra.Matrix.SchurComplement
 import Mathlib.LinearAlgebra.Matrix.Permutation
+import Mathlib.LinearAlgebra.Matrix.SchurComplement
 import Seymour.Basic.Fin
 import Seymour.Basic.SignTypeCast
 import Seymour.Matrix.TotalUnimodularity
@@ -13,6 +13,7 @@ This file defines and studies pivoting in matrices. Pivoting is later used in ma
 open scoped Matrix
 
 variable {X Y F : Type*}
+
 
 /-! ## Elementary row operations -/
 
@@ -404,7 +405,7 @@ private lemma Matrix.shortTableauPivot_submatrix_eq [Field F] {k : ℕ} {x y : F
   exact A.shortTableauPivot_submatrix_succAbove_pivot_apply i j
 
 private abbrev Fin.reindexFun {n : ℕ} (i : Fin n.succ) : Fin 1 ⊕ Fin n → Fin n.succ :=
-  (·.casesOn i i.succAbove)
+  (·.casesOn ↓i i.succAbove)
 
 private lemma Fin.reindexFun_bijective {n : ℕ} (i : Fin n.succ) : i.reindexFun.Bijective :=
   ⟨fun a b hab => by
@@ -429,7 +430,6 @@ private lemma Fin.reindexFun_bijective {n : ℕ} (i : Fin n.succ) : i.reindexFun
     (by
       if hi : i = · then
         use ◩0
-        simpa using hi
       else
         aesop)⟩
 
@@ -536,9 +536,9 @@ lemma Matrix.abs_det_eq_shortTableauPivot_submatrix_abs_det [LinearOrderedField 
     | inl h1 => exact ne_zero_of_eq_one h1
     | inr h9 => simp [h9]
   obtain ⟨f, g, hAfg⟩ := shortTableauPivot_submatrix_det_abs_eq_div hAij0
-  have hAij_abs : |A i j| = 1
+  have hAij1 : |A i j| = 1
   · cases hAij with
     | inl h1 => rw [h1, abs_one]
     | inr h9 => rw [h9, abs_neg, abs_one]
-  rw [hAij_abs, div_one] at hAfg
+  rw [hAij1, div_one] at hAfg
   exact ⟨f, g, hAfg.symm⟩

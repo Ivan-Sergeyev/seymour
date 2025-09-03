@@ -913,6 +913,7 @@ lemma ext_standardRepr_of_same_matroid_same_X {S₁ S₂ : StandardRepr α Z2} [
   convert hSS
   cc
 
+omit α
 universe u₁ u₂ v
 
 /-- If two standard representations of the same matroid have the same base, then the standard representation matrices have
