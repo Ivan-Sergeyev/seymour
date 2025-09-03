@@ -1,5 +1,4 @@
 import Mathlib.Data.Matroid.IndepAxioms
-import Mathlib.Data.Matroid.Dual
 import Mathlib.Data.Matroid.Map
 import Mathlib.Data.Matroid.Sum
 import Seymour.Basic.Sets
