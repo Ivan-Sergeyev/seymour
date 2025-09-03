@@ -1,6 +1,6 @@
 # Seymour's Matroid Decomposition Theorem Verification
 
-Seymour's decomposition theorem is a hallmark result in matroid theory that gives a structural characterization of the class of regular matroids. The aim of this project is to formally verify the proof of this theorem in Lean 4. [This file](Seymour.lean) contains a summary of our main results together with the key definitions they depend on. Currently, we formalized the statement of the theorem and the proof of its forward (composition) direction for matroids of finite rank and with potentially infinite ground sets. In the future, we would like to also formalize the proof of the backward (decomposition) direction, which we stated in [this file](Seymour/HardDirection.lean).
+Seymour's decomposition theorem is a hallmark result in matroid theory that gives a structural characterization of the class of regular matroids. The aim of this project is to formally verify the proof of this theorem in Lean 4. [This file](Seymour.lean) contains a formally verified summary of our main results together with the key definitions they depend on. Currently, we formalized the statement of the theorem and the proof of its forward (composition) direction for matroids of finite rank and with potentially infinite ground sets. In the future, we would like to also formalize the proof of the backward (decomposition) direction, which we stated in [this file](Seymour/Results/HardDirection.lean).
 
 ## Blueprint
 
