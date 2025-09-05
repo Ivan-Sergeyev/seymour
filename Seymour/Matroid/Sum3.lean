@@ -1570,9 +1570,10 @@ private lemma MatrixLikeSum3.D_Aᵣ_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : T
   | inr => rfl
 
 /-- Every 3-sum-like matrix is totally unimodular. -/
-private lemma MatrixLikeSum3.IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type*} {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ}
+private lemma MatrixLikeSum3.isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type*} {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
-    (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) : M.matrix.IsTotallyUnimodular := by
+    (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) :
+    M.matrix.IsTotallyUnimodular := by
   rw [Matrix.isTotallyUnimodular_iff_forall_isPartiallyUnimodular]
   intro k
   induction k generalizing M with
@@ -1653,18 +1654,18 @@ private noncomputable def MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3 {Xₗ Y
   Col₁ := hS.col₁
 
 /-- The canonical signing of a 3-sum of matrices is totally unimodular. -/
-private lemma MatrixSum3.IsCanonicalSigning.IsTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type*}
+private lemma MatrixSum3.IsCanonicalSigning.isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type*}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ} (hS : S.IsCanonicalSigning) :
     S.matrix.IsTotallyUnimodular :=
-  hS.toMatrixLikeSum3.IsTotallyUnimodular
+  hS.toMatrixLikeSum3.isTotallyUnimodular
 
 /-- If the reconstructed summands of a 3-sum have TU signings, then the canonical signing of the 3-sum has a TU signing. -/
 private lemma MatrixSum3.HasCanonicalSigning.HasTuSigning {Xₗ Yₗ Xᵣ Yᵣ : Type*}
     [DecidableEq Xₗ] [DecidableEq Yₗ] [DecidableEq Xᵣ] [DecidableEq Yᵣ]
     {S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ Z2} (hS : S.HasCanonicalSigning) :
     S.matrix.HasTuSigning :=
-  ⟨hS.toCanonicalSigning.matrix, hS.toCanonicalSigning_isCanonicalSigning.IsTotallyUnimodular, hS.toCanonicalSigning_isSigning⟩
+  ⟨hS.toCanonicalSigning.matrix, hS.toCanonicalSigning_isCanonicalSigning.isTotallyUnimodular, hS.toCanonicalSigning_isSigning⟩
 
 
 /-! ## Matroid-level 3-sum -/
