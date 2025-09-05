@@ -567,7 +567,7 @@ For the sake of simplicity of notation, going forward we assume that the submatr
 \end{proof}
 
 \begin{lemma}
-    \label{MatrixLikeSum3.IsTotallyUnimodular}
+    \label{MatrixLikeSum3.isTotallyUnimodular}
     \uses{MatrixLikeSum3,Matrix.IsTotallyUnimodular}
     % \lean{}
     \leanok
@@ -589,7 +589,7 @@ For the sake of simplicity of notation, going forward we assume that the submatr
 \end{proof}
 
 \begin{lemma}
-    \label{MatrixSum3.IsCanonicalSigning.IsTotallyUnimodular}
+    \label{MatrixSum3.IsCanonicalSigning.isTotallyUnimodular}
     \uses{MatrixSum3.toCanonicalSigning,Matrix.IsTotallyUnimodular}
     % \lean{}
     \leanok
@@ -597,22 +597,22 @@ For the sake of simplicity of notation, going forward we assume that the submatr
 \end{lemma}
 
 \begin{proof}
-    \uses{MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3,MatrixLikeSum3.IsTotallyUnimodular}
+    \uses{MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3,MatrixLikeSum3.isTotallyUnimodular}
     \leanok
-    Combine the results of Lemmas~\ref{MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3} and~\ref{MatrixLikeSum3.IsTotallyUnimodular}.
-    % By Lemma~\ref{MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3}, $B'' \in \mathcal{C} (X_{\ell}', Y_{\ell}', X_{r}', Y_{r}'; c_{0}'', c_{1}'')$, and by Lemma~\ref{MatrixLikeSum3.IsTotallyUnimodular}, every matrix in $\mathcal{C} (X_{\ell}', Y_{\ell}', X_{r}', Y_{r}'; c_{0}'', c_{1}'')$ is TU.
+    Combine the results of Lemmas~\ref{MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3} and~\ref{MatrixLikeSum3.isTotallyUnimodular}.
+    % By Lemma~\ref{MatrixSum3.IsCanonicalSigning.toMatrixLikeSum3}, $B'' \in \mathcal{C} (X_{\ell}', Y_{\ell}', X_{r}', Y_{r}'; c_{0}'', c_{1}'')$, and by Lemma~\ref{MatrixLikeSum3.isTotallyUnimodular}, every matrix in $\mathcal{C} (X_{\ell}', Y_{\ell}', X_{r}', Y_{r}'; c_{0}'', c_{1}'')$ is TU.
 \end{proof}
 
 \begin{theorem}
     \label{Matroid.IsSum3of.isRegular}
-    \uses{Matroid.IsSum3of,Matroid.IsRegular,Matrix.isUnit_2x2}
+    \uses{Matroid.IsSum3of,Matroid.IsRegular}
     % \lean{}
     \leanok
     Let $M$ be a $3$-sum of regular matroids $M_{\ell}$ and $M_{r}$. Then $M$ is also regular.
 \end{theorem}
 
 \begin{proof}
-    \uses{StandardRepr,Matroid.IsSum3of,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,MatrixSum3.toCanonicalSigning,MatrixSum3.HasCanonicalSigning.toCanonicalSigning,MatrixSum3.IsCanonicalSigning.IsTotallyUnimodular}
+    \uses{StandardRepr,Matroid.IsSum3of,StandardRepr.toMatroid_isRegular_iff_hasTuSigning,MatrixSum3.toCanonicalSigning,MatrixSum3.HasCanonicalSigning.toCanonicalSigning,MatrixSum3.IsCanonicalSigning.isTotallyUnimodular,Matrix.isUnit_2x2}
     \leanok
-    Let $B_{\ell}$, $B_{r}$, and $B$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{Matroid.IsSum3of}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings. Then the canonical signing $B''$ from Definition~\ref{MatrixSum3.toCanonicalSigning} is a TU signing of $B$. Indeed, $B''$ is a signing of $B$ by Lemma~\ref{MatrixSum3.HasCanonicalSigning.toCanonicalSigning}, and $B''$ is TU by Lemma~\ref{MatrixSum3.IsCanonicalSigning.IsTotallyUnimodular}. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
+    Let $B_{\ell}$, $B_{r}$, and $B$ be standard $\mathbb{Z}_{2}$ representation matrices from Definition~\ref{Matroid.IsSum3of}. Since $M_{\ell}$ and $M_{r}$ are regular, by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, $B_{\ell}$ and $B_{r}$ have TU signings. Then the canonical signing $B''$ from Definition~\ref{MatrixSum3.toCanonicalSigning} is a TU signing of $B$. Indeed, $B''$ is a signing of $B$ by Lemma~\ref{MatrixSum3.HasCanonicalSigning.toCanonicalSigning}, and $B''$ is TU by Lemma~\ref{MatrixSum3.IsCanonicalSigning.isTotallyUnimodular}. Thus, $M$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
 \end{proof}
