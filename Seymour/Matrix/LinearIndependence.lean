@@ -156,7 +156,6 @@ end
 
 /-- The identity matrix has linearly independent rows. -/
 lemma Matrix.one_linearIndependent {α R : Type*} [DecidableEq α] [Ring R] : LinearIndependent R (1 : Matrix α α R) := by
-  -- Riccardo Brasca proved:
   rw [linearIndependent_iff]
   intro l hl
   ext j

@@ -226,23 +226,6 @@ private lemma Matrix.fromBlocks_submatrix {Z : Type*} [Zero R] (A₁ : Matrix X�
     ←Matrix.submatrix_submatrix]
   aesop
 
-/-
-In the comments bellow, we will use the following shorthands:
-
-`Z` is the next indexing type (for both rows and cols of the big square submatrix), typically `Fin k`
-
-`▫X₁` denotes `{ x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd }`
-`▫X₂` denotes `{ x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd }`
-`▫Y₁` denotes `{ y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd }`
-`▫Y₂` denotes `{ y₂ : Z × Y₂ // g y₂.fst = ◪y₂.snd }`
-
-`X'` is a specific subset of `▫X₂` converted to a type
-`(▫X₂ \ X')` is its complement as a type, formally written as `{ x // x ∉ X' }` (where `x : ▫X₂` implicitly)
-
-`I` is `Equiv.refl _`
-` | ` denotes `Equiv.sumCongr`
-`|S|` denotes `#S` for any `{S : Type*} [Fintype S]`
--/
 variable [LinearOrderedCommRing R] [DecidableEq X₁] [DecidableEq X₂]
 
 /-- `Matrix.fromBlocks_isTotallyUnimodular` square case. -/
@@ -258,27 +241,6 @@ private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_isTotallyU
     Fintype.equivOfCardEq hfg₁
   let e₂ : { x₂ : Z × X₂ // f x₂.fst = ◪x₂.snd } ≃ { y₂ : Z × Y₂ // g y₂.fst = ◪y₂.snd } :=
     Fintype.equivOfCardEq hfg₂
-/-
-  ` f :  Z -> X₁ ⊕ X₂ `
-  ` g :  Z -> Y₁ ⊕ Y₂ `
-  are decomposed into
-  ` f₁ :  ▫X₁ -> X₁ `
-  ` f₂ :  ▫X₂ -> X₂ `
-  ` g₁ :  ▫Y₁ -> Y₁ `
-  ` g₂ :  ▫Y₂ -> Y₂ `
-
-  Here we have ` |▫X₁| = |▫Y₁| ` and ` |▫X₂| = |▫Y₂| `
-
-  ` ▫X₁ ⊕ ▫X₂ = Z = ▫Y₁ ⊕ ▫Y₂ `
-
-  ` e₁ :  ▫X₁ ≃ ▫Y₁ `
-  ` e₂ :  ▫X₂ ≃ ▫Y₂ `
-
-  ` g₁ ∘ e₁ :  ▫X₁ -> Y₁ `
-  ` g₂ ∘ e₂ :  ▫X₂ -> Y₂ `
-
-  ` (g₁ ∘ e₁) | (g₂ ∘ e₂) :  Z -> Y₁ ⊕ Y₂ `   (note that `f` has the same type)
--/
   have hAfg : -- make the outer submatrix bijective
     (Matrix.fromBlocks
       (A₁.submatrix
@@ -318,9 +280,6 @@ private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_card_lt
   -- we will show that the submatrix is singular
   convert zero_in_signTypeCastRange
   rw [Matrix.fromBlocks_submatrix]
-  -- we need a new indexing type [`▫X₁ ⊕ ` a part of `▫X₂`] of the same cardinality as `▫Y₁` for the "top half"
-  -- then the bottom left blocks will be all `0`s, hence we can multiply the two determinants, and the top left block will
-  -- have at least one row made of `0`s, hence its determinant is `0`
   have hZY₁ :
       #{ y₁ : Z × Y₁ // g y₁.fst = ◩y₁.snd } ≤
       #{ x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } +
@@ -344,32 +303,6 @@ private lemma Matrix.fromBlocks_submatrix_det_in_signTypeCastRange_of_card_lt
   let e₂ := Fintype.equivOfCardEq hY₂
   let e₃ := (Equiv.sumAssoc { x₁ : Z × X₁ // f x₁.fst = ◩x₁.snd } X' { x // x ∉ X' }).symm
   let e' := (Equiv.sumCompl (· ∈ X')).symm
-/-
-  ` f :  Z -> X₁ ⊕ X₂ `
-  ` g :  Z -> Y₁ ⊕ Y₂ `
-  are decomposed into
-  ` f₁ :  ▫X₁ -> X₁ `
-  ` f₂ :  ▫X₂ -> X₂ `
-  ` g₁ :  ▫Y₁ -> Y₁ `
-  ` g₂ :  ▫Y₂ -> Y₂ `
-
-  ` ▫X₁ ⊕ ▫X₂ = Z = ▫Y₁ ⊕ ▫Y₂ `
-
-  Here we have ` |▫X₁| < |▫Y₁| ` and so ` |▫X₂| > |▫Y₂| `
-
-  We choose `X'` so that ` |▫X₁ ⊕ X'| = |▫Y₁| `(hY₁) and therefore ` |▫X₂ \ X'| = |▫Y₂| `(hY₂)
-
-  ` e₁ :  ▫X₁ ⊕ X' ≃ ▫Y₁ `
-  ` e₂ :  ▫X₂ \ X' ≃ ▫Y₂ `
-
-  ` e₃ :  ▫X₁ ⊕ (X' ⊕ (▫X₂ \ X')) ≃ (▫X₁ ⊕ X') ⊕ (▫X₂ \ X') `
-
-  ` e' :  ▫X₂ ≃ X' ⊕ (▫X₂ \ X') `
-
-  ` I | e' :  ▫X₁ ⊕ ▫X₂ ≃ ▫X₁ ⊕ (X' ⊕ (▫X₂ \ X')) `
-
-  ` e₃ ∘ (I | e') :  Z ≃ (▫X₁ ⊕ X') ⊕ (▫X₂ \ X') `
--/
   have hAfg : -- make the outer submatrix bijective
     (Matrix.fromBlocks
       (A₁.submatrix
@@ -432,9 +365,3 @@ lemma Matrix.fromBlocks_isTotallyUnimodular [DecidableEq Y₁] [DecidableEq Y₂
       have := f.decomposeSum_card_eq
       have := g.decomposeSum_card_eq
       omega
-
-/-
-Alternative proof is here (the auxiliary definition is different but the main ideas are identical):
-https://github.com/madvorak/matrix-tu-experimental/blob/082206a6cf744d3bc80513494781a05451da5717/MatrixTuExperimental.lean#L262
-It will be probably upstreamed to Mathlib someday.
--/
