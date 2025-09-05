@@ -21,7 +21,7 @@
 
 \begin{lemma}
     \label{Matrix.det_fromBlocks_zero}
-    \uses{Matrix.det}
+    \uses{Matrix.det,Matrix.fromBlocks}
     % \lean{}
     \leanok
     Let $A$ be a square matrix of the form $A = \begin{bmatrix} A_{11} & A_{12} \\ 0 & A_{22} \end{bmatrix}$. Then $\det A = \det A_{11} \cdot \det A_{22}$.
