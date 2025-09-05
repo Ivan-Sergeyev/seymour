@@ -117,14 +117,14 @@
 
 \begin{lemma}
     \label{Matrix.isUnit_2x2}
-    \uses{Matrix.det}
+    \uses{Matrix}
     % \lean{}
     \leanok
     Let $D_{0} \in \mathbb{Z}_{2}^{\{x_{1}, x_{0}\} \times \{y_{0}, y_{1}\}}$ be an invertible matrix. Then, up to reindexing of rows and columns, either $D_{0} = \begin{bmatrix} 1 & 0 \\ 0 & 1 \\ \end{bmatrix}$ or $D_{0} = \begin{bmatrix} 1 & 1 \\ 0 & 1 \\ \end{bmatrix}$.
 \end{lemma}
 
 \begin{proof}
-    \uses{}
+    \uses{Matrix,Matrix.det}
     \leanok
     Brute force.
 \end{proof}
