@@ -1,6 +1,6 @@
 % CPP template
-% \documentclass[sigplan,10pt,anonymous,review]{acmart} % for anonymous review version
-\documentclass[sigplan,10pt]{acmart} % for public version
+\documentclass[sigplan,10pt,anonymous,review]{acmart} % for anonymous review version
+% \documentclass[sigplan,10pt]{acmart} % for public version
 \settopmatter{printfolios=true,printccs=false,printacmref=false}
 
 % \citestyle{acmauthoryear}
@@ -12,6 +12,14 @@
 \input{src/02 ccs concepts}
 \input{src/05 abstract}
 \maketitle
+\bigskip
+\bigskip
+
+
+\emph{We would like to dedicate the paper to the memory of Klaus Truemper, whose monograph Matroid Decomposition \cite{Truemper2016} laid the foundation for our entire work.}
+\bigskip
+\bigskip
+
 
 \input{src/10 introduction}
 \input{src/15 theory underpinning the formalization}
@@ -25,7 +33,8 @@
 \input{src/50 proof of regularity}
 \input{src/80 related work}
 \input{src/90 conclusion}
-\input{src/99 acknowledgments}
+% \input{src/99 acknowledgments} % removed from blinded version
+
 % \balance % added to first column on last page due to bug in acmart (https://tex.stackexchange.com/questions/504955/package-balance-warning-in-acmart)
 
 \bibliography{bibliography.bib}
@@ -35,7 +44,5 @@
 \input{src/A1 suggestions for Lean}
 \input{src/A2 suggestions for Mathlib}
 \input{src/A3 suggestions for Aesop}
-
-\todo[inline]{@Martin (WIP) refactor code snippets in the paper to contain as little custom notation as possible (use custom notation only when it clearly makes presentation better) and align it with the presentation file whereëver possible}
 
 \end{document}

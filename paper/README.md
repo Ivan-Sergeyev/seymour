@@ -22,3 +22,5 @@ REAMDE.md   % this readme file
 * Keep consistent spelling and capitalization: Lean, Lean 4, Mathlib, Aesop (project), aesop (tactic).
   None of the above should be italicized. The last one, when referring to a tactic call, should be \texttt{aesop}, everything else normal text.
   Also, I suggest not mentioning versions with Mathlib (would be mathlib3 and Mathlib4).
+* Paragraphs that were changed for the sake of better line breaks are denoted by %lb at the end.
+  These paragraphs should be revisited when resubmitting the paper with a different format.

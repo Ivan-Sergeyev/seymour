@@ -13,4 +13,5 @@ def Subtype.toSum {α : Type*} {X Y : Set α}
 \end{leancode}
 This allows us to re-type matrix dimensions and thus define the matrix transformation \texttt{Matrix.toMatrixUnionUnion} so that \texttt{A.toMatrixUnionUnion i j = A i.toSum j.toSum}.
 
-We also define a function \texttt{Matrix.toMatrixElemElem} with API that greatly simplifies some proofs where extensive work with matrices constructed by \texttt{Matrix.toMatrixUnionUnion} is necessary, but \texttt{Matrix.toMatrixElemElem} is not a part of the trusted code.
+% Martin: shortened for fitting
+We also define a function \texttt{Matrix.toMatrixElemElem} for convenience, but it is not a part of the trusted code.

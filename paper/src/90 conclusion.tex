@@ -1,7 +1,9 @@
 \section{Conclusion}
 
 % Summary
-In this work, we formally stated Seymour's decomposition theorem for regular matroids and implemented a formally verified proof of the forward (composition) direction of this theorem in the setting where the matroids have finite rank and may have infinite ground sets. To this end, we developed a modular and extensible library in Lean 4 formalizing definitions and lemmas about totally unimodular matrices, vector matroids, regular matroids, and 1-, 2-, and 3-sums of matrices, standard representations of vector matroids, and matroids. Our contribution is a significant step towards formally verifying the proof of Seymour's theorem, and our library can be reused to prove further structural results about matroids. Moreover, our work demonstrates that one can effectively use Lean and Mathlib to formally verify advanced results from matroid theory and extend classical results to a more general setting.
+In this work, we formally stated Seymour's decomposition theorem for regular matroids and implemented a formally verified proof of the forward (composition) direction of this theorem in the setting where the matroids have finite rank and may have infinite ground sets. To this end, we developed a modular and extensible library in Lean 4 formalizing definitions and lemmas about totally unimodular matrices, vector matroids, regular matroids, and 1-, 2-, and 3-sums of matrices, standard representations of vector matroids, and matroids.
+%Our contribution is a significant step towards formally verifying the proof of Seymour's theorem, and our library can be reused to prove further structural results about matroids.
+Our work demonstrates that one can effectively use Lean and Mathlib to formally verify advanced results from matroid theory and extend classical results to a more general setting.
 
 % Future work
 The most natural continuation of our project is proving the decomposition direction of Seymour's theorem, stated as \texttt{Matroid.IsRegular.isGood} in our library. Our work can also serve as a starting point for formalizing Seymour's theorem for matroids of infinite rank \cite{Bowler2013}.

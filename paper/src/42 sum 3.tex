@@ -7,10 +7,9 @@ The implementation of 3-sum follows the same outline as for 1-sum and 2-sum, tho
 % Theoretical Definition
 The 3-sum of binary matroids is defined as follows. Let $X_{\ell}$, $Y_{\ell}$, $X_{r}$, and $Y_{r}$ be sets with the following properties:
 \begin{itemize}
-    \item $X_{\ell} \cap X_{r} = \{x_{2}, x_{1}, x_{0}\}$ for some distinct $x_{0}$, $x_{1}$, and $x_{2}$;
-    \item $Y_{\ell} \cap Y_{r} = \{y_{0}, y_{1}, y_{2}\}$ for some distinct $y_{0}$, $y_{1}$, and $y_{2}$;
-    \item $X_{\ell} \cap Y_{\ell} = X_{\ell} \cap Y_{r} = \emptyset$; and
-    \item $X_{r} \cap Y_{\ell} = X_{r} \cap Y_{r} = \emptyset$.
+    \item $X_{\ell} \cap X_{r} = \{x_{2}, x_{1}, x_{0}\}$ for some distinct $x_{0}$, $x_{1}$, and $x_{2}$
+    \item $Y_{\ell} \cap Y_{r} \,=\, \{y_{0}, y_{1}, y_{2}\}$ for some distinct $y_{0}$, $y_{1}$, and $y_{2}$
+    \item $X_{\ell} \cap Y_{\ell} = X_{\ell} \cap Y_{r} = X_{r} \cap Y_{\ell} = X_{r} \cap Y_{r} = \emptyset$
 \end{itemize}
 Let $B_{\ell} \in \mathbb{Z}_{2}^{X_{\ell} \times Y_{\ell}}$ and $B_{r} \in \mathbb{Z}_{2}^{X_{r} \times Y_{r}}$ be matrices of the form
 \[
@@ -31,7 +30,7 @@ Let $B_{\ell} \in \mathbb{Z}_{2}^{X_{\ell} \times Y_{\ell}}$ and $B_{r} \in \mat
         \\
     \end{NiceArray}
 \]
-where $D_{0}$ is invertible. Then their 3-sum $B = B_{\ell} \oplus_{3} B_{r}$ is
+where $D_{0}$ is invertible. Then their 3-sum is
 \[
     B = \begin{NiceArray}{cccccccc}[hvlines,right-margin=0.5em,left-margin=0.1em]
         \Block[draw]{4-4}{A_{\ell}} & & & & \Block[draw]{4-4}{0} & & & \\
@@ -43,8 +42,8 @@ where $D_{0}$ is invertible. Then their 3-sum $B = B_{\ell} \oplus_{3} B_{r}$ is
         \Block[draw]{2-2}{D_{\ell r}} & & \Block[draw]{2-2}{D_{r}} \\
         \\
     \end{NiceArray}
-    , \hspace{0.5em}
-    D_{\ell r} = D_{r} \cdot (D_{0})^{-1} \cdot D_{\ell}.
+    \textup{where\ }
+    D_{\ell r} = D_{r} \cdot D_{0}^{-1} \cdot D_{\ell}
 \]
 Here $D_{0} \in \mathbb{Z}_{2}^{\{x_{1}, x_{0}\} \times \{y_{0}, y_{1}\}}$,
 $
@@ -163,7 +162,32 @@ def Matrix.toMatrixDropUnionDrop {α : Type*}
     Matrix
       (Xₗ.drop2 x₀ₗ x₁ₗ ∪ Xᵣ.drop1 x₂ᵣ).Elem
       (Yₗ.drop1 y₂ₗ ∪ Yᵣ.drop2 y₀ᵣ y₁ᵣ).Elem
-      R := /- implementation omitted -/
+      R :=
+  A.submatrix
+    (fun i : (Xₗ.drop2 x₀ₗ x₁ₗ ∪ Xᵣ.drop1 x₂ᵣ) =>
+      if hi₂ₗ : i.val = x₂ₗ then
+        Sum.inl (Sum.inr 0) else
+      if hiXₗ : i.val ∈ Xₗ.drop3 x₀ₗ x₁ₗ x₂ₗ then
+        Sum.inl (Sum.inl ⟨i, hiXₗ⟩) else
+      if hi₀ᵣ : i.val = x₀ᵣ then
+        Sum.inr (Sum.inl 0) else
+      if hi₁ᵣ : i.val = x₁ᵣ then
+        Sum.inr (Sum.inl 1) else
+      if hiXᵣ : i.val ∈ Xᵣ.drop3 x₀ᵣ x₁ᵣ x₂ᵣ then
+        Sum.inr (Sum.inr ⟨i, hiXᵣ⟩) else
+      False.elim sorry)
+    (fun j : (Yₗ.drop1 y₂ₗ ∪ Yᵣ.drop2 y₀ᵣ y₁ᵣ) =>
+      if hj₀ₗ : j.val = y₀ₗ then
+        Sum.inl (Sum.inr 0) else
+      if hj₁ₗ : j.val = y₁ₗ then
+        Sum.inl (Sum.inr 1) else
+      if hjYₗ : j.val ∈ Yₗ.drop3 y₀ₗ y₁ₗ y₂ₗ then
+        Sum.inl (Sum.inl ⟨j, hjYₗ⟩) else
+      if hj₂ᵣ : j.val = y₂ᵣ then
+        Sum.inr (Sum.inl 0) else
+      if hjYᵣ : j.val ∈ Yᵣ.drop3 y₀ᵣ y₁ᵣ y₂ᵣ then
+        Sum.inr (Sum.inr ⟨j, hjYᵣ⟩) else
+      False.elim sorry)
 \end{leancode}
 This allows us to define the 3-sum of standard representations as follows:
 \begin{leancode}
@@ -192,7 +216,7 @@ noncomputable def standardReprSum3 {α : Type*}
     ((x₀ ≠ x₁ ∧ x₀ ≠ x₂ ∧ x₁ ≠ x₂) ∧
      (y₀ ≠ y₁ ∧ y₀ ≠ y₂ ∧ y₁ ≠ y₂))
     ∧ Sₗ.B.submatrix ![x₀ₗ, x₁ₗ] ![y₀ₗ, y₁ₗ] =
-      Sᵣ.B.submatrix ![x₀ᵣ, x₁ᵣ] ![y₀ᵣ, y₁ᵣ]
+      €Sᵣ.B.submatrix ![x₀ᵣ, x₁ᵣ] ![y₀ᵣ, y₁ᵣ]
     ∧ IsUnit (Sₗ.B.submatrix ![x₀ₗ, x₁ₗ] ![y₀ₗ, y₁ₗ])
     ∧ Sₗ.B x₀ₗ y₂ₗ = 1
     ∧ Sₗ.B x₁ₗ y₂ₗ = 1
@@ -229,4 +253,4 @@ The resulting definition has similar advantages to its analogs for the 1- and 2-
 
 
 % Implementation for Matroids
-Finally, the matroid-level predicate \texttt{Matroid.IsSum3of} is defined similarly to those for 1- and 2-sums by substituting in \texttt{standardReprSum3}, ensuring consistency.
+Finally, the \texttt{Matroid}-level predicate \texttt{Matroid.IsSum3of} is defined similarly to those for 1- and 2-sums by substituting in \texttt{standardReprSum3}, ensuring consistency.

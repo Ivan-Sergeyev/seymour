@@ -2,6 +2,7 @@
 
 % Final theorems
 In our library, the final theorems that regularity is preserved under 1-, 2-, and 3-sums are stated as follows.
+% (conjunctions in assumptions are curried)
 % Discussion: \url{https://leanprover.zulipchat.com/\#narrow/channel/113488-general/topic/How.20to.20best.20recall.20P.20.E2.88.A7.20Q.20.E2.86.92.20R/with/532666812
 \begin{leancode}
 theorem Matroid.IsSum1of.isRegular {α : Type*}
@@ -26,7 +27,7 @@ Note that these three theorems are stated for matroids and have the same interfa
 % High-level breakdown
 We split the proof of each of these theorems into three stages corresponding to the three abstraction layers used for the definitions: \texttt{Matroid}, \texttt{StandardRepr}, and \texttt{Matrix}. 
 
-The final matroid-level theorems are reduced to the respective lemmas for standard representations by applying \texttt{StandardRepr.toMatroid\_isRegular\_iff\_hasTuSigning} and \texttt{StandardRepr.finite\_X\_of\_toMatroid\_rankFinite} in all three proofs (for the 1-, 2-, and 3-sums). The reduction from the standard representation level to the matrix level for 1- and 2-sums is straightforward\EmDash plug the standard representation matrices and their (rational) signings into \texttt{matrixSum1} and \texttt{matrixSum2}, respectively. For 3-sums, this reduction is more involved, as we additionally apply the following lemma to simplify the assumption on $D_{0}$:
+The final \texttt{Matroid}-level theorems are reduced to the respective lemmas for standard representations by applying \texttt{StandardRepr.toMatroid\_isRegular\_iff\_hasTuSigning} and \texttt{StandardRepr.finite\_X\_of\_toMatroid\_rankFinite} in all three proofs (for the 1-, 2-, and 3-sums). The reductions from the \texttt{StandardRepr} level to the \texttt{Matrix} level for 1- and 2-sums is straightforward\EmDash plug the standard representation matrices and their (rational) signings into \texttt{matrixSum1} and \texttt{matrixSum2}, respectively. For 3-sums, this reduction is more involved, as we additionally apply the following lemma to simplify the assumption on $D_{0}$:
 \begin{leancode}
 lemma Matrix.isUnit_2x2
     (A : Matrix (Fin 2) (Fin 2) Z2)
@@ -39,7 +40,7 @@ lemma Matrix.isUnit_2x2
 Therefore, up to reindexing, $D_{0}$ is either $\begin{bmatrix} 1 & 0 \\ 0 & 1 \\ \end{bmatrix}$ or $\begin{bmatrix} 1 & 0 \\ 1 & 1 \\ \end{bmatrix}$. Performing the reduction at this stage allows us to invoke \texttt{Matrix.isUnit\_2x2} only once and then simply consider the two special forms of $D_{0}$.
 
 % Matrix-level Implementation for 1-Sums
-On the matrix level, our formal proof that 1-sums preserve total unimodularity of matrices is nearly identical to \cite{Truemper2016}. For 2-sums, we streamlined the proof by reformulating it as a forward argument by induction. For 3-sums, the entire argument was significantly reworked to simplify and streamline the approach of \cite{Truemper2016}. On a high level, we make two major changes, which we discuss in detail below.
+On the \texttt{Matrix} level, our formal proof that 1-sums preserve total unimodularity of matrices is nearly identical to \cite{Truemper2016}. For 2-sums, we streamlined the proof by reformulating it as a forward argument by induction. For 3-sums, the entire argument was significantly reworked to simplify and streamline the approach of \cite{Truemper2016}. On a high level, we make two major changes, which we discuss in detail below.
 
 % Only one re-signing: details
 The first key difference is that we re-sign the summands only once, rather than multiple times. Like in \cite{Truemper2016}, we start with totally unimodular signings exhibiting regularity of the two summands. Then we multiply their rows and columns by $\pm 1$ factors (which preserves total unimodularity) so that the submatrix $
