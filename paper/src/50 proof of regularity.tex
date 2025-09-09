@@ -37,7 +37,7 @@ lemma Matrix.isUnit_2x2
     A.submatrix f g = 1 ∨
     A.submatrix f g = !![1, 1; 0, 1]
 \end{leancode}
-Therefore, up to reindexing, $D_{0}$ is either $\begin{bmatrix} 1 & 0 \\ 0 & 1 \\ \end{bmatrix}$ or $\begin{bmatrix} 1 & 0 \\ 1 & 1 \\ \end{bmatrix}$. Performing the reduction at this stage allows us to invoke \texttt{Matrix.isUnit\_2x2} only once and then simply consider the two special forms of $D_{0}$.
+Therefore, up to reindexing, $D_{0}$ is either $\begin{bmatrix} 1 & 0 \\ 0 & 1 \\ \end{bmatrix}$ or $\begin{bmatrix} 1 & 1 \\ 0 & 1 \\ \end{bmatrix}$. Performing the reduction at this stage allows us to invoke \texttt{Matrix.isUnit\_2x2} only once and then simply consider the two special forms of $D_{0}$.
 
 % Matrix-level Implementation for 1-Sums
 On the \texttt{Matrix} level, our formal proof that 1-sums preserve total unimodularity of matrices is nearly identical to \cite{Truemper2016}. For 2-sums, we streamlined the proof by reformulating it as a forward argument by induction. For 3-sums, the entire argument was significantly reworked to simplify and streamline the approach of \cite{Truemper2016}. On a high level, we make two major changes, which we discuss in detail below.
@@ -61,7 +61,7 @@ $ or $
     1 & 1 & 1 \\
     0 & 1 & 1 \\
 \end{bmatrix}
-$, depending on whether $D_{0}$ is $\begin{bmatrix} 1 & 0 \\ 0 & 1 \\ \end{bmatrix}$ or $\begin{bmatrix} 1 & 0 \\ 1 & 1 \\ \end{bmatrix}$. Thus, we get totally unimodular signings of the summands that coincide on the intersection, which allows us to define the \emph{canonical} signing of the entire 3-sum: use the same signs as in the re-signed summands everywhere except for the bottom-left block, which is signed via $D_{\ell r}' = D_{r}' \cdot (D_{0}')^{-1} \cdot D_{\ell}'$, and the $0$ block, which remains as is.
+$, depending on whether $D_{0}$ is $\begin{bmatrix} 1 & 0 \\ 0 & 1 \\ \end{bmatrix}$ or $\begin{bmatrix} 1 & 1 \\ 0 & 1 \\ \end{bmatrix}$. Thus, we get totally unimodular signings of the summands that coincide on the intersection, which allows us to define the \emph{canonical} signing of the entire 3-sum: use the same signs as in the re-signed summands everywhere except for the bottom-left block, which is signed via $D_{\ell r}' = D_{r}' \cdot (D_{0}')^{-1} \cdot D_{\ell}'$, and the $0$ block, which remains as is.
 
 % Only one re-signing: advantage
 The main advantage of our approach is that we avoid chained constructions and proofs of properties of such constructions, and we do not need to define $\Delta$-sums. Moreover, unlike \cite{Truemper2016}, our proof does not rely on the general lemma about re-signing totally unimodular matrices. This detail is crucial, as the proof of this lemma in \cite{Truemper2016} involves a graph-theoretic argument, which would be very challenging to formalize in Lean with the current tools available in Mathlib.

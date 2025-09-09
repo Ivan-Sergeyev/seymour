@@ -24,3 +24,4 @@ REAMDE.md   % this readme file
   Also, I suggest not mentioning versions with Mathlib (would be mathlib3 and Mathlib4).
 * Paragraphs that were changed for the sake of better line breaks are denoted by %lb at the end.
   These paragraphs should be revisited when resubmitting the paper with a different format.
+  Similarly, %pb denotes things that were changed for the sake of better page breaks.

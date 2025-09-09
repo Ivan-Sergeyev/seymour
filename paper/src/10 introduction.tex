@@ -11,7 +11,8 @@ The interest in matroids comes from the fact that they capture and generalize ma
 Formalization of results about matroids faces several challenges. One of them is that the support for them is limited. In Mathlib, only selected basic definitions for matroids are implemented, such as maps, duals, and minors. However, many other fundamental notions are not yet implemented, including representability and regularity, the splitter theorem and the separation algorithm. Part of the difficulty stems from the fact that classically, matroids are defined only in the finite case (i.e., when the ground set and the rank are finite), while Mathlib implements matroids more generally, allowing them to be infinite and to have infinite rank. Additionally, the proofs presented in the existing literature require substantial additional work to make them easily amenable to formalization.
 
 % \subsection{Project Goals}
-The goal of our work was to develop a general and reusable library proving a result that is at least as strong as the forward (composition) direction of classical Seymour's theorem (i.e., stated for finite matroids). Moreover, our aim was to make our library modular and extensible by ensuring compatibility with Mathlib and its implementation of matroids. Last but not least, we aimed to capture the final results in just a few theorems, which can be easily understood and matched with the corresponding theoretical results.
+The goal of our work was to develop a general and reusable library proving a result that is at least as strong as the forward (composition) direction of classical Seymour's theorem (i.e., stated for finite matroids). Moreover, our aim was to make our library modular and extensible by ensuring compatibility with matroids in Mathlib \cite{Mathlib}.
+\pagebreak[4] %pb
 
 % \subsection{Compromises}
 To achieve our goals, we made the following compromises. First, we focused on the implementation of the proof of the composition direction, while only stating the decomposition direction. Second, we assumed finiteness where it would simplify proofs, while making sure that the final results held for finite matroids (in fact, they hold for matroids with potentially infinite ground set and finite rank). Finally, we tailored our implementation specifically to Seymour's theorem, avoiding introducing additional matroid notions if possible.
@@ -33,4 +34,4 @@ While working on our project, we leveraged the LeanBlueprint\footnote{\url{https
 
 We use Lean version 4.18.0 and we import Mathlib library revision aa936c3 (dated 2025-04-01).
 
-We made the code snippets in this paper as faithful to the content of the repository as possible, though we made some omissions. In particular, proofs inside definitions were replaced by the \leaninline{sorry} keyword in the paper, while the repository contains the full implementation.
+We made the code snippets in this paper as faithful to the content of the repository as possible, though we made some omissions. In particular, proofs inside definitions were replaced by the \leaninline{sorry} keyword in the paper, while the repository contains full implementation.
