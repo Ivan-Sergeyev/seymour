@@ -280,7 +280,7 @@ private lemma Matrix.toMatroid_isRegular_if_hasTuSigning {X Y : Set α} (A : Mat
 
 /-- Every regular matroid is binary. -/
 lemma Matroid.IsRegular.isBinary {M : Matroid α} (hM : M.IsRegular) :
-    ∃ X : Set α, ∃ Y : Set α, ∃ A : Matrix X Y Z2, A.toMatroid = M := by
+    ∃ X Y : Set α, ∃ A : Matrix X Y Z2, A.toMatroid = M := by
   obtain ⟨X, Y, A, hA, rfl⟩ := hM
   exact ⟨X, Y, A.support, hA.toMatroid_eq_support_toMatroid.symm⟩
 
