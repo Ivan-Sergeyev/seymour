@@ -8,7 +8,7 @@ This file provides lemmas about determinants that are not present in Mathlib.
 -/
 
 lemma Matrix.isUnit_2x2 (A : Matrix (Fin 2) (Fin 2) Z2) (hA : IsUnit A) :
-    ∃ f : Fin 2 ≃ Fin 2, ∃ g : Fin 2 ≃ Fin 2, A.submatrix f g = 1 ∨ A.submatrix f g = !![1, 1; 0, 1] := by
+    ∃ f g : Fin 2 ≃ Fin 2, A.submatrix f g = 1 ∨ A.submatrix f g = !![1, 1; 0, 1] := by
   -- `hA` via explicit determinant
   rw [Matrix.isUnit_iff_isUnit_det, Matrix.det_fin_two, isUnit_iff_eq_one] at hA
   -- case exhaustion

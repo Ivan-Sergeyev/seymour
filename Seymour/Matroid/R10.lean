@@ -7,8 +7,12 @@ import Seymour.Matroid.Graphicness
 Here we study the R10 matroid.
 -/
 
-def matrixR10auxZ2 : Matrix (Fin 5) (Fin 5) Z2 :=
-  !![1, 0, 0, 1, 1; 1, 1, 0, 0, 1; 0, 1, 1, 0, 1; 0, 0, 1, 1, 1; 1, 1, 1, 1, 1]
+def matrixR10auxZ2 : Matrix (Fin 5) (Fin 5) Z2 := !![
+  1, 0, 0, 1, 1;
+  1, 1, 0, 0, 1;
+  0, 1, 1, 0, 1;
+  0, 0, 1, 1, 1;
+  1, 1, 1, 1, 1]
 
 def matrixR10auxRat : Matrix (Fin 5) (Fin 5) ℚ :=
   matrixR10auxZ2.map (·.val)
@@ -40,12 +44,12 @@ def matroidR10 : StandardRepr (Fin 10) Z2 where
   decmemX := (·.val.decLt 5)
   decmemY := Fin.decLe 5
 
-@[simp] lemma matroidR10_X_eq : matroidR10.X = { x | x.val < 5 } := rfl
-@[simp] lemma matroidR10_Y_eq : matroidR10.Y = { x | 5 ≤ x.val } := rfl
+@[simp] lemma matroidR10_X_eq : matroidR10.X = { x : Fin 10 | x.val < 5 } := rfl
+@[simp] lemma matroidR10_Y_eq : matroidR10.Y = { x : Fin 10 | 5 ≤ x.val } := rfl
 @[simp] lemma matroidR10_B_eq : matroidR10.B = matrixR10Z2 := rfl
 
 @[simp]
-lemma matroidR10.isRegular : matroidR10.toMatroid.IsRegular := by
+theorem matroidR10.isRegular : matroidR10.toMatroid.IsRegular := by
   rw [StandardRepr.toMatroid_isRegular_iff_hasTuSigning]
   use matrixR10Rat
   simp_rw [Matrix.IsTuSigningOf]

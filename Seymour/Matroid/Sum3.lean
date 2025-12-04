@@ -2238,7 +2238,7 @@ set_option maxHeartbeats 3000000 in
 lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x₁ x₂ y₀ y₁ y₂ : α}
     {hXX : Sₗ.X ∩ Sᵣ.X = {x₀, x₁, x₂}} {hYY : Sₗ.Y ∩ Sᵣ.Y = {y₀, y₁, y₂}} {hXY : Sₗ.X ⫗ Sᵣ.Y} {hYX : Sₗ.Y ⫗ Sᵣ.X}
     (hSₗ : Sₗ.B.HasTuSigning) (hSᵣ : Sᵣ.B.HasTuSigning) (hS : standardReprSum3 hXX hYY hXY hYX = some S) :
-   S.B.HasTuSigning := by
+    S.B.HasTuSigning := by
   -- row membership
   let x₀ₗ : Sₗ.X := ⟨x₀, hXX.mem3₀ₗ⟩
   let x₀ᵣ : Sᵣ.X := ⟨x₀, hXX.mem3₀ᵣ⟩
