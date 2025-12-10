@@ -287,7 +287,6 @@ lemma Matrix.exists_standardRepr_isBase [DivisionRing R] {X Y G : Set α}
         rfl
       exact lin_indep (s.map e.symm.toEmbedding) (g ∘ e) hsA (e.symm i) (Finset.mem_map_equiv.← hi)
     · apply le_of_eq
-      -- Christian Merten's idea:
       apply Submodule.map_injective_of_injective (Submodule.span R Aᵀ.range).subtype_injective
       simp [←hRAGY, Submodule.map_span, ←Set.range_comp, Function.comp_def]
       rfl
