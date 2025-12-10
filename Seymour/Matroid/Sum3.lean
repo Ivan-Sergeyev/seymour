@@ -1940,7 +1940,7 @@ private def equiv₃Y {Yₗ Yᵣ : Set α} [∀ a, Decidable (a ∈ Yₗ)] [∀ 
   Equiv.sumCongr
     (((equivFin2 hy₂ₗ).rightCongr.trans (Yₗ.drop3_disjoint₀₁ y₀ₗ y₁ₗ y₂ₗ).equivSumUnion).trans
       (drop3_union_pair hy₁ₗ hy₀ₗ).≃)
-    (((equivFin1 y₂ᵣ).leftCongr.trans ((Yᵣ.drop3_disjoint₂ y₀ᵣ y₁ᵣ y₂ᵣ).symm).equivSumUnion).trans
+    (((equivFin1 y₂ᵣ).leftCongr.trans (Yᵣ.drop3_disjoint₂ y₀ᵣ y₁ᵣ y₂ᵣ).symm.equivSumUnion).trans
       (mem_union_drop3 hy₁ᵣ hy₀ᵣ).≃)
 
 private def Matrix.toIntermediate {Xₗ Yₗ Xᵣ Yᵣ : Set α} {R : Type*}
