@@ -182,19 +182,15 @@ open scoped BigOperators Matrix
 variable {X Y E ι₁ ι₂ 𝔽 : Type*}
 variable [Field 𝔽]
 
-/-- Dot product on `E → 𝔽` using a finite sum. -/
-def dot [Fintype E] (v w : E → 𝔽) : 𝔽 :=
-  ∑ e, v e * w e
-
-def rowSpace {ι E 𝕂 : Type*} [Field 𝕂] (A : Matrix ι E 𝕂) : Submodule 𝕂 (E → 𝕂) :=
-  Submodule.span 𝕂 (Set.range (fun i => A i))
+private def rowSpace {ι E 𝕂 : Type*} [Field 𝕂] (A : Matrix ι E 𝕂) : Submodule 𝕂 (E → 𝕂) :=
+  Submodule.span 𝕂 (Set.range A)
 
 /-- Orthogonal complement (with respect to `dot`) of a submodule of `E → 𝔽`. -/
-def orth [Fintype E] (U : Submodule 𝔽 (E → 𝔽)) : Submodule 𝔽 (E → 𝔽) :=
-{ carrier := { v | ∀ u, u ∈ U → dot (E := E) v u = 0 }
+private def orth [Fintype E] (U : Submodule 𝔽 (E → 𝔽)) : Submodule 𝔽 (E → 𝔽) :=
+{ carrier := { v | ∀ u, u ∈ U → dotProduct v u = 0 }
   zero_mem' := by
     intro u hu
-    simp [dot]
+    simp [dotProduct]
   add_mem' := by
     intro v w hv hw u hu
     sorry
@@ -202,76 +198,50 @@ def orth [Fintype E] (U : Submodule 𝔽 (E → 𝔽)) : Submodule 𝔽 (E → �
     intro a v hv u hu
     sorry }
 
-/-- Standard block matrix `A = [1_X | B]` with columns indexed by `Sum X Y`. -/
-def stdMat [DecidableEq X] (B : Matrix X Y 𝔽) : Matrix X (Sum X Y) 𝔽 :=
-  fun x e =>
-    match e with
-    | Sum.inl x' => if x = x' then 1 else 0
-    | Sum.inr y  => B x y
-
-/-- The "dual" block matrix `B* = -Bᵀ` over an arbitrary field. -/
-def dualBlock (B : Matrix X Y 𝔽) : Matrix Y X 𝔽 :=
-  - (Matrix.transpose B)
-
-/-- Standard dual block matrix `A* = [1_Y | B*]` with columns indexed by `Sum X Y`. -/
-def stdMatDual [DecidableEq Y] (B : Matrix X Y 𝔽) : Matrix Y (Sum X Y) 𝔽 :=
-  fun y e => (stdMat (X := Y) (Y := X) (𝔽 := 𝔽) (dualBlock (X := X) (Y := Y) (𝔽 := 𝔽) B)) y (Sum.swap e)
-
-variable {X Y E ι₁ ι₂ : Type*}
-variable [Fintype X] [Fintype Y]
-variable [DecidableEq X] [DecidableEq Y]
+variable {α X Y E ι₁ ι₂ : Type*} [Field 𝔽]
+[Fintype X] [Fintype Y]
+[DecidableEq X] [DecidableEq Y] [DecidableEq α]
 
 /- We specialize to `ZMod 2` for the early lemmas. -/
 variable (B : Matrix X Y (ZMod 2))
 
-def glue (u : X → ZMod 2) (v : Y → ZMod 2) : Sum X Y → ZMod 2
-| Sum.inl x => u x
-| Sum.inr y => v y
-
 /-- Lemma 0.1 (Row space of a standard representation). -/
-lemma rowSpace_stdMat
+private lemma rowSpace_stdMat
   [Fintype (Sum X Y)] :
-  rowSpace (stdMat B)
+  rowSpace (1 ◫ B)
     =
   Submodule.span (ZMod 2)
-    (Set.range (fun u : X → ZMod 2 =>
-      glue u (Matrix.vecMul u B))) :=
+    (Set.range (fun u => Sum.elim u (Matrix.vecMul u B))) :=
 by
   sorry
 
 /-- Lemma 0.2 (Orthogonal complement of a standard row space). -/
-lemma rth_rowSpace_stdMat
+private lemma rth_rowSpace_stdMat
   [Fintype (Sum X Y)] :
-  orth (rowSpace (stdMat B))
+  orth (rowSpace (1 ◫ B))
     =
   Submodule.span (ZMod 2)
-    (Set.range (fun b : Y → ZMod 2 =>
-      glue (Matrix.vecMul b (Matrix.transpose B)) b)) :=
+    (Set.range (fun b => Sum.elim (Matrix.vecMul b Bᵀ) b)) :=
 by
   sorry
 
 /-- Lemma 0.3 (Row space of the dual standard matrix). -/
-lemma rowSpace_stdMatDual
+private lemma rowSpace_stdMatDual
   [Fintype (Sum X Y)] :
-  rowSpace (stdMatDual B) = orth (rowSpace (stdMat B)) :=
+  rowSpace (fun y e => (1 ◫ (-Bᵀ)) y (Sum.swap e)) = orth (rowSpace (1 ◫ B)) :=
 by
   sorry
 
 /-- Lemma 0.4 (Dual vector matroid via orthogonal complement). -/
-lemma matrix_toMatroid_dual_of_rowSpace_eq_orth
-  {α 𝔽 : Type*}
-  [Field 𝔽] [DecidableEq α]
+private lemma matrix_toMatroid_dual_of_rowSpace_eq_orth
   {X Y : Set α}
   [Fintype X] [Fintype Y]
   (A  : Matrix X Y 𝔽)
   (A' : Matrix X Y 𝔽)
-  (h  : rowSpace A' = orth (E := Y) (𝔽 := 𝔽) (rowSpace A)) :
-  (Matrix.toMatroid (R := 𝔽) A') = (Matrix.toMatroid (R := 𝔽) A)✶ :=
+  (h  : rowSpace A' = orth (rowSpace A)) :
+  Matrix.toMatroid A' = (Matrix.toMatroid A)✶ :=
 by
   sorry
-
-
-variable {α : Type*} [DecidableEq α]
 
 /-- Theorem 0.5 (Dual of standard representation corresponds to dual matroid). -/
 theorem StandardRepr.toMatroid_dual (S : StandardRepr α (ZMod 2)) :
