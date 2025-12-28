@@ -27,3 +27,8 @@ theorem Matroid.IsGood.isRegular {M : Matroid α} (hM : M.IsGood) : M.IsRegular 
   | is1sum hMMM hM _ _ ihₗ ihᵣ => exact hMMM.isRegular hM ihₗ ihᵣ
   | is2sum hMMM hM _ _ ihₗ ihᵣ => exact hMMM.isRegular hM ihₗ ihᵣ
   | is3sum hMMM hM _ _ ihₗ ihᵣ => exact hMMM.isRegular hM ihₗ ihᵣ
+
+/-- Every good matroid is binary. -/
+lemma Matroid.IsGood.isBinary {M : Matroid α} (hM : M.IsGood) :
+    ∃ X Y : Set α, ∃ A : Matrix X Y Z2, A.toMatroid = M :=
+  hM.isRegular.isBinary
