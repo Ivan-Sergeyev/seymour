@@ -65,7 +65,7 @@ private def Matrix.squareSetSubmatrix {m n : ℕ} (A : Matrix (Fin m) (Fin n) �
 
 /-- Faster algorithm for testing total unimodularity without permutation with pending formal guarantees. -/
 def Matrix.testTotallyUnimodularFast {m n : ℕ} (A : Matrix (Fin m) (Fin n) ℚ) : Bool :=
-  ∀ (X : Finset (Fin m)) (Y : Finset (Fin n)) (hXY : X.card = Y.card),
+  ∀ X : Finset (Fin m), ∀ Y : Finset (Fin n), ∀ hXY : X.card = Y.card,
     (A.squareSetSubmatrix hXY).det ∈ SignType.cast.range
 
 private lemma range_eq_range_iff_exists_comp_equiv {α β γ : Type*} {f : α → γ} {g : β → γ}
@@ -74,15 +74,15 @@ private lemma range_eq_range_iff_exists_comp_equiv {α β γ : Type*} {f : α �
   constructor
   · classical
     intro hfg
-    have hf' := fun (a : α) =>
+    have hf' := fun a : α =>
       show ∃ b : β, g b = f a by
       simp_rw [Set.range, Set.ext_iff] at hfg
       exact (hfg (f a)).→ (by simp)
-    have hg' := fun (b : β) =>
-      show ∃ (a : α), f a = g b by
+    have hg' := fun b : β =>
+      show ∃ a : α, f a = g b by
       simp_rw [Set.range, Set.ext_iff] at hfg
       exact (hfg (g b)).← (by simp)
-    use Equiv.ofBijective (fun a => (hf' a).choose) ⟨fun a₁ a₂ haa =>
+    use Equiv.ofBijective (hf' · |>.choose) ⟨fun a₁ a₂ haa =>
       by
         simp only at haa
         have ha₁ := (hf' a₁).choose_spec

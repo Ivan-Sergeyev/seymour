@@ -113,7 +113,7 @@ lemma Matrix.det_eq_zero_of_col_sub_col_eq_col [CommRing R] [IsDomain R] (A : Ma
   ext i
   simp only [Matrix.mulVec, dotProduct, mul_dite, mul_one, mul_neg, mul_zero, Pi.zero_apply]
   specialize hAjjj i
-  let f := fun (z : Z) => if z = j₀ then -A i j₀ else if z = j₁ then A i j₁ else if z = j₂ then A i j₀ - A i j₁ else 0
+  let f := fun z : Z => if z = j₀ then -A i j₀ else if z = j₁ then A i j₁ else if z = j₂ then A i j₀ - A i j₁ else 0
   conv_lhs => enter [2, x, 2, hxj₀]; rw [hxj₀, show -A i j₀ = f x by unfold f; split_ifs; rfl]
   conv_lhs => enter [2, x, 3, hj₂, 2, hxj₁]; rw [hxj₁, show A i j₁ = f x by unfold f; split_ifs; rfl]
   conv_lhs => enter [2, x, 3, hj₂, 3, hj₁, 2, hj₀]; rw [hj₀, ←hAjjj, show A i j₀ - A i j₁ = f x by unfold f; split_ifs; rfl]

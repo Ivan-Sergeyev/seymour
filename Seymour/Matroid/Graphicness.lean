@@ -156,7 +156,7 @@ lemma Matrix.IsGraphic.isTotallyUnimodular {X Y : Set α} {A : Matrix X Y ℚ} (
     · have ⟨j₁, i₁, hnAg⟩ := hA.submatrix_one_if_not_graphic hf hAfg
       rw [(A.submatrix f g).det_succ_column j₁]
       simp_rw [Matrix.submatrix_apply]
-      have hAxj₁ : ∀ (x : Fin (k + 1)),
+      have hAxj₁ : ∀ x : Fin (k + 1),
           (-1 : ℚ) ^ (x.val + j₁.val) * A (f x) (g j₁) * ((A.submatrix f g).submatrix x.succAbove j₁.succAbove).det =
           if x = i₁ then
             (-1 : ℤ) ^ (x.val + j₁.val + 0) * A (f x) (g j₁) * ((A.submatrix f g).submatrix x.succAbove j₁.succAbove).det
