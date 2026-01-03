@@ -2578,8 +2578,6 @@ lemma standardReprSum3_hasTuSigning {Sₗ Sᵣ S : StandardRepr α Z2} {x₀ x�
               · exact hSS.rrrr.right.left
               · rfl
       obtain ⟨B, hB, hBM⟩ := hM.HasTuSigning
-      have hX₀₁ : Sₗ.X.drop2 x₀ₗ x₁ₗ ∪ Sᵣ.X.drop1 x₂ᵣ = Sₗ.X.drop2 x₁ₗ x₀ₗ ∪ Sᵣ.X.drop1 x₂ᵣ
-      · rw [drop2_comm x₀ₗ x₁ₗ]
       have hY₀₁ : Sₗ.Y.drop1 y₂ₗ ∪ Sᵣ.Y.drop2 y₀ᵣ y₁ᵣ = Sₗ.Y.drop1 y₂ₗ ∪ Sᵣ.Y.drop2 y₁ᵣ y₀ᵣ
       · rw [drop2_comm y₀ᵣ y₁ᵣ]
       rw [hY₀₁] at hYyyy
