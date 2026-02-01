@@ -244,7 +244,8 @@ by
   sorry
 
 /-- Theorem 0.5 (Dual of standard representation corresponds to dual matroid). -/
-theorem StandardRepr.toMatroid_dual (S : StandardRepr α (Z2)) :
+theorem StandardRepr.toMatroid_dual (S : StandardRepr α (Z2))
+  [Fintype (Sum S.X S.Y)] :
   S.dual.toMatroid = S.toMatroid✶ := by
   sorry
 

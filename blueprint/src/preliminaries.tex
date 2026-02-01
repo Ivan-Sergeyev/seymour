@@ -1,6 +1,6 @@
-\chapter{Preliminaries}
+\section{Preliminaries}
 
-\section{Total Unimodularity}
+\subsection{Total Unimodularity}
 
 \begin{definition}
     \label{Matrix}
@@ -15,13 +15,13 @@
     \label{Matrix.det}
     \uses{Matrix}
     \leanok
-    Let $A$ be a square matrix over a commutative ring whose rows and colummns are indexed by the integers $\{1, \dots, n\}$.
+    Let $A$ be a square matrix over a commutative ring whose rows and columns are indexed by the integers $\{1, \dots, n\}$.
     The determinant of $A$ is
     \[
         \det A = \sum_{\sigma \in S_{n}} \left( \operatorname{sgn}(\sigma) \prod_{i = 1}^{n} a_{i, \sigma(i)} \right),
     \]
     where the sum is computed over all permutations $\sigma \in S_{n}$, $\operatorname{sgn}(\sigma)$ denotes the sign of permutation $\sigma$,
-    and $a_{i,j} \in R$ is the element element of $A$ corresponding to the $i$-th row and the $j$-th column.
+    and $a_{i,j} \in R$ is the element of $A$ corresponding to the $i$-th row and the $j$-th column.
 \end{definition}
 
 \begin{definition}
@@ -85,14 +85,7 @@
     This follows from Definitions~\ref{Matrix.IsTotallyUnimodular} and~\ref{Matrix.IsPartiallyUnimodular}.
 \end{proof}
 
-\begin{definition}
-    \label{Matrix.fromBlocks}
-    \uses{Matrix}
-    \leanok
-    Matrix made of 4 blocks (2x2).
-\end{definition}
-
-\section{Pivoting}
+\subsection{Pivoting}
 
 % Long Tableau Pivot
 
@@ -211,11 +204,11 @@
 \begin{proof}
     \uses{Matrix.IsTotallyUnimodular.longTableauPivot}
     \leanok
-    \SeeLean
+    See implementation in Lean, which uses Lemma \ref{Matrix.IsTotallyUnimodular.longTableauPivot}.
 \end{proof}
 
 
-\section{Vector Matroids}
+\subsection{Vector Matroids}
 
 \begin{definition}
     \label{Matroid}
@@ -229,7 +222,7 @@
         \item If $X \subseteq E$ and $I \subseteq X$ is such that $I \in \mathcal I$, then there exists an $J \in \mathcal I$ with $I \subseteq J \subseteq X$
             that is maximal with respect to set inclusion.
     \end{enumerate}
-    We call $E$ the grounnd set of $M$ and $\mathcal{I}$ the collection of independent sets in $M$. We say that $B \in \mathcal I$ is a base of $M$ if $B$ is maximal in $\mathcal I$.
+    We call $E$ the ground set of $M$ and $\mathcal{I}$ the collection of independent sets in $M$. We say that $B \in \mathcal I$ is a base of $M$ if $B$ is maximal in $\mathcal I$.
 \end{definition}
 
 \begin{definition}
@@ -299,7 +292,7 @@
 \begin{proof}
     \uses{Matrix.IsTotallyUnimodular.longTableauPivot,Matrix.fromRows_zero_reindex_toMatroid}
     \leanok
-    \SeeLean
+    See Lean implementation, which uses Lemmas \ref{Matrix.IsTotallyUnimodular.longTableauPivot} and \ref{Matrix.fromRows_zero_reindex_toMatroid}.
 \end{proof}
 
 % Representation via support matrices
@@ -394,7 +387,7 @@
 \begin{proof}
     \uses{Matrix.support_submatrix,Matrix.isUnit_iff_isUnit_det}
     \leanok
-    \SeeLean
+    See Lean implementation, which uses Lemmas \ref{Matrix.support_submatrix} and \ref{Matrix.isUnit_iff_isUnit_det}.
 \end{proof}
 
 \begin{lemma}
@@ -409,7 +402,7 @@
 \begin{proof}
     \uses{Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent_of_finite_of_finite}
     \leanok
-    \SeeLean
+    See Lean implementation, which uses Lemma \ref{Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent_of_finite_of_finite}.
 \end{proof}
 
 \begin{lemma}
@@ -424,7 +417,7 @@
 \begin{proof}
     \uses{Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent_of_finite}
     \leanok
-    \SeeLean
+    See Lean implementation, which uses Lemma \ref{Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent_of_finite}.
 \end{proof}
 
 \begin{lemma}
@@ -442,11 +435,11 @@
 \begin{proof}
     \uses{Matrix.support_transpose,Matrix.support_submatrix,Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent}
     \leanok
-    \SeeLean
+    See Lean implementation, which uses Lemmas \ref{Matrix.support_transpose}, \ref{Matrix.support_submatrix}, and \ref{Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearIndependent}.
 \end{proof}
 
 
-\section{Regular Matroids}
+\subsection{Regular Matroids}
 
 \begin{definition}
     \label{Matroid.IsRegular}

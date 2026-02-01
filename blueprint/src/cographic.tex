@@ -1,0 +1,182 @@
+\subsection{Regularity of Cographic Matroids}
+
+\begin{lemma}[Row space of a standard representation]
+    \label{lem:row-space-standard}
+    Let $X$ and $Y$ be disjoint finite sets and let
+    
+    \[
+      B \in \mathbb{F}_2^{X \times Y}.
+    \]
+
+    Consider the matrix
+    
+    \[ A := [\, \mathbf{1}_x \mid B \,] \in \mathbb{F}_2^{X \times (X \cup Y)},\]
+    
+    where the columns are indexed by $E := X \cup Y$ and the rows by $X$.
+    Then the row space of $A$ is
+    
+    \[ \text{row}(A) \;=\; \{\, (u,\, uB) \mid u \in \mathbb{F}_2^X \,\} \;\subseteq\; \mathbb{F}_2^X \oplus \mathbb{F}_2^Y \cong \mathbb{F}_2^{E}. \]
+\end{lemma}
+
+\begin{proof}
+    The $x$-th row of $A$ is $(e_x, B_{x,*})$, where $e_x$ is the standard basis vector
+    in $\mathbb{F}_2^X$ and $B_{x,*}$ is the $x$-th row of $B$.
+    A general linear combination of the rows is therefore
+    \[
+      \sum_{x \in X} u_x (e_x, B_{x,*})
+      = \bigl( u,\, \sum_{x \in X} u_x B_{x,*} \bigr)
+      = (u,\, uB),
+    \]
+    where $u = (u_x)_{x \in X} \in \mathbb{F}_2^X$.
+    Conversely, every pair $(u, uB)$ arises in this way, so these are exactly the row vectors.
+\end{proof}
+
+\begin{lemma}[Orthogonal complement of a standard row space]
+    \label{lem:orth-complement-standard}
+    Let $A = [\mathbf{1}_x \mid B]$ be as in Lemma~\ref{lem:row-space-standard}, and let
+    \[U := \text{row}(A) \subseteq \mathbb{F}_2^{X \cup Y}.\]
+    Then the orthogonal complement of $U$ is
+    \[U^\perp = \{\, (b B^{\mathsf T},\, b) \mid b \in \mathbb{F}_2^Y \,\}.\]
+    Equivalently, if $B^* := -B^{\mathsf T}$, then
+    \[U^\perp= \{\, (b B^*,\, b) \mid b \in \mathbb{F}_2^Y \,\}.
+    \]
+\end{lemma}
+
+\begin{proof}
+    Write vectors in $\mathbb{F}_2^{X \cup Y}$ as pairs $(a,b)$ with
+    $a \in \mathbb{F}_2^X$ and $b \in \mathbb{F}_2^Y$.
+    By Lemma~\ref{lem:row-space-standard}, any element of $U$ has the form
+    $(u, uB)$ with $u \in \mathbb{F}_2^X$.
+    The orthogonality condition $(a,b) \in U^\perp$ means
+    \begin{align*}
+      0 &= (a,b) \cdot (u, uB) \\ 
+        &= a \cdot u + b \cdot (uB) \\
+        &= a \cdot u + (b B^{\mathsf T}) \cdot u \\
+        &= (a + b B^{\mathsf T}) \cdot u
+    \end{align*}
+    for all $u \in \mathbb{F}_2^X$.
+    Hence we must have $a = b B^{\mathsf T}$, and then
+    \[
+      U^\perp = \{\, (b B^{\mathsf T}, b) \mid b \in \mathbb{F}_2^Y \,\}.
+    \]
+    Over $\mathbb{F}_2$ we have $-1 = 1$, so $B^* = -B^{\mathsf T} = B^{\mathsf T}$,
+    yielding the alternative description.
+\end{proof}
+
+\begin{lemma}[Row space of the dual standard matrix]
+    \label{lem:row-space-dual-standard}
+    With $B$ and $B^* = -B^{\mathsf T}$ as above, define
+    \[A^* := [\, \mathbf{1}_y \mid B^* \,] \in \mathbb{F}_2^{Y \times (X \cup Y)}.\]
+    Then
+    \[\text{row}(A^*) = U^\perp,\]
+    where $U = \text{row}(A)$ and $U^\perp$ is given by
+    Lemma~\ref{lem:orth-complement-standard}.
+\end{lemma}
+
+\begin{proof}
+    The $y$-th row of $A^*$ is $(e_y, B^*_{y,*})$ with $e_y \in \mathbb{F}_2^Y$.
+    A general linear combination of the rows is
+    \[\sum_{y \in Y} b_y (e_y, B^*_{y,*}) = \bigl( b,\, b B^* \bigr),
+    \]
+    where $b = (b_y)_{y \in Y} \in \mathbb{F}_2^Y$.
+    Thus
+    \[\text{row}(A^*) = \{\, (b, b B^*) \mid b \in \mathbb{F}_2^Y \,\}.\]
+    Identifying $\mathbb{F}_2^{X \cup Y}$ as $\mathbb{F}_2^X \oplus \mathbb{F}_2^Y$
+    with coordinates ordered as $(X, Y)$, this is exactly the set
+    \[\{\, (b B^*, b) \mid b \in \mathbb{F}_2^Y \,\},\]
+    which coincides with $U^\perp$ by Lemma~\ref{lem:orth-complement-standard}.
+\end{proof}
+
+\begin{lemma}[Dual vector matroid via orthogonal complement]
+    \label{lem:dual-vectormatroid-orth}
+    Let $A$ and $A'$ be matrices over a field $F$ with the same column index set $E$,
+    and suppose
+    \[\text{row}(A') = \text{row}(A)^{\perp} \subseteq F^{E}.\]
+    Let $M(A)$ and $M(A')$ be the vector matroids represented by $A$ and $A'$. Then
+    \[M(A') = M(A)^{*}.\]
+\end{lemma}
+
+
+\begin{proof}
+    Let $F \subseteq E$.  
+
+    \emph{($\Rightarrow$)}  
+    Suppose $F$ is dependent in $M(A)$.  
+    Then there exists a nonzero vector $c \in F^{F}$ such that $A_F c = 0$.  
+    Extend $c$ by zero outside $F$ (still denoted $c$).  
+    The condition $A c = 0$ means each row $r$ of $A$ satisfies $r \cdot c = 0$,  
+    hence $c \in \text{row}(A)^{\perp} = \text{row}(A')$.  
+    Write
+    \[
+        c = \sum_i \lambda_i r'_i,
+    \]
+    where the $r'_i$ are rows of $A'$ and not all $\lambda_i$ are zero.  
+    For every $e \in E\setminus F$ we have $c_e = 0$, so
+    \[
+        \left(\sum_i \lambda_i r'_i\right)\big|_{E\setminus F} = 0.
+    \]
+    Hence the rows of $A'$ indexed by $E \setminus F$ admit a nontrivial
+    linear combination giving the zero row, so $E \setminus F$ is dependent in $M(A')$.
+
+    \emph{($\Leftarrow$)}  
+    The same argument with $A$ and $A'$ interchanged, using
+    $\text{row}(A) = (\text{row}(A')^\perp)$, shows that if
+    $E\setminus F$ is dependent in $M(A')$, then $F$ is dependent in $M(A)$.
+
+    Thus
+    \[
+        F \text{ dependent in } M(A)
+        \;\Longleftrightarrow\;
+        E \setminus F \text{ dependent in } M(A'),
+    \]
+    which is the defining property of duality.
+\end{proof}
+
+
+
+
+
+\begin{theorem}[Dual of standard representation corresponds to dual matroid]
+\label{thm:StandardRepr.toMatroid_dual}
+Let M be a binary matroid on ground set $E = X \cup Y$, with
+standard representation $B$ so that
+\[A = [\, \mathbf{1}_X \mid B \,].\]
+Let $B^{*} := -B^{\mathsf T}$ and
+\[A^{*} := [\, \mathbf{1}_Y \mid B^{*} \,].\]
+Then $M(A^{*}) = M(A)^{*} = M^{*}$.
+\end{theorem}
+
+\begin{proof}
+    By Lemma~\ref{lem:row-space-standard} and Lemma~\ref{lem:orth-complement-standard},
+    if $U = \text{row}(A)$ then $U^\perp$ has the form
+    \[U^\perp = \{\, (b B^*, b) \mid b \in \mathbb{F}_2^Y \,\}.\]
+    By Lemma~\ref{lem:row-space-dual-standard}, we have
+    \[\text{row}(A^*) = U^\perp = \text{row}(A)^\perp.\]
+    Therefore, by Lemma~\ref{lem:dual-vectormatroid-orth},
+    the column-matroid $M(A^*)$ is the dual of $M(A)$:
+    \[M(A^*) = M(A)^* = M^*.\]
+\end{proof}
+
+\begin{lemma}
+    \label{lem:Matroid.Dual.isRegular}
+    The dual matroid of a regular matroid is also a regular matroid.
+\end{lemma}
+
+\begin{proof}
+    Let $M$ be a regular matroid. We wish to show that $M^{*}$ is also regular. 
+    
+    Take a standard $ \mathbb Z_2$-representation matrix $B$ of $M$. By Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}, since $M$ is regular, there exists a TU signing $B'$ of $B$: $B'$ is a matrix over $\mathbb Q$ that is TU, and $|B'(i,j)| = B(i,j)$ for all entries.  So $M$ is represented (over $\mathbb Q$) by a TU matrix $B'$ whose pattern of zero and non-zero entries is exactly that of $B$.
+
+    From Theorem \ref{thm:StandardRepr.toMatroid_dual}, if a matroid $M$ has standard representation matrix $B$, then its dual $M^{*}$ has the standard representation matrix $B^{*} = -B^{\intercal}$. The TU signing of this dual standard matrix, $(B')^{*} = -(B')^{\intercal}$, preserves total unimodularity, so $(B')^{*}$ is a TU matrix whose support is exactly $B^{*}$.
+
+    Since we have just exhibited a TU signing of $M^{*}$ (i.e., $(B')^{*}$), the dual matroid $M^{*}$ is regular by Lemma~\ref{StandardRepr.toMatroid_isRegular_iff_hasTuSigning}.
+\end{proof}
+
+\begin{theorem}
+    \label{Matroid.IsCographic.isRegular}
+    Every cographic matroid is regular.
+\end{theorem}
+
+\begin{proof}
+    We know that all graphic matroids are regular by Theorem~\ref{Matroid.IsGraphic.isRegular}. Recall that we say a matroid is cographic if its dual is graphic. So it suffices to show regularity is preserved under duals, which we showed in Lemma \ref{lem:Matroid.Dual.isRegular}.
+\end{proof}
