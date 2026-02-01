@@ -210,7 +210,7 @@ private lemma rowSpace_stdMat
   [Fintype (Sum X Y)] :
   rowSpace (1 ◫ B)
     =
-  Submodule.span (Z2)
+  Submodule.span Z2
     (fun u => Sum.elim u (u ᵥ* B)).range :=
 by
   sorry
@@ -220,7 +220,7 @@ private lemma rth_rowSpace_stdMat
   [Fintype (Sum X Y)] :
   orth (rowSpace (1 ◫ B))
     =
-  Submodule.span (Z2)
+  Submodule.span Z2
     (fun b => Sum.elim (b ᵥ* Bᵀ) b).range :=
 by
   sorry
