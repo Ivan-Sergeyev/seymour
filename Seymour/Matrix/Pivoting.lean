@@ -207,7 +207,7 @@ private lemma Matrix.IsTotallyUnimodular.addRowMultiples [DecidableEq X] [Field 
           simp [f', ha] at hab
           have hab' : f b' = x
           · convert hab.symm
-            have hb' : b'.succ = b := Fin.succ_pred b hb
+            have hb' : b'.succ = b := b.succ_pred hb
             rw [←hb']
             simp
           exact hx ⟨b', hab'⟩
@@ -217,14 +217,14 @@ private lemma Matrix.IsTotallyUnimodular.addRowMultiples [DecidableEq X] [Field 
           simp [f', hb] at hab
           have hab' : f a' = x
           · convert hab
-            have ha' : a'.succ = a := Fin.succ_pred a ha
+            have ha' : a'.succ = a := a.succ_pred ha
             rw [←ha']
             simp
           exact hx ⟨a', hab'⟩
         · let a' := a.pred ha
           let b' := b.pred hb
-          have ha' : a'.succ = a := Fin.succ_pred a ha
-          have hb' : b'.succ = b := Fin.succ_pred b hb
+          have ha' : a'.succ = a := a.succ_pred ha
+          have hb' : b'.succ = b := b.succ_pred hb
           rw [←ha', ←hb'] at hab ⊢
           simp [f'] at hab
           rw [hf hab]

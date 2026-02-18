@@ -702,8 +702,7 @@ lemma Matrix.exists_standardRepr_isBase_isTotallyUnimodular [Field R] {X Y G : S
   rw [hA₁₁, hA₂₁, hA₂₂, ←Matrix.fromRows_fromCols_eq_fromBlocks, Matrix.fromCols_zero] at hA
   have hA'' : A'.toMatroid =
       (((1 ◫ A'.submatrix g hYGY.elem) ⊟ 0).reindex (e'.leftCongr.trans e) hGY.equiv).toMatroid
-  · rewrite [←((Matrix.reindex (e'.leftCongr.trans e) hGY.equiv).symm_apply_eq).→ hA]
-    rfl
+  · rw [←((Matrix.reindex (e'.leftCongr.trans e) hGY.equiv).symm_apply_eq).→ hA]
   use ⟨G, Y \ G, Set.disjoint_sdiff_right, A'.submatrix g hYGY.elem,
     G.decidableMemOfFintype, (Classical.propDecidable <| · ∈ Y \ G)⟩
   refine ⟨by simp, ?_, hA'.submatrix g hYGY.elem⟩
@@ -885,7 +884,7 @@ private lemma support_eq_support_of_same_matroid_aux {F₁ F₂ : Type*} [Decida
   rw [←Matrix.transpose_inj]
   apply Matrix.ext_col
   intro y
-  have hBB : { x | B₁ᵀ y x ≠ 0 } = { x | B₂ᵀ y x ≠ 0 } :=
+  have hBB : { x : X | B₁ᵀ y x ≠ 0 } = { x : X | B₂ᵀ y x ≠ 0 } :=
     Set.eq_of_subset_of_subset
       (support_subset_support_of_same_matroid_aux hSS y)
       (support_subset_support_of_same_matroid_aux hSS.symm y)
