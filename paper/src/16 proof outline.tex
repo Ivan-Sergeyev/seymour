@@ -1,0 +1,8 @@
+\section{Proof Outline and Design Choices}
+Before delving into technical details, we outline the structure of our formal proof and explain key design decisions. 
+Our development mirrors the theoretical decomposition: we implement each matroid sum (1-, 2-, and 3-sum) at three levels (matrix, standard representation, and abstract matroid) to manage complexity. 
+For each sum, we first prove that the matrix-level construction preserves total unimodularity, then lift this result to the matroid level via the StandardRepr abstraction. 
+The 1-sum and 2-sum proofs closely follow and streamline the arguments in Truemper's work, while the 3-sum case required a new approach. 
+We re-designed the 3-sum proof to avoid formalizing a difficult graph-theoretic re-signing argument: instead, we re-sign each summand only once and introduce an intermediate structure \texttt{MatrixLikeSum3} to capture the combined matrix blocks. 
+This strategic design lets us systematically derive total unimodularity for 3-sums (reusing parts of the 2-sum argument) and circumvents the need for a complex graph argument in Lean. 
+We also split our code into an ``implementation'' (detailed definitions and lemmas) and a “presentation” (key results with Lean's \verb|#guard_msgs| checks), ensuring the proof is both modular and trustworthy.
