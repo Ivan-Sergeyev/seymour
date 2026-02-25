@@ -126,7 +126,7 @@ theorem Matrix.indepCols_aug [DivisionRing R] (A : Matrix X Y R) (I J : Set α)
     · by_contra! hx_in_J'
       have Mx_in_MJ' : Aᵀ x ∈ (Aᵀ '' J') := Set.mem_image_of_mem Aᵀ hx_in_J'
       have v_in_MJ' : v ∈ (Aᵀ '' J') := Set.mem_of_eq_of_mem hxv.symm Mx_in_MJ'
-      exact v_ni_Jₛ (Submodule.mem_span.← (fun p a => a v_in_MJ'))
+      exact v_ni_Jₛ (Submodule.mem_span.← ↓(· v_in_MJ'))
     have J'_indep : LinearIndepOn R Aᵀ J' := J_indep
     have xJ'_indep : LinearIndepOn R Aᵀ (x ᕃ J') := (linearIndepOn_insert x_ni_J').← ⟨J'_indep, Mx_ni_span_J'⟩
     have M_indep_xJ : A.IndepCols (↑x ᕃ J)

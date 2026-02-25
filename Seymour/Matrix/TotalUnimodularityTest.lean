@@ -146,10 +146,8 @@ lemma Matrix.isTotallyUnimodular_of_testTotallyUnimodularFast {m n : ℕ} (A : M
     (fun p => ((List.finRange m).filter (· ∈ f.range.toFinset))[p]'(by convert p.isLt; apply filter_length_card))
     (fun p => ((List.finRange n).filter (· ∈ g.range.toFinset))[p]'(by convert p.isLt; rw [hfg]; apply filter_length_card))
     f g
-    (fun a₁ a₂ haa => by simpa [Fin.mk.injEq, Fin.val_inj] using
-        (List.nodup_iff_injective_get.→ ((List.nodup_finRange m).filter _) haa))
-    (fun a₁ a₂ haa => by simpa [Fin.mk.injEq, Fin.val_inj] using
-        (List.nodup_iff_injective_get.→ ((List.nodup_finRange n).filter _) haa))
+    ↓↓(by simpa [Fin.mk.injEq, Fin.val_inj] using List.nodup_iff_injective_get.→ ((List.nodup_finRange m).filter _) ·)
+    ↓↓(by simpa [Fin.mk.injEq, Fin.val_inj] using List.nodup_iff_injective_get.→ ((List.nodup_finRange n).filter _) ·)
     hf hg
     (by
       rw [range_of_list_get (filter_length_card _).symm]

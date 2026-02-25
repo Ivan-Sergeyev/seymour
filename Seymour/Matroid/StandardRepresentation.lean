@@ -178,7 +178,7 @@ private lemma exists_standardRepr_isBase_aux_left {X Y G I : Set α} [∀ a, Dec
   have hX : G ∪ (X \ G) = X := Set.union_diff_cancel' (by tauto) hGX
   let e : hIGX.elem.range → hIX.elem.range := fun ⟨⟨i, hi⟩, hhi⟩ => ⟨⟨i, hX ▸ hi⟩, by simpa using hhi⟩
   unfold LinearIndepOn
-  convert (B.linearIndepOn_in_submodule hAI).comp e (fun _ _ hee => by ext; simpa [e] using hee) with ⟨⟨i, hi⟩, -⟩
+  convert (B.linearIndepOn_in_submodule hAI).comp e ↓↓(by ext; simpa [e] using ·) with ⟨⟨i, hi⟩, -⟩
   ext ⟨j, hj⟩
   if hiG : i ∈ G then
     have hBij := B.repr_self_apply ⟨i, hiG⟩ ⟨j, hj⟩
@@ -216,7 +216,7 @@ private lemma exists_standardRepr_isBase_aux_right {X Y G I : Set α} [∀ a, De
   have hX : X = G ∪ (X \ G) := (Set.union_diff_cancel' (by tauto) hGX).symm
   let e : hIX.elem.range → hIGX.elem.range := fun ⟨⟨i, hi⟩, hhi⟩ => ⟨⟨i, hX ▸ hi⟩, by simpa using hhi⟩
   unfold LinearIndepOn
-  convert hBI.comp e (fun _ _ hee => by ext; simpa [e] using hee) with ⟨⟨i, hi⟩, -⟩
+  convert hBI.comp e ↓↓(by ext; simpa [e] using ·) with ⟨⟨i, hi⟩, -⟩
   ext ⟨j, hj⟩
   if hiG : i ∈ G then
     have hBij := B.repr_self_apply ⟨i, hiG⟩ ⟨j, hj⟩
@@ -837,13 +837,13 @@ private lemma support_subset_support_of_same_matroid_aux {F F₀ : Type*} [Decid
       exfalso
       have hlBd := congr_fun hlB d
       rw [Finsupp.linearCombination_apply] at hlBd
-      have hlBd' : l.sum (fun i a => a • Matrix.fromRows 1 Bᵀ i.toSum d) = 0
+      have hlBd' : l.sum (fun a : F => a • (1 ⊟ Bᵀ) ·.toSum d) = 0
       · simpa [Finsupp.sum] using hlBd
-      have untransposed : l.sum (fun i a => a • ((1 : Matrix X X F) ◫ B) d i.toSum) = 0
+      have untransposed : l.sum (fun a : F => a • (1 ◫ B) d ·.toSum) = 0
       · rwa [←Matrix.transpose_transpose (1 ◫ B), Matrix.one_fromCols_transpose]
       have hyl : hYXY.elem y ∈ l.support
       · rwa [Finsupp.mem_support_iff]
-      have h0 : ∀ a ∈ l.support, a.val ≠ y.val → l a • ((1 : Matrix X X F) ◫ B) d a.toSum = 0
+      have h0 : ∀ a ∈ l.support, a.val ≠ y.val → l a • (1 ◫ B) d a.toSum = 0
       · intro a ha hay
         have hal := hl'' a ha
         if haX : a.val ∈ X then
@@ -860,7 +860,7 @@ private lemma support_subset_support_of_same_matroid_aux {F F₀ : Type*} [Decid
           cases hal with
           | inl hay' => exact hay hay'
           | inr haDₒ => simp_all
-      have hlyd : l (hYXY.elem y) • ((1 : Matrix X X F) ◫ B) d (hYXY.elem y).toSum ≠ 0
+      have hlyd : l (hYXY.elem y) • (1 ◫ B) d (hYXY.elem y).toSum ≠ 0
       · refine (hly <| (mul_eq_zero_iff_right ?_).→ ·)
         simp_rw [Matrix.transpose_apply, Set.mem_setOf_eq] at hd
         simp [hd, hXY.not_mem_of_mem_right y.property]

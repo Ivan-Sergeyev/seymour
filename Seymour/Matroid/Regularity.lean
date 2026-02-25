@@ -223,8 +223,7 @@ private lemma Matrix.IsTotallyUnimodular.linearIndependent_iff_support_linearInd
     rw [(hA.submatrix id Subtype.val).linearIndependent_iff_support_linearIndependent_of_finite_of_finite] at lin_indep
     exact A.support.linearIndependent_if_linearIndependent_subset_cols lin_indep
   · obtain ⟨Y', hY', hAY'⟩ := A.support.exists_finite_allColsIn Finset.univ (Finset.mem_univ <| A.support · ·)
-    rw [A.support.linearIndependent_iff_allCols_submatrix_linearIndependent hAY'] at lin_indep
-    rw [Matrix.support_submatrix] at lin_indep
+    rw [A.support.linearIndependent_iff_allCols_submatrix_linearIndependent hAY', Matrix.support_submatrix] at lin_indep
     have := Set.Finite.fintype hY'
     rw [←(hA.submatrix id Subtype.val).linearIndependent_iff_support_linearIndependent_of_finite_of_finite] at lin_indep
     exact A.linearIndependent_if_linearIndependent_subset_cols lin_indep

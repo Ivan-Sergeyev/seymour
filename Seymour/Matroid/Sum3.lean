@@ -100,7 +100,7 @@ private def MatrixSum3.Bᵣ_unexpand : Lean.PrettyPrinter.Unexpander
 private lemma blocksToMatrixSum3_Bₗ_eq {Xₗ Yₗ Xᵣ Yᵣ R : Type*} [Zero R] [One R]
     (Bₗ : Matrix ((Xₗ ⊕ Unit) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Unit) R)
     (Bᵣ : Matrix (Unit ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Unit ⊕ Yᵣ)) R)
-    (hBₗ : Bₗ ◪0 ◪0 = Bᵣ ◪◩0 ◪◩0 ∧ Bₗ ◪1 ◪0 = Bᵣ ◪◩1 ◪◩0 ∧ ∀ i, Bₗ ◩i ◪0 = 0) :
+    (hBₗ : Bₗ ◪0 ◪0 = Bᵣ ◪◩0 ◪◩0 ∧ Bₗ ◪1 ◪0 = Bᵣ ◪◩1 ◪◩0 ∧ ∀ i : Xₗ ⊕ Unit, Bₗ ◩i ◪0 = 0) :
     (blocksToMatrixSum3 Bₗ Bᵣ).Bₗ = Bₗ := by
   ext i j
   cases j with
@@ -115,7 +115,7 @@ private lemma blocksToMatrixSum3_Bₗ_eq {Xₗ Yₗ Xᵣ Yᵣ R : Type*} [Zero R
 private lemma blocksToMatrixSum3_Bᵣ_eq {Xₗ Yₗ Xᵣ Yᵣ R : Type*} [Zero R] [One R]
     (Bₗ : Matrix ((Xₗ ⊕ Unit) ⊕ Fin 2) ((Yₗ ⊕ Fin 2) ⊕ Unit) R)
     (Bᵣ : Matrix (Unit ⊕ (Fin 2 ⊕ Xᵣ)) (Fin 2 ⊕ (Unit ⊕ Yᵣ)) R)
-    (hBᵣ : Bᵣ ◩0 ◩0 = Bₗ ◩◪0 ◩◪0 ∧ Bᵣ ◩0 ◩1 = Bₗ ◩◪0 ◩◪1 ∧ ∀ i, Bᵣ ◩0 ◪i = 0) :
+    (hBᵣ : Bᵣ ◩0 ◩0 = Bₗ ◩◪0 ◩◪0 ∧ Bᵣ ◩0 ◩1 = Bₗ ◩◪0 ◩◪1 ∧ ∀ i : Unit ⊕ Yᵣ, Bᵣ ◩0 ◪i = 0) :
     (blocksToMatrixSum3 Bₗ Bᵣ).Bᵣ = Bᵣ := by
   ext i j
   cases i with
