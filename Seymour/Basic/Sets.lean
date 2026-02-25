@@ -52,7 +52,7 @@ lemma eq_toFinset_of_toSet_eq {s : Finset α} {S : Set α} [Fintype S] (hsS : s.
 
 def HasSubset.Subset.equiv {A B : Set α} [∀ i, Decidable (i ∈ A)] (hAB : A ⊆ B) : A.Elem ⊕ (B \ A).Elem ≃ B.Elem :=
   ⟨(·.casesOn hAB.elem Set.diff_subset.elem),
-  fun i => if hiA : i.val ∈ A then ◩⟨i.val, hiA⟩ else ◪⟨i.val, by simp [hiA]⟩,
+  fun i : B => if hiA : i.val ∈ A then ◩⟨i.val, hiA⟩ else ◪⟨i.val, by simp [hiA]⟩,
   fun _ => by aesop,
   fun _ => by aesop⟩
 

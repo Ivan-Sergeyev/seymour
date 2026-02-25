@@ -763,7 +763,7 @@ private lemma support_subset_support_of_same_matroid_aux {F F₀ : Type*} [Decid
   have hSS' := congr_arg Matroid.Indep hSS
   let D := { x : X | Bᵀ y x ≠ 0 }
   let Dₒ := { x : X | Bₒᵀ y x ≠ 0 }
-  have hyy : (hYXY.elem y).toSum = ◪y := toSum_right (hXY.not_mem_of_mem_right y.property) _
+  have hyy : (hYXY.elem y).toSum = ◪y := toSum_right (hXY.not_mem_of_mem_right y.property) y.property
   by_contra hD
   rw [Set.not_subset_iff_exists_mem_not_mem] at hD
   -- otherwise `y ᕃ Dₒ` is dependent in `Mₒ` but indep in `M`
