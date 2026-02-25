@@ -138,7 +138,7 @@ private def Matrix.AllColsIn_unexpand : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 private lemma Matrix.exists_finite_allColsIn {X Y R : Type*} [Fintype X] [DecidableEq Y] (A : Matrix X Y R) (V : Finset R)
-    (hAV : ∀ i j, A i j ∈ V) :
+    (hAV : ∀ i : X, ∀ j : Y, A i j ∈ V) :
     ∃ Y' : Set Y, Finite Y' ∧ A.AllColsIn Y' := by
   let C : Set (X → R) := { (A · y) | y : Y }
   let Y' : Set Y := { Classical.choose hc | (c : X → R) (hc : c ∈ C) }

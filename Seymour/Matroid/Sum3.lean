@@ -665,11 +665,11 @@ private lemma MatrixSum3.c₀_c₁_c₂_Aᵣ_isTotallyUnimodular_of_Bᵣ {Xₗ Y
     (S : MatrixSum3 Xₗ Yₗ Xᵣ Yᵣ ℚ) (hS : S.Bᵣ.IsTotallyUnimodular) (hSAₗ : S.Aₗ ◪0 ◪0 = 1 ∧ S.Aₗ ◪0 ◪1 = 1) :
     (▮S.c₀ ◫ ▮S.c₁ ◫ ▮(S.c₀ - S.c₁) ◫ S.Aᵣ).IsTotallyUnimodular := by
   intro k f g hf hg
-  if hgc₂ : ∃ j, g j = ◩◪⟨⟩ then -- `c₂` is contained in the submatrix
+  if hgc₂ : ∃ j : Fin k, g j = ◩◪⟨⟩ then -- `c₂` is contained in the submatrix
     obtain ⟨j₂, hj₂⟩ := hgc₂
-    if hgc₀ : ∃ j, g j = ◩◩◩⟨⟩ then -- `c₀` is contained in the submatrix
+    if hgc₀ : ∃ j : Fin k, g j = ◩◩◩⟨⟩ then -- `c₀` is contained in the submatrix
       obtain ⟨j₀, hj₀⟩ := hgc₀
-      if hgc₁ : ∃ j, g j = ◩◩◪⟨⟩ then -- `c₁` is contained in the submatrix
+      if hgc₁ : ∃ j : Fin k, g j = ◩◩◪⟨⟩ then -- `c₁` is contained in the submatrix
         obtain ⟨j₁, hj₁⟩ := hgc₁
         use 0
         symm
@@ -1338,7 +1338,7 @@ private lemma MatrixLikeSum3.mulCols_auxTU {Xₗ Yₗ Xᵣ Yᵣ : Type*} [Decida
     {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ} (M : MatrixLikeSum3 Xₗ Yₗ Xᵣ Yᵣ c₀ c₁) {q : Yₗ → ℚ} (hq : ∀ j : Yₗ, q j ∈ SignType.cast.range) :
     (⊞ (M.mulColsAₗ q) 0 (M.mulColsD q).toRows₁ (▮![1, 1])).IsTotallyUnimodular := by
   let q' : Yₗ ⊕ Unit → ℚ := (·.casesOn q 1)
-  have hq' : ∀ j, q' j ∈ SignType.cast.range := (·.casesOn hq (by simp [q']))
+  have hq' : ∀ j : Yₗ ⊕ Unit, q' j ∈ SignType.cast.range := (·.casesOn hq (by simp [q']))
   convert M.AuxTU.mul_cols hq'
   aesop
 
@@ -1430,7 +1430,7 @@ private lemma MatrixLikeSum3.shortTableauPivot_isParallelTo₃ {Xₗ Yₗ Xᵣ Y
       | neg =>
         simp only [SignType.neg_eq_neg_one, SignType.coe_neg, SignType.coe_one, Matrix.fromRows_apply_inl] at hsᵣ
         aesop
-    · have hMDAₗ : ∀ i, M.D i y / M.Aₗ x y * M.Aₗ x j = 0 := by aesop
+    · have hMDAₗ : ∀ i : Fin 2 ⊕ Xᵣ, M.D i y / M.Aₗ x y * M.Aₗ x j = 0 := by simp_all
       have hMDj : (M.shortTableauPivotD x y · j) = (M.D · j) := by simp [hjy, hMDAₗ]
       exact hMDj ▸ M.Parallels j
     · have hMDAₗ : (M.D · y / M.Aₗ x y * M.Aₗ x j) = (M.D · y) := by simp_rw [←div_mul_comm, h1, one_mul]

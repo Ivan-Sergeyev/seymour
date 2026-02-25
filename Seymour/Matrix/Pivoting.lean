@@ -408,7 +408,7 @@ private abbrev Fin.reindexFun {n : ℕ} (i : Fin n.succ) : Fin 1 ⊕ Fin n → F
   (·.casesOn ↓i i.succAbove)
 
 private lemma Fin.reindexFun_bijective {n : ℕ} (i : Fin n.succ) : i.reindexFun.Bijective :=
-  ⟨fun a b hab => by
+  ⟨fun a b : Fin 1 ⊕ Fin n => fun hab : i.reindexFun a = i.reindexFun b => by
     cases a with
     | inl a₁ =>
       cases b with

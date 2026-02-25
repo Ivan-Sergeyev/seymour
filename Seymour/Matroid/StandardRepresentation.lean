@@ -807,8 +807,7 @@ private lemma support_subset_support_of_same_matroid_aux {F F₀ : Type*} [Decid
     intro l hl hlB
     have hl' : l.support.toSet ⊆ hyDXY.elem.range
     · rwa [Finsupp.mem_supported] at hl
-    have hl'' : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' Dₒ :=
-      fun e he => (hyDXY.elem_range ▸ hl') he
+    have hl'' : ∀ e ∈ l.support, e.val ∈ y.val ᕃ Subtype.val '' Dₒ := ↓((hyDXY.elem_range ▸ hl') ·)
     if hly : l (hYXY.elem y) = 0 then
       ext i
       if hil : i ∈ l.support then

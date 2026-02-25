@@ -9,7 +9,7 @@ Here we study graphic and cographic matroids.
 /-- Column of a node-edge incidence matrix is either all `0`,
     or has exactly one `+1` entry, exactly one `-1` entry, and all other elements `0`. -/
 def IsIncidenceMatrixColumn {m : Type*} [DecidableEq m] (v : m → ℚ) : Prop :=
-  v = 0 ∨ ∃ i₁ i₂ : m, i₁ ≠ i₂ ∧ v i₁ = 1 ∧ v i₂ = -1 ∧ (∀ i : m, i ≠ i₁ → i ≠ i₂ → v i = 0)
+  v = 0 ∨ ∃ i₁ i₂ : m, i₁ ≠ i₂ ∧ v i₁ = 1 ∧ v i₂ = -1 ∧ ∀ i : m, i ≠ i₁ → i ≠ i₂ → v i = 0
 
 /-- Matrix is called graphic iff it is a node-edge incidence matrix of a (directed) graph. -/
 def Matrix.IsGraphic {m n : Type*} [DecidableEq m] (A : Matrix m n ℚ) : Prop :=
@@ -66,7 +66,7 @@ lemma Matrix.IsGraphic.elem_in_signTypeCastRange {m n : Type*} [DecidableEq m] {
 /-- Column of a node-edge incidence matrix has either zero or two non-zero entries. -/
 private lemma IsIncidenceMatrixColumn.zero_or_two_nonzeros {m : Type*} [DecidableEq m] {v : m → ℚ}
     (hv : IsIncidenceMatrixColumn v) :
-    v = 0 ∨ ∃ i₁ i₂ : m, i₁ ≠ i₂ ∧ ∀ i, i ≠ i₁ → i ≠ i₂ → v i = 0 :=
+    v = 0 ∨ ∃ i₁ i₂ : m, i₁ ≠ i₂ ∧ ∀ i : m, i ≠ i₁ → i ≠ i₂ → v i = 0 :=
   Or.imp_right (fun ⟨i₁, i₂, hii, _, _, hvnii⟩ => ⟨i₁, i₂, hii, hvnii⟩) hv
 
 /-- Column of a node-edge incidence matrix has either zero or two non-zero entries. -/
@@ -142,7 +142,7 @@ lemma Matrix.IsGraphic.isTotallyUnimodular {X Y : Set α} {A : Matrix X Y ℚ} (
   | succ k ih =>
     intro f g hf hg
     by_cases hAfg : (A.submatrix f g).IsGraphic
-    · by_cases hAfg' : ∃ j, (∀ i, (A.submatrix f g) i j = 0)
+    · by_cases hAfg' : ∃ j : Fin k.succ, (∀ i : Fin k.succ, (A.submatrix f g) i j = 0)
       · simp [Matrix.det_eq_zero_of_column_eq_zero hAfg'.choose hAfg'.choose_spec]
       · use SignType.zero
         simp only [SignType.zero_eq_zero, SignType.coe_zero]
@@ -156,7 +156,7 @@ lemma Matrix.IsGraphic.isTotallyUnimodular {X Y : Set α} {A : Matrix X Y ℚ} (
     · have ⟨j₁, i₁, hnAg⟩ := hA.submatrix_one_if_not_graphic hf hAfg
       rw [(A.submatrix f g).det_succ_column j₁]
       simp_rw [Matrix.submatrix_apply]
-      have hAxj₁ : ∀ x : Fin (k + 1),
+      have hAxj₁ : ∀ x : Fin k.succ,
           (-1 : ℚ) ^ (x.val + j₁.val) * A (f x) (g j₁) * ((A.submatrix f g).submatrix x.succAbove j₁.succAbove).det =
           if x = i₁ then
             (-1 : ℤ) ^ (x.val + j₁.val + 0) * A (f x) (g j₁) * ((A.submatrix f g).submatrix x.succAbove j₁.succAbove).det
