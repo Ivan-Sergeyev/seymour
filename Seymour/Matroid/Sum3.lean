@@ -718,7 +718,7 @@ private lemma MatrixSum3.c₀_c₀_c₁_c₁_c₂_c₂_Aᵣ_isTotallyUnimodular_
     (▮S.c₀ ◫ ▮S.c₀ ◫ ▮S.c₁ ◫ ▮S.c₁ ◫ ▮(S.c₀ - S.c₁) ◫ ▮(S.c₀ - S.c₁) ◫ S.Aᵣ).IsTotallyUnimodular := by
   convert (S.c₀_c₁_c₂_Aᵣ_isTotallyUnimodular_of_Bᵣ hS hSAₗ).comp_cols
     (fun j : ((((((Unit ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ (Unit ⊕ Yᵣ)) =>
-      (j.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (↓◩◩◩⟨⟩) ↓◩◩◩⟨⟩) ↓◩◩◪⟨⟩) ↓◩◩◪⟨⟩) ↓◩◪⟨⟩) ↓◩◪⟨⟩) Sum.inr))
+      (j.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn ↓◩◩◩⟨⟩ ↓◩◩◩⟨⟩) ↓◩◩◪⟨⟩) ↓◩◩◪⟨⟩) ↓◩◪⟨⟩) ↓◩◪⟨⟩) Sum.inr))
   aesop
 
 private lemma MatrixSum3.pmz_c₀_c₁_c₂_Aᵣ_isTotallyUnimodular_of_Bᵣ {Xₗ Yₗ Xᵣ Yᵣ : Type*}
@@ -1503,7 +1503,7 @@ private lemma MatrixLikeSum3.c₀_c₀_c₁_c₁_c₂_c₂_Aᵣ_isTotallyUnimodu
     (▮c₀ ◫ ▮c₀ ◫ ▮c₁ ◫ ▮c₁ ◫ ▮(c₀ - c₁) ◫ ▮(c₀ - c₁) ◫ M.Aᵣ).IsTotallyUnimodular := by
   convert M.BottomTU.comp_cols
     (fun j : ((((((Unit ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Unit) ⊕ Yᵣ) =>
-      (j.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (↓◩◩◩⟨⟩) ↓◩◩◩⟨⟩) ↓◩◩◪⟨⟩) ↓◩◩◪⟨⟩) ↓◩◪⟨⟩) ↓◩◪⟨⟩) Sum.inr))
+      (j.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn (·.casesOn ↓◩◩◩⟨⟩ ↓◩◩◩⟨⟩) ↓◩◩◪⟨⟩) ↓◩◩◪⟨⟩) ↓◩◪⟨⟩) ↓◩◪⟨⟩) Sum.inr))
   aesop
 
 private lemma MatrixLikeSum3.pmz_c₀_c₁_c₂_Aᵣ_isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type*} [DecidableEq Yᵣ] {c₀ c₁ : Fin 2 ⊕ Xᵣ → ℚ}
@@ -1606,8 +1606,8 @@ private lemma MatrixLikeSum3.isTotallyUnimodular {Xₗ Yₗ Xᵣ Yᵣ : Type*} {
       | zero => exact (hAxy0 hs.symm).elim
       | pos => exact Or.inl hs.symm
       | neg => exact Or.inr hs.symm
-    have hMfg19 : (M.matrix.submatrix f g) iₗ j₀ = 1 ∨ (M.matrix.submatrix f g) iₗ j₀ = -1 := by
-      rw [Matrix.submatrix_apply, hfiₗ, hgj₀]
+    have hMfg19 : (M.matrix.submatrix f g) iₗ j₀ = 1 ∨ (M.matrix.submatrix f g) iₗ j₀ = -1
+    · rw [Matrix.submatrix_apply, hfiₗ, hgj₀]
       exact hAxy1
     rw [in_signTypeCastRange_iff_abs]
     obtain ⟨f', g', hMffgg⟩ := (M.matrix.submatrix f g).abs_det_eq_shortTableauPivot_submatrix_abs_det hMfg19

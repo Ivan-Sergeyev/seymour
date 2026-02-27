@@ -57,7 +57,7 @@ lemma Disjoint.matrix_one_eq_fromBlocks_toMatrixUnionUnion [DecidableEq α] [Zer
         rw [hi, hj, Matrix.one_apply_ne hij,
           Matrix.one_apply_ne (hij <| by simpa using congr_arg Sum.toUnion <| hi.trans · |>.trans hj.symm)]
 
-lemma Matrix.linearIndepOn_iff_fromCols_zero [Ring R] {X Y I : Set α} (A : Matrix X Y R) (hIX : I ∩ X ⊆ X) (Y₀ : Set α)  :
+lemma Matrix.linearIndepOn_iff_fromCols_zero [Ring R] {X Y I : Set α} (A : Matrix X Y R) (hIX : I ∩ X ⊆ X) (Y₀ : Set α) :
     LinearIndepOn R A hIX.elem.range ↔ LinearIndepOn R (A ◫ (0 : Matrix X Y₀ R)) hIX.elem.range := by
   simp only [linearIndepOn_iff']
   constructor
@@ -76,7 +76,7 @@ lemma Matrix.linearIndepOn_iff_fromCols_zero [Ring R] {X Y I : Set α} (A : Matr
         simpa [Finset.sum_apply, Pi.smul_apply] using congr_fun hsc0 jₗ
     · simpa using hx
 
-lemma Matrix.linearIndepOn_iff_zero_fromCols [Ring R] {X Y I : Set α} (A : Matrix X Y R) (hIX : I ∩ X ⊆ X) (Y₀ : Set α)  :
+lemma Matrix.linearIndepOn_iff_zero_fromCols [Ring R] {X Y I : Set α} (A : Matrix X Y R) (hIX : I ∩ X ⊆ X) (Y₀ : Set α) :
     LinearIndepOn R A hIX.elem.range ↔ LinearIndepOn R ((0 : Matrix X Y₀ R) ◫ A) hIX.elem.range := by
   rw [A.linearIndepOn_iff_fromCols_zero hIX Y₀]
   constructor
@@ -148,7 +148,7 @@ lemma linearIndepOn_toMatrixUnionUnion_elem_range_iff [Ring R] {Xₗ Yₗ Xᵣ Y
               simp [hx, in_right_of_in_union_of_ni_left x.property]
           simp [Matrix.toMatrixUnionUnion, hXXjₗ, Finset.sum_dite] at hsc0jₗ
           convert hsc0jₗ
-          exact Finset.sum_bij (↓⟨hXₗ.elem ·, by simp_all⟩) (by simp) (by simp) (by aesop) (by simp)
+          exact Finset.sum_bij ↓⟨hXₗ.elem ·, by simp_all⟩ (by simp) (by simp) (by aesop) (by simp)
     else
       have hiXᵣ : i.val ∈ Xᵣ := in_right_of_in_union_of_ni_left i.property hiXₗ
       refine h0Xᵣ (c ∘ hXᵣ.elem) ?_ ?_ ⟨i, hiXᵣ⟩ (by simp [hi, hiXᵣ])
@@ -170,4 +170,4 @@ lemma linearIndepOn_toMatrixUnionUnion_elem_range_iff [Ring R] {Xₗ Yₗ Xᵣ Y
               simp [hx, in_left_of_in_union_of_ni_right x.property]
           simp [Matrix.toMatrixUnionUnion, hXXjᵣ, Finset.sum_dite, hYY.ni_left_of_in_right] at hsc0jᵣ
           convert hsc0jᵣ
-          exact Finset.sum_bij (↓⟨hXᵣ.elem ·, by simp_all⟩) (by simp) (by simp) (by aesop) (by simp)
+          exact Finset.sum_bij ↓⟨hXᵣ.elem ·, by simp_all⟩ (by simp) (by simp) (by aesop) (by simp)
