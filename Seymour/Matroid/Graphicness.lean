@@ -175,3 +175,86 @@ theorem Matroid.IsGraphic.isRegular {M : Matroid α} (hM : M.IsGraphic) :
     M.IsRegular := by
   obtain ⟨X, Y, A, hA, hMA⟩ := hM
   exact ⟨X, Y, A, hA.isTotallyUnimodular, hMA⟩
+
+
+open scoped BigOperators Matrix
+
+variable {α X Y E ι₁ ι₂ 𝔽 : Type*}
+variable [Field 𝔽] [Fintype X] [Fintype Y]
+variable [DecidableEq X] [DecidableEq Y] [DecidableEq α]
+
+private abbrev rowSpace {ι E 𝕂 : Type*} [Field 𝕂] (A : Matrix ι E 𝕂) : Submodule 𝕂 (E → 𝕂) :=
+  Submodule.span 𝕂 (Set.range A)
+
+/-- Orthogonal complement (with respect to `dot`) of a submodule of `E → 𝔽`. -/
+private def orth [Fintype E] (U : Submodule 𝔽 (E → 𝔽)) : Submodule 𝔽 (E → 𝔽) :=
+{ carrier := { v | ∀ u, u ∈ U → dotProduct v u = 0 }
+  zero_mem' := by
+    intro u hu
+    simp [dotProduct]
+  add_mem' := by
+    intro v w hv hw u hu
+    rw [add_dotProduct, hv, hw, add_zero]
+    · exact hu
+    · exact hu
+  smul_mem' := by
+    intro a v hv u hu
+    rw [smul_dotProduct, hv _ hu, smul_zero]
+}
+
+/- We specialize to `Z2` for the early lemmas. -/
+variable (B : Matrix X Y Z2)
+
+/-- Lemma 0.1 (Row space of a standard representation). -/
+private lemma rowSpace_stdMat
+  [Fintype (Sum X Y)] :
+  rowSpace (1 ◫ B)
+    =
+  Submodule.span Z2
+    (fun u => Sum.elim u (u ᵥ* B)).range :=
+by
+  sorry
+
+/-- Lemma 0.2 (Orthogonal complement of a standard row space). -/
+private lemma rth_rowSpace_stdMat
+  [Fintype (Sum X Y)] :
+  orth (rowSpace (1 ◫ B))
+    =
+  Submodule.span Z2
+    (fun b => Sum.elim (b ᵥ* Bᵀ) b).range :=
+by
+  sorry
+
+/-- Lemma 0.3 (Row space of the dual standard matrix). -/
+private lemma rowSpace_stdMatDual
+  [Fintype (Sum X Y)] :
+  rowSpace ((1 ◫ (-Bᵀ)) · ·.swap) = orth (rowSpace (1 ◫ B)) :=
+by
+  sorry
+
+/-- Lemma 0.4 (Dual vector matroid via orthogonal complement). -/
+private lemma matrix_toMatroid_dual_of_rowSpace_eq_orth
+  {X Y : Set α}
+  [Fintype X] [Fintype Y]
+  (A  : Matrix X Y 𝔽)
+  (A' : Matrix X Y 𝔽)
+  (h  : rowSpace A' = orth (rowSpace A)) :
+  A'.toMatroid = A.toMatroid✶ :=
+by
+  sorry
+
+/-- Theorem 0.5 (Dual of standard representation corresponds to dual matroid). -/
+theorem StandardRepr.toMatroid_dual (S : StandardRepr α (Z2))
+  [Fintype (Sum S.X S.Y)] :
+  S.dual.toMatroid = S.toMatroid✶ := by
+  sorry
+
+/-- Lemma 0.6 (dual matroid of a regular matroid is also a regular matroid). -/
+lemma Matroid.Dual.isRegular {M: Matroid α} (hM : M.IsRegular) :
+  M.dual.IsRegular := by
+  sorry
+
+/-- Every cographic matroid is regular. -/
+theorem Matroid.IsCographic.isRegular {M: Matroid α} (hM : M.IsCographic) :
+  M.IsRegular := by
+  sorry

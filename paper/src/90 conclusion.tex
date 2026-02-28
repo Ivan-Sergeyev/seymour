@@ -5,6 +5,13 @@ In this work, we formally stated Seymour's decomposition theorem for regular mat
 %Our contribution is a significant step towards formally verifying the proof of Seymour's theorem, and our library can be reused to prove further structural results about matroids.
 Our work demonstrates that one can effectively use Lean and Mathlib to formally verify advanced results from matroid theory and extend classical results to a more general setting.
 
+Formalizing Seymour's theorem presented several challenges. 
+First, the limited matroid theory in Mathlib meant we had to develop many fundamentals from scratch (e.g. representability and regularity definitions). 
+We addressed this by introducing a \emph{StandardRepr} structure to bridge matrices and matroids, enabling us to work around the absence of a general matroid representation theory. 
+Moreover, some proofs required managing enormous case splits (our 3-sum proof involved up to 896 subcases). We tackled this with structured automation - for instance, using \verb|all_goals try| tactics to discharge many cases at once - thereby keeping the proof tractable in Lean. 
+We also avoided certain combinatorial arguments (such as the graph-theoretic re-signing lemma from [12]) that would be cumbersome to formalize, opting for alternative approaches better suited to Lean. 
+
+
 % Future work
 The most natural continuation of our project is proving the decomposition direction of Seymour's theorem, stated as \texttt{Matroid.IsRegular.isGood} in our library. Our work can also serve as a starting point for formalizing Seymour's theorem for matroids of infinite rank \cite{Bowler2013}.
 

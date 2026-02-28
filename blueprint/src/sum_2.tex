@@ -1,8 +1,8 @@
-\chapter{Regularity of 2-Sum}
+\section{Regularity of 2-Sum}
 
 \begin{definition}
     \label{standardReprSum2}
-    \uses{StandardRepr,Matrix.fromBlocks}
+    \uses{StandardRepr}
     % \lean{}
     \leanok
     Let $R$ be a semiring (we will use $R = \mathbb{Z}_{2}$ and $R = \mathbb{Q}$). Let $B_{\ell} \in R^{X_{\ell} \times Y_{\ell}}$ and $B_{r} \in R^{X_{r} \times Y_{r}}$ where $X_{\ell} \cap X_{r} = \{x\}$, $Y_{\ell} \cap Y_{r} = \{y\}$, $X_{\ell}$ is disjoint with $Y_{\ell}$ and $Y_{r}$, and $X_{r}$ is disjoint with $Y_{\ell}$ and $Y_{r}$. Additionally, let $A_{\ell} = B_{\ell} (X_{\ell} \setminus \{x\}, Y_{\ell})$ and $A_{r} = B_{r} (X_{r}, Y_{r} \setminus \{y\})$, and suppose $r = B_{\ell} (x, Y_{\ell}) \neq 0$ and $c = B_{r} (X_{r}, y) \neq 0$. Then the $2$-sum $B = B_{\ell} \oplus_{2, x, y} B_{r}$ of $B_{\ell}$ and $B_{r}$ is defined as

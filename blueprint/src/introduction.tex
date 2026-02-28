@@ -1,0 +1,18 @@
+\section{Introduction}
+
+Seymour's decomposition theorem provides a structural characterization of regular matroids by expressing them as iterated $1$-, $2$-, and $3$-sums of graphic matroids, cographic matroids, and a single exceptional matroid $R_{10}$.  
+This result lies at the intersection of matroid theory, linear optimization, and combinatorial geometry, and it plays a central role in the theory of totally unimodular matrices and polynomial-time algorithms. Throughout this blueprint, we primarily work with finite matroids. Several results extend to matroids of finite rank or to infinite matroids, but these generalizations are not pursued systematically here.
+
+Our presentation of the structural theory of regular matroids closely follows the exposition and
+terminology of Truemper's monograph~\cite{Truemper}, which serves as a primary reference for the
+matroid theory and the matrix-based approach adopted throughout this blueprint. We thank Klaus Truemper for helpful correspondences about the regularity of the 3-sum.
+
+The present document is a \emph{blueprint} for the formalization of this theory in the Lean4 proof assistant.  
+Rather than presenting a traditional mathematical exposition, the blueprint records the logical structure of the proof, isolates intermediate results into modular components, and tracks the precise dependencies between statements.  
+Each definition, lemma, and theorem is intended to correspond to a Lean declaration, and many proofs are deferred to Lean and indicated as such.
+
+
+The blueprint is organized into several thematic parts.  
+We begin by developing the necessary background on totally unimodular matrices, pivoting operations, and vector matroids.  
+We then prove that regularity is preserved under $1$-, $2$-, and $3$-sums of matroids.  
+Finally, we establish regularity for certain special matroids -- graphic matroids, cographic matroids, and the matroid $R_{10}$ -- thereby completing the ingredients needed for Seymour's decomposition.

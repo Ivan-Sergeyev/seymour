@@ -1,10 +1,10 @@
-\chapter{Regularity of 3-Sum}
+\section{Regularity of 3-Sum}
 
-\section{Definition}
+\subsection{Definition}
 
 \begin{definition}
     \label{standardReprSum3}
-    \uses{StandardRepr,Matrix.fromBlocks}
+    \uses{StandardRepr}
     % \lean{}
     \leanok
     Let $X_{\ell}$, $Y_{\ell}$, $X_{r}$, and $Y_{r}$ be sets satisfying the following properties:
@@ -113,7 +113,7 @@
 \end{definition}
 
 
-\section{Canonical Signing}
+\subsection{Canonical Signing}
 
 \begin{lemma}
     \label{Matrix.isUnit_2x2}
@@ -133,7 +133,6 @@ For the sake of simplicity of notation, going forward we assume that the submatr
 
 \begin{definition}
     \label{matrix3x3signed}
-    \uses{Matrix.fromBlocks}
     % \lean{}
     \leanok
     We call $D_{0}' \in \mathbb{Q}^{\{x_{1}, x_{0}\} \times \{y_{0}, y_{1}\}}$ the canonical signing of $D_{0} \in \mathbb{Z}_{2}^{\{x_{1}, x_{0}\} \times \{y_{0}, y_{1}\}}$ if
@@ -339,7 +338,7 @@ For the sake of simplicity of notation, going forward we assume that the submatr
 \end{definition}
 
 
-\section{Properties of Canonical Signing}
+\subsection{Properties of Canonical Signing}
 
 \begin{lemma}
     \label{MatrixSum3.HasCanonicalSigning.toCanonicalSigning}
@@ -506,7 +505,7 @@ For the sake of simplicity of notation, going forward we assume that the submatr
 \end{proof}
 
 
-\section{Proof of Regularity}
+\subsection{Proof of Regularity}
 
 \begin{definition}
     \label{MatrixLikeSum3}
